@@ -1,3 +1,0 @@
-export declare const AVAILABLE_PERMISSIONS: readonly ["user:create", "user:read", "user:update", "user:delete", "role:create", "role:read", "role:update", "role:delete", "project:create", "project:read", "project:update", "project:delete", "task:create", "task:read", "task:update", "task:delete", "task:approve_ai", "document:upload", "document:delete", "ai:analyze"];
-export declare const PROJECT_SCOPED_PERMISSIONS: readonly ["project:read", "project:update", "project:delete", "task:create", "task:read", "task:update", "task:delete", "task:approve_ai", "document:upload", "document:delete", "ai:analyze"];
-export type ProjectScopedPermission = (typeof PROJECT_SCOPED_PERMISSIONS)[number];

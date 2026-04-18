@@ -121,7 +121,10 @@ function WorkflowGraph({
   selectedNodeId?: string | null;
   selectedEdgeId?: string | null;
   connectingFromId?: string | null;
-  onNodeMouseDown?: (nodeId: string, event: ReactMouseEvent<HTMLButtonElement>) => void;
+  onNodeMouseDown?: (
+    nodeId: string,
+    event: ReactMouseEvent<HTMLButtonElement>,
+  ) => void;
   onNodeClick?: (nodeId: string) => void;
   onEdgeClick?: (edgeId: string) => void;
   className?: string;
@@ -137,8 +140,14 @@ function WorkflowGraph({
     const padding = 48;
     const minX = Math.min(...workflow.nodes.map((node) => node.x), 0);
     const minY = Math.min(...workflow.nodes.map((node) => node.y), 0);
-    const maxX = Math.max(...workflow.nodes.map((node) => node.x + NODE_WIDTH), NODE_WIDTH);
-    const maxY = Math.max(...workflow.nodes.map((node) => node.y + NODE_HEIGHT), NODE_HEIGHT);
+    const maxX = Math.max(
+      ...workflow.nodes.map((node) => node.x + NODE_WIDTH),
+      NODE_WIDTH,
+    );
+    const maxY = Math.max(
+      ...workflow.nodes.map((node) => node.y + NODE_HEIGHT),
+      NODE_HEIGHT,
+    );
 
     const width = maxX - minX + padding * 2;
     const height = maxY - minY + padding * 2;
@@ -184,7 +193,9 @@ function WorkflowGraph({
         style={{
           width: layout.width,
           height: layout.height,
-          transform: fitToView ? `translate(${offsetX}px, ${offsetY}px) scale(${scale})` : undefined,
+          transform: fitToView
+            ? `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+            : undefined,
           transformOrigin: "top left",
           backgroundImage:
             "linear-gradient(to right, rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.14) 1px, transparent 1px)",
@@ -212,8 +223,10 @@ function WorkflowGraph({
 
             const path = getConnectorPath(source, target);
             const isSelected = selectedEdgeId === edge.id;
-            const midX = (source.x + NODE_WIDTH / 2 + target.x + NODE_WIDTH / 2) / 2;
-            const midY = (source.y + NODE_HEIGHT / 2 + target.y + NODE_HEIGHT / 2) / 2;
+            const midX =
+              (source.x + NODE_WIDTH / 2 + target.x + NODE_WIDTH / 2) / 2;
+            const midY =
+              (source.y + NODE_HEIGHT / 2 + target.y + NODE_HEIGHT / 2) / 2;
 
             return (
               <g key={edge.id}>
@@ -223,17 +236,19 @@ function WorkflowGraph({
                   fill='none'
                   stroke='transparent'
                   strokeWidth='16'
-                  className={onEdgeClick ? 'cursor-pointer' : ''}
+                  className={onEdgeClick ? "cursor-pointer" : ""}
                   onClick={() => onEdgeClick?.(edge.id)}
                 />
                 {/* Visible path */}
                 <path
                   d={path}
                   fill='none'
-                  stroke={isSelected ? '#ef4444' : '#cbd5e1'}
+                  stroke={isSelected ? "#ef4444" : "#cbd5e1"}
                   strokeWidth='3'
                   markerEnd={`url(#${markerId})`}
-                  className={onEdgeClick ? 'cursor-pointer pointer-events-none' : ''}
+                  className={
+                    onEdgeClick ? "cursor-pointer pointer-events-none" : ""
+                  }
                 />
                 {/* Delete button at midpoint when selected */}
                 {isSelected && onEdgeClick && (
@@ -241,7 +256,7 @@ function WorkflowGraph({
                     transform={`translate(${midX}, ${midY})`}
                     onClick={() => onEdgeClick(edge.id)}
                     className='cursor-pointer'
-                    style={{ pointerEvents: 'all' }}
+                    style={{ pointerEvents: "all" }}
                   >
                     <circle r='10' fill='#ef4444' />
                     <text
@@ -250,7 +265,7 @@ function WorkflowGraph({
                       fill='white'
                       fontSize='13'
                       fontWeight='bold'
-                      style={{ userSelect: 'none' }}
+                      style={{ userSelect: "none" }}
                     >
                       ×
                     </text>
@@ -349,8 +364,14 @@ export function ProjectWorkflowEditor({
       if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
-      const nextX = Math.max(24, event.clientX - rect.left + canvas.scrollLeft - dragging.offsetX);
-      const nextY = Math.max(24, event.clientY - rect.top + canvas.scrollTop - dragging.offsetY);
+      const nextX = Math.max(
+        24,
+        event.clientX - rect.left + canvas.scrollLeft - dragging.offsetX,
+      );
+      const nextY = Math.max(
+        24,
+        event.clientY - rect.top + canvas.scrollTop - dragging.offsetY,
+      );
 
       setWorkflow((current) => ({
         ...current,
@@ -373,7 +394,7 @@ export function ProjectWorkflowEditor({
   if (!open) return null;
 
   const selectedNode = selectedNodeId
-    ? workflow.nodes.find((node) => node.id === selectedNodeId) ?? null
+    ? (workflow.nodes.find((node) => node.id === selectedNodeId) ?? null)
     : null;
 
   const addNode = () => {
@@ -401,7 +422,9 @@ export function ProjectWorkflowEditor({
       ),
     }));
     const nextNode = workflow.nodes.find((node) => node.id !== nodeId);
-    setSelectedNodeId((current) => (current === nodeId ? nextNode?.id ?? null : current));
+    setSelectedNodeId((current) =>
+      current === nodeId ? (nextNode?.id ?? null) : current,
+    );
     setConnectingFromId((current) => (current === nodeId ? null : current));
     setSelectedEdgeId(null);
   };
@@ -457,9 +480,12 @@ export function ProjectWorkflowEditor({
       <div className='flex h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[28px] bg-white shadow-2xl'>
         <div className='flex items-center justify-between border-b border-slate-200 px-6 py-4'>
           <div>
-            <h3 className='text-lg font-semibold text-slate-900'>Workflow Builder</h3>
+            <h3 className='text-lg font-semibold text-slate-900'>
+              Workflow Builder
+            </h3>
             <p className='text-sm text-slate-500'>
-              Drag nodes, connect transitions, and choose a color for each status.
+              Drag nodes, connect transitions, and choose a color for each
+              status.
             </p>
           </div>
           <button
@@ -509,7 +535,9 @@ export function ProjectWorkflowEditor({
                 selectedEdgeId={selectedEdgeId}
                 connectingFromId={connectingFromId}
                 onEdgeClick={(edgeId) => {
-                  setSelectedEdgeId((current) => current === edgeId ? null : edgeId);
+                  setSelectedEdgeId((current) =>
+                    current === edgeId ? null : edgeId,
+                  );
                   setSelectedNodeId(null);
                 }}
                 onNodeMouseDown={(nodeId, event) => {
@@ -517,14 +545,18 @@ export function ProjectWorkflowEditor({
                   if ((event.target as HTMLElement).closest("input")) return;
 
                   const canvas = canvasRef.current;
-                  const node = workflow.nodes.find((item) => item.id === nodeId);
+                  const node = workflow.nodes.find(
+                    (item) => item.id === nodeId,
+                  );
                   if (!canvas || !node) return;
 
                   const rect = canvas.getBoundingClientRect();
                   setDragging({
                     nodeId,
-                    offsetX: event.clientX - rect.left + canvas.scrollLeft - node.x,
-                    offsetY: event.clientY - rect.top + canvas.scrollTop - node.y,
+                    offsetX:
+                      event.clientX - rect.left + canvas.scrollLeft - node.x,
+                    offsetY:
+                      event.clientY - rect.top + canvas.scrollTop - node.y,
                   });
                 }}
                 onNodeClick={selectOrConnectNode}
@@ -542,9 +574,15 @@ export function ProjectWorkflowEditor({
             <div className='min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5'>
               {selectedEdgeId ? (
                 (() => {
-                  const edge = workflow.edges.find((e) => e.id === selectedEdgeId);
-                  const sourceNode = edge ? workflow.nodes.find((n) => n.id === edge.source) : null;
-                  const targetNode = edge ? workflow.nodes.find((n) => n.id === edge.target) : null;
+                  const edge = workflow.edges.find(
+                    (e) => e.id === selectedEdgeId,
+                  );
+                  const sourceNode = edge
+                    ? workflow.nodes.find((n) => n.id === edge.source)
+                    : null;
+                  const targetNode = edge
+                    ? workflow.nodes.find((n) => n.id === edge.target)
+                    : null;
                   if (!edge || !sourceNode || !targetNode) return null;
                   return (
                     <div className='space-y-4'>
@@ -552,20 +590,27 @@ export function ProjectWorkflowEditor({
                         <div className='flex items-center gap-2 text-sm text-slate-600'>
                           <span
                             className='rounded-md px-2 py-1 text-xs font-semibold'
-                            style={getTaskStatusInlineStyle(sourceNode.name, workflow)}
+                            style={getTaskStatusInlineStyle(
+                              sourceNode.name,
+                              workflow,
+                            )}
                           >
                             {sourceNode.name}
                           </span>
                           <span className='text-slate-400'>→</span>
                           <span
                             className='rounded-md px-2 py-1 text-xs font-semibold'
-                            style={getTaskStatusInlineStyle(targetNode.name, workflow)}
+                            style={getTaskStatusInlineStyle(
+                              targetNode.name,
+                              workflow,
+                            )}
                           >
                             {targetNode.name}
                           </span>
                         </div>
                         <p className='text-xs text-slate-400'>
-                          Nhấn nút bên dưới hoặc click vào dấu × trên mũi tên để xóa liên kết này.
+                          Nhấn nút bên dưới hoặc click vào dấu × trên mũi tên để
+                          xóa liên kết này.
                         </p>
                       </div>
                       <div className='rounded-2xl border border-red-100 bg-red-50 p-3'>
@@ -584,7 +629,9 @@ export function ProjectWorkflowEditor({
               ) : selectedNode ? (
                 <>
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>Status name</label>
+                    <label className='text-xs font-medium text-slate-500'>
+                      Status name
+                    </label>
                     <input
                       value={selectedNode.name}
                       onChange={(event) =>
@@ -602,7 +649,9 @@ export function ProjectWorkflowEditor({
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>Status color</label>
+                    <label className='text-xs font-medium text-slate-500'>
+                      Status color
+                    </label>
                     <div className='flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5'>
                       <input
                         type='color'
@@ -612,7 +661,10 @@ export function ProjectWorkflowEditor({
                             ...current,
                             nodes: current.nodes.map((node) =>
                               node.id === selectedNode.id
-                                ? { ...node, color: event.target.value.toUpperCase() }
+                                ? {
+                                    ...node,
+                                    color: event.target.value.toUpperCase(),
+                                  }
                                 : node,
                             ),
                           }))
@@ -621,7 +673,10 @@ export function ProjectWorkflowEditor({
                       />
                       <div
                         className='rounded-lg border px-3 py-1.5 text-sm font-semibold'
-                        style={getTaskStatusInlineStyle(selectedNode.name, workflow)}
+                        style={getTaskStatusInlineStyle(
+                          selectedNode.name,
+                          workflow,
+                        )}
                       >
                         {selectedNode.color}
                       </div>
@@ -629,13 +684,17 @@ export function ProjectWorkflowEditor({
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>Transitions</label>
+                    <label className='text-xs font-medium text-slate-500'>
+                      Transitions
+                    </label>
                     <div className='space-y-2 rounded-2xl border border-slate-200 bg-white p-3'>
                       <button
                         type='button'
                         onClick={() =>
                           setConnectingFromId((current) =>
-                            current === selectedNode.id ? null : selectedNode.id,
+                            current === selectedNode.id
+                              ? null
+                              : selectedNode.id,
                           )
                         }
                         className={cn(
@@ -665,13 +724,17 @@ export function ProjectWorkflowEditor({
                                 key={edge.id}
                                 className='flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-sm'
                               >
-                                <span className='text-slate-600'>{targetNode.name}</span>
+                                <span className='text-slate-600'>
+                                  {targetNode.name}
+                                </span>
                                 <button
                                   type='button'
                                   onClick={() =>
                                     setWorkflow((current) => ({
                                       ...current,
-                                      edges: current.edges.filter((item) => item.id !== edge.id),
+                                      edges: current.edges.filter(
+                                        (item) => item.id !== edge.id,
+                                      ),
                                     }))
                                   }
                                   className='rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600'
@@ -681,8 +744,9 @@ export function ProjectWorkflowEditor({
                               </div>
                             );
                           })}
-                        {workflow.edges.filter((edge) => edge.source === selectedNode.id)
-                          .length === 0 && (
+                        {workflow.edges.filter(
+                          (edge) => edge.source === selectedNode.id,
+                        ).length === 0 && (
                           <p className='text-xs text-slate-400'>
                             No outgoing transitions from this status yet.
                           </p>
@@ -716,29 +780,31 @@ export function ProjectWorkflowEditor({
                   Status Order
                 </p>
                 <div className='space-y-2 rounded-2xl border border-slate-200 bg-white p-3'>
-                  {sortNodesByCanvasPosition(workflow.nodes).map((node, index) => (
-                    <button
-                      key={node.id}
-                      type='button'
-                      onClick={() => setSelectedNodeId(node.id)}
-                      className={cn(
-                        "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm",
-                        selectedNodeId === node.id
-                          ? "border-sky-300 bg-sky-50"
-                          : "border-transparent hover:border-slate-200 hover:bg-slate-50",
-                      )}
-                    >
-                      <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500'>
-                        {index + 1}
-                      </span>
-                      <span
-                        className='rounded-md px-2 py-1 text-xs font-semibold'
-                        style={getTaskStatusInlineStyle(node.name, workflow)}
+                  {sortNodesByCanvasPosition(workflow.nodes).map(
+                    (node, index) => (
+                      <button
+                        key={node.id}
+                        type='button'
+                        onClick={() => setSelectedNodeId(node.id)}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm",
+                          selectedNodeId === node.id
+                            ? "border-sky-300 bg-sky-50"
+                            : "border-transparent hover:border-slate-200 hover:bg-slate-50",
+                        )}
                       >
-                        {node.name}
-                      </span>
-                    </button>
-                  ))}
+                        <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500'>
+                          {index + 1}
+                        </span>
+                        <span
+                          className='rounded-md px-2 py-1 text-xs font-semibold'
+                          style={getTaskStatusInlineStyle(node.name, workflow)}
+                        >
+                          {node.name}
+                        </span>
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
