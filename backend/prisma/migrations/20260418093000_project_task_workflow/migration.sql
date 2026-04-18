@@ -1,0 +1,13 @@
+ALTER TABLE "projects"
+ADD COLUMN "task_statuses" TEXT[] NOT NULL DEFAULT ARRAY['TODO', 'IN_PROGRESS', 'DONE']::TEXT[];
+
+ALTER TABLE "tasks"
+ALTER COLUMN "status" DROP DEFAULT;
+
+ALTER TABLE "tasks"
+ALTER COLUMN "status" TYPE TEXT USING "status"::TEXT;
+
+ALTER TABLE "tasks"
+ALTER COLUMN "status" SET DEFAULT 'TODO';
+
+DROP TYPE "TaskStatus";
