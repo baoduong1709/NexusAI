@@ -11,6 +11,25 @@ import {
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import {
+  EditorContent,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+  useEditor,
+} from "@tiptap/react";
+import { Node, mergeAttributes } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
+import UnderlineExt from "@tiptap/extension-underline";
+import Placeholder from "@tiptap/extension-placeholder";
+import Mention from "@tiptap/extension-mention";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
 import {
   Loader2,
   Plus,
@@ -19,8 +38,8 @@ import {
   Upload,
   FileText,
   Users,
-  BrainCircuit,
   ChevronLeft,
+  ChevronRight,
   X,
   CheckCircle,
   Send,
@@ -31,6 +50,24 @@ import {
   History,
   ChevronDown,
   Settings2,
+  BarChart2,
+  GitBranch,
+  LayoutGrid,
+  CalendarDays,
+  Layers,
+  Tags,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Quote,
+  Code2,
+  Undo2,
+  Redo2,
+  WandSparkles,
+  Minus,
+  CheckSquare,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
@@ -40,6 +77,7 @@ import {
   normalizeTaskWorkflow,
   cn,
   formatDate,
+  formatDateTime,
   PRIORITY_COLORS,
 } from "@/lib/utils";
 import {
@@ -53,15 +91,30 @@ import {
   ProjectRoleConfig,
   PROJECT_ROLE_PERMISSION_GROUPS,
 } from "@/lib/project-roles";
+import { BrandLogo } from "@/components/brand-logo";
 
-type Tab = "tasks" | "documents" | "members" | "settings";
+type Tab =
+  | "summary"
+  | "timeline"
+  | "backlog"
+  | "board"
+  | "calendar"
+  | "documents"
+  | "members"
+  | "settings";
+
+const HOURS_PER_WORK_DAY = 8;
 
 interface SuggestedTask {
   title: string;
   description?: string;
   priority?: "LOW" | "MEDIUM" | "HIGH";
   dueDate?: string;
+  epic?: string;
+  labels?: string[];
   sprint?: string;
+  estimateHours?: number;
+  loggedHours?: number;
   assigneeId?: number | null;
 }
 
@@ -72,19 +125,879 @@ interface ChatMessage {
   suggestedTasks?: SuggestedTask[];
 }
 
+interface DescriptionAiMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+type ActivityTab = "all" | "comments" | "history" | "worklog";
+
+interface TaskActivity {
+  id: number;
+  type: "COMMENT" | "HISTORY" | "WORK_LOG";
+  field?: string | null;
+  fromValue?: string | null;
+  toValue?: string | null;
+  body?: string | null;
+  durationHours?: number | null;
+  createdAt: string;
+  user?: { id: number; name: string; email: string } | null;
+}
+
+const InfoPanelNode = Node.create({
+  name: "infoPanel",
+  group: "block",
+  content: "block+",
+  defining: true,
+  addAttributes() {
+    return {
+      panelType: {
+        default: "info",
+        parseHTML: (element) =>
+          element.getAttribute("data-panel-type") || "info",
+        renderHTML: (attributes) => ({
+          "data-panel-type": attributes.panelType || "info",
+        }),
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'div[data-node-type="info-panel"]' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "info-panel",
+      }),
+      0,
+    ];
+  },
+});
+
+const DateBadgeNode = Node.create({
+  name: "dateBadge",
+  group: "inline",
+  inline: true,
+  atom: true,
+  addAttributes() {
+    return {
+      value: {
+        default: "",
+        parseHTML: (element) => element.getAttribute("data-value") || "",
+        renderHTML: (attributes) => ({
+          "data-value": attributes.value || "",
+        }),
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'span[data-node-type="date-badge"]' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    const value = HTMLAttributes["data-value"] || HTMLAttributes.value || "";
+    return [
+      "span",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "date-badge",
+      }),
+      value ? `Date: ${value}` : "Date",
+    ];
+  },
+});
+
+const StatusBadgeNode = Node.create({
+  name: "statusBadge",
+  group: "inline",
+  inline: true,
+  atom: true,
+  addAttributes() {
+    return {
+      value: {
+        default: "TODO",
+        parseHTML: (element) => element.getAttribute("data-value") || "TODO",
+        renderHTML: (attributes) => ({
+          "data-value": attributes.value || "TODO",
+        }),
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'span[data-node-type="status-badge"]' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    const value =
+      HTMLAttributes["data-value"] || HTMLAttributes.value || "TODO";
+    return [
+      "span",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "status-badge",
+      }),
+      value,
+    ];
+  },
+});
+
+function ExpandBlockView({ node, updateAttributes }: any) {
+  return (
+    <NodeViewWrapper
+      as='details'
+      data-node-type='expand-block'
+      data-summary={node.attrs.summary}
+      data-body={node.attrs.body}
+      open
+      className='expand-block-node'
+    >
+      <summary aria-label='Expand details' />
+      <textarea
+        value={node.attrs.body || ""}
+        onChange={(e) => updateAttributes({ body: e.target.value })}
+        className='mt-2 min-h-[72px] w-full resize-y rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-700 outline-none focus:ring-1 focus:ring-sky-400'
+        placeholder='Details content...'
+      />
+    </NodeViewWrapper>
+  );
+}
+
+const ExpandBlockNode = Node.create({
+  name: "expandBlock",
+  group: "block",
+  atom: true,
+  defining: true,
+  addAttributes() {
+    return {
+      summary: {
+        default: "Expand",
+        parseHTML: (element) =>
+          element.getAttribute("data-summary") ||
+          element.querySelector("summary")?.textContent ||
+          "Expand",
+        renderHTML: (attributes) => ({
+          "data-summary": attributes.summary || "Expand",
+        }),
+      },
+      body: {
+        default: "Details content...",
+        parseHTML: (element) =>
+          element.getAttribute("data-body") ||
+          element.querySelector("[data-expand-body]")?.textContent ||
+          "Details content...",
+        renderHTML: (attributes) => ({
+          "data-body": attributes.body || "Details content...",
+        }),
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'details[data-node-type="expand-block"]' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    const summary =
+      HTMLAttributes["data-summary"] || HTMLAttributes.summary || "Expand";
+    const body =
+      HTMLAttributes["data-body"] ||
+      HTMLAttributes.body ||
+      "Details content...";
+    return [
+      "details",
+      mergeAttributes(HTMLAttributes, {
+        "data-node-type": "expand-block",
+      }),
+      ["summary", {}, summary],
+      ["div", { "data-expand-body": "" }, body],
+    ];
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(ExpandBlockView);
+  },
+});
+
+function parseTaskLabels(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return Array.from(
+      new Set(value.map((label) => String(label).trim()).filter(Boolean)),
+    );
+  }
+
+  if (typeof value !== "string") return [];
+  return Array.from(
+    new Set(
+      value
+        .split(",")
+        .map((label) => label.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
+function stripTaskPrefix(title: string) {
+  return title.replace(/^(\[[^\]]+\]\s*)+/, "").trim();
+}
+
+function previewTaskNamingRule(
+  rule: string,
+  sample: {
+    title: string;
+    epic?: string;
+    labels?: string[];
+    sprint?: string;
+    priority?: string;
+  },
+) {
+  const title = stripTaskPrefix(sample.title);
+  if (!rule.trim()) return title;
+
+  const labels = sample.labels || [];
+  const rendered = rule
+    .replaceAll("{title}", title)
+    .replaceAll("{epic}", sample.epic || "")
+    .replaceAll("{labels}", labels.join("]["))
+    .replaceAll("{firstLabel}", labels[0] || "")
+    .replaceAll("{remainingLabels}", labels.slice(1).join("]["))
+    .replaceAll("{sprint}", sample.sprint || "")
+    .replaceAll("{priority}", sample.priority || "");
+
+  return rendered.replace(/\[\]/g, "").replace(/\s+/g, " ").trim();
+}
+
+function sanitizeRichTextHtml(input: string) {
+  if (!input) return "";
+  return input
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "")
+    .replace(/javascript:/gi, "")
+    .trim();
+}
+
+function stripHtmlTags(input: string) {
+  return input
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+type DescriptionEditorProps = {
+  value: string;
+  onChange: (next: string) => void;
+  onBlur?: () => void;
+  onImprove: () => void;
+  onAssist: (instruction: string) => void;
+  aiMessages: DescriptionAiMessage[];
+  assisting: boolean;
+  improving: boolean;
+  mentionItems: { id: string; label: string }[];
+  disabled?: boolean;
+};
+
+function DescriptionEditor({
+  value,
+  onChange,
+  onBlur,
+  onImprove,
+  onAssist,
+  aiMessages,
+  assisting,
+  improving,
+  mentionItems,
+  disabled,
+}: DescriptionEditorProps) {
+  const [aiInput, setAiInput] = useState("");
+  const [selectedMention, setSelectedMention] = useState("");
+  const [customStatus, setCustomStatus] = useState("");
+  const [panelToInsert, setPanelToInsert] = useState("");
+  const [dateToInsert, setDateToInsert] = useState("");
+  const [isTableActive, setIsTableActive] = useState(false);
+  const [showTableMenu, setShowTableMenu] = useState(false);
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+      }),
+      UnderlineExt,
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Mention.configure({
+        HTMLAttributes: {
+          class: "mention-chip",
+        },
+        renderText({ options, node }) {
+          return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
+        },
+        renderHTML({ options, node }) {
+          return [
+            "span",
+            mergeAttributes(options.HTMLAttributes, {
+              "data-mention-id": node.attrs.id,
+            }),
+            `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`,
+          ];
+        },
+      }),
+      InfoPanelNode,
+      DateBadgeNode,
+      StatusBadgeNode,
+      ExpandBlockNode,
+      Placeholder.configure({
+        placeholder:
+          "Add task details, acceptance criteria, or steps to reproduce...",
+      }),
+    ],
+    content: value || "",
+    editable: !disabled,
+    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      onChange(sanitizeRichTextHtml(editor.getHTML()));
+      setIsTableActive(editor.isActive("table"));
+    },
+    onSelectionUpdate: ({ editor }) => {
+      setIsTableActive(editor.isActive("table"));
+    },
+    onBlur: () => onBlur?.(),
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[180px] px-3 py-2 text-sm leading-6 text-gray-900 focus:outline-none",
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!disabled);
+  }, [editor, disabled]);
+
+  useEffect(() => {
+    if (!editor) return;
+    const current = sanitizeRichTextHtml(editor.getHTML());
+    const next = sanitizeRichTextHtml(value || "");
+    if (current !== next) {
+      editor.commands.setContent(next || "<p></p>", false);
+    }
+  }, [editor, value]);
+
+  const runWithFallback = (
+    action: (ed: NonNullable<typeof editor>) => boolean,
+    fallback?: (ed: NonNullable<typeof editor>) => boolean,
+  ) => {
+    if (!editor || disabled) return;
+    const ok = action(editor);
+    if (ok) return;
+    editor.chain().focus("end").insertContent("<p></p>").run();
+    if (fallback) {
+      fallback(editor);
+      return;
+    }
+    action(editor);
+  };
+
+  const insertInlineNode = (
+    node: { type: string; attrs?: Record<string, string> },
+    fallbackText: string,
+  ) => {
+    runWithFallback(
+      (ed) =>
+        ed
+          .chain()
+          .focus()
+          .insertContent([node, { type: "text", text: " " }])
+          .run(),
+      (ed) => ed.chain().focus().insertContent(fallbackText).run(),
+    );
+  };
+
+  return (
+    <div className='mt-1 rounded-lg border border-gray-200 bg-white'>
+      <div className='flex flex-wrap items-center gap-1 border-b border-gray-100 p-2'>
+        <button
+          type='button'
+          onClick={onImprove}
+          disabled={disabled || improving}
+          className='inline-flex items-center gap-1.5 rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 hover:bg-sky-100 disabled:opacity-50'
+        >
+          {improving ? (
+            <Loader2 size={13} className='animate-spin' />
+          ) : (
+            <WandSparkles size={13} />
+          )}
+          Improve description
+        </button>
+        <span className='mx-1 h-5 w-px bg-gray-200' />
+        {[
+          {
+            icon: Bold,
+            active: !!editor?.isActive("bold"),
+            action: () => editor?.chain().focus().toggleBold().run(),
+          },
+          {
+            icon: Italic,
+            active: !!editor?.isActive("italic"),
+            action: () => editor?.chain().focus().toggleItalic().run(),
+          },
+          {
+            icon: Underline,
+            active: !!editor?.isActive("underline"),
+            action: () => editor?.chain().focus().toggleUnderline().run(),
+          },
+          {
+            icon: List,
+            active: !!editor?.isActive("bulletList"),
+            action: () => editor?.chain().focus().toggleBulletList().run(),
+          },
+          {
+            icon: ListOrdered,
+            active: !!editor?.isActive("orderedList"),
+            action: () => editor?.chain().focus().toggleOrderedList().run(),
+          },
+          {
+            icon: Quote,
+            active: !!editor?.isActive("blockquote"),
+            action: () => editor?.chain().focus().toggleBlockquote().run(),
+          },
+          {
+            icon: Code2,
+            active: !!editor?.isActive("codeBlock"),
+            action: () => editor?.chain().focus().toggleCodeBlock().run(),
+          },
+          {
+            icon: Undo2,
+            active: false,
+            action: () => editor?.chain().focus().undo().run(),
+          },
+          {
+            icon: Redo2,
+            active: false,
+            action: () => editor?.chain().focus().redo().run(),
+          },
+        ].map((item, idx) => (
+          <button
+            key={`${idx}`}
+            type='button'
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (disabled) return;
+              item.action();
+            }}
+            disabled={disabled}
+            className={cn(
+              "rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50",
+              item.active && "bg-sky-100 text-sky-700",
+            )}
+          >
+            <item.icon size={14} />
+          </button>
+        ))}
+        <span className='mx-1 h-5 w-px bg-gray-200' />
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            runWithFallback((ed) => ed.chain().focus().toggleTaskList().run());
+          }}
+          disabled={disabled}
+          className={cn(
+            "rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50",
+            editor?.isActive("taskList") && "bg-sky-100 text-sky-700",
+          )}
+          title='Action item'
+        >
+          <CheckSquare size={14} />
+        </button>
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            runWithFallback((ed) =>
+              ed
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run(),
+            );
+          }}
+          disabled={disabled}
+          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+          title='Insert table'
+        >
+          <LayoutGrid size={14} />
+        </button>
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            runWithFallback((ed) =>
+              ed.chain().focus().setHorizontalRule().run(),
+            );
+          }}
+          disabled={disabled}
+          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+          title='Divider'
+        >
+          <Minus size={14} />
+        </button>
+        <select
+          value={panelToInsert}
+          onChange={(e) => {
+            const panelType = e.target.value;
+            setPanelToInsert("");
+            if (!panelType) return;
+            const label =
+              panelType === "warning"
+                ? "Warning panel"
+                : panelType === "success"
+                  ? "Success panel"
+                  : "Info panel";
+            runWithFallback(
+              (ed) =>
+                ed
+                  .chain()
+                  .focus()
+                  .insertContent({
+                    type: "infoPanel",
+                    attrs: { panelType },
+                    content: [
+                      {
+                        type: "paragraph",
+                        content: [{ type: "text", text: label }],
+                      },
+                    ],
+                  })
+                  .run(),
+              (ed) =>
+                ed
+                  .chain()
+                  .focus()
+                  .insertContent(
+                    `<p><strong>${panelType.toUpperCase()}:</strong> ...</p>`,
+                  )
+                  .run(),
+            );
+          }}
+          disabled={disabled}
+          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          title='Info panel'
+        >
+          <option value=''>Panel</option>
+          <option value='info'>Info</option>
+          <option value='warning'>Warning</option>
+          <option value='success'>Success</option>
+        </select>
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            runWithFallback(
+              (ed) =>
+                ed
+                  .chain()
+                  .focus()
+                  .insertContent({
+                    type: "expandBlock",
+                    attrs: {
+                      body: "Details content...",
+                    },
+                  })
+                  .run(),
+              (ed) =>
+                ed
+                  .chain()
+                  .focus()
+                  .insertContent(
+                    '<details data-node-type="expand-block" data-summary="Expand" data-body="Details content..."><summary>Expand</summary><div data-expand-body="">Details content...</div></details>',
+                  )
+                  .run(),
+            );
+          }}
+          disabled={disabled}
+          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+        >
+          <ChevronDown size={14} />
+        </button>
+        <input
+          type='date'
+          value={dateToInsert}
+          onChange={(e) => {
+            const value = e.target.value;
+            setDateToInsert("");
+            if (!value) return;
+            insertInlineNode(
+              { type: "dateBadge", attrs: { value } },
+              ` <code>Date: ${value}</code> `,
+            );
+          }}
+          disabled={disabled}
+          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          title='Date'
+        />
+        <input
+          type='text'
+          value={customStatus}
+          onChange={(e) => setCustomStatus(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            const value = customStatus.trim();
+            if (!value) return;
+            setCustomStatus("");
+            insertInlineNode(
+              { type: "statusBadge", attrs: { value } },
+              ` <code>${value}</code> `,
+            );
+          }}
+          disabled={disabled}
+          className='h-7 w-24 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          placeholder='Status'
+        />
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            const value = customStatus.trim();
+            if (!value) return;
+            setCustomStatus("");
+            insertInlineNode(
+              { type: "statusBadge", attrs: { value } },
+              ` <code>${value}</code> `,
+            );
+          }}
+          disabled={disabled}
+          className='rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+          title='Insert custom status'
+        >
+          Add
+        </button>
+        <select
+          value={selectedMention}
+          onChange={(e) => {
+            const id = e.target.value;
+            setSelectedMention("");
+            if (!id || disabled) return;
+            const member = mentionItems.find((item) => item.id === id);
+            if (!member) return;
+            insertInlineNode(
+              {
+                type: "mention",
+                attrs: { id: member.id, label: member.label },
+              },
+              ` @${member.label} `,
+            );
+          }}
+          disabled={disabled}
+          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+        >
+          <option value=''>@ mention</option>
+          {mentionItems.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <EditorContent editor={editor} />
+      {isTableActive && (
+        <div className='relative border-t border-gray-100 bg-slate-50 px-2 py-2'>
+          <button
+            type='button'
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (disabled) return;
+              editor?.chain().focus().addColumnAfter().run();
+            }}
+            disabled={disabled}
+            className='absolute left-1/2 top-2 z-10 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-sky-600 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-50'
+            title='Insert column'
+          >
+            +
+          </button>
+          <button
+            type='button'
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (disabled) return;
+              editor?.chain().focus().addRowAfter().run();
+            }}
+            disabled={disabled}
+            className='absolute left-2 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-sky-600 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-50'
+            title='Insert row'
+          >
+            +
+          </button>
+          <div className='flex items-center gap-2 pl-8'>
+            <button
+              type='button'
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setShowTableMenu((open) => !open);
+              }}
+              disabled={disabled}
+              className='rounded-md border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+            >
+              Table
+            </button>
+            <span className='text-xs text-gray-400'>
+              Select a cell to edit rows and columns
+            </span>
+          </div>
+          {showTableMenu && (
+            <div className='absolute left-8 top-10 z-20 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg'>
+              {[
+                {
+                  label: "Add row above",
+                  action: () => editor?.chain().focus().addRowBefore().run(),
+                },
+                {
+                  label: "Add row below",
+                  action: () => editor?.chain().focus().addRowAfter().run(),
+                },
+                {
+                  label: "Add column before",
+                  action: () =>
+                    editor?.chain().focus().addColumnBefore().run(),
+                },
+                {
+                  label: "Add column after",
+                  action: () => editor?.chain().focus().addColumnAfter().run(),
+                },
+                {
+                  label: "Delete row",
+                  action: () => editor?.chain().focus().deleteRow().run(),
+                },
+                {
+                  label: "Delete column",
+                  action: () => editor?.chain().focus().deleteColumn().run(),
+                },
+                {
+                  label: "Delete table",
+                  action: () => editor?.chain().focus().deleteTable().run(),
+                },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  type='button'
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    if (disabled) return;
+                    item.action();
+                    setShowTableMenu(false);
+                  }}
+                  disabled={disabled}
+                  className='block w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      <div className='border-t border-gray-100 p-2'>
+        <div className='max-h-32 space-y-1 overflow-y-auto rounded-md bg-gray-50 p-2'>
+          {aiMessages.length === 0 ? (
+            <p className='text-xs text-gray-400'>
+              Ask AI: "thêm acceptance criteria", "viết lại ngắn gọn", "bổ sung
+              risks"...
+            </p>
+          ) : (
+            aiMessages.map((msg, idx) => (
+              <p
+                key={`${msg.role}-${idx}`}
+                className={cn(
+                  "text-xs",
+                  msg.role === "assistant" ? "text-sky-700" : "text-gray-600",
+                )}
+              >
+                <strong>{msg.role === "assistant" ? "AI" : "Bạn"}:</strong>{" "}
+                {msg.content}
+              </p>
+            ))
+          )}
+        </div>
+        <div className='mt-2 flex gap-2'>
+          <input
+            type='text'
+            value={aiInput}
+            onChange={(e) => setAiInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const instruction = aiInput.trim();
+                if (!instruction || disabled || assisting) return;
+                onAssist(instruction);
+                setAiInput("");
+              }
+            }}
+            placeholder='Nhập yêu cầu cho AI...'
+            className='h-8 flex-1 rounded-md border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400'
+            disabled={disabled || assisting}
+          />
+          <button
+            type='button'
+            onClick={() => {
+              const instruction = aiInput.trim();
+              if (!instruction || disabled || assisting) return;
+              onAssist(instruction);
+              setAiInput("");
+            }}
+            disabled={disabled || assisting}
+            className='inline-flex h-8 items-center gap-1 rounded-md bg-slate-900 px-2.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50'
+          >
+            {assisting ? <Loader2 size={12} className='animate-spin' /> : null}
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const projectId = Number(id);
   const { hasPermission, user } = useAuth();
   const qc = useQueryClient();
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("tasks");
+  const [tab, setTab] = useState<Tab>("summary");
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
   const [showRolesModal, setShowRolesModal] = useState(false);
   const [editTask, setEditTask] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
+  const [showUpdateRequirementsConfirm, setShowUpdateRequirementsConfirm] =
+    useState(false);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
+  const CHAT_STORAGE_KEY = `ai-bubble-chat-${projectId}`;
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const raw =
+        typeof window !== "undefined"
+          ? localStorage.getItem(`ai-bubble-chat-${projectId}`)
+          : null;
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const setChatMessagesAndSave = (
+    updater: (prev: ChatMessage[]) => ChatMessage[],
+  ) => {
+    setChatMessages((prev) => {
+      const next = updater(prev);
+      try {
+        localStorage.setItem(
+          `ai-bubble-chat-${projectId}`,
+          JSON.stringify(next),
+        );
+      } catch {}
+      return next;
+    });
+  };
   const [chatInput, setChatInput] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [reviewTasks, setReviewTasks] = useState<SuggestedTask[] | null>(null);
@@ -106,6 +1019,44 @@ export default function ProjectDetailPage() {
   } | null>(null);
   const [roleDraft, setRoleDraft] = useState<ProjectRoleConfig[]>([]);
   const [newProjectRole, setNewProjectRole] = useState("");
+  const [showSprintModal, setShowSprintModal] = useState(false);
+  const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
+  const [dragTaskId, setDragTaskId] = useState<number | null>(null);
+  const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+  const [newSprintName, setNewSprintName] = useState("");
+  const [newEpicName, setNewEpicName] = useState("");
+  const [newLabelName, setNewLabelName] = useState("");
+  const [descriptionHtml, setDescriptionHtml] = useState("");
+  const [descriptionAiMessages, setDescriptionAiMessages] = useState<
+    DescriptionAiMessage[]
+  >([]);
+  const [activityTab, setActivityTab] = useState<ActivityTab>("comments");
+  const [commentDraft, setCommentDraft] = useState("");
+  const [workLogDraft, setWorkLogDraft] = useState("");
+  const [workLogNote, setWorkLogNote] = useState("");
+  const [taskNamingRuleDraft, setTaskNamingRuleDraft] = useState("");
+  const [showLabelFilterMenu, setShowLabelFilterMenu] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [taskFilters, setTaskFilters] = useState({
+    search: "",
+    status: "",
+    priority: "",
+    epic: "",
+    labels: [] as string[],
+    sprint: "",
+    assigneeId: "",
+    dueFrom: "",
+    dueTo: "",
+    ai: "",
+  });
+  const [sprints, setSprints] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(`sprints-${projectId}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { data: project, isLoading } = useQuery({
@@ -126,6 +1077,17 @@ export default function ProjectDetailPage() {
     queryFn: () => aiApi.getHistory(projectId).then((r) => r.data),
     enabled: tab === "documents" && showHistory,
   });
+  const { data: taskActivities = [], isLoading: loadingTaskActivities } =
+    useQuery<TaskActivity[]>({
+      queryKey: ["task-activities", projectId, editTask?.id],
+      queryFn: () =>
+        tasksApi.getActivities(projectId, editTask.id).then((r) => r.data),
+      enabled: showTaskModal && !!editTask?.id,
+    });
+
+  useEffect(() => {
+    setTaskNamingRuleDraft(project?.taskNamingRule || "");
+  }, [project?.taskNamingRule]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -153,11 +1115,12 @@ export default function ProjectDetailPage() {
   const updateTaskMutation = useMutation({
     mutationFn: ({ taskId, data }: any) =>
       tasksApi.update(projectId, taskId, data),
-    onSuccess: () => {
+    onSuccess: (response) => {
       qc.invalidateQueries({ queryKey: ["project", projectId] });
-      toast.success("Task updated");
-      setShowTaskModal(false);
-      setEditTask(null);
+      qc.invalidateQueries({
+        queryKey: ["task-activities", projectId, response?.data?.id],
+      });
+      if (response?.data) setEditTask(response.data);
     },
     onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
   });
@@ -185,6 +1148,19 @@ export default function ProjectDetailPage() {
       qc.invalidateQueries({ queryKey: ["project", projectId] });
       toast.success("Project roles updated");
       setShowRolesModal(false);
+    },
+    onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
+  });
+
+  const updateProjectMetadataMutation = useMutation({
+    mutationFn: (data: {
+      epics?: string[];
+      labels?: string[];
+      taskNamingRule?: string;
+    }) => projectsApi.update(projectId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      toast.success("Project fields updated");
     },
     onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
   });
@@ -217,6 +1193,60 @@ export default function ProjectDetailPage() {
       toast.error(e.response?.data?.message || "Failed to update requirements"),
   });
 
+  const improveDescriptionMutation = useMutation({
+    mutationFn: (payload: { title?: string; description: string }) =>
+      aiApi.improveDescription(projectId, payload).then((r) => r.data),
+    onError: (e: any) =>
+      toast.error(e.response?.data?.message || "Failed to improve description"),
+  });
+
+  const assistDescriptionMutation = useMutation({
+    mutationFn: (payload: {
+      title?: string;
+      description: string;
+      instruction: string;
+    }) => aiApi.assistDescription(projectId, payload).then((r) => r.data),
+    onError: (e: any) =>
+      toast.error(
+        e.response?.data?.message || "Failed to apply AI instruction",
+      ),
+  });
+
+  const addTaskCommentMutation = useMutation({
+    mutationFn: (body: string) =>
+      tasksApi.addComment(projectId, editTask.id, body).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ["task-activities", projectId, editTask?.id],
+      });
+      setCommentDraft("");
+    },
+    onError: (e: any) =>
+      toast.error(e.response?.data?.message || "Failed to add comment"),
+  });
+
+  const addTaskWorkLogMutation = useMutation({
+    mutationFn: (data: { durationHours: number; note?: string }) =>
+      tasksApi.addWorkLog(projectId, editTask.id, data).then((r) => r.data),
+    onSuccess: (_activity, variables) => {
+      const currentLogged =
+        parseDurationInput(getValues("loggedInput")) ?? toHours(editTask?.loggedHours);
+      const nextLogged = currentLogged + variables.durationHours;
+      setValue("loggedInput", formatDuration(nextLogged), { shouldDirty: true });
+      if (editTask) {
+        setEditTask({ ...editTask, loggedHours: nextLogged });
+      }
+      qc.invalidateQueries({
+        queryKey: ["task-activities", projectId, editTask?.id],
+      });
+      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      setWorkLogDraft("");
+      setWorkLogNote("");
+    },
+    onError: (e: any) =>
+      toast.error(e.response?.data?.message || "Failed to add work log"),
+  });
+
   const chatMutation = useMutation({
     mutationFn: (userMsg: string) => {
       const newMessages = [
@@ -231,7 +1261,7 @@ export default function ProjectDetailPage() {
         .then((r) => ({ userMsg, data: r.data }));
     },
     onSuccess: ({ userMsg, data }) => {
-      setChatMessages((prev) => [
+      setChatMessagesAndSave((prev) => [
         ...prev,
         { role: "user", content: userMsg },
         {
@@ -244,7 +1274,8 @@ export default function ProjectDetailPage() {
         setReviewTasks(data.suggestedTasks);
       }
     },
-    onError: (e: any) => toast.error(e.response?.data?.message || "Chat failed"),
+    onError: (e: any) =>
+      toast.error(e.response?.data?.message || "Chat failed"),
   });
 
   const confirmReviewMutation = useMutation({
@@ -253,7 +1284,7 @@ export default function ProjectDetailPage() {
     onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ["project", projectId] });
       setReviewTasks(null);
-      setChatMessages((prev) =>
+      setChatMessagesAndSave((prev) =>
         prev.map((m, i) =>
           i === prev.length - 1 && m.suggestedTasks
             ? {
@@ -319,7 +1350,8 @@ export default function ProjectDetailPage() {
     },
   });
 
-  const { register, handleSubmit, reset } = useForm<any>();
+  const { register, handleSubmit, reset, getValues, setValue, watch } =
+    useForm<any>();
   const projectRoleConfigs = normalizeProjectRoleConfigs(
     project?.projectRoleConfigs?.length
       ? project.projectRoleConfigs
@@ -334,19 +1366,203 @@ export default function ProjectDetailPage() {
     project?.taskWorkflow,
     workflowStatuses,
   );
-  const currentMember = project?.members?.find((member: any) => member.userId === user?.id);
+  const allEpics = project?.epics ?? [];
+  const allLabels = project?.labels ?? [];
+  const currentMember = project?.members?.find(
+    (member: any) => member.userId === user?.id,
+  );
   const currentProjectPermissions = Array.from(
     new Set([
       ...((currentMember?.projectRole
-        ? getProjectRolePermissions(projectRoleConfigs, currentMember.projectRole)
+        ? getProjectRolePermissions(
+            projectRoleConfigs,
+            currentMember.projectRole,
+          )
         : []) || []),
       ...(user?.role?.permissions || []),
     ]),
   );
   const canProject = (permission: string) =>
     hasPermission(permission) || currentProjectPermissions.includes(permission);
+
+  const saveSprints = (updated: string[]) => {
+    setSprints(updated);
+    localStorage.setItem(`sprints-${projectId}`, JSON.stringify(updated));
+  };
+
+  // Merge sprints from tasks into the managed list (once project loads)
+  const allSprints = Array.from(
+    new Set([
+      ...sprints,
+      ...(project?.tasks?.map((t: any) => t.sprint).filter(Boolean) ?? []),
+    ]),
+  ).sort();
+
+  const filteredTasks = (project?.tasks || []).filter((task: any) => {
+    const search = taskFilters.search.trim().toLowerCase();
+    if (
+      search &&
+      !`${task.title || ""} ${task.description || ""}`
+        .toLowerCase()
+        .includes(search)
+    ) {
+      return false;
+    }
+
+    if (taskFilters.status && task.status !== taskFilters.status) return false;
+    if (taskFilters.priority && task.priority !== taskFilters.priority)
+      return false;
+    if (taskFilters.epic && (task.epic || "") !== taskFilters.epic)
+      return false;
+    if (taskFilters.sprint && (task.sprint || "") !== taskFilters.sprint)
+      return false;
+    if (
+      taskFilters.assigneeId &&
+      String(task.assignee?.id || "") !== taskFilters.assigneeId
+    ) {
+      return false;
+    }
+    if (
+      taskFilters.labels.length > 0 &&
+      !taskFilters.labels.every((label) => task.labels?.includes(label))
+    ) {
+      return false;
+    }
+    if (taskFilters.dueFrom) {
+      if (!task.dueDate || task.dueDate.slice(0, 10) < taskFilters.dueFrom)
+        return false;
+    }
+    if (taskFilters.dueTo) {
+      if (!task.dueDate || task.dueDate.slice(0, 10) > taskFilters.dueTo)
+        return false;
+    }
+    if (taskFilters.ai === "ai" && !task.isAiGenerated) return false;
+    if (taskFilters.ai === "manual" && task.isAiGenerated) return false;
+
+    return true;
+  });
+  const hasTaskFilters =
+    taskFilters.search ||
+    taskFilters.status ||
+    taskFilters.priority ||
+    taskFilters.epic ||
+    taskFilters.labels.length > 0 ||
+    taskFilters.sprint ||
+    taskFilters.assigneeId ||
+    taskFilters.dueFrom ||
+    taskFilters.dueTo ||
+    taskFilters.ai;
+  const showTaskFilters = [
+    "summary",
+    "timeline",
+    "backlog",
+    "board",
+    "calendar",
+  ].includes(tab);
+
+  const toHours = (value: any) => {
+    const hours = Number(value);
+    return Number.isFinite(hours) ? hours : 0;
+  };
+
+  const durationFromHours = (value: any) => {
+    const totalMinutes = Math.max(0, Math.round(toHours(value) * 60));
+    const minutesPerDay = HOURS_PER_WORK_DAY * 60;
+    const days = Math.floor(totalMinutes / minutesPerDay);
+    const remainingMinutes = totalMinutes % minutesPerDay;
+    const hours = Math.floor(remainingMinutes / 60);
+    const minutes = remainingMinutes % 60;
+
+    return { days, hours, minutes };
+  };
+
+  const durationToHours = (days: any, hours: any, minutes: any) => {
+    const total =
+      toHours(days) * HOURS_PER_WORK_DAY +
+      toHours(hours) +
+      toHours(minutes) / 60;
+    return Math.round(total * 10000) / 10000;
+  };
+
+  const parseDurationInput = (value: any) => {
+    const text = String(value ?? "")
+      .trim()
+      .toLowerCase();
+    if (!text) return 0;
+
+    const tokenPattern = /(\d+(?:\.\d+)?)\s*([dhm])/g;
+    let total = 0;
+    let match: RegExpExecArray | null;
+    while ((match = tokenPattern.exec(text))) {
+      const amount = Number(match[1]);
+      const unit = match[2];
+      if (unit === "d") total += amount * HOURS_PER_WORK_DAY;
+      if (unit === "h") total += amount;
+      if (unit === "m") total += amount / 60;
+    }
+
+    const leftover = text.replace(tokenPattern, "").replace(/\s+/g, "");
+    if (leftover) return null;
+
+    return Math.round(total * 10000) / 10000;
+  };
+
+  const formatDuration = (value: any) => {
+    const { days, hours, minutes } = durationFromHours(value);
+    const parts = [
+      days ? `${days}d` : "",
+      hours ? `${hours}h` : "",
+      minutes ? `${minutes}m` : "",
+    ].filter(Boolean);
+
+    return parts.length ? parts.join(" ") : "0m";
+  };
+
+  const totalEstimateHours =
+    filteredTasks.reduce(
+      (total: number, task: any) => total + toHours(task.estimateHours),
+      0,
+    ) || 0;
+  const totalLoggedHours =
+    filteredTasks.reduce(
+      (total: number, task: any) => total + toHours(task.loggedHours),
+      0,
+    ) || 0;
+
+  const updateReviewTaskDuration = (
+    index: number,
+    field: "estimateHours" | "loggedHours",
+    part: "days" | "hours" | "minutes",
+    value: string,
+  ) => {
+    setReviewTasks((prev) =>
+      prev!.map((task, taskIndex) => {
+        if (taskIndex !== index) return task;
+
+        const duration = durationFromHours(task[field]);
+        const nextDuration = {
+          ...duration,
+          [part]: value ? Number(value) : 0,
+        };
+
+        return {
+          ...task,
+          [field]: durationToHours(
+            nextDuration.days,
+            nextDuration.hours,
+            nextDuration.minutes,
+          ),
+        };
+      }),
+    );
+  };
+
   const tabs = [
-    { key: "tasks", label: "Tasks", icon: CheckCircle },
+    { key: "summary", label: "Summary", icon: BarChart2 },
+    { key: "timeline", label: "Timeline", icon: GitBranch },
+    { key: "backlog", label: "Backlog", icon: ListChecks },
+    { key: "board", label: "Board", icon: LayoutGrid },
+    { key: "calendar", label: "Calendar", icon: CalendarDays },
     { key: "documents", label: "Documents", icon: FileText },
     { key: "members", label: "Members", icon: Users },
     ...(canProject("project:update")
@@ -362,37 +1578,200 @@ export default function ProjectDetailPage() {
       assigneeId: "",
       status: workflowStatuses[0],
       dueDate: "",
+      epic: "",
+      labels: [],
       sprint: "",
+      estimateInput: "",
+      loggedInput: "",
     });
+    setDescriptionHtml("");
+    setDescriptionAiMessages([]);
+    setActivityTab("comments");
+    setCommentDraft("");
+    setWorkLogDraft("");
+    setWorkLogNote("");
     setEditTask(null);
     setShowTaskModal(true);
   };
 
   const openEditTask = (t: any) => {
+    const initialDescription = t.description || "";
     reset({
       title: t.title,
-      description: t.description,
+      description: initialDescription,
       priority: t.priority,
       status: t.status,
       assigneeId: t.assignee?.id || "",
       dueDate: t.dueDate ? t.dueDate.slice(0, 10) : "",
+      epic: t.epic || "",
+      labels: t.labels || [],
       sprint: t.sprint || "",
+      estimateInput: toHours(t.estimateHours)
+        ? formatDuration(t.estimateHours)
+        : "",
+      loggedInput: toHours(t.loggedHours) ? formatDuration(t.loggedHours) : "",
     });
+    setDescriptionHtml(initialDescription);
+    setDescriptionAiMessages([]);
+    setActivityTab("comments");
+    setCommentDraft("");
+    setWorkLogDraft("");
+    setWorkLogNote("");
     setEditTask(t);
     setShowTaskModal(true);
   };
 
   const onTaskSubmit = (data: any) => {
+    const { estimateInput, loggedInput, ...taskData } = data;
+    const estimateHours = parseDurationInput(estimateInput);
+    const loggedHours = parseDurationInput(loggedInput);
+
+    if (estimateHours == null || loggedHours == null) {
+      toast.error('Use time like "30m", "1h", "1d" or "1d 2h 30m"');
+      return;
+    }
+
     const payload = {
-      ...data,
+      ...taskData,
+      description: sanitizeRichTextHtml(data.description || ""),
       assigneeId: data.assigneeId ? Number(data.assigneeId) : undefined,
       dueDate: data.dueDate || undefined,
+      epic: data.epic?.trim() || undefined,
+      labels: parseTaskLabels(data.labels),
       sprint: data.sprint?.trim() || undefined,
+      estimateHours,
+      loggedHours,
       status: data.status || undefined,
     };
     if (editTask)
       updateTaskMutation.mutate({ taskId: editTask.id, data: payload });
     else createTaskMutation.mutate(payload);
+  };
+
+  const autoSaveTask = () => {
+    if (!editTask || updateTaskMutation.isPending) return;
+    onTaskSubmit(getValues());
+  };
+
+  const selectedTaskLabels = parseTaskLabels(watch("labels"));
+  const watchedEstimateInput = watch("estimateInput");
+  const watchedLoggedInput = watch("loggedInput");
+
+  const addTaskComment = () => {
+    const body = commentDraft.trim();
+    if (!editTask) {
+      toast.error("Create the task before adding comments");
+      return;
+    }
+    if (!body || addTaskCommentMutation.isPending) return;
+    addTaskCommentMutation.mutate(body);
+  };
+
+  const addTaskWorkLog = () => {
+    if (!editTask) {
+      toast.error("Create the task before logging work");
+      return;
+    }
+
+    const durationHours = parseDurationInput(workLogDraft);
+    if (!durationHours) {
+      toast.error('Use time like "30m", "1h", "1d" or "1d 2h 30m"');
+      return;
+    }
+
+    addTaskWorkLogMutation.mutate({
+      durationHours,
+      note: workLogNote.trim() || undefined,
+    });
+  };
+
+  const filteredTaskActivities = taskActivities.filter((activity) => {
+    if (activityTab === "all") return true;
+    if (activityTab === "comments") return activity.type === "COMMENT";
+    if (activityTab === "history") return activity.type === "HISTORY";
+    return activity.type === "WORK_LOG";
+  });
+
+  const describeActivity = (activity: TaskActivity) => {
+    if (activity.type === "COMMENT") return activity.body || "";
+    if (activity.type === "WORK_LOG") {
+      const duration = formatDuration(activity.durationHours || 0);
+      return activity.body ? `Logged ${duration}: ${activity.body}` : `Logged ${duration}`;
+    }
+    if (activity.body) return activity.body;
+    if (activity.field) {
+      const from = activity.fromValue || "None";
+      const to = activity.toValue || "None";
+      return `Changed ${activity.field} from ${from} to ${to}`;
+    }
+    return "Updated task";
+  };
+
+  const toggleTaskLabel = (label: string) => {
+    const current = parseTaskLabels(getValues("labels"));
+    const next = current.includes(label)
+      ? current.filter((value) => value !== label)
+      : [...current, label];
+
+    setValue("labels", next, { shouldDirty: true });
+    if (editTask && !updateTaskMutation.isPending) {
+      onTaskSubmit({ ...getValues(), labels: next });
+    }
+  };
+
+  const handleImproveDescription = async () => {
+    const current = sanitizeRichTextHtml(getValues("description") || "");
+    if (!stripHtmlTags(current)) {
+      toast.error("Please enter a description before using AI improve");
+      return;
+    }
+
+    const title = String(getValues("title") || "").trim() || undefined;
+    const result = await improveDescriptionMutation.mutateAsync({
+      title,
+      description: current,
+    });
+    const improved = sanitizeRichTextHtml(result?.description || "");
+    setDescriptionHtml(improved);
+    setValue("description", improved, { shouldDirty: true });
+    setDescriptionAiMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "Đã cải thiện description." },
+    ]);
+    if (editTask && !updateTaskMutation.isPending) {
+      onTaskSubmit({ ...getValues(), description: improved });
+    }
+  };
+
+  const handleAssistDescription = async (instruction: string) => {
+    const current = sanitizeRichTextHtml(getValues("description") || "");
+    if (!stripHtmlTags(current)) {
+      toast.error("Please enter a description before asking AI");
+      return;
+    }
+
+    setDescriptionAiMessages((prev) => [
+      ...prev,
+      { role: "user", content: instruction },
+    ]);
+
+    const title = String(getValues("title") || "").trim() || undefined;
+    const result = await assistDescriptionMutation.mutateAsync({
+      title,
+      description: current,
+      instruction,
+    });
+    const next = sanitizeRichTextHtml(result?.description || "");
+    setDescriptionHtml(next);
+    setValue("description", next, { shouldDirty: true });
+    setDescriptionAiMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: result?.message || "Updated." },
+    ]);
+
+    if (editTask && !updateTaskMutation.isPending) {
+      onTaskSubmit({ ...getValues(), description: next });
+    }
   };
 
   const openWorkflowEditor = () => setShowWorkflowModal(true);
@@ -421,9 +1800,35 @@ export default function ProjectDetailPage() {
     updateRolesMutation.mutate({ roles: normalized });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const saveProjectEpics = (epics: string[]) => {
+    updateProjectMetadataMutation.mutate({ epics: parseTaskLabels(epics) });
+  };
+
+  const saveProjectLabels = (labels: string[]) => {
+    updateProjectMetadataMutation.mutate({ labels: parseTaskLabels(labels) });
+  };
+
+  const saveTaskNamingRule = () => {
+    updateProjectMetadataMutation.mutate({
+      taskNamingRule: taskNamingRuleDraft.trim(),
+    });
+  };
+
+  const clearTaskFilters = () =>
+    setTaskFilters({
+      search: "",
+      status: "",
+      priority: "",
+      epic: "",
+      labels: [],
+      sprint: "",
+      assigneeId: "",
+      dueFrom: "",
+      dueTo: "",
+      ai: "",
+    });
+
+  const uploadDocumentFile = async (file: File) => {
     try {
       setUploading(true);
       await documentsApi.upload(projectId, file);
@@ -433,8 +1838,20 @@ export default function ProjectDetailPage() {
       toast.error("Upload failed");
     } finally {
       setUploading(false);
-      e.target.value = "";
+      setPendingUploadFile(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = "";
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingUploadFile(file);
+  };
+
+  const cancelFileUpload = () => {
+    setPendingUploadFile(null);
+    if (uploadInputRef.current) uploadInputRef.current.value = "";
   };
 
   const memberIds = new Set(project?.members?.map((m: any) => m.userId));
@@ -447,9 +1864,7 @@ export default function ProjectDetailPage() {
     );
   if (!project)
     return (
-      <div className='text-center py-12 text-gray-500'>
-        Project not found
-      </div>
+      <div className='text-center py-12 text-gray-500'>Project not found</div>
     );
 
   return (
@@ -515,21 +1930,235 @@ export default function ProjectDetailPage() {
         ))}
       </div>
 
-      {/* Tasks Tab */}
-      {tab === "tasks" && (
+      {showTaskFilters && (
+        <div className='rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-sm'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <input
+              value={taskFilters.search}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
+              placeholder='Search tasks'
+              className='h-9 min-w-[220px] flex-1 rounded-lg border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+            <select
+              value={taskFilters.status}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, status: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Status</option>
+              {workflowStatuses.map((status: string) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <select
+              value={taskFilters.priority}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({
+                  ...prev,
+                  priority: e.target.value,
+                }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Priority</option>
+              <option value='HIGH'>HIGH</option>
+              <option value='MEDIUM'>MEDIUM</option>
+              <option value='LOW'>LOW</option>
+            </select>
+            <select
+              value={taskFilters.epic}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, epic: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Epic</option>
+              {allEpics.map((epic: string) => (
+                <option key={epic} value={epic}>
+                  {epic}
+                </option>
+              ))}
+            </select>
+            <div className='relative'>
+              <button
+                type='button'
+                onClick={() => setShowLabelFilterMenu((value) => !value)}
+                className={cn(
+                  "flex h-9 min-w-[116px] items-center justify-between gap-2 rounded-lg border px-3 text-sm",
+                  taskFilters.labels.length
+                    ? "border-blue-200 bg-blue-50 text-blue-700"
+                    : "border-gray-200 text-gray-700 hover:bg-gray-50",
+                )}
+              >
+                <span>
+                  {taskFilters.labels.length
+                    ? `${taskFilters.labels.length} labels`
+                    : "Labels"}
+                </span>
+                <ChevronDown size={14} />
+              </button>
+              {showLabelFilterMenu && (
+                <div className='absolute left-0 top-10 z-30 w-52 rounded-lg border border-gray-100 bg-white p-2 shadow-lg'>
+                  {allLabels.length === 0 ? (
+                    <p className='px-2 py-1.5 text-xs text-gray-400'>
+                      No labels
+                    </p>
+                  ) : (
+                    allLabels.map((label: string) => (
+                      <label
+                        key={label}
+                        className='flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-50'
+                      >
+                        <input
+                          type='checkbox'
+                          checked={taskFilters.labels.includes(label)}
+                          onChange={(e) =>
+                            setTaskFilters((prev) => ({
+                              ...prev,
+                              labels: e.target.checked
+                                ? [...prev.labels, label]
+                                : prev.labels.filter(
+                                    (value) => value !== label,
+                                  ),
+                            }))
+                          }
+                        />
+                        {label}
+                      </label>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+            <select
+              value={taskFilters.sprint}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, sprint: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Sprint</option>
+              {allSprints.map((sprint) => (
+                <option key={sprint} value={sprint}>
+                  {sprint}
+                </option>
+              ))}
+            </select>
+            <select
+              value={taskFilters.assigneeId}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({
+                  ...prev,
+                  assigneeId: e.target.value,
+                }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Assignee</option>
+              {project.members?.map((member: any) => (
+                <option key={member.userId} value={member.userId}>
+                  {member.user.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type='date'
+              value={taskFilters.dueFrom}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, dueFrom: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              title='Due from'
+            />
+            <input
+              type='date'
+              value={taskFilters.dueTo}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, dueTo: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              title='Due to'
+            />
+            <select
+              value={taskFilters.ai}
+              onChange={(e) =>
+                setTaskFilters((prev) => ({ ...prev, ai: e.target.value }))
+              }
+              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>Source</option>
+              <option value='ai'>AI generated</option>
+              <option value='manual'>Manual</option>
+            </select>
+            <div className='ml-auto flex h-9 items-center gap-2 text-sm text-gray-500'>
+              <span className='whitespace-nowrap'>
+                {filteredTasks.length}/{project.tasks?.length || 0}
+              </span>
+              {hasTaskFilters && (
+                <button
+                  onClick={clearTaskFilters}
+                  className='rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50'
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+          {taskFilters.labels.length > 0 && (
+            <div className='mt-2 flex flex-wrap gap-1.5'>
+              {taskFilters.labels.map((label) => (
+                <button
+                  key={label}
+                  onClick={() =>
+                    setTaskFilters((prev) => ({
+                      ...prev,
+                      labels: prev.labels.filter((value) => value !== label),
+                    }))
+                  }
+                  className='rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 hover:bg-slate-200'
+                >
+                  {label} ×
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {/* Backlog Tab */}
+      {tab === "backlog" && (
         <div className='space-y-3'>
-          {canProject("task:create") && (
-            <div className='flex justify-end'>
+          <div className='flex items-center justify-between gap-3'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <button
+                onClick={() => setShowSprintModal(true)}
+                className='flex items-center gap-2 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50'
+              >
+                <GitBranch size={14} /> Manage Sprints
+                {allSprints.length > 0 && (
+                  <span className='bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full'>
+                    {allSprints.length}
+                  </span>
+                )}
+              </button>
+            </div>
+            {canProject("task:create") && (
               <button
                 onClick={openCreateTask}
                 className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm'
               >
                 <Plus size={16} /> Add task
               </button>
-            </div>
-          )}
-          {project.tasks?.length === 0 ? (
-            <p className='text-center text-gray-400 py-8'>No tasks yet</p>
+            )}
+          </div>
+          {filteredTasks.length === 0 ? (
+            <p className='text-center text-gray-400 py-8'>
+              {hasTaskFilters ? "No tasks match these filters" : "No tasks yet"}
+            </p>
           ) : (
             <div className='bg-white rounded-xl border border-gray-100 overflow-hidden'>
               <table className='w-full'>
@@ -539,7 +2168,11 @@ export default function ProjectDetailPage() {
                       "Title",
                       "Assignee",
                       "Priority",
+                      "Epic",
+                      "Labels",
                       "Sprint",
+                      "Est",
+                      "Logged",
                       "Deadline",
                       "Status",
                       "AI",
@@ -555,15 +2188,15 @@ export default function ProjectDetailPage() {
                   </tr>
                 </thead>
                 <tbody className='divide-y divide-gray-50'>
-                  {project.tasks.map((t: any) => (
+                  {filteredTasks.map((t: any) => (
                     <tr key={t.id} className='hover:bg-gray-50'>
                       <td className='px-4 py-3'>
                         <p className='font-medium text-gray-900 text-sm'>
                           {t.title}
                         </p>
-                        {t.description && (
+                        {stripHtmlTags(t.description || "") && (
                           <p className='text-xs text-gray-400 line-clamp-1 mt-0.5'>
-                            {t.description}
+                            {stripHtmlTags(t.description)}
                           </p>
                         )}
                       </td>
@@ -583,7 +2216,38 @@ export default function ProjectDetailPage() {
                         </span>
                       </td>
                       <td className='px-4 py-3 text-xs text-gray-500'>
+                        {t.epic ? (
+                          <span className='rounded-full bg-indigo-50 px-2 py-0.5 font-medium text-indigo-600'>
+                            {t.epic}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className='px-4 py-3 text-xs text-gray-500'>
+                        {t.labels?.length ? (
+                          <div className='flex flex-wrap gap-1'>
+                            {t.labels.map((label: string) => (
+                              <span
+                                key={label}
+                                className='rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600'
+                              >
+                                {label}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className='px-4 py-3 text-xs text-gray-500'>
                         {t.sprint || "-"}
+                      </td>
+                      <td className='px-4 py-3 text-xs text-gray-500'>
+                        {formatDuration(t.estimateHours)}
+                      </td>
+                      <td className='px-4 py-3 text-xs text-gray-500'>
+                        {formatDuration(t.loggedHours)}
                       </td>
                       <td className='px-4 py-3 text-xs text-gray-500'>
                         {t.dueDate ? formatDate(t.dueDate) : "-"}
@@ -599,9 +2263,15 @@ export default function ProjectDetailPage() {
                               })
                             }
                             className='text-xs px-2.5 py-1 rounded-full font-medium border focus:outline-none focus:ring-2 focus:ring-blue-300'
-                            style={getTaskStatusInlineStyle(t.status, projectWorkflow)}
+                            style={getTaskStatusInlineStyle(
+                              t.status,
+                              projectWorkflow,
+                            )}
                           >
-                            {getAllowedTransitionStatuses(projectWorkflow, t.status).map((status: string) => (
+                            {getAllowedTransitionStatuses(
+                              projectWorkflow,
+                              t.status,
+                            ).map((status: string) => (
                               <option key={status} value={status}>
                                 {status}
                               </option>
@@ -610,7 +2280,10 @@ export default function ProjectDetailPage() {
                         ) : (
                           <span
                             className='text-xs px-2.5 py-1 rounded-full font-medium border'
-                            style={getTaskStatusInlineStyle(t.status, projectWorkflow)}
+                            style={getTaskStatusInlineStyle(
+                              t.status,
+                              projectWorkflow,
+                            )}
                           >
                             {t.status}
                           </span>
@@ -618,7 +2291,7 @@ export default function ProjectDetailPage() {
                       </td>
                       <td className='px-4 py-3'>
                         {t.isAiGenerated && (
-                          <span className='text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full'>
+                          <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
                             AI
                           </span>
                         )}
@@ -655,6 +2328,501 @@ export default function ProjectDetailPage() {
         </div>
       )}
 
+      {/* Summary Tab */}
+      {tab === "summary" && (
+        <div className='space-y-4'>
+          <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3'>
+            {[
+              { label: "Tổng tasks", value: filteredTasks.length },
+              { label: "Thành viên", value: project.members?.length || 0 },
+              { label: "Estimate", value: formatDuration(totalEstimateHours) },
+              { label: "Logged", value: formatDuration(totalLoggedHours) },
+              {
+                label: "Tài liệu",
+                value:
+                  project.documents?.filter(
+                    (d: any) => d.originalName !== "requirements.md",
+                  ).length || 0,
+              },
+              {
+                label: "Hoàn thành",
+                value:
+                  filteredTasks.filter(
+                    (t: any) =>
+                      t.status ===
+                      workflowStatuses[workflowStatuses.length - 1],
+                  ).length || 0,
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className='bg-white rounded-xl border border-gray-100 p-4'
+              >
+                <p className='text-xs text-gray-500'>{stat.label}</p>
+                <p className='text-2xl font-bold text-gray-900 mt-1'>
+                  {stat.value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className='bg-white rounded-xl border border-gray-100 p-5'>
+            <h3 className='text-sm font-semibold text-gray-700 mb-3'>
+              Tasks theo trạng thái
+            </h3>
+            <div className='space-y-2'>
+              {workflowStatuses.map((status: string) => {
+                const count =
+                  filteredTasks.filter((t: any) => t.status === status)
+                    .length || 0;
+                const total = filteredTasks.length || 1;
+                return (
+                  <div key={status} className='flex items-center gap-3'>
+                    <span
+                      className='text-xs px-2 py-0.5 rounded-full font-medium border w-28 text-center truncate flex-shrink-0'
+                      style={getTaskStatusInlineStyle(status, projectWorkflow)}
+                    >
+                      {status}
+                    </span>
+                    <div className='flex-1 bg-gray-100 rounded-full h-2'>
+                      <div
+                        className='h-2 rounded-full bg-blue-500 transition-all'
+                        style={{
+                          width: `${total > 0 ? (count / total) * 100 : 0}%`,
+                        }}
+                      />
+                    </div>
+                    <span className='text-xs text-gray-500 w-6 text-right'>
+                      {count}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className='bg-white rounded-xl border border-gray-100 p-5'>
+            <h3 className='text-sm font-semibold text-gray-700 mb-3'>
+              Tasks gần đây
+            </h3>
+            {filteredTasks.length === 0 ? (
+              <p className='text-sm text-gray-400 text-center py-4'>
+                Chưa có task nào
+              </p>
+            ) : (
+              <div className='divide-y divide-gray-50'>
+                {filteredTasks.slice(0, 6).map((t: any) => (
+                  <div
+                    key={t.id}
+                    className='flex items-center gap-3 py-2.5 cursor-pointer hover:bg-gray-50 rounded-lg px-1 -mx-1'
+                    onClick={() => openEditTask(t)}
+                  >
+                    <span
+                      className='text-xs px-2 py-0.5 rounded-full font-medium border flex-shrink-0'
+                      style={getTaskStatusInlineStyle(
+                        t.status,
+                        projectWorkflow,
+                      )}
+                    >
+                      {t.status}
+                    </span>
+                    <p className='flex-1 text-sm text-gray-800 truncate'>
+                      {t.title}
+                    </p>
+                    <span
+                      className={cn(
+                        "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
+                        PRIORITY_COLORS[
+                          t.priority as keyof typeof PRIORITY_COLORS
+                        ],
+                      )}
+                    >
+                      {t.priority}
+                    </span>
+                    <span className='text-xs text-gray-400 flex-shrink-0'>
+                      {formatDuration(t.loggedHours)} /{" "}
+                      {formatDuration(t.estimateHours)}
+                    </span>
+                    <span className='text-xs text-gray-400 flex-shrink-0'>
+                      {t.assignee?.name || "-"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Board Tab */}
+      {tab === "board" && (
+        <div className='flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-18rem)]'>
+          {workflowStatuses.map((status: string) => {
+            const statusTasks =
+              filteredTasks.filter((t: any) => t.status === status) || [];
+            const isDragOver = dragOverStatus === status;
+            return (
+              <div
+                key={status}
+                className='flex-shrink-0 w-72 flex flex-col'
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverStatus(status);
+                }}
+                onDragLeave={(e) => {
+                  const relatedTarget = e.relatedTarget;
+                  if (
+                    !(relatedTarget instanceof globalThis.Node) ||
+                    !e.currentTarget.contains(relatedTarget)
+                  ) {
+                    setDragOverStatus(null);
+                  }
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOverStatus(null);
+                  if (dragTaskId == null) return;
+                  const task = project.tasks?.find(
+                    (t: any) => t.id === dragTaskId,
+                  );
+                  if (
+                    task &&
+                    task.status !== status &&
+                    canProject("task:update")
+                  ) {
+                    updateStatusMutation.mutate({ taskId: dragTaskId, status });
+                  }
+                  setDragTaskId(null);
+                }}
+              >
+                <div className='flex items-center gap-2 mb-3'>
+                  <span
+                    className='text-xs px-2.5 py-1 rounded-full font-medium border'
+                    style={getTaskStatusInlineStyle(status, projectWorkflow)}
+                  >
+                    {status}
+                  </span>
+                  <span className='text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full'>
+                    {statusTasks.length}
+                  </span>
+                </div>
+                <div
+                  className={cn(
+                    "flex-1 space-y-2 rounded-xl p-2 min-h-32 transition-colors",
+                    isDragOver
+                      ? "bg-blue-50 ring-2 ring-blue-300"
+                      : "bg-gray-50",
+                  )}
+                >
+                  {statusTasks.map((t: any) => (
+                    <div
+                      key={t.id}
+                      draggable={canProject("task:update")}
+                      onDragStart={() => setDragTaskId(t.id)}
+                      onDragEnd={() => {
+                        setDragTaskId(null);
+                        setDragOverStatus(null);
+                      }}
+                      className={cn(
+                        "bg-white rounded-xl border p-3 shadow-sm transition-all",
+                        canProject("task:update")
+                          ? "cursor-grab active:cursor-grabbing"
+                          : "cursor-pointer",
+                        dragTaskId === t.id
+                          ? "opacity-40 scale-95"
+                          : "hover:border-blue-200",
+                      )}
+                      onClick={() =>
+                        canProject("task:update") && openEditTask(t)
+                      }
+                    >
+                      <p className='text-sm font-medium text-gray-900 mb-1'>
+                        {t.title}
+                      </p>
+                      {stripHtmlTags(t.description || "") && (
+                        <p className='text-xs text-gray-400 line-clamp-2 mb-2'>
+                          {stripHtmlTags(t.description)}
+                        </p>
+                      )}
+                      <div className='flex items-center gap-2 flex-wrap'>
+                        <span
+                          className={cn(
+                            "text-xs px-1.5 py-0.5 rounded-full",
+                            PRIORITY_COLORS[
+                              t.priority as keyof typeof PRIORITY_COLORS
+                            ],
+                          )}
+                        >
+                          {t.priority}
+                        </span>
+                        {t.epic && (
+                          <span className='text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded-full'>
+                            {t.epic}
+                          </span>
+                        )}
+                        {t.labels?.map((label: string) => (
+                          <span
+                            key={label}
+                            className='text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full'
+                          >
+                            {label}
+                          </span>
+                        ))}
+                        {t.sprint && (
+                          <span className='text-xs text-gray-400'>
+                            #{t.sprint}
+                          </span>
+                        )}
+                        <span className='text-xs text-gray-400'>
+                          {formatDuration(t.loggedHours)} /{" "}
+                          {formatDuration(t.estimateHours)}
+                        </span>
+                        {t.assignee && (
+                          <span className='text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full ml-auto'>
+                            {t.assignee.name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {canProject("task:create") && (
+                    <button
+                      onClick={openCreateTask}
+                      className='w-full py-2 text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl hover:border-blue-300 hover:text-blue-500 flex items-center justify-center gap-1 bg-white'
+                    >
+                      <Plus size={12} /> Add task
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Timeline Tab */}
+      {tab === "timeline" && (
+        <div className='space-y-3'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <button
+              onClick={() => setShowSprintModal(true)}
+              className='flex items-center gap-2 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50'
+            >
+              <GitBranch size={14} /> Manage Sprints
+              {allSprints.length > 0 && (
+                <span className='bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full'>
+                  {allSprints.length}
+                </span>
+              )}
+            </button>
+          </div>
+          {!filteredTasks.length ? (
+            <p className='text-center text-gray-400 py-8'>
+              {hasTaskFilters
+                ? "No tasks match these filters"
+                : "Chưa có task nào"}
+            </p>
+          ) : (
+            (() => {
+              const sprintGroups = Array.from(
+                new Set(filteredTasks.map((t: any) => t.sprint || "")),
+              ).sort() as string[];
+              const groups = [
+                ...sprintGroups.filter((s) => s !== ""),
+                ...(filteredTasks.some((t: any) => !t.sprint) ? [""] : []),
+              ];
+              return groups.map((sprint) => {
+                const tasks = filteredTasks.filter((t: any) =>
+                  sprint === "" ? !t.sprint : t.sprint === sprint,
+                );
+                return (
+                  <div
+                    key={sprint || "__nosprint"}
+                    className='bg-white rounded-xl border border-gray-100 overflow-hidden'
+                  >
+                    <div className='px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-2'>
+                      <GitBranch size={14} className='text-gray-400' />
+                      <span className='text-sm font-semibold text-gray-700'>
+                        {sprint || "Chưa có sprint"}
+                      </span>
+                      <span className='text-xs text-gray-400 ml-1'>
+                        {tasks.length} tasks
+                      </span>
+                    </div>
+                    <div className='divide-y divide-gray-50'>
+                      {tasks.map((t: any) => (
+                        <div
+                          key={t.id}
+                          className='px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 cursor-pointer'
+                          onClick={() => openEditTask(t)}
+                        >
+                          <span
+                            className='text-xs px-2 py-0.5 rounded-full font-medium border flex-shrink-0'
+                            style={getTaskStatusInlineStyle(
+                              t.status,
+                              projectWorkflow,
+                            )}
+                          >
+                            {t.status}
+                          </span>
+                          <p className='flex-1 text-sm text-gray-800 truncate'>
+                            {t.title}
+                          </p>
+                          <span
+                            className={cn(
+                              "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
+                              PRIORITY_COLORS[
+                                t.priority as keyof typeof PRIORITY_COLORS
+                              ],
+                            )}
+                          >
+                            {t.priority}
+                          </span>
+                          <span className='text-xs text-gray-400 flex-shrink-0'>
+                            {formatDuration(t.loggedHours)} /{" "}
+                            {formatDuration(t.estimateHours)}
+                          </span>
+                          {t.dueDate && (
+                            <span className='text-xs text-gray-400 flex-shrink-0'>
+                              {formatDate(t.dueDate)}
+                            </span>
+                          )}
+                          {t.assignee && (
+                            <span className='text-xs text-gray-500 flex-shrink-0'>
+                              {t.assignee.name}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              });
+            })()
+          )}
+        </div>
+      )}
+
+      {/* Calendar Tab */}
+      {tab === "calendar" && (
+        <div className='space-y-3'>
+          <div className='flex items-center gap-3'>
+            <button
+              onClick={() =>
+                setCalendarDate(
+                  (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
+                )
+              }
+              className='p-2 rounded-lg hover:bg-gray-100 text-gray-500'
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <h3 className='text-sm font-semibold text-gray-900 flex-1 text-center capitalize'>
+              {calendarDate.toLocaleString("vi-VN", {
+                month: "long",
+                year: "numeric",
+              })}
+            </h3>
+            <button
+              onClick={() =>
+                setCalendarDate(
+                  (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
+                )
+              }
+              className='p-2 rounded-lg hover:bg-gray-100 text-gray-500'
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          {(() => {
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const cells = Array.from(
+              { length: firstDayOfWeek + daysInMonth },
+              (_, i) => (i < firstDayOfWeek ? null : i - firstDayOfWeek + 1),
+            );
+            const tasksByDay: Record<string, any[]> = {};
+            filteredTasks.forEach((t: any) => {
+              if (!t.dueDate) return;
+              const key = t.dueDate.slice(0, 10);
+              if (!tasksByDay[key]) tasksByDay[key] = [];
+              tasksByDay[key].push(t);
+            });
+            const today = new Date();
+            return (
+              <div className='bg-white rounded-xl border border-gray-100 overflow-hidden'>
+                <div className='grid grid-cols-7 border-b border-gray-100 bg-gray-50'>
+                  {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => (
+                    <div
+                      key={d}
+                      className='py-2 text-center text-xs font-semibold text-gray-400'
+                    >
+                      {d}
+                    </div>
+                  ))}
+                </div>
+                <div className='grid grid-cols-7'>
+                  {cells.map((day, idx) => {
+                    if (!day)
+                      return (
+                        <div
+                          key={`empty-${idx}`}
+                          className='min-h-[80px] border-r border-b border-gray-50 bg-gray-50/50'
+                        />
+                      );
+                    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                    const tasks = tasksByDay[dateStr] || [];
+                    const isToday =
+                      today.getFullYear() === year &&
+                      today.getMonth() === month &&
+                      today.getDate() === day;
+                    return (
+                      <div
+                        key={idx}
+                        className='min-h-[80px] p-1.5 border-r border-b border-gray-50 hover:bg-gray-50/80'
+                      >
+                        <div
+                          className={cn(
+                            "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1 ml-auto",
+                            isToday
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-600",
+                          )}
+                        >
+                          {day}
+                        </div>
+                        <div className='space-y-0.5'>
+                          {tasks.slice(0, 2).map((t: any) => (
+                            <div
+                              key={t.id}
+                              className='text-[10px] px-1 py-0.5 rounded truncate cursor-pointer hover:opacity-80'
+                              style={getTaskStatusInlineStyle(
+                                t.status,
+                                projectWorkflow,
+                              )}
+                              onClick={() => openEditTask(t)}
+                            >
+                              {t.title}
+                            </div>
+                          ))}
+                          {tasks.length > 2 && (
+                            <div className='text-[10px] text-gray-400 px-1'>
+                              +{tasks.length - 2} more
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       {/* Documents Tab */}
       {tab === "documents" && (
         <div className='flex gap-4 h-[calc(100vh-18rem)]'>
@@ -663,13 +2831,18 @@ export default function ProjectDetailPage() {
             {/* Requirements header */}
             <div className='flex items-center gap-2'>
               <div className='flex items-center gap-2 flex-1'>
-                <BrainCircuit className='text-purple-500' size={16} />
+                <BrandLogo size={24} />
                 <span className='font-semibold text-gray-800 text-sm'>
                   Requirements
                 </span>
                 {requirements?.version && (
-                  <span className='text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full'>
+                  <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
                     v{requirements.version}
+                  </span>
+                )}
+                {requirements?.createdAt && (
+                  <span className='text-xs text-gray-400'>
+                    Updated {formatDateTime(requirements.createdAt)}
                   </span>
                 )}
               </div>
@@ -688,9 +2861,9 @@ export default function ProjectDetailPage() {
               </button>
               {canProject("ai:analyze") && (
                 <button
-                  onClick={() => updateReqMutation.mutate()}
+                  onClick={() => setShowUpdateRequirementsConfirm(true)}
                   disabled={updateReqMutation.isPending}
-                  className='flex items-center gap-1.5 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 disabled:opacity-50'
+                  className='flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 disabled:opacity-50'
                 >
                   {updateReqMutation.isPending ? (
                     <Loader2 size={12} className='animate-spin' />
@@ -715,7 +2888,7 @@ export default function ProjectDetailPage() {
                     {(reqHistory as any[]).map((h: any) => (
                       <div
                         key={h.id}
-                        className='border border-gray-100 rounded-lg p-2 hover:border-purple-200 hover:bg-purple-50 transition-colors cursor-pointer'
+                        className='border border-gray-100 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
                         onClick={() =>
                           aiApi
                             .getVersion(projectId, h.id)
@@ -723,11 +2896,11 @@ export default function ProjectDetailPage() {
                         }
                       >
                         <div className='flex items-center justify-between mb-1'>
-                          <span className='text-xs font-semibold text-purple-700'>
+                          <span className='text-xs font-semibold text-sky-700'>
                             v{h.version}
                           </span>
                           <span className='text-xs text-gray-400'>
-                            {formatDate(h.createdAt)}
+                            {formatDateTime(h.createdAt)}
                           </span>
                         </div>
                         {h.changesSummary ? (
@@ -749,9 +2922,83 @@ export default function ProjectDetailPage() {
             {/* Requirements content */}
             <div className='flex-1 bg-white border border-gray-100 rounded-xl p-4 overflow-y-auto'>
               {requirements?.content ? (
-                <pre className='text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed'>
-                  {requirements.content}
-                </pre>
+                <div className='max-w-none text-sm leading-6 text-gray-700'>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ children }) => (
+                        <h1 className='mb-4 border-b border-gray-100 pb-3 text-xl font-semibold text-gray-950'>
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className='mb-2 mt-5 text-base font-semibold text-gray-900'>
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800'>
+                          {children}
+                        </h3>
+                      ),
+                      p: ({ children }) => (
+                        <p className='mb-3 text-sm text-gray-700'>{children}</p>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className='mb-3 list-disc space-y-1 pl-5'>
+                          {children}
+                        </ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className='mb-3 list-decimal space-y-1 pl-5'>
+                          {children}
+                        </ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className='pl-1 text-sm text-gray-700'>
+                          {children}
+                        </li>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote className='mb-3 border-l-4 border-sky-200 bg-sky-50 px-3 py-2 text-sm text-gray-700'>
+                          {children}
+                        </blockquote>
+                      ),
+                      table: ({ children }) => (
+                        <div className='mb-4 overflow-x-auto rounded-lg border border-gray-100'>
+                          <table className='min-w-full divide-y divide-gray-100 text-left text-xs'>
+                            {children}
+                          </table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className='bg-gray-50'>{children}</thead>
+                      ),
+                      th: ({ children }) => (
+                        <th className='px-3 py-2 font-semibold text-gray-700'>
+                          {children}
+                        </th>
+                      ),
+                      td: ({ children }) => (
+                        <td className='border-t border-gray-100 px-3 py-2 align-top text-gray-700'>
+                          {children}
+                        </td>
+                      ),
+                      code: ({ children }) => (
+                        <code className='rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-800'>
+                          {children}
+                        </code>
+                      ),
+                      pre: ({ children }) => (
+                        <pre className='mb-4 overflow-x-auto rounded-lg bg-gray-950 p-3 text-xs leading-relaxed text-gray-50'>
+                          {children}
+                        </pre>
+                      ),
+                    }}
+                  >
+                    {requirements.content}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <div className='flex flex-col items-center justify-center h-full text-gray-400'>
                   <FileText size={32} className='mb-2 opacity-40' />
@@ -783,9 +3030,9 @@ export default function ProjectDetailPage() {
                     )}
                     Upload
                     <input
+                      ref={uploadInputRef}
                       type='file'
                       className='hidden'
-                      accept='.pdf,.docx,.doc,.txt'
                       onChange={handleFileUpload}
                       disabled={uploading}
                     />
@@ -822,7 +3069,8 @@ export default function ProjectDetailPage() {
                         {canProject("document:delete") && (
                           <button
                             onClick={() =>
-                              confirm("Delete?") && deleteDocMutation.mutate(d.id)
+                              confirm("Delete?") &&
+                              deleteDocMutation.mutate(d.id)
                             }
                             className='p-1 text-gray-300 hover:text-red-500 flex-shrink-0'
                           >
@@ -835,125 +3083,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
-
-          {/* Right: AI Chat */}
-          {canProject("ai:analyze") && (
-            <div className='w-80 flex flex-col bg-white border border-gray-100 rounded-xl overflow-hidden'>
-              <div className='px-4 py-3 border-b border-gray-100 flex items-center gap-2 bg-purple-50'>
-                <BrainCircuit className='text-purple-600' size={16} />
-                <span className='text-sm font-semibold text-purple-900'>
-                  AI Assistant
-                </span>
-              </div>
-
-              <div className='flex-1 overflow-y-auto p-3 space-y-3'>
-                {chatMessages.length === 0 && (
-                  <div className='text-center py-6'>
-                    <Bot size={28} className='text-purple-200 mx-auto mb-2' />
-                    <p className='text-xs text-gray-400'>
-                      Chat with AI to generate tasks
-                    </p>
-                    <p className='text-xs text-gray-300 mt-1'>
-                      Example: "Create tasks for the login module"
-                    </p>
-                  </div>
-                )}
-                {chatMessages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "flex gap-2",
-                      msg.role === "user" ? "justify-end" : "justify-start",
-                    )}
-                  >
-                    {msg.role === "assistant" && (
-                      <div className='w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'>
-                        <Bot size={12} className='text-purple-600' />
-                      </div>
-                    )}
-                    <div
-                      className={cn(
-                        "max-w-[85%] rounded-xl px-3 py-2 text-xs whitespace-pre-wrap",
-                        msg.role === "user"
-                          ? "bg-blue-600 text-white rounded-tr-sm"
-                          : "bg-gray-50 text-gray-800 rounded-tl-sm border border-gray-100",
-                      )}
-                    >
-                      {msg.content}
-                      {msg.suggestedTasks?.length ? (
-                        <div className='mt-2 pt-2 border-t border-purple-200/50'>
-                          <button
-                            onClick={() => setReviewTasks(msg.suggestedTasks!)}
-                            className='flex items-center gap-1.5 text-xs font-semibold text-purple-700 hover:text-purple-900'
-                          >
-                            <ListChecks size={11} />
-                            Review {msg.suggestedTasks.length} suggested tasks
-                          </button>
-                        </div>
-                      ) : null}
-                      {msg.tasksCreated?.length ? (
-                        <div className='mt-2 pt-2 border-t border-gray-200/50'>
-                          <p className='font-semibold text-green-700 flex items-center gap-1 mb-1'>
-                            <ListChecks size={11} /> Created:
-                          </p>
-                          {msg.tasksCreated.map((t) => (
-                            <p
-                              key={t.id}
-                              className='text-green-700 flex items-center gap-1'
-                            >
-                              <CheckCircle size={10} /> {t.title}
-                            </p>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                    {msg.role === "user" && (
-                      <div className='w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'>
-                        <User size={12} className='text-blue-600' />
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {chatMutation.isPending && (
-                  <div className='flex gap-2'>
-                    <div className='w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0'>
-                      <Bot size={12} className='text-purple-600' />
-                    </div>
-                    <div className='bg-gray-50 border border-gray-100 rounded-xl px-3 py-2'>
-                      <Loader2
-                        size={12}
-                        className='animate-spin text-purple-400'
-                      />
-                    </div>
-                  </div>
-                )}
-                <div ref={bottomRef} />
-              </div>
-
-              <div className='p-3 border-t border-gray-100 flex gap-2'>
-                <textarea
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendChat();
-                    }
-                  }}
-                  placeholder='Type your prompt...'
-                  rows={2}
-                  className='flex-1 resize-none text-xs border border-gray-200 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-purple-400'
-                />
-                <button
-                  onClick={sendChat}
-                  disabled={!chatInput.trim() || chatMutation.isPending}
-                  className='flex-shrink-0 bg-purple-600 text-white px-3 rounded-lg hover:bg-purple-700 disabled:opacity-40'
-                >
-                  <Send size={14} />
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -969,7 +3098,8 @@ export default function ProjectDetailPage() {
                   Project task workflow
                 </h2>
                 <p className='text-sm text-gray-500 mt-1'>
-                  The workflow has been moved out of the task screen. Only members with project settings access can view and edit it.
+                  The workflow has been moved out of the task screen. Only
+                  members with project settings access can view and edit it.
                 </p>
               </div>
             </div>
@@ -983,6 +3113,47 @@ export default function ProjectDetailPage() {
             </div>
           </div>
 
+          <div className='bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+            <div className='max-w-2xl space-y-2'>
+              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-gray-400'>
+                Task Fields
+              </p>
+              <div>
+                <h2 className='text-lg font-semibold text-gray-900'>
+                  Epics, labels, and naming rule
+                </h2>
+                <p className='text-sm text-gray-500 mt-1'>
+                  Manage the dropdown values used by tasks and the title format
+                  applied when tasks are created or updated.
+                </p>
+              </div>
+              <div className='flex flex-wrap gap-2 pt-1'>
+                {allEpics.map((epic: string) => (
+                  <span
+                    key={epic}
+                    className='rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600'
+                  >
+                    {epic}
+                  </span>
+                ))}
+                {allLabels.map((label: string) => (
+                  <span
+                    key={label}
+                    className='rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600'
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={() => setShowTaxonomyModal(true)}
+              className='px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2'
+            >
+              <Tags size={14} /> Edit fields
+            </button>
+          </div>
+
           <div className='bg-white rounded-2xl border border-gray-100 overflow-hidden'>
             <div className='px-5 py-4 border-b border-gray-100 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
               <div>
@@ -990,7 +3161,8 @@ export default function ProjectDetailPage() {
                   Workflow Canvas
                 </p>
                 <p className='text-sm text-gray-500 mt-1'>
-                  Drag statuses, connect transitions, and color each node in the builder.
+                  Drag statuses, connect transitions, and color each node in the
+                  builder.
                 </p>
               </div>
               <div className='flex flex-wrap gap-2'>
@@ -1034,7 +3206,8 @@ export default function ProjectDetailPage() {
                 ))}
               </div>
               <p className='text-xs text-gray-400'>
-                Project managers can create and name custom roles for each project.
+                Project managers can create and name custom roles for each
+                project.
               </p>
             </div>
             {canProject("project:update") && (
@@ -1071,9 +3244,7 @@ export default function ProjectDetailPage() {
           )}
           <div className='bg-white rounded-xl border border-gray-100 divide-y divide-gray-50'>
             {project.members?.length === 0 ? (
-              <p className='text-center text-gray-400 py-8'>
-                No members yet
-              </p>
+              <p className='text-center text-gray-400 py-8'>No members yet</p>
             ) : (
               project.members.map((m: any) => (
                 <div
@@ -1177,9 +3348,7 @@ export default function ProjectDetailPage() {
       {addMemberDialog && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
           <div className='bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6'>
-            <h3 className='font-semibold text-gray-900 mb-1'>
-              Add member
-            </h3>
+            <h3 className='font-semibold text-gray-900 mb-1'>Add member</h3>
             <p className='text-sm text-gray-500 mb-4'>
               Set the role for{" "}
               <span className='font-medium text-gray-800'>
@@ -1249,17 +3418,25 @@ export default function ProjectDetailPage() {
       {/* Task Modal */}
       {/* AI Task Review Modal */}
       {reviewTasks && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 md:p-6'>
+          <div className='bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden'>
             <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0'>
               <div className='flex items-center gap-2'>
-                <BrainCircuit size={16} className='text-purple-500' />
-                <span className='font-semibold text-gray-900'>
-                  Review suggested tasks
-                </span>
-                <span className='text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold'>
-                  {reviewTasks.length} tasks
-                </span>
+                <BrandLogo size={24} />
+                <div>
+                  <div className='flex items-center gap-2'>
+                    <span className='font-semibold text-gray-900'>
+                      Review suggested tasks
+                    </span>
+                    <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full font-semibold'>
+                      {reviewTasks.length} tasks
+                    </span>
+                  </div>
+                  <p className='text-xs text-gray-500 mt-1'>
+                    AI generated a draft task list. Review and edit it here
+                    before creating tasks.
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setReviewTasks(null)}
@@ -1269,11 +3446,11 @@ export default function ProjectDetailPage() {
               </button>
             </div>
 
-            <div className='flex-1 overflow-y-auto p-4 space-y-3'>
+            <div className='flex-1 overflow-y-auto p-5 md:p-6 space-y-4 bg-gray-50/60'>
               {reviewTasks.map((task, idx) => (
                 <div
                   key={idx}
-                  className='border border-gray-200 rounded-xl p-4 space-y-3'
+                  className='border border-gray-200 bg-white rounded-2xl p-4 md:p-5 space-y-4 shadow-sm'
                 >
                   <div className='flex items-start gap-2'>
                     <span className='text-xs font-bold text-gray-400 mt-2 w-5 flex-shrink-0'>
@@ -1288,7 +3465,7 @@ export default function ProjectDetailPage() {
                           ),
                         )
                       }
-                      className='flex-1 text-sm font-semibold border-0 border-b border-gray-200 focus:outline-none focus:border-purple-400 py-1'
+                      className='flex-1 text-sm font-semibold border-0 border-b border-gray-200 focus:outline-none focus:border-sky-400 py-1'
                       placeholder='Task title *'
                     />
                     <button
@@ -1313,11 +3490,11 @@ export default function ProjectDetailPage() {
                       )
                     }
                     rows={2}
-                    className='w-full text-xs border border-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-purple-300 text-gray-600 ml-7'
+                    className='w-full text-xs border border-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-sky-300 text-gray-600 ml-7'
                     placeholder='Task description...'
                   />
 
-                  <div className='grid grid-cols-4 gap-2 ml-7'>
+                  <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3 ml-7'>
                     <div>
                       <p className='text-xs text-gray-400 mb-1'>Priority</p>
                       <select
@@ -1331,7 +3508,7 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-300'
+                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
                         <option value='HIGH'>HIGH</option>
                         <option value='MEDIUM'>MEDIUM</option>
@@ -1352,13 +3529,78 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-300'
+                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       />
                     </div>
                     <div>
+                      <p className='text-xs text-gray-400 mb-1'>Epic</p>
+                      <select
+                        value={task.epic || ""}
+                        onChange={(e) =>
+                          setReviewTasks((prev) =>
+                            prev!.map((t, i) =>
+                              i === idx
+                                ? { ...t, epic: e.target.value || undefined }
+                                : t,
+                            ),
+                          )
+                        }
+                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                      >
+                        <option value=''>- No epic -</option>
+                        {allEpics.map((epic: string) => (
+                          <option key={epic} value={epic}>
+                            {epic}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <p className='text-xs text-gray-400 mb-1'>Labels</p>
+                      <div className='flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-gray-200 bg-white p-1.5'>
+                        {allLabels.length === 0 ? (
+                          <span className='px-1 text-xs text-gray-400'>
+                            No labels
+                          </span>
+                        ) : (
+                          allLabels.map((label: string) => {
+                            const checked = task.labels?.includes(label);
+                            return (
+                              <button
+                                key={label}
+                                type='button'
+                                onClick={() =>
+                                  setReviewTasks((prev) =>
+                                    prev!.map((t, i) => {
+                                      if (i !== idx) return t;
+                                      const labels = parseTaskLabels(t.labels);
+                                      return {
+                                        ...t,
+                                        labels: checked
+                                          ? labels.filter(
+                                              (value) => value !== label,
+                                            )
+                                          : [...labels, label],
+                                      };
+                                    }),
+                                  )
+                                }
+                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+                                  checked
+                                    ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                    <div>
                       <p className='text-xs text-gray-400 mb-1'>Sprint</p>
-                      <input
-                        type='text'
+                      <select
                         value={task.sprint || ""}
                         onChange={(e) =>
                           setReviewTasks((prev) =>
@@ -1369,9 +3611,129 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        placeholder='Sprint 1'
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-300'
-                      />
+                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                      >
+                        <option value=''>- Không có sprint -</option>
+                        {allSprints.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='xl:col-span-2'>
+                      <p className='text-xs text-gray-400 mb-1'>Estimate</p>
+                      <div className='grid grid-cols-3 gap-1.5'>
+                        <input
+                          type='number'
+                          min='0'
+                          placeholder='Days'
+                          value={
+                            durationFromHours(task.estimateHours).days || ""
+                          }
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "estimateHours",
+                              "days",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                        <input
+                          type='number'
+                          min='0'
+                          max={HOURS_PER_WORK_DAY - 1}
+                          placeholder='Hours'
+                          value={
+                            durationFromHours(task.estimateHours).hours || ""
+                          }
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "estimateHours",
+                              "hours",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                        <input
+                          type='number'
+                          min='0'
+                          max='59'
+                          placeholder='Mins'
+                          value={
+                            durationFromHours(task.estimateHours).minutes || ""
+                          }
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "estimateHours",
+                              "minutes",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                      </div>
+                    </div>
+                    <div className='xl:col-span-2'>
+                      <p className='text-xs text-gray-400 mb-1'>Logged</p>
+                      <div className='grid grid-cols-3 gap-1.5'>
+                        <input
+                          type='number'
+                          min='0'
+                          placeholder='Days'
+                          value={durationFromHours(task.loggedHours).days || ""}
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "loggedHours",
+                              "days",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                        <input
+                          type='number'
+                          min='0'
+                          max={HOURS_PER_WORK_DAY - 1}
+                          placeholder='Hours'
+                          value={
+                            durationFromHours(task.loggedHours).hours || ""
+                          }
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "loggedHours",
+                              "hours",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                        <input
+                          type='number'
+                          min='0'
+                          max='59'
+                          placeholder='Mins'
+                          value={
+                            durationFromHours(task.loggedHours).minutes || ""
+                          }
+                          onChange={(e) =>
+                            updateReviewTaskDuration(
+                              idx,
+                              "loggedHours",
+                              "minutes",
+                              e.target.value,
+                            )
+                          }
+                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        />
+                      </div>
                     </div>
                     <div>
                       <p className='text-xs text-gray-400 mb-1'>Assignee</p>
@@ -1391,7 +3753,7 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-purple-300'
+                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
                         <option value=''>- Unassigned</option>
                         {(project?.members || []).map((m: any) => (
@@ -1411,7 +3773,7 @@ export default function ProjectDetailPage() {
               )}
             </div>
 
-            <div className='flex items-center justify-between px-5 py-4 border-t border-gray-100 flex-shrink-0 bg-gray-50 rounded-b-2xl'>
+            <div className='flex items-center justify-between px-5 py-4 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-3xl'>
               <button
                 onClick={() => setReviewTasks(null)}
                 className='text-sm text-gray-500 hover:text-gray-700 px-4 py-2'
@@ -1426,7 +3788,7 @@ export default function ProjectDetailPage() {
                 disabled={
                   reviewTasks.length === 0 || confirmReviewMutation.isPending
                 }
-                className='flex items-center gap-2 bg-purple-600 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-purple-700 disabled:opacity-50'
+                className='flex items-center gap-2 bg-slate-900 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-slate-800 disabled:opacity-50'
               >
                 {confirmReviewMutation.isPending ? (
                   <Loader2 size={14} className='animate-spin' />
@@ -1451,12 +3813,12 @@ export default function ProjectDetailPage() {
           >
             <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100'>
               <div className='flex items-center gap-2'>
-                <History size={16} className='text-purple-500' />
+                <History size={16} className='text-sky-600' />
                 <span className='font-semibold text-gray-900 text-sm'>
                   Version v{previewVersion.version}
                 </span>
                 <span className='text-xs text-gray-400'>
-                  | {formatDate(previewVersion.createdAt)}
+                  | {formatDateTime(previewVersion.createdAt)}
                 </span>
               </div>
               <button
@@ -1498,7 +3860,8 @@ export default function ProjectDetailPage() {
               <div>
                 <h3 className='font-semibold text-gray-900'>Project roles</h3>
                 <p className='text-sm text-gray-500'>
-                  Create custom project roles and define permissions for each one.
+                  Create custom project roles and define permissions for each
+                  one.
                 </p>
               </div>
               <button
@@ -1554,7 +3917,8 @@ export default function ProjectDetailPage() {
                         </p>
                         <div className='flex flex-wrap gap-2'>
                           {group.permissions.map((permission) => {
-                            const checked = role.permissions.includes(permission);
+                            const checked =
+                              role.permissions.includes(permission);
 
                             return (
                               <button
@@ -1568,9 +3932,13 @@ export default function ProjectDetailPage() {
                                             ...item,
                                             permissions: checked
                                               ? item.permissions.filter(
-                                                  (value) => value !== permission,
+                                                  (value) =>
+                                                    value !== permission,
                                                 )
-                                              : [...item.permissions, permission],
+                                              : [
+                                                  ...item.permissions,
+                                                  permission,
+                                                ],
                                           }
                                         : item,
                                     ),
@@ -1631,7 +3999,9 @@ export default function ProjectDetailPage() {
               </div>
 
               <p className='text-xs text-gray-400'>
-                Each role can enable or disable individual actions in the project. If a role is still assigned to members, the backend blocks deletion until those members are reassigned.
+                Each role can enable or disable individual actions in the
+                project. If a role is still assigned to members, the backend
+                blocks deletion until those members are reassigned.
               </p>
             </div>
 
@@ -1659,130 +4029,859 @@ export default function ProjectDetailPage() {
         </div>
       )}
       {showTaskModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
-          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md'>
-            <h3 className='font-bold text-lg text-gray-900 mb-4'>
-              {editTask ? "Update task" : "Add new task"}
-            </h3>
-            <form onSubmit={handleSubmit(onTaskSubmit)} className='space-y-3'>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Title *
-                </label>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4'>
+          <div className='flex w-full max-w-7xl max-h-[92vh] flex-col overflow-hidden rounded-xl bg-white text-gray-900 shadow-2xl'>
+            <div className='flex items-center justify-between border-b border-gray-100 px-6 py-4'>
+              <div className='min-w-0'>
+                <div className='mb-2 flex min-w-0 items-center gap-2 text-xs text-gray-500'>
+                  <span>Spaces</span>
+                  <span>/</span>
+                  <span className='truncate'>{project.name}</span>
+                  <span>/</span>
+                  <span>{editTask ? `TASK-${editTask.id}` : "NEW-TASK"}</span>
+                </div>
+                <h3 className='font-semibold text-gray-900'>
+                  {editTask ? "Task detail" : "Add new task"}
+                </h3>
+              </div>
+              <button
+                type='button'
+                onClick={() => {
+                  setShowTaskModal(false);
+                  setEditTask(null);
+                }}
+                className='rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700'
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form
+              onSubmit={handleSubmit(onTaskSubmit)}
+              className='grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[minmax(0,1fr)_340px]'
+            >
+              <div className='min-h-0 overflow-y-auto p-6 lg:p-8'>
                 <input
-                  {...register("title", { required: true })}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  {...register("title", {
+                    required: true,
+                    onBlur: autoSaveTask,
+                  })}
+                  className='w-full bg-transparent text-2xl font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:ring-0'
+                  placeholder='Task title'
                 />
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Description
-                </label>
-                <textarea
-                  {...register("description")}
-                  rows={3}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Status
-                </label>
-                <select
-                  {...register("status")}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  {workflowStatuses.map((status: string) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='grid grid-cols-2 gap-3'>
-                <div>
-                  <label className='text-sm font-medium text-gray-700'>
-                    Priority
-                  </label>
-                  <select
-                    {...register("priority")}
-                    className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  >
-                    <option value='LOW'>LOW</option>
-                    <option value='MEDIUM'>MEDIUM</option>
-                    <option value='HIGH'>HIGH</option>
-                  </select>
+                <div className='mt-8 space-y-8'>
+                  <section>
+                    <div className='mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900'>
+                      <ChevronDown size={16} className='text-gray-400' />
+                      <span>Key details</span>
+                    </div>
+                    <div className='grid gap-x-10 gap-y-5 text-sm md:grid-cols-[180px_minmax(0,1fr)]'>
+                      <span className='text-gray-500'>Assignee</span>
+                      <select
+                        {...register("assigneeId", { onBlur: autoSaveTask })}
+                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-gray-900 hover:border-gray-200 hover:bg-gray-50 focus:border-blue-300 focus:bg-white focus:outline-none'
+                      >
+                        <option value=''>Unassigned</option>
+                        {project.members?.map((m: any) => (
+                          <option key={m.userId} value={m.userId}>
+                            {m.user.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      <span className='text-gray-500'>Due date</span>
+                      <input
+                        type='date'
+                        {...register("dueDate", { onBlur: autoSaveTask })}
+                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-gray-900 hover:border-gray-200 hover:bg-gray-50 focus:border-blue-300 focus:bg-white focus:outline-none'
+                      />
+
+                      <span className='text-gray-500'>Original estimate</span>
+                      <span className='text-gray-900'>
+                        {watchedEstimateInput || "None"}
+                      </span>
+
+                      <span className='text-gray-500'>Time spent</span>
+                      <span className='text-gray-900'>
+                        {watchedLoggedInput || "None"}
+                      </span>
+                    </div>
+                  </section>
+                  <div>
+                    <label className='mb-2 block text-sm font-semibold text-gray-900'>
+                      Description
+                    </label>
+                    <input type='hidden' {...register("description")} />
+                    <DescriptionEditor
+                      value={descriptionHtml}
+                      onChange={(next) => {
+                        setDescriptionHtml(next);
+                        setValue("description", next, { shouldDirty: true });
+                      }}
+                      onBlur={autoSaveTask}
+                      onImprove={handleImproveDescription}
+                      onAssist={handleAssistDescription}
+                      aiMessages={descriptionAiMessages}
+                      assisting={assistDescriptionMutation.isPending}
+                      improving={improveDescriptionMutation.isPending}
+                      mentionItems={
+                        project.members?.map((m: any) => ({
+                          id: String(m.userId),
+                          label: m.user?.name || `User ${m.userId}`,
+                        })) || []
+                      }
+                      disabled={
+                        createTaskMutation.isPending ||
+                        updateTaskMutation.isPending
+                      }
+                    />
+                  </div>
+                  <section className='space-y-3'>
+                    <h4 className='text-sm font-semibold text-gray-900'>
+                      Subtasks
+                    </h4>
+                    <button
+                      type='button'
+                      className='text-sm text-gray-500 hover:text-gray-800'
+                    >
+                      Add subtask
+                    </button>
+                  </section>
+                  <section className='space-y-3'>
+                    <h4 className='text-sm font-semibold text-gray-900'>
+                      Activity
+                    </h4>
+                    <div className='flex flex-wrap gap-2'>
+                      {[
+                        ["all", "All"],
+                        ["comments", "Comments"],
+                        ["history", "History"],
+                        ["worklog", "Work log"],
+                      ].map(([key, label]) => (
+                          <button
+                            key={key}
+                            type='button'
+                            onClick={() => setActivityTab(key as ActivityTab)}
+                            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition ${
+                              activityTab === key
+                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                            }`}
+                          >
+                            {label}
+                          </button>
+                      ))}
+                    </div>
+                    {editTask ? (
+                      <div className='space-y-4'>
+                        {(activityTab === "comments" ||
+                          activityTab === "all") && (
+                          <div className='rounded-lg border border-gray-200 bg-white p-3'>
+                            <textarea
+                              value={commentDraft}
+                              onChange={(event) =>
+                                setCommentDraft(event.target.value)
+                              }
+                              placeholder='Add a comment...'
+                              rows={3}
+                              className='w-full resize-none rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            />
+                            <div className='mt-2 flex justify-end'>
+                              <button
+                                type='button'
+                                onClick={addTaskComment}
+                                disabled={
+                                  !commentDraft.trim() ||
+                                  addTaskCommentMutation.isPending
+                                }
+                                className='rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50'
+                              >
+                                Comment
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        {(activityTab === "worklog" ||
+                          activityTab === "all") && (
+                          <div className='rounded-lg border border-gray-200 bg-white p-3'>
+                            <div className='grid gap-2 md:grid-cols-[160px_minmax(0,1fr)_auto]'>
+                              <input
+                                value={workLogDraft}
+                                onChange={(event) =>
+                                  setWorkLogDraft(event.target.value)
+                                }
+                                placeholder='1h 30m'
+                                className='rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                              />
+                              <input
+                                value={workLogNote}
+                                onChange={(event) =>
+                                  setWorkLogNote(event.target.value)
+                                }
+                                placeholder='Work log note'
+                                className='rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                              />
+                              <button
+                                type='button'
+                                onClick={addTaskWorkLog}
+                                disabled={
+                                  !workLogDraft.trim() ||
+                                  addTaskWorkLogMutation.isPending
+                                }
+                                className='rounded-md bg-slate-900 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50'
+                              >
+                                Log work
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        <div className='space-y-2'>
+                          {loadingTaskActivities ? (
+                            <div className='flex items-center gap-2 text-sm text-gray-500'>
+                              <Loader2 size={14} className='animate-spin' />
+                              Loading activity...
+                            </div>
+                          ) : filteredTaskActivities.length === 0 ? (
+                            <p className='text-sm text-gray-500'>
+                              No activity yet.
+                            </p>
+                          ) : (
+                            filteredTaskActivities.map((activity) => (
+                              <div
+                                key={activity.id}
+                                className='rounded-lg border border-gray-100 bg-white px-3 py-2'
+                              >
+                                <div className='mb-1 flex flex-wrap items-center gap-2 text-xs text-gray-500'>
+                                  <span className='font-medium text-gray-700'>
+                                    {activity.user?.name ||
+                                      activity.user?.email ||
+                                      "System"}
+                                  </span>
+                                  <span>{formatDateTime(activity.createdAt)}</span>
+                                  <span className='rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-600'>
+                                    {activity.type === "WORK_LOG"
+                                      ? "Work log"
+                                      : activity.type === "COMMENT"
+                                        ? "Comment"
+                                        : "History"}
+                                  </span>
+                                </div>
+                                <p className='whitespace-pre-wrap text-sm text-gray-800'>
+                                  {describeActivity(activity)}
+                                </p>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className='text-sm text-gray-500'>
+                        Create the task to start comments, history, and work
+                        logs.
+                      </p>
+                    )}
+                  </section>
                 </div>
-                <div>
-                  <label className='text-sm font-medium text-gray-700'>
-                    Assignee
-                  </label>
-                  <select
-                    {...register("assigneeId")}
-                    className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  >
-                    <option value=''>- Unassigned -</option>
-                    {project.members?.map((m: any) => (
-                      <option key={m.userId} value={m.userId}>
-                        {m.user.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
-              <div className='grid grid-cols-2 gap-3'>
-                <div>
-                  <label className='text-sm font-medium text-gray-700'>
-                    Deadline
-                  </label>
-                  <input
-                    type='date'
-                    {...register("dueDate")}
-                    className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-                <div>
-                  <label className='text-sm font-medium text-gray-700'>
-                    Sprint
-                  </label>
-                  <input
-                    type='text'
-                    {...register("sprint")}
-                    placeholder='Sprint 1'
-                    className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-              </div>
-              <div className='flex gap-2 justify-end mt-4'>
-                <button
-                  type='button'
-                  onClick={() => {
-                    setShowTaskModal(false);
-                    setEditTask(null);
-                  }}
-                  className='px-4 py-2 text-sm text-gray-600 border rounded-lg hover:bg-gray-50'
-                >
-                  Cancel
-                </button>
-                <button
-                  type='submit'
-                  disabled={
-                    createTaskMutation.isPending || updateTaskMutation.isPending
-                  }
-                  className='px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50'
-                >
-                  {(createTaskMutation.isPending ||
-                    updateTaskMutation.isPending) && (
-                    <Loader2 className='animate-spin' size={14} />
+              <aside className='min-h-0 overflow-y-auto border-t border-gray-100 bg-gray-50 p-5 lg:border-l lg:border-t-0'>
+                <div className='mb-4 flex items-center gap-2'>
+                  <div className='relative'>
+                    <button
+                      type='button'
+                      onClick={() => setShowStatusDropdown((v) => !v)}
+                      className='flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400'
+                      style={getTaskStatusInlineStyle(watch("status") || workflowStatuses[0], projectWorkflow)}
+                    >
+                      {watch("status") || workflowStatuses[0]}
+                      <ChevronDown size={14} />
+                    </button>
+                    {showStatusDropdown && (
+                      <>
+                        <div className='fixed inset-0 z-[9]' onClick={() => setShowStatusDropdown(false)} />
+                        <div className='absolute left-0 top-full z-10 mt-1 min-w-[160px] rounded-md border border-gray-200 bg-white py-1 shadow-lg'>
+                          {workflowStatuses.map((status: string) => (
+                            <button
+                              key={status}
+                              type='button'
+                              onClick={() => {
+                                setValue("status", status, { shouldDirty: true });
+                                setShowStatusDropdown(false);
+                                autoSaveTask();
+                              }}
+                              className='flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-gray-50'
+                            >
+                              <span
+                                className='inline-block rounded-full border px-2 py-0.5 text-xs font-semibold'
+                                style={getTaskStatusInlineStyle(status, projectWorkflow)}
+                              >
+                                {status}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {workflowStatuses.indexOf(watch("status")) === workflowStatuses.length - 1 && (
+                    <span className='text-xs text-gray-500'>Done</span>
                   )}
-                  {editTask ? "Update" : "Create task"}
-                </button>
-              </div>
+                </div>
+                <div className='rounded-lg border border-gray-200 bg-white'>
+                  <div className='border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900'>
+                    Details
+                  </div>
+                  <div className='space-y-4 p-4'>
+                    <div>
+                      <label className='text-xs font-medium text-gray-500'>
+                        Priority
+                      </label>
+                      <select
+                        {...register("priority", { onBlur: autoSaveTask })}
+                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      >
+                        <option value='LOW'>LOW</option>
+                        <option value='MEDIUM'>MEDIUM</option>
+                        <option value='HIGH'>HIGH</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className='text-xs font-medium text-gray-500'>
+                        Epic
+                      </label>
+                      <select
+                        {...register("epic", { onBlur: autoSaveTask })}
+                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      >
+                        <option value=''>No epic</option>
+                        {allEpics.map((epic: string) => (
+                          <option key={epic} value={epic}>
+                            {epic}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className='text-xs font-medium text-gray-500'>
+                        Labels
+                      </label>
+                      <input type='hidden' {...register("labels")} />
+                      <div className='mt-1 flex min-h-[38px] flex-wrap gap-1.5 rounded-md border border-gray-200 bg-white p-2'>
+                        {allLabels.length === 0 ? (
+                          <span className='text-sm text-gray-400'>None</span>
+                        ) : (
+                          allLabels.map((label: string) => {
+                            const checked = selectedTaskLabels.includes(label);
+                            return (
+                              <button
+                                key={label}
+                                type='button'
+                                onClick={() => toggleTaskLabel(label)}
+                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+                                  checked
+                                    ? "border-sky-200 bg-sky-50 text-sky-700"
+                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className='text-xs font-medium text-gray-500'>
+                        Sprint
+                      </label>
+                      <select
+                        {...register("sprint", { onBlur: autoSaveTask })}
+                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      >
+                        <option value=''>No sprint</option>
+                        {allSprints.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className='text-xs font-medium text-gray-500'>
+                        Time tracking
+                      </label>
+                      <div className='mt-1 grid grid-cols-2 gap-2'>
+                        <input
+                          {...register("estimateInput", {
+                            onBlur: autoSaveTask,
+                          })}
+                          placeholder='Estimate'
+                          className='rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        />
+                        <input
+                          {...register("loggedInput", {
+                            onBlur: autoSaveTask,
+                          })}
+                          placeholder='Logged'
+                          className='rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {!editTask && (
+                  <div className='mt-4 flex justify-end'>
+                    <button
+                      type='submit'
+                      disabled={createTaskMutation.isPending}
+                      className='flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50'
+                    >
+                      {createTaskMutation.isPending && (
+                        <Loader2 className='animate-spin' size={14} />
+                      )}
+                      Create task
+                    </button>
+                  </div>
+                )}
+              </aside>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Epic & Label Manager Modal */}
+      {showTaxonomyModal && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4'>
+          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl'>
+            <div className='flex items-center justify-between mb-5'>
+              <div>
+                <h3 className='font-bold text-lg text-gray-900 flex items-center gap-2'>
+                  <Tags size={18} className='text-indigo-500' /> Epics & Labels
+                </h3>
+                <p className='text-sm text-gray-500 mt-1'>
+                  Create project fields before assigning them to tasks.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTaxonomyModal(false);
+                  setNewEpicName("");
+                  setNewLabelName("");
+                }}
+                className='p-1.5 rounded-lg hover:bg-gray-100 text-gray-400'
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className='grid gap-5 md:grid-cols-2'>
+              <div className='md:col-span-2 rounded-xl border border-gray-100 bg-gray-50 p-4'>
+                <div className='flex items-start justify-between gap-3'>
+                  <div>
+                    <h4 className='text-sm font-semibold text-gray-800'>
+                      Task naming rule
+                    </h4>
+                    <p className='mt-1 text-xs text-gray-500'>
+                      Tokens: {"{firstLabel}"}, {"{epic}"},{" "}
+                      {"{remainingLabels}"}, {"{labels}"}, {"{title}"},{" "}
+                      {"{sprint}"}, {"{priority}"}
+                    </p>
+                  </div>
+                  <button
+                    onClick={saveTaskNamingRule}
+                    disabled={updateProjectMetadataMutation.isPending}
+                    className='rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50'
+                  >
+                    Save rule
+                  </button>
+                </div>
+                <input
+                  value={taskNamingRuleDraft}
+                  onChange={(e) => setTaskNamingRuleDraft(e.target.value)}
+                  placeholder='[{firstLabel}][{epic}][{remainingLabels}] {title}'
+                  className='mt-3 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                />
+                <div className='mt-3 rounded-lg bg-white px-3 py-2 text-xs text-gray-500'>
+                  Preview:{" "}
+                  <span className='font-semibold text-gray-800'>
+                    {previewTaskNamingRule(taskNamingRuleDraft, {
+                      title: "Optimize Buggy Service List API Performance",
+                      epic: allEpics[0] || "Admin",
+                      labels: allLabels.length
+                        ? allLabels.slice(0, 2)
+                        : ["BE", "Buggy"],
+                    })}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div className='flex items-center gap-2 mb-3'>
+                  <Layers size={16} className='text-indigo-500' />
+                  <h4 className='text-sm font-semibold text-gray-800'>Epics</h4>
+                </div>
+                <div className='flex gap-2 mb-3'>
+                  <input
+                    value={newEpicName}
+                    onChange={(e) => setNewEpicName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault();
+                      const name = newEpicName.trim();
+                      if (name && !allEpics.includes(name)) {
+                        saveProjectEpics([...allEpics, name]);
+                        setNewEpicName("");
+                      }
+                    }}
+                    placeholder='Authentication'
+                    className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                  />
+                  <button
+                    onClick={() => {
+                      const name = newEpicName.trim();
+                      if (name && !allEpics.includes(name)) {
+                        saveProjectEpics([...allEpics, name]);
+                        setNewEpicName("");
+                      }
+                    }}
+                    className='px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700'
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className='space-y-1.5 max-h-64 overflow-y-auto'>
+                  {allEpics.length === 0 ? (
+                    <p className='text-sm text-gray-400 py-3'>No epics yet</p>
+                  ) : (
+                    allEpics.map((epic: string) => {
+                      const taskCount =
+                        project?.tasks?.filter((t: any) => t.epic === epic)
+                          .length ?? 0;
+                      return (
+                        <div
+                          key={epic}
+                          className='flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2'
+                        >
+                          <span className='text-sm text-gray-700'>{epic}</span>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-xs text-gray-400'>
+                              {taskCount} task
+                            </span>
+                            <button
+                              onClick={() => {
+                                if (taskCount > 0) {
+                                  toast.error(
+                                    `Epic "${epic}" is used by ${taskCount} task`,
+                                  );
+                                  return;
+                                }
+                                saveProjectEpics(
+                                  allEpics.filter(
+                                    (value: string) => value !== epic,
+                                  ),
+                                );
+                              }}
+                              className='p-1 text-gray-300 hover:text-red-500'
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <div className='flex items-center gap-2 mb-3'>
+                  <Tags size={16} className='text-slate-500' />
+                  <h4 className='text-sm font-semibold text-gray-800'>
+                    Labels
+                  </h4>
+                </div>
+                <div className='flex gap-2 mb-3'>
+                  <input
+                    value={newLabelName}
+                    onChange={(e) => setNewLabelName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault();
+                      const name = newLabelName.trim();
+                      if (name && !allLabels.includes(name)) {
+                        saveProjectLabels([...allLabels, name]);
+                        setNewLabelName("");
+                      }
+                    }}
+                    placeholder='FE'
+                    className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500'
+                  />
+                  <button
+                    onClick={() => {
+                      const name = newLabelName.trim();
+                      if (name && !allLabels.includes(name)) {
+                        saveProjectLabels([...allLabels, name]);
+                        setNewLabelName("");
+                      }
+                    }}
+                    className='px-3 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-800'
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className='space-y-1.5 max-h-64 overflow-y-auto'>
+                  {allLabels.length === 0 ? (
+                    <p className='text-sm text-gray-400 py-3'>No labels yet</p>
+                  ) : (
+                    allLabels.map((label: string) => {
+                      const taskCount =
+                        project?.tasks?.filter((t: any) =>
+                          t.labels?.includes(label),
+                        ).length ?? 0;
+                      return (
+                        <div
+                          key={label}
+                          className='flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2'
+                        >
+                          <span className='rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600'>
+                            {label}
+                          </span>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-xs text-gray-400'>
+                              {taskCount} task
+                            </span>
+                            <button
+                              onClick={() => {
+                                if (taskCount > 0) {
+                                  toast.error(
+                                    `Label "${label}" is used by ${taskCount} task`,
+                                  );
+                                  return;
+                                }
+                                saveProjectLabels(
+                                  allLabels.filter(
+                                    (value: string) => value !== label,
+                                  ),
+                                );
+                              }}
+                              className='p-1 text-gray-300 hover:text-red-500'
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sprint Manager Modal */}
+      {showSprintModal && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
+          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm'>
+            <div className='flex items-center justify-between mb-4'>
+              <h3 className='font-bold text-lg text-gray-900 flex items-center gap-2'>
+                <GitBranch size={18} className='text-blue-500' /> Quản lý Sprint
+              </h3>
+              <button
+                onClick={() => {
+                  setShowSprintModal(false);
+                  setNewSprintName("");
+                }}
+                className='p-1.5 rounded-lg hover:bg-gray-100 text-gray-400'
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Add new sprint */}
+            <div className='flex gap-2 mb-4'>
+              <input
+                type='text'
+                value={newSprintName}
+                onChange={(e) => setNewSprintName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const name = newSprintName.trim();
+                    if (name && !allSprints.includes(name)) {
+                      saveSprints([...sprints, name]);
+                      setNewSprintName("");
+                    }
+                  }
+                }}
+                placeholder='Tên sprint (vd: Sprint 1)'
+                className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              />
+              <button
+                onClick={() => {
+                  const name = newSprintName.trim();
+                  if (name && !allSprints.includes(name)) {
+                    saveSprints([...sprints, name]);
+                    setNewSprintName("");
+                  }
+                }}
+                className='px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-1'
+              >
+                <Plus size={14} /> Thêm
+              </button>
+            </div>
+
+            {/* Sprint list */}
+            {allSprints.length === 0 ? (
+              <p className='text-sm text-gray-400 text-center py-4'>
+                Chưa có sprint nào
+              </p>
+            ) : (
+              <div className='space-y-1.5 max-h-60 overflow-y-auto'>
+                {allSprints.map((s) => {
+                  const taskCount =
+                    project?.tasks?.filter((t: any) => t.sprint === s).length ??
+                    0;
+                  return (
+                    <div
+                      key={s}
+                      className='flex items-center gap-3 px-3 py-2 rounded-lg border border-gray-100 hover:bg-gray-50'
+                    >
+                      <GitBranch
+                        size={13}
+                        className='text-gray-400 flex-shrink-0'
+                      />
+                      <span className='flex-1 text-sm text-gray-800'>{s}</span>
+                      <span className='text-xs text-gray-400'>
+                        {taskCount} tasks
+                      </span>
+                      <button
+                        onClick={() => {
+                          if (taskCount > 0) {
+                            toast.error(
+                              `Sprint "${s}" đang có ${taskCount} task, không thể xóa`,
+                            );
+                            return;
+                          }
+                          saveSprints(sprints.filter((x) => x !== s));
+                        }}
+                        className='p-1 text-gray-300 hover:text-red-500 rounded'
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className='mt-4 flex justify-end'>
+              <button
+                onClick={() => {
+                  setShowSprintModal(false);
+                  setNewSprintName("");
+                }}
+                className='px-4 py-2 text-sm text-gray-600 border rounded-lg hover:bg-gray-50'
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pendingUploadFile && (
+        <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4'>
+          <div className='w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl'>
+            <div className='flex items-start gap-3'>
+              <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700'>
+                <Upload size={18} />
+              </div>
+              <div className='min-w-0 flex-1'>
+                <h3 className='text-base font-semibold text-gray-900'>
+                  Confirm document upload
+                </h3>
+                <p className='mt-1 text-sm text-gray-500'>
+                  Upload this document to the project? It can be used as source
+                  material when requirements are updated.
+                </p>
+                <div className='mt-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2'>
+                  <p className='truncate text-sm font-medium text-gray-800'>
+                    {pendingUploadFile.name}
+                  </p>
+                  <p className='mt-0.5 text-xs text-gray-400'>
+                    {(pendingUploadFile.size / 1024).toFixed(1)} KB
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className='mt-5 flex justify-end gap-2'>
+              <button
+                type='button'
+                onClick={cancelFileUpload}
+                disabled={uploading}
+                className='rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                onClick={() => uploadDocumentFile(pendingUploadFile)}
+                disabled={uploading}
+                className='inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50'
+              >
+                {uploading && <Loader2 size={14} className='animate-spin' />}
+                Upload document
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showUpdateRequirementsConfirm && (
+        <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4'>
+          <div className='w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl'>
+            <div className='flex items-start gap-3'>
+              <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700'>
+                <RefreshCw size={18} />
+              </div>
+              <div className='min-w-0 flex-1'>
+                <h3 className='text-base font-semibold text-gray-900'>
+                  Confirm requirements update
+                </h3>
+                <p className='mt-1 text-sm text-gray-500'>
+                  AI will read the latest project documents and update the
+                  shared requirements file. A new version will be added to the
+                  requirements history.
+                </p>
+              </div>
+            </div>
+            <div className='mt-5 flex justify-end gap-2'>
+              <button
+                type='button'
+                onClick={() => setShowUpdateRequirementsConfirm(false)}
+                disabled={updateReqMutation.isPending}
+                className='rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                onClick={() => {
+                  setShowUpdateRequirementsConfirm(false);
+                  updateReqMutation.mutate();
+                }}
+                disabled={updateReqMutation.isPending}
+                className='inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50'
+              >
+                {updateReqMutation.isPending && (
+                  <Loader2 size={14} className='animate-spin' />
+                )}
+                Update requirements
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
-

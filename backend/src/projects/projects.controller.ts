@@ -12,7 +12,7 @@ import {
 } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { ProjectsService } from "./projects.service";
-import { CreateProjectDto } from "./dto/create-project.dto";
+import { CreateProjectDto, UpdateProjectDto } from "./dto/create-project.dto";
 import { UpdateProjectWorkflowDto } from "./dto/update-project-workflow.dto";
 import { UpdateProjectRolesDto } from "./dto/update-project-roles.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
@@ -49,7 +49,7 @@ export class ProjectsController {
 
   @Put(":id")
   @RequirePermissions("project:update")
-  update(@Param("id", ParseIntPipe) id: number, @Body() dto: CreateProjectDto) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
     return this.projectsService.update(id, dto);
   }
 

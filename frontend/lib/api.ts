@@ -81,6 +81,15 @@ export const tasksApi = {
     api.put(`/projects/${projectId}/tasks/${taskId}`, data),
   updateStatus: (projectId: number, taskId: number, status: string) =>
     api.patch(`/projects/${projectId}/tasks/${taskId}/status`, { status }),
+  getActivities: (projectId: number, taskId: number) =>
+    api.get(`/projects/${projectId}/tasks/${taskId}/activities`),
+  addComment: (projectId: number, taskId: number, body: string) =>
+    api.post(`/projects/${projectId}/tasks/${taskId}/comments`, { body }),
+  addWorkLog: (
+    projectId: number,
+    taskId: number,
+    data: { durationHours: number; note?: string },
+  ) => api.post(`/projects/${projectId}/tasks/${taskId}/worklogs`, data),
   delete: (projectId: number, taskId: number) =>
     api.delete(`/projects/${projectId}/tasks/${taskId}`),
 };
@@ -114,6 +123,37 @@ export const aiApi = {
     api.post(`/projects/${projectId}/ai/confirm-tasks`, { tasks }),
   suggestAssignee: (projectId: number, taskDescription: string) =>
     api.post(`/projects/${projectId}/ai/suggest-assignee`, { taskDescription }),
-  chat: (projectId: number, messages: { role: string; content: string }[]) =>
-    api.post(`/projects/${projectId}/ai/chat`, { messages }),
+  improveDescription: (
+    projectId: number,
+    payload: { title?: string; description: string },
+  ) => api.post(`/projects/${projectId}/ai/description/improve`, payload),
+  assistDescription: (
+    projectId: number,
+    payload: { title?: string; description: string; instruction: string },
+  ) => api.post(`/projects/${projectId}/ai/description/assist`, payload),
+  chat: (
+    projectId: number,
+    messages: { role: string; content: string }[],
+    summary?: string,
+  ) => api.post(`/projects/${projectId}/ai/chat`, { messages, summary }),
+  summarize: (
+    projectId: number,
+    currentSummary: string,
+    messages: { role: string; content: string }[],
+  ) =>
+    api.post(`/projects/${projectId}/ai/summarize`, {
+      currentSummary,
+      messages,
+    }),
+  listSessions: (projectId: number) =>
+    api.get(`/projects/${projectId}/ai/sessions`),
+  createSession: (projectId: number, name: string) =>
+    api.post(`/projects/${projectId}/ai/sessions`, { name }),
+  updateSession: (
+    projectId: number,
+    sessionId: number,
+    data: { name?: string; summary?: string; messages?: any[] },
+  ) => api.put(`/projects/${projectId}/ai/sessions/${sessionId}`, data),
+  deleteSession: (projectId: number, sessionId: number) =>
+    api.delete(`/projects/${projectId}/ai/sessions/${sessionId}`),
 };

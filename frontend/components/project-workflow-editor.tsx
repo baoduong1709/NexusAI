@@ -681,6 +681,47 @@ export function ProjectWorkflowEditor({
                         {selectedNode.color}
                       </div>
                     </div>
+                    {/* Color palette */}
+                    <div className='flex flex-wrap gap-1.5 pt-1'>
+                      {[
+                        "#475569", // slate
+                        "#64748B", // slate-light
+                        "#2563EB", // blue
+                        "#0EA5E9", // sky
+                        "#0F766E", // teal
+                        "#16A34A", // green
+                        "#CA8A04", // yellow
+                        "#EA580C", // orange
+                        "#DC2626", // red
+                        "#9333EA", // purple
+                        "#DB2777", // pink
+                        "#0369A1", // dark-sky
+                      ].map((color) => (
+                        <button
+                          key={color}
+                          type='button'
+                          title={color}
+                          onClick={() =>
+                            setWorkflow((current) => ({
+                              ...current,
+                              nodes: current.nodes.map((node) =>
+                                node.id === selectedNode.id
+                                  ? { ...node, color }
+                                  : node,
+                              ),
+                            }))
+                          }
+                          className='h-6 w-6 rounded-md border-2 transition-transform hover:scale-110'
+                          style={{
+                            backgroundColor: color,
+                            borderColor:
+                              selectedNode.color === color
+                                ? "#1e293b"
+                                : "transparent",
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
 
                   <div className='space-y-2'>

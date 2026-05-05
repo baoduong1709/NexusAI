@@ -1,8 +1,11 @@
 import {
   IsArray,
+  IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
   ValidateNested,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -36,6 +39,31 @@ class ConfirmTaskDto {
   @IsString()
   @IsOptional()
   sprint?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  epic?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  labels?: string[];
+
+  @ApiPropertyOptional({ minimum: 0 })
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0)
+  @IsOptional()
+  estimateHours?: number;
+
+  @ApiPropertyOptional({ minimum: 0 })
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0)
+  @IsOptional()
+  loggedHours?: number;
 }
 
 export class ConfirmAiTasksDto {
@@ -51,6 +79,35 @@ export class SuggestAssigneeDto {
   @IsString()
   @IsNotEmpty()
   taskDescription: string;
+}
+
+export class ImproveDescriptionDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+}
+
+export class AssistDescriptionDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  instruction: string;
 }
 
 class ChatMessageDto {
@@ -71,4 +128,46 @@ export class AiChatDto {
   @ValidateNested({ each: true })
   @Type(() => ChatMessageDto)
   messages: ChatMessageDto[];
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  summary?: string;
+}
+
+export class AiSummarizeDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  currentSummary?: string;
+
+  @ApiProperty({ type: [ChatMessageDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ChatMessageDto)
+  messages: ChatMessageDto[];
+}
+
+export class CreateSessionDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+
+export class UpdateSessionDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  summary?: string;
+
+  @ApiPropertyOptional()
+  @IsArray()
+  @IsOptional()
+  messages?: any[];
 }

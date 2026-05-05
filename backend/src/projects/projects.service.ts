@@ -65,6 +65,19 @@ function sortProjectRoleConfigs(roleConfigs: ProjectRoleConfig[]) {
   return [...roleConfigs];
 }
 
+function normalizeProjectList(values?: string[]) {
+  if (!Array.isArray(values)) return undefined;
+  return Array.from(
+    new Set(values.map((value) => value.trim()).filter(Boolean)),
+  );
+}
+
+function normalizeTaskNamingRule(value?: string) {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
 @Injectable()
 export class ProjectsService {
   constructor(
@@ -80,9 +93,15 @@ export class ProjectsService {
     const projectRoles = getProjectRoleNames(projectRoleConfigs);
     const taskStatuses = normalizeTaskStatuses(data.taskStatuses);
     const taskWorkflow = createDefaultTaskWorkflow(taskStatuses);
+    const epics = normalizeProjectList(data.epics) ?? [];
+    const labels = normalizeProjectList(data.labels) ?? [];
+    const taskNamingRule = normalizeTaskNamingRule(data.taskNamingRule);
     const project = await this.prisma.project.create({
       data: {
         ...data,
+        epics,
+        labels,
+        taskNamingRule,
         projectRoles,
         projectRoleConfigs:
           projectRoleConfigs as unknown as Prisma.InputJsonValue,
@@ -194,6 +213,12 @@ export class ProjectsService {
     const taskStatuses = data.taskStatuses
       ? normalizeTaskStatuses(data.taskStatuses)
       : undefined;
+    const epics = data.epics ? normalizeProjectList(data.epics) : undefined;
+    const labels = data.labels ? normalizeProjectList(data.labels) : undefined;
+    const taskNamingRule =
+      data.taskNamingRule !== undefined
+        ? normalizeTaskNamingRule(data.taskNamingRule)
+        : undefined;
     const taskWorkflow = taskStatuses
       ? createDefaultTaskWorkflow(taskStatuses)
       : normalizeTaskWorkflow(
@@ -205,6 +230,9 @@ export class ProjectsService {
       where: { id },
       data: {
         ...data,
+        epics,
+        labels,
+        taskNamingRule,
         projectRoles,
         projectRoleConfigs: projectRoleConfigs
           ? (projectRoleConfigs as unknown as Prisma.InputJsonValue)

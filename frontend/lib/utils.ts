@@ -14,6 +14,17 @@ export function formatDate(date: string | Date) {
   });
 }
 
+export function formatDateTime(date: string | Date) {
+  if (!date) return "-";
+  return new Date(date).toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

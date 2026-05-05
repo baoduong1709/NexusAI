@@ -4,10 +4,14 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
+  IsArray,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { Priority } from "@prisma/client";
 
 export class CreateTaskDto {
@@ -48,6 +52,31 @@ export class CreateTaskDto {
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
+  epic?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  labels?: string[];
+
+  @ApiPropertyOptional({ minimum: 0, description: "Estimated effort in hours" })
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0)
+  @IsOptional()
+  estimateHours?: number;
+
+  @ApiPropertyOptional({ minimum: 0, description: "Logged effort in hours" })
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0)
+  @IsOptional()
+  loggedHours?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
   @IsNotEmpty()
   @IsOptional()
   status?: string;
@@ -58,4 +87,24 @@ export class UpdateTaskStatusDto {
   @IsString()
   @IsNotEmpty()
   status: string;
+}
+
+export class CreateTaskCommentDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  body: string;
+}
+
+export class CreateTaskWorkLogDto {
+  @ApiProperty({ minimum: 0, description: "Logged effort in hours" })
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0.0001)
+  durationHours: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  note?: string;
 }

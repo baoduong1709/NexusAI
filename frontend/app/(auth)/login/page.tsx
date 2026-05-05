@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { Loader2, BrainCircuit } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -46,9 +47,7 @@ export default function LoginPage() {
     <div className='w-full max-w-md'>
       <div className='bg-white rounded-2xl shadow-xl p-8'>
         <div className='flex items-center gap-3 mb-8'>
-          <div className='bg-blue-600 p-2 rounded-xl'>
-            <BrainCircuit className='text-white' size={28} />
-          </div>
+          <BrandLogo size={44} />
           <div>
             <h1 className='text-2xl font-bold text-gray-900'>NexusAI</h1>
             <p className='text-xs text-gray-500'>

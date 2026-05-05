@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
+import AiChatBubble from "@/components/ai-chat-bubble";
 import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -34,6 +35,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <Header />
         <main className='flex-1 overflow-auto p-6'>{children}</main>
       </div>
+      <AiChatBubble />
     </div>
   );
 }

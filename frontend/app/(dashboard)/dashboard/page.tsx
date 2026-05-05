@@ -2,19 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { projectsApi, usersApi } from "@/lib/api";
-import {
-  FolderKanban,
-  Users,
-  CheckCircle,
-  Clock,
-  Loader2,
-} from "lucide-react";
+import { FolderKanban, Users, CheckCircle, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { formatDate, PROJECT_STATUS_COLORS, cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
+  const router = useRouter();
+  if (!hasPermission("user:read")) {
+    router.replace("/projects");
+    return null;
+  }
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: () => projectsApi.getAll().then((r) => r.data),
@@ -51,7 +51,7 @@ export default function DashboardPage() {
       value:
         projects?.filter((p: any) => p.status === "COMPLETED").length ?? "-",
       icon: CheckCircle,
-      color: "bg-purple-50 text-purple-600",
+      color: "bg-purple-50 text-sky-700",
       href: "/projects",
     },
   ];

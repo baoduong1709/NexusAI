@@ -12,10 +12,16 @@ import {
 } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TasksService } from "./tasks.service";
-import { CreateTaskDto, UpdateTaskStatusDto } from "./dto/create-task.dto";
+import {
+  CreateTaskCommentDto,
+  CreateTaskDto,
+  CreateTaskWorkLogDto,
+  UpdateTaskStatusDto,
+} from "./dto/create-task.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { RequirePermissions } from "../auth/decorators/permissions.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 
 @ApiTags("Tasks")
 @ApiBearerAuth()
@@ -30,8 +36,9 @@ export class TasksController {
   create(
     @Param("projectId", ParseIntPipe) projectId: number,
     @Body() dto: CreateTaskDto,
+    @CurrentUser() user: { id: number },
   ) {
-    return this.tasksService.create(projectId, dto);
+    return this.tasksService.create(projectId, dto, user?.id);
   }
 
   @Get()
@@ -49,8 +56,12 @@ export class TasksController {
 
   @Put(":id")
   @RequirePermissions("task:update")
-  update(@Param("id", ParseIntPipe) id: number, @Body() dto: CreateTaskDto) {
-    return this.tasksService.update(id, dto);
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: CreateTaskDto,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.tasksService.update(id, dto, user?.id);
   }
 
   @Patch(":id/status")
@@ -59,8 +70,43 @@ export class TasksController {
   updateStatus(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateTaskStatusDto,
+    @CurrentUser() user: { id: number },
   ) {
-    return this.tasksService.updateStatus(id, dto);
+    return this.tasksService.updateStatus(id, dto, user?.id);
+  }
+
+  @Get(":id/activities")
+  @RequirePermissions("task:read")
+  @ApiOperation({ summary: "Get task activity" })
+  getActivities(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("id", ParseIntPipe) id: number,
+  ) {
+    return this.tasksService.getActivities(projectId, id);
+  }
+
+  @Post(":id/comments")
+  @RequirePermissions("task:update")
+  @ApiOperation({ summary: "Add task comment" })
+  addComment(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: CreateTaskCommentDto,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.tasksService.addComment(projectId, id, user?.id, dto);
+  }
+
+  @Post(":id/worklogs")
+  @RequirePermissions("task:update")
+  @ApiOperation({ summary: "Add task work log" })
+  addWorkLog(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: CreateTaskWorkLogDto,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.tasksService.addWorkLog(projectId, id, user?.id, dto);
   }
 
   @Delete(":id")

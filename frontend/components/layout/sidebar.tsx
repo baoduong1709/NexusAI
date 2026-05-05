@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BrainCircuit,
   LayoutDashboard,
   Users,
   FolderKanban,
@@ -12,13 +11,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { BrandLogo } from "@/components/brand-logo";
 
 const navItems = [
   {
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    permission: null,
+    permission: "user:read",
   },
   {
     href: "/projects",
@@ -42,9 +42,7 @@ export default function Sidebar() {
   return (
     <aside className='w-64 bg-white border-r border-gray-200 flex flex-col'>
       <div className='flex items-center gap-3 px-6 py-5 border-b border-gray-100'>
-        <div className='bg-blue-600 p-2 rounded-xl'>
-          <BrainCircuit className='text-white' size={22} />
-        </div>
+        <BrandLogo size={38} />
         <div>
           <span className='font-bold text-gray-900 text-lg'>NexusAI</span>
           <p className='text-xs text-gray-400 leading-none'>Project Manager</p>

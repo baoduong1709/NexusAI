@@ -6,7 +6,6 @@ import { aiApi, projectsApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import {
-  BrainCircuit,
   Loader2,
   ChevronLeft,
   Sparkles,
@@ -19,6 +18,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/brand-logo";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -120,9 +120,7 @@ export default function AiAnalysisPage() {
           <ChevronLeft size={20} />
         </button>
         <div className='flex items-center gap-2'>
-          <div className='bg-purple-100 p-2 rounded-lg'>
-            <BrainCircuit className='text-purple-600' size={20} />
-          </div>
+          <BrandLogo size={36} />
           <div>
             <h1 className='text-xl font-bold text-gray-900'>AI Assistant</h1>
             <p className='text-sm text-gray-400'>{project?.name}</p>
@@ -138,7 +136,7 @@ export default function AiAnalysisPage() {
       {phase === "init" && (
         <div className='flex-1 flex items-center justify-center'>
           <div className='bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-10 text-center max-w-lg w-full'>
-            <BrainCircuit className='text-purple-400 mx-auto mb-4' size={52} />
+            <BrandLogo size={56} className='mx-auto mb-4' />
             <h2 className='text-lg font-semibold text-gray-800 mb-2'>
               Analyze project documents
             </h2>
@@ -150,7 +148,7 @@ export default function AiAnalysisPage() {
             <button
               onClick={() => analyzeMutation.mutate()}
               disabled={analyzeMutation.isPending}
-              className='inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50'
+              className='inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 font-medium disabled:opacity-50'
             >
               {analyzeMutation.isPending ? (
                 <>
@@ -212,8 +210,8 @@ export default function AiAnalysisPage() {
                 )}
               >
                 {msg.role === "assistant" && (
-                  <div className='flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center'>
-                    <Bot size={16} className='text-purple-600' />
+                  <div className='flex-shrink-0 w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center'>
+                    <Bot size={16} className='text-sky-700' />
                   </div>
                 )}
                 <div
@@ -253,11 +251,11 @@ export default function AiAnalysisPage() {
 
             {chatMutation.isPending && (
               <div className='flex gap-3 justify-start'>
-                <div className='flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center'>
-                  <Bot size={16} className='text-purple-600' />
+                <div className='flex-shrink-0 w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center'>
+                  <Bot size={16} className='text-sky-700' />
                 </div>
                 <div className='bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm'>
-                  <Loader2 size={16} className='animate-spin text-purple-400' />
+                  <Loader2 size={16} className='animate-spin text-sky-500' />
                 </div>
               </div>
             )}
@@ -271,12 +269,12 @@ export default function AiAnalysisPage() {
               onKeyDown={handleKeyDown}
               placeholder='Example: "Create tasks for the login module", "Create API QA tasks"...'
               rows={2}
-              className='flex-1 resize-none border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white'
+              className='flex-1 resize-none border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 bg-white'
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || chatMutation.isPending}
-              className='flex-shrink-0 bg-purple-600 text-white px-4 rounded-xl hover:bg-purple-700 disabled:opacity-40 flex items-center justify-center'
+              className='flex-shrink-0 bg-slate-900 text-white px-4 rounded-xl hover:bg-slate-800 disabled:opacity-40 flex items-center justify-center'
             >
               <Send size={18} />
             </button>
