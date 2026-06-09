@@ -1,8 +1,7 @@
 # AGENTS
 
 ## Local Execution Policy
-- Do not start or run local services from Codex.
-- Do not run commands like `npm run dev`, `npm run start`, `npm run start:dev`, `pnpm dev`, `yarn dev`, or `docker compose up`.
-- Do not run `npm run` commands by default.
-- Only run read-only commands by default.
-- If build or test commands are needed, ask for explicit user confirmation first.
+- The agent is granted full permission to run build, test, code generation (like Prisma generate), and package installation commands freely without asking for explicit user confirmation first.
+- Do not run persistent local development servers (like `npm run dev`, `npm run start`, `pnpm dev`, `yarn dev`) or background docker services unless explicitly requested by the user.
+- NEVER automatically restart or rerun `npm run dev` (or similar dev server commands) after modifying code; assume the user is managing it and hot reload is handling the changes.
+

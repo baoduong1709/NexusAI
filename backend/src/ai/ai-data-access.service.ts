@@ -8,8 +8,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Dữ liệu dự án đã được lọc theo quyền của user.
- * AI chỉ nhận được thông tin mà user thực sự có quyền xem.
+ * Project data filtered according to user permissions.
+ * AI only receives information that the user actually has permission to view.
  */
 export interface FilteredProjectContext {
   project: {
@@ -24,7 +24,7 @@ export interface FilteredProjectContext {
     labels: string[];
     taskNamingRule: string | null;
   };
-  /** Chỉ có khi user có quyền project:read */
+  /** Only available when the user has project:read permission */
   members?: {
     userId: number;
     name: string;
@@ -32,9 +32,9 @@ export interface FilteredProjectContext {
     skills: string[];
     globalRole: string | null;
   }[];
-  /** Chỉ có khi user có quyền task:read */
+  /** Only available when the user has task:read permission */
   tasks?: {
-    id: number;
+    id: string;
     title: string;
     status: string;
     priority: string;
@@ -48,14 +48,14 @@ export interface FilteredProjectContext {
     loggedHours: number;
     description: string | null;
   }[];
-  /** Chỉ có khi user có quyền project:read */
+  /** Only available when the user has project:read permission */
   documents?: {
     id: number;
     originalName: string;
     mimeType: string | null;
     size: number;
   }[];
-  /** Nội dung tài liệu — chỉ có khi user có quyền project:read */
+  /** Document contents — only available when the user has project:read permission */
   documentContents?: {
     textDocs: string[];
     inlineParts: { inlineData: { mimeType: string; data: string } }[];
@@ -67,12 +67,19 @@ export interface FilteredProjectContext {
       kind: "text" | "binary";
     }[];
   };
-  /** Chỉ có khi user có quyền ai:analyze */
+  /** Only available when the user has ai:analyze permission */
   requirementsContent?: string;
-  /** Danh sách quyền thực tế của user trong project */
+  /** Actual user permissions in the project */
   userPermissions: string[];
-  /** Role của user trong project */
+  /** User role in the project */
   userProjectRole: string | null;
+}
+
+export interface ProjectContextOptions {
+  includeMembers?: boolean;
+  includeTasks?: boolean;
+  includeDocuments?: boolean;
+  includeRequirements?: boolean;
 }
 
 @Injectable()
@@ -82,14 +89,14 @@ export class AiDataAccessService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Resolve permissions của user trong project.
-   * Merge global permissions (từ system role) + project-scoped permissions (từ project role).
+   * Resolves the user's permissions in the project.
+   * Merges global permissions (from system role) + project-scoped permissions (from project role).
    */
   async resolveUserPermissions(
     projectId: number,
     userId: number,
   ): Promise<{ permissions: string[]; projectRole: string | null }> {
-    // 1. Lấy global permissions từ system role
+    // 1. Get global permissions from system role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -101,7 +108,7 @@ export class AiDataAccessService {
       ? (user.role.permissions as string[])
       : [];
 
-    // 2. Lấy project-scoped permissions từ project role
+    // 2. Get project-scoped permissions from project role
     const membership = await this.prisma.projectMember.findUnique({
       where: { projectId_userId: { projectId, userId } },
       select: {
@@ -138,12 +145,17 @@ export class AiDataAccessService {
   }
 
   /**
-   * Lấy dữ liệu dự án đã lọc theo quyền user.
-   * Đây là method chính mà AiService sẽ gọi thay vì query trực tiếp DB.
+   * Retrieves project context filtered by user permissions.
    */
   async getFilteredProjectContext(
     projectId: number,
     userId: number,
+    options: ProjectContextOptions = {
+      includeMembers: true,
+      includeTasks: true,
+      includeDocuments: true,
+      includeRequirements: true,
+    },
   ): Promise<FilteredProjectContext> {
     const { permissions, projectRole } = await this.resolveUserPermissions(
       projectId,
@@ -152,7 +164,7 @@ export class AiDataAccessService {
 
     const has = (perm: string) => permissions.includes(perm);
 
-    // Luôn lấy thông tin cơ bản của project (user đã qua guard rồi)
+    // Always fetch basic project details
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
       select: {
@@ -177,8 +189,8 @@ export class AiDataAccessService {
       userProjectRole: projectRole,
     };
 
-    // Members — cần project:read
-    if (has("project:read")) {
+    // Members — requires project:read
+    if (options.includeMembers && has("project:read")) {
       const members = await this.prisma.projectMember.findMany({
         where: { projectId },
         include: {
@@ -202,8 +214,8 @@ export class AiDataAccessService {
       }));
     }
 
-    // Tasks — cần task:read
-    if (has("task:read")) {
+    // Tasks — requires task:read
+    if (options.includeTasks && has("task:read")) {
       const tasks = await this.prisma.task.findMany({
         where: { projectId },
         include: {
@@ -229,8 +241,8 @@ export class AiDataAccessService {
       }));
     }
 
-    // Documents — cần project:read
-    if (has("project:read")) {
+    // Documents — requires project:read
+    if (options.includeDocuments && has("project:read")) {
       const documents = await this.prisma.document.findMany({
         where: { projectId },
         orderBy: { createdAt: "desc" },
@@ -244,8 +256,8 @@ export class AiDataAccessService {
       }));
     }
 
-    // Requirements — cần ai:analyze
-    if (has("ai:analyze")) {
+    // Requirements — requires ai:analyze
+    if (options.includeRequirements && has("ai:analyze")) {
       const latestReq = await this.prisma.requirementsHistory.findFirst({
         where: { projectId },
         orderBy: { version: "desc" },
@@ -259,8 +271,7 @@ export class AiDataAccessService {
   }
 
   /**
-   * Lấy nội dung documents (text + binary) — chỉ khi user có quyền project:read.
-   * Dùng cho analyze và updateRequirements.
+   * Retrieves document contents (text & binary files converted to text) — only when user has project:read.
    */
   async getFilteredDocumentContents(
     projectId: number,
@@ -303,8 +314,7 @@ export class AiDataAccessService {
     ]);
 
     const textDocs: string[] = [];
-    const inlineParts: { inlineData: { mimeType: string; data: string } }[] =
-      [];
+    const inlineParts: { inlineData: { mimeType: string; data: string } }[] = [];
     const sources: {
       id: number;
       originalName: string;
@@ -332,6 +342,26 @@ export class AiDataAccessService {
           this.logger.warn(`Could not read file: ${doc.path}`);
         }
       } else {
+        // Check if there is a converted markdown version available
+        const mdPath = `${doc.path}.md`;
+        if (fs.existsSync(mdPath)) {
+          try {
+            const markdownText = fs.readFileSync(mdPath, "utf-8");
+            textDocs.push(`--- [Converted to Markdown] ${doc.originalName} ---\n${markdownText}`);
+            sources.push({
+              id: doc.id,
+              originalName: doc.originalName,
+              mimeType: "text/markdown",
+              size: Buffer.byteLength(markdownText),
+              kind: "text",
+            });
+            continue; // Skip the binary fallback
+          } catch {
+            this.logger.warn(`Could not read converted markdown file: ${mdPath}`);
+          }
+        }
+
+        // Fallback to binary multimodal processing if markdown is not available
         try {
           const buffer = fs.readFileSync(doc.path);
           inlineParts.push({

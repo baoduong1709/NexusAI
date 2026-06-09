@@ -92,6 +92,8 @@ import {
   PROJECT_ROLE_PERMISSION_GROUPS,
 } from "@/lib/project-roles";
 import { BrandLogo } from "@/components/brand-logo";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 type Tab =
   | "summary"
@@ -121,7 +123,7 @@ interface SuggestedTask {
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
-  tasksCreated?: { id: number; title: string }[];
+  tasksCreated?: { id: string; title: string }[];
   suggestedTasks?: SuggestedTask[];
 }
 
@@ -252,7 +254,7 @@ function ExpandBlockView({ node, updateAttributes }: any) {
       <textarea
         value={node.attrs.body || ""}
         onChange={(e) => updateAttributes({ body: e.target.value })}
-        className='mt-2 min-h-[72px] w-full resize-y rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-700 outline-none focus:ring-1 focus:ring-sky-400'
+        className='mt-2 min-h-[72px] w-full resize-y rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-sky-400'
         placeholder='Details content...'
       />
     </NodeViewWrapper>
@@ -462,7 +464,7 @@ function DescriptionEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[180px] px-3 py-2 text-sm leading-6 text-gray-900 focus:outline-none",
+          "min-h-[180px] px-3 py-2 text-sm leading-6 text-zinc-900 dark:text-zinc-100 focus:outline-none",
       },
     },
   });
@@ -512,13 +514,13 @@ function DescriptionEditor({
   };
 
   return (
-    <div className='mt-1 rounded-lg border border-gray-200 bg-white'>
-      <div className='flex flex-wrap items-center gap-1 border-b border-gray-100 p-2'>
+    <div className='mt-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'>
+      <div className='flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-white/5 p-2'>
         <button
           type='button'
           onClick={onImprove}
           disabled={disabled || improving}
-          className='inline-flex items-center gap-1.5 rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 hover:bg-sky-100 disabled:opacity-50'
+          className='inline-flex items-center gap-1.5 rounded-md border border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-2.5 py-1.5 text-xs font-medium text-sky-700 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 disabled:opacity-50'
         >
           {improving ? (
             <Loader2 size={13} className='animate-spin' />
@@ -585,8 +587,8 @@ function DescriptionEditor({
             }}
             disabled={disabled}
             className={cn(
-              "rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50",
-              item.active && "bg-sky-100 text-sky-700",
+              "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
+              item.active && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
             )}
           >
             <item.icon size={14} />
@@ -601,8 +603,8 @@ function DescriptionEditor({
           }}
           disabled={disabled}
           className={cn(
-            "rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50",
-            editor?.isActive("taskList") && "bg-sky-100 text-sky-700",
+            "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
+            editor?.isActive("taskList") && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
           )}
           title='Action item'
         >
@@ -621,7 +623,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
           title='Insert table'
         >
           <LayoutGrid size={14} />
@@ -635,7 +637,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
           title='Divider'
         >
           <Minus size={14} />
@@ -679,13 +681,13 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
           title='Info panel'
         >
-          <option value=''>Panel</option>
-          <option value='info'>Info</option>
-          <option value='warning'>Warning</option>
-          <option value='success'>Success</option>
+          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Panel</option>
+          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='info'>Info</option>
+          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='warning'>Warning</option>
+          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='success'>Success</option>
         </select>
         <button
           type='button'
@@ -714,7 +716,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50'
+          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
         >
           <ChevronDown size={14} />
         </button>
@@ -731,7 +733,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
           title='Date'
         />
         <input
@@ -750,7 +752,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='h-7 w-24 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          className='h-7 w-24 rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
           placeholder='Status'
         />
         <button
@@ -766,7 +768,7 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+          className='rounded-md border border-zinc-200 dark:border-white/10 px-2 py-1 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-50'
           title='Insert custom status'
         >
           Add
@@ -788,11 +790,11 @@ function DescriptionEditor({
             );
           }}
           disabled={disabled}
-          className='h-7 rounded-md border border-gray-200 px-2 text-xs text-gray-700'
+          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
         >
-          <option value=''>@ mention</option>
+          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>@ mention</option>
           {mentionItems.map((item) => (
-            <option key={item.id} value={item.id}>
+            <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={item.id} value={item.id}>
               {item.label}
             </option>
           ))}
@@ -800,7 +802,7 @@ function DescriptionEditor({
       </div>
       <EditorContent editor={editor} />
       {isTableActive && (
-        <div className='relative border-t border-gray-100 bg-slate-50 px-2 py-2'>
+        <div className='relative border-t border-zinc-200 dark:border-white/5 bg-slate-50 px-2 py-2'>
           <button
             type='button'
             onMouseDown={(e) => {
@@ -835,16 +837,16 @@ function DescriptionEditor({
                 setShowTableMenu((open) => !open);
               }}
               disabled={disabled}
-              className='rounded-md border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+              className='rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-50'
             >
               Table
             </button>
-            <span className='text-xs text-gray-400'>
+            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
               Select a cell to edit rows and columns
             </span>
           </div>
           {showTableMenu && (
-            <div className='absolute left-8 top-10 z-20 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg'>
+            <div className='absolute left-8 top-10 z-20 w-52 overflow-hidden rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl shadow-lg'>
               {[
                 {
                   label: "Add row above",
@@ -886,7 +888,7 @@ function DescriptionEditor({
                     setShowTableMenu(false);
                   }}
                   disabled={disabled}
-                  className='block w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+                  className='block w-full px-3 py-2 text-left text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5 disabled:opacity-50'
                 >
                   {item.label}
                 </button>
@@ -895,10 +897,10 @@ function DescriptionEditor({
           )}
         </div>
       )}
-      <div className='border-t border-gray-100 p-2'>
-        <div className='max-h-32 space-y-1 overflow-y-auto rounded-md bg-gray-50 p-2'>
+      <div className='border-t border-zinc-200 dark:border-white/5 p-2'>
+        <div className='max-h-32 space-y-1 overflow-y-auto rounded-md bg-zinc-50 dark:bg-white/5 p-2'>
           {aiMessages.length === 0 ? (
-            <p className='text-xs text-gray-400'>
+            <p className='text-xs text-zinc-400 dark:text-zinc-500'>
               Ask AI: "thêm acceptance criteria", "viết lại ngắn gọn", "bổ sung
               risks"...
             </p>
@@ -908,7 +910,7 @@ function DescriptionEditor({
                 key={`${msg.role}-${idx}`}
                 className={cn(
                   "text-xs",
-                  msg.role === "assistant" ? "text-sky-700" : "text-gray-600",
+                  msg.role === "assistant" ? "text-sky-700" : "text-zinc-600 dark:text-zinc-400",
                 )}
               >
                 <strong>{msg.role === "assistant" ? "AI" : "Bạn"}:</strong>{" "}
@@ -932,7 +934,7 @@ function DescriptionEditor({
               }
             }}
             placeholder='Nhập yêu cầu cho AI...'
-            className='h-8 flex-1 rounded-md border border-gray-200 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400'
+            className='h-8 flex-1 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-sky-400'
             disabled={disabled || assisting}
           />
           <button
@@ -1021,7 +1023,7 @@ export default function ProjectDetailPage() {
   const [newProjectRole, setNewProjectRole] = useState("");
   const [showSprintModal, setShowSprintModal] = useState(false);
   const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
-  const [dragTaskId, setDragTaskId] = useState<number | null>(null);
+  const [dragTaskId, setDragTaskId] = useState<string | null>(null);
   const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
   const [newSprintName, setNewSprintName] = useState("");
   const [newEpicName, setNewEpicName] = useState("");
@@ -1166,7 +1168,7 @@ export default function ProjectDetailPage() {
   });
 
   const deleteTaskMutation = useMutation({
-    mutationFn: (taskId: number) => tasksApi.delete(projectId, taskId),
+    mutationFn: (taskId: string) => tasksApi.delete(projectId, taskId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["project", projectId] });
       toast.success("Task deleted");
@@ -1864,74 +1866,103 @@ export default function ProjectDetailPage() {
     );
   if (!project)
     return (
-      <div className='text-center py-12 text-gray-500'>Project not found</div>
+      <div className='text-center py-12 text-zinc-500 dark:text-zinc-400'>Project not found</div>
     );
 
+  const headerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
+  };
+
   return (
-    <div className='space-y-4'>
-      {/* Header */}
-      <div className='flex items-center gap-4'>
-        <button
-          onClick={() => router.push("/projects")}
-          className='p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg'
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <div className='flex-1'>
-          <h1 className='text-2xl font-bold text-gray-900'>{project.name}</h1>
-          {project.description && (
-            <p className='text-gray-500 text-sm mt-0.5'>
-              {project.description}
-            </p>
+    <div className='space-y-6 max-w-[1400px] mx-auto'>
+      {/* Premium Header */}
+      <motion.div 
+        variants={headerVariants}
+        initial="hidden"
+        animate="show"
+        className='bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl p-6 shadow-xl shadow-black/5 dark:shadow-black/20 relative overflow-hidden'
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] pointer-events-none rounded-full" />
+        
+        <div className='flex items-start sm:items-center gap-5 relative z-10'>
+          <button
+            onClick={() => router.push("/projects")}
+            className='p-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-zinc-100/50 hover:bg-zinc-200 dark:bg-zinc-900/95 backdrop-blur-xl/5 dark:hover:bg-zinc-800/95 backdrop-blur-xl/10 rounded-2xl transition-all'
+          >
+            <ChevronLeft size={22} />
+          </button>
+          
+          <div className='flex-1'>
+            <h1 className='text-3xl font-black text-zinc-900 dark:text-white'>{project.name}</h1>
+            {project.description && (
+              <p className='text-zinc-500 dark:text-zinc-400 text-sm mt-1.5 font-medium max-w-3xl'>
+                {project.description}
+              </p>
+            )}
+            
+            {/* Stats bar within header */}
+            <div className='flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-500 mt-4'>
+              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
+                <Users size={14} className="text-emerald-500" /> {project.members?.length} members
+              </span>
+              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
+                <FileText size={14} className="text-indigo-500" /> {project.tasks?.length} tasks
+              </span>
+              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
+                <LayoutGrid size={14} className="text-amber-500" /> {project.documents?.length} documents
+              </span>
+              {project.startDate && (
+                <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
+                  <CalendarDays size={14} className="text-blue-500" /> Start: {formatDate(project.startDate)}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {canProject("project:delete") && (
+            <button
+              onClick={() =>
+                confirm("Delete this project?") && deleteProjectMutation.mutate()
+              }
+              className='p-3 text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-2xl transition-colors'
+              title="Delete Project"
+            >
+              <Trash2 size={20} />
+            </button>
           )}
         </div>
-        {canProject("project:delete") && (
-          <button
-            onClick={() =>
-              confirm("Delete this project?") && deleteProjectMutation.mutate()
-            }
-            className='p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg'
-          >
-            <Trash2 size={18} />
-          </button>
-        )}
-      </div>
-
-      {/* Stats bar */}
-      <div className='flex gap-4 text-sm text-gray-500'>
-        <span>{project.members?.length} members</span>
-        <span>|</span>
-        <span>{project.tasks?.length} tasks</span>
-        <span>|</span>
-        <span>{project.documents?.length} documents</span>
-        {project.startDate && (
-          <>
-            <span>|</span>
-            <span>Start date: {formatDate(project.startDate)}</span>
-          </>
-        )}
-      </div>
+      </motion.div>
 
       {/* Tabs */}
-      <div className='flex border-b border-gray-200'>
-        {tabs.map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setTab(key as Tab)}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors",
-              tab === key
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700",
-            )}
-          >
-            <Icon size={15} /> {label}
-          </button>
-        ))}
+      <div className='flex overflow-x-auto hide-scrollbar border-b border-zinc-200 dark:border-white/10'>
+        <div className="flex space-x-1 min-w-max pb-px">
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key as Tab)}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3.5 text-sm font-bold transition-all relative whitespace-nowrap group",
+                tab === key
+                  ? "text-indigo-600 dark:text-indigo-400"
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white",
+              )}
+            >
+              <Icon size={16} className={cn("transition-colors", tab === key ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300")} /> 
+              {label}
+              {tab === key && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-t-full"
+                />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {showTaskFilters && (
-        <div className='rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-sm'>
+        <div className='rounded-xl border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-3 py-2 shadow-sm'>
           <div className='flex flex-wrap items-center gap-2'>
             <input
               value={taskFilters.search}
@@ -1939,18 +1970,18 @@ export default function ProjectDetailPage() {
                 setTaskFilters((prev) => ({ ...prev, search: e.target.value }))
               }
               placeholder='Search tasks'
-              className='h-9 min-w-[220px] flex-1 rounded-lg border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 min-w-[220px] flex-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent dark:bg-zinc-900 px-3 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
             <select
               value={taskFilters.status}
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, status: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Status</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Status</option>
               {workflowStatuses.map((status: string) => (
-                <option key={status} value={status}>
+                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={status} value={status}>
                   {status}
                 </option>
               ))}
@@ -1963,23 +1994,23 @@ export default function ProjectDetailPage() {
                   priority: e.target.value,
                 }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Priority</option>
-              <option value='HIGH'>HIGH</option>
-              <option value='MEDIUM'>MEDIUM</option>
-              <option value='LOW'>LOW</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Priority</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
             </select>
             <select
               value={taskFilters.epic}
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, epic: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Epic</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Epic</option>
               {allEpics.map((epic: string) => (
-                <option key={epic} value={epic}>
+                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
                   {epic}
                 </option>
               ))}
@@ -1992,7 +2023,7 @@ export default function ProjectDetailPage() {
                   "flex h-9 min-w-[116px] items-center justify-between gap-2 rounded-lg border px-3 text-sm",
                   taskFilters.labels.length
                     ? "border-blue-200 bg-blue-50 text-blue-700"
-                    : "border-gray-200 text-gray-700 hover:bg-gray-50",
+                    : "border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5",
                 )}
               >
                 <span>
@@ -2003,16 +2034,16 @@ export default function ProjectDetailPage() {
                 <ChevronDown size={14} />
               </button>
               {showLabelFilterMenu && (
-                <div className='absolute left-0 top-10 z-30 w-52 rounded-lg border border-gray-100 bg-white p-2 shadow-lg'>
+                <div className='absolute left-0 top-10 z-30 w-52 rounded-lg border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-2 shadow-lg'>
                   {allLabels.length === 0 ? (
-                    <p className='px-2 py-1.5 text-xs text-gray-400'>
+                    <p className='px-2 py-1.5 text-xs text-zinc-400 dark:text-zinc-500'>
                       No labels
                     </p>
                   ) : (
                     allLabels.map((label: string) => (
                       <label
                         key={label}
-                        className='flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-50'
+                        className='flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5'
                       >
                         <input
                           type='checkbox'
@@ -2040,11 +2071,11 @@ export default function ProjectDetailPage() {
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, sprint: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Sprint</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Sprint</option>
               {allSprints.map((sprint) => (
-                <option key={sprint} value={sprint}>
+                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={sprint} value={sprint}>
                   {sprint}
                 </option>
               ))}
@@ -2057,11 +2088,11 @@ export default function ProjectDetailPage() {
                   assigneeId: e.target.value,
                 }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Assignee</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Assignee</option>
               {project.members?.map((member: any) => (
-                <option key={member.userId} value={member.userId}>
+                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={member.userId} value={member.userId}>
                   {member.user.name}
                 </option>
               ))}
@@ -2072,7 +2103,7 @@ export default function ProjectDetailPage() {
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, dueFrom: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               title='Due from'
             />
             <input
@@ -2081,7 +2112,7 @@ export default function ProjectDetailPage() {
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, dueTo: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               title='Due to'
             />
             <select
@@ -2089,20 +2120,20 @@ export default function ProjectDetailPage() {
               onChange={(e) =>
                 setTaskFilters((prev) => ({ ...prev, ai: e.target.value }))
               }
-              className='h-9 rounded-lg border border-gray-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value=''>Source</option>
-              <option value='ai'>AI generated</option>
-              <option value='manual'>Manual</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Source</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='ai'>AI generated</option>
+              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='manual'>Manual</option>
             </select>
-            <div className='ml-auto flex h-9 items-center gap-2 text-sm text-gray-500'>
+            <div className='ml-auto flex h-9 items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400'>
               <span className='whitespace-nowrap'>
                 {filteredTasks.length}/{project.tasks?.length || 0}
               </span>
               {hasTaskFilters && (
                 <button
                   onClick={clearTaskFilters}
-                  className='rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50'
+                  className='rounded-lg border border-zinc-200 dark:border-white/10 px-3 py-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
                 >
                   Clear
                 </button>
@@ -2136,11 +2167,11 @@ export default function ProjectDetailPage() {
             <div className='flex flex-wrap items-center gap-2'>
               <button
                 onClick={() => setShowSprintModal(true)}
-                className='flex items-center gap-2 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50'
+                className='flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:bg-white/5'
               >
                 <GitBranch size={14} /> Manage Sprints
                 {allSprints.length > 0 && (
-                  <span className='bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full'>
+                  <span className='bg-gray-100 text-zinc-600 dark:text-zinc-400 text-xs px-1.5 py-0.5 rounded-full'>
                     {allSprints.length}
                   </span>
                 )}
@@ -2156,15 +2187,16 @@ export default function ProjectDetailPage() {
             )}
           </div>
           {filteredTasks.length === 0 ? (
-            <p className='text-center text-gray-400 py-8'>
+            <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>
               {hasTaskFilters ? "No tasks match these filters" : "No tasks yet"}
             </p>
           ) : (
-            <div className='bg-white rounded-xl border border-gray-100 overflow-hidden'>
+            <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'>
               <table className='w-full'>
-                <thead className='bg-gray-50 border-b border-gray-100'>
+                <thead className='bg-zinc-50 dark:bg-white/5 border-b border-zinc-200 dark:border-white/5'>
                   <tr>
                     {[
+                      "ID",
                       "Title",
                       "Assignee",
                       "Priority",
@@ -2180,7 +2212,7 @@ export default function ProjectDetailPage() {
                     ].map((h) => (
                       <th
                         key={h}
-                        className='px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase'
+                        className='px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase'
                       >
                         {h}
                       </th>
@@ -2189,18 +2221,21 @@ export default function ProjectDetailPage() {
                 </thead>
                 <tbody className='divide-y divide-gray-50'>
                   {filteredTasks.map((t: any) => (
-                    <tr key={t.id} className='hover:bg-gray-50'>
+                    <tr key={t.id} className='hover:bg-zinc-50 dark:bg-white/5'>
+                      <td className='px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400'>
+                        {t.id}
+                      </td>
                       <td className='px-4 py-3'>
-                        <p className='font-medium text-gray-900 text-sm'>
+                        <p className='font-medium text-zinc-900 dark:text-zinc-100 text-sm'>
                           {t.title}
                         </p>
                         {stripHtmlTags(t.description || "") && (
-                          <p className='text-xs text-gray-400 line-clamp-1 mt-0.5'>
+                          <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-1 mt-0.5'>
                             {stripHtmlTags(t.description)}
                           </p>
                         )}
                       </td>
-                      <td className='px-4 py-3 text-sm text-gray-500'>
+                      <td className='px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400'>
                         {t.assignee?.name || "-"}
                       </td>
                       <td className='px-4 py-3'>
@@ -2215,7 +2250,7 @@ export default function ProjectDetailPage() {
                           {t.priority}
                         </span>
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {t.epic ? (
                           <span className='rounded-full bg-indigo-50 px-2 py-0.5 font-medium text-indigo-600'>
                             {t.epic}
@@ -2224,7 +2259,7 @@ export default function ProjectDetailPage() {
                           "-"
                         )}
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {t.labels?.length ? (
                           <div className='flex flex-wrap gap-1'>
                             {t.labels.map((label: string) => (
@@ -2240,16 +2275,16 @@ export default function ProjectDetailPage() {
                           "-"
                         )}
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {t.sprint || "-"}
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {formatDuration(t.estimateHours)}
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {formatDuration(t.loggedHours)}
                       </td>
-                      <td className='px-4 py-3 text-xs text-gray-500'>
+                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
                         {t.dueDate ? formatDate(t.dueDate) : "-"}
                       </td>
                       <td className='px-4 py-3'>
@@ -2272,7 +2307,7 @@ export default function ProjectDetailPage() {
                               projectWorkflow,
                               t.status,
                             ).map((status: string) => (
-                              <option key={status} value={status}>
+                              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={status} value={status}>
                                 {status}
                               </option>
                             ))}
@@ -2301,7 +2336,7 @@ export default function ProjectDetailPage() {
                           {canProject("task:update") && (
                             <button
                               onClick={() => openEditTask(t)}
-                              className='p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded'
+                              className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-blue-600 hover:bg-blue-50 rounded'
                             >
                               <Pencil size={13} />
                             </button>
@@ -2312,7 +2347,7 @@ export default function ProjectDetailPage() {
                                 confirm("Delete this task?") &&
                                 deleteTaskMutation.mutate(t.id)
                               }
-                              className='p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded'
+                              className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded'
                             >
                               <Trash2 size={13} />
                             </button>
@@ -2356,18 +2391,18 @@ export default function ProjectDetailPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className='bg-white rounded-xl border border-gray-100 p-4'
+                className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-4'
               >
-                <p className='text-xs text-gray-500'>{stat.label}</p>
-                <p className='text-2xl font-bold text-gray-900 mt-1'>
+                <p className='text-xs text-zinc-500 dark:text-zinc-400'>{stat.label}</p>
+                <p className='text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-1'>
                   {stat.value}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className='bg-white rounded-xl border border-gray-100 p-5'>
-            <h3 className='text-sm font-semibold text-gray-700 mb-3'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5'>
+            <h3 className='text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3'>
               Tasks theo trạng thái
             </h3>
             <div className='space-y-2'>
@@ -2392,7 +2427,7 @@ export default function ProjectDetailPage() {
                         }}
                       />
                     </div>
-                    <span className='text-xs text-gray-500 w-6 text-right'>
+                    <span className='text-xs text-zinc-500 dark:text-zinc-400 w-6 text-right'>
                       {count}
                     </span>
                   </div>
@@ -2401,12 +2436,12 @@ export default function ProjectDetailPage() {
             </div>
           </div>
 
-          <div className='bg-white rounded-xl border border-gray-100 p-5'>
-            <h3 className='text-sm font-semibold text-gray-700 mb-3'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5'>
+            <h3 className='text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3'>
               Tasks gần đây
             </h3>
             {filteredTasks.length === 0 ? (
-              <p className='text-sm text-gray-400 text-center py-4'>
+              <p className='text-sm text-zinc-400 dark:text-zinc-500 text-center py-4'>
                 Chưa có task nào
               </p>
             ) : (
@@ -2414,7 +2449,7 @@ export default function ProjectDetailPage() {
                 {filteredTasks.slice(0, 6).map((t: any) => (
                   <div
                     key={t.id}
-                    className='flex items-center gap-3 py-2.5 cursor-pointer hover:bg-gray-50 rounded-lg px-1 -mx-1'
+                    className='flex items-center gap-3 py-2.5 cursor-pointer hover:bg-zinc-50 dark:bg-white/5 rounded-lg px-1 -mx-1'
                     onClick={() => openEditTask(t)}
                   >
                     <span
@@ -2426,9 +2461,14 @@ export default function ProjectDetailPage() {
                     >
                       {t.status}
                     </span>
-                    <p className='flex-1 text-sm text-gray-800 truncate'>
-                      {t.title}
-                    </p>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-sm text-gray-800 truncate dark:text-zinc-200'>
+                        {t.title}
+                      </p>
+                      <p className='text-[11px] font-semibold text-zinc-400 dark:text-zinc-500'>
+                        {t.id}
+                      </p>
+                    </div>
                     <span
                       className={cn(
                         "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
@@ -2439,11 +2479,11 @@ export default function ProjectDetailPage() {
                     >
                       {t.priority}
                     </span>
-                    <span className='text-xs text-gray-400 flex-shrink-0'>
+                    <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
                       {formatDuration(t.loggedHours)} /{" "}
                       {formatDuration(t.estimateHours)}
                     </span>
-                    <span className='text-xs text-gray-400 flex-shrink-0'>
+                    <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
                       {t.assignee?.name || "-"}
                     </span>
                   </div>
@@ -2502,7 +2542,7 @@ export default function ProjectDetailPage() {
                   >
                     {status}
                   </span>
-                  <span className='text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full'>
+                  <span className='text-xs bg-gray-100 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full'>
                     {statusTasks.length}
                   </span>
                 </div>
@@ -2511,7 +2551,7 @@ export default function ProjectDetailPage() {
                     "flex-1 space-y-2 rounded-xl p-2 min-h-32 transition-colors",
                     isDragOver
                       ? "bg-blue-50 ring-2 ring-blue-300"
-                      : "bg-gray-50",
+                      : "bg-zinc-50 dark:bg-white/5",
                   )}
                 >
                   {statusTasks.map((t: any) => (
@@ -2524,7 +2564,7 @@ export default function ProjectDetailPage() {
                         setDragOverStatus(null);
                       }}
                       className={cn(
-                        "bg-white rounded-xl border p-3 shadow-sm transition-all",
+                        "bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border p-3 shadow-sm transition-all",
                         canProject("task:update")
                           ? "cursor-grab active:cursor-grabbing"
                           : "cursor-pointer",
@@ -2536,11 +2576,11 @@ export default function ProjectDetailPage() {
                         canProject("task:update") && openEditTask(t)
                       }
                     >
-                      <p className='text-sm font-medium text-gray-900 mb-1'>
+                      <p className='text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1'>
                         {t.title}
                       </p>
                       {stripHtmlTags(t.description || "") && (
-                        <p className='text-xs text-gray-400 line-clamp-2 mb-2'>
+                        <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-2 mb-2'>
                           {stripHtmlTags(t.description)}
                         </p>
                       )}
@@ -2569,11 +2609,11 @@ export default function ProjectDetailPage() {
                           </span>
                         ))}
                         {t.sprint && (
-                          <span className='text-xs text-gray-400'>
+                          <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                             #{t.sprint}
                           </span>
                         )}
-                        <span className='text-xs text-gray-400'>
+                        <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                           {formatDuration(t.loggedHours)} /{" "}
                           {formatDuration(t.estimateHours)}
                         </span>
@@ -2588,7 +2628,7 @@ export default function ProjectDetailPage() {
                   {canProject("task:create") && (
                     <button
                       onClick={openCreateTask}
-                      className='w-full py-2 text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl hover:border-blue-300 hover:text-blue-500 flex items-center justify-center gap-1 bg-white'
+                      className='w-full py-2 text-xs text-zinc-400 dark:text-zinc-500 border border-dashed border-zinc-200 dark:border-white/10 rounded-xl hover:border-blue-300 hover:text-blue-500 flex items-center justify-center gap-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'
                     >
                       <Plus size={12} /> Add task
                     </button>
@@ -2606,18 +2646,18 @@ export default function ProjectDetailPage() {
           <div className='flex flex-wrap items-center gap-2'>
             <button
               onClick={() => setShowSprintModal(true)}
-              className='flex items-center gap-2 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50'
+              className='flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:bg-white/5'
             >
               <GitBranch size={14} /> Manage Sprints
               {allSprints.length > 0 && (
-                <span className='bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full'>
+                <span className='bg-gray-100 text-zinc-600 dark:text-zinc-400 text-xs px-1.5 py-0.5 rounded-full'>
                   {allSprints.length}
                 </span>
               )}
             </button>
           </div>
           {!filteredTasks.length ? (
-            <p className='text-center text-gray-400 py-8'>
+            <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>
               {hasTaskFilters
                 ? "No tasks match these filters"
                 : "Chưa có task nào"}
@@ -2638,14 +2678,14 @@ export default function ProjectDetailPage() {
                 return (
                   <div
                     key={sprint || "__nosprint"}
-                    className='bg-white rounded-xl border border-gray-100 overflow-hidden'
+                    className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'
                   >
-                    <div className='px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-2'>
-                      <GitBranch size={14} className='text-gray-400' />
-                      <span className='text-sm font-semibold text-gray-700'>
+                    <div className='px-4 py-3 bg-zinc-50 dark:bg-white/5 border-b border-zinc-200 dark:border-white/5 flex items-center gap-2'>
+                      <GitBranch size={14} className='text-zinc-400 dark:text-zinc-500' />
+                      <span className='text-sm font-semibold text-zinc-700 dark:text-zinc-300'>
                         {sprint || "Chưa có sprint"}
                       </span>
-                      <span className='text-xs text-gray-400 ml-1'>
+                      <span className='text-xs text-zinc-400 dark:text-zinc-500 ml-1'>
                         {tasks.length} tasks
                       </span>
                     </div>
@@ -2653,7 +2693,7 @@ export default function ProjectDetailPage() {
                       {tasks.map((t: any) => (
                         <div
                           key={t.id}
-                          className='px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 cursor-pointer'
+                          className='px-4 py-2.5 flex items-center gap-3 hover:bg-zinc-50 dark:bg-white/5 cursor-pointer'
                           onClick={() => openEditTask(t)}
                         >
                           <span
@@ -2665,7 +2705,7 @@ export default function ProjectDetailPage() {
                           >
                             {t.status}
                           </span>
-                          <p className='flex-1 text-sm text-gray-800 truncate'>
+                          <p className='flex-1 text-sm text-gray-800 truncate dark:text-zinc-200'>
                             {t.title}
                           </p>
                           <span
@@ -2678,17 +2718,17 @@ export default function ProjectDetailPage() {
                           >
                             {t.priority}
                           </span>
-                          <span className='text-xs text-gray-400 flex-shrink-0'>
+                          <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
                             {formatDuration(t.loggedHours)} /{" "}
                             {formatDuration(t.estimateHours)}
                           </span>
                           {t.dueDate && (
-                            <span className='text-xs text-gray-400 flex-shrink-0'>
+                            <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
                               {formatDate(t.dueDate)}
                             </span>
                           )}
                           {t.assignee && (
-                            <span className='text-xs text-gray-500 flex-shrink-0'>
+                            <span className='text-xs text-zinc-500 dark:text-zinc-400 flex-shrink-0'>
                               {t.assignee.name}
                             </span>
                           )}
@@ -2713,11 +2753,11 @@ export default function ProjectDetailPage() {
                   (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
                 )
               }
-              className='p-2 rounded-lg hover:bg-gray-100 text-gray-500'
+              className='p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400'
             >
               <ChevronLeft size={16} />
             </button>
-            <h3 className='text-sm font-semibold text-gray-900 flex-1 text-center capitalize'>
+            <h3 className='text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex-1 text-center capitalize'>
               {calendarDate.toLocaleString("vi-VN", {
                 month: "long",
                 year: "numeric",
@@ -2729,7 +2769,7 @@ export default function ProjectDetailPage() {
                   (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
                 )
               }
-              className='p-2 rounded-lg hover:bg-gray-100 text-gray-500'
+              className='p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400'
             >
               <ChevronRight size={16} />
             </button>
@@ -2752,12 +2792,12 @@ export default function ProjectDetailPage() {
             });
             const today = new Date();
             return (
-              <div className='bg-white rounded-xl border border-gray-100 overflow-hidden'>
-                <div className='grid grid-cols-7 border-b border-gray-100 bg-gray-50'>
+              <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'>
+                <div className='grid grid-cols-7 border-b border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5'>
                   {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => (
                     <div
                       key={d}
-                      className='py-2 text-center text-xs font-semibold text-gray-400'
+                      className='py-2 text-center text-xs font-semibold text-zinc-400 dark:text-zinc-500'
                     >
                       {d}
                     </div>
@@ -2769,7 +2809,7 @@ export default function ProjectDetailPage() {
                       return (
                         <div
                           key={`empty-${idx}`}
-                          className='min-h-[80px] border-r border-b border-gray-50 bg-gray-50/50'
+                          className='min-h-[80px] border-r border-b border-gray-50 bg-zinc-50 dark:bg-white/5/50'
                         />
                       );
                     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -2781,14 +2821,14 @@ export default function ProjectDetailPage() {
                     return (
                       <div
                         key={idx}
-                        className='min-h-[80px] p-1.5 border-r border-b border-gray-50 hover:bg-gray-50/80'
+                        className='min-h-[80px] p-1.5 border-r border-b border-gray-50 hover:bg-zinc-50 dark:bg-white/5/80'
                       >
                         <div
                           className={cn(
                             "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1 ml-auto",
                             isToday
                               ? "bg-blue-600 text-white"
-                              : "text-gray-600",
+                              : "text-zinc-600 dark:text-zinc-400",
                           )}
                         >
                           {day}
@@ -2808,7 +2848,7 @@ export default function ProjectDetailPage() {
                             </div>
                           ))}
                           {tasks.length > 2 && (
-                            <div className='text-[10px] text-gray-400 px-1'>
+                            <div className='text-[10px] text-zinc-400 dark:text-zinc-500 px-1'>
                               +{tasks.length - 2} more
                             </div>
                           )}
@@ -2832,7 +2872,7 @@ export default function ProjectDetailPage() {
             <div className='flex items-center gap-2'>
               <div className='flex items-center gap-2 flex-1'>
                 <BrandLogo size={24} />
-                <span className='font-semibold text-gray-800 text-sm'>
+                <span className='font-semibold text-gray-800 text-sm dark:text-zinc-200'>
                   Requirements
                 </span>
                 {requirements?.version && (
@@ -2841,14 +2881,14 @@ export default function ProjectDetailPage() {
                   </span>
                 )}
                 {requirements?.createdAt && (
-                  <span className='text-xs text-gray-400'>
+                  <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                     Updated {formatDateTime(requirements.createdAt)}
                   </span>
                 )}
               </div>
               <button
                 onClick={() => setShowHistory((v) => !v)}
-                className='flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 border rounded-lg px-2 py-1'
+                className='flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 border rounded-lg px-2 py-1'
               >
                 <History size={12} /> History{" "}
                 <ChevronDown
@@ -2877,18 +2917,18 @@ export default function ProjectDetailPage() {
 
             {/* History dropdown */}
             {showHistory && (
-              <div className='bg-white border border-gray-100 rounded-xl p-3'>
-                <p className='text-xs font-semibold text-gray-500 mb-2'>
+              <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-3'>
+                <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2'>
                   Version history
                 </p>
                 {(reqHistory as any[]).length === 0 ? (
-                  <p className='text-xs text-gray-400'>No history yet</p>
+                  <p className='text-xs text-zinc-400 dark:text-zinc-500'>No history yet</p>
                 ) : (
                   <div className='space-y-2'>
                     {(reqHistory as any[]).map((h: any) => (
                       <div
                         key={h.id}
-                        className='border border-gray-100 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
+                        className='border border-zinc-200 dark:border-white/5 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
                         onClick={() =>
                           aiApi
                             .getVersion(projectId, h.id)
@@ -2899,16 +2939,16 @@ export default function ProjectDetailPage() {
                           <span className='text-xs font-semibold text-sky-700'>
                             v{h.version}
                           </span>
-                          <span className='text-xs text-gray-400'>
+                          <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                             {formatDateTime(h.createdAt)}
                           </span>
                         </div>
                         {h.changesSummary ? (
-                          <p className='text-xs text-gray-500 whitespace-pre-line leading-relaxed'>
+                          <p className='text-xs text-zinc-500 dark:text-zinc-400 whitespace-pre-line leading-relaxed'>
                             {h.changesSummary}
                           </p>
                         ) : (
-                          <p className='text-xs text-gray-400 italic'>
+                          <p className='text-xs text-zinc-400 dark:text-zinc-500 italic'>
                             Initial version
                           </p>
                         )}
@@ -2920,29 +2960,29 @@ export default function ProjectDetailPage() {
             )}
 
             {/* Requirements content */}
-            <div className='flex-1 bg-white border border-gray-100 rounded-xl p-4 overflow-y-auto'>
+            <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto'>
               {requirements?.content ? (
-                <div className='max-w-none text-sm leading-6 text-gray-700'>
+                <div className='max-w-none text-sm leading-6 text-zinc-700 dark:text-zinc-300'>
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
                       h1: ({ children }) => (
-                        <h1 className='mb-4 border-b border-gray-100 pb-3 text-xl font-semibold text-gray-950'>
+                        <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950'>
                           {children}
                         </h1>
                       ),
                       h2: ({ children }) => (
-                        <h2 className='mb-2 mt-5 text-base font-semibold text-gray-900'>
+                        <h2 className='mb-2 mt-5 text-base font-semibold text-zinc-900 dark:text-zinc-100'>
                           {children}
                         </h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800'>
+                        <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800 dark:text-zinc-200'>
                           {children}
                         </h3>
                       ),
                       p: ({ children }) => (
-                        <p className='mb-3 text-sm text-gray-700'>{children}</p>
+                        <p className='mb-3 text-sm text-zinc-700 dark:text-zinc-300'>{children}</p>
                       ),
                       ul: ({ children }) => (
                         <ul className='mb-3 list-disc space-y-1 pl-5'>
@@ -2955,37 +2995,37 @@ export default function ProjectDetailPage() {
                         </ol>
                       ),
                       li: ({ children }) => (
-                        <li className='pl-1 text-sm text-gray-700'>
+                        <li className='pl-1 text-sm text-zinc-700 dark:text-zinc-300'>
                           {children}
                         </li>
                       ),
                       blockquote: ({ children }) => (
-                        <blockquote className='mb-3 border-l-4 border-sky-200 bg-sky-50 px-3 py-2 text-sm text-gray-700'>
+                        <blockquote className='mb-3 border-l-4 border-sky-200 bg-sky-50 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
                           {children}
                         </blockquote>
                       ),
                       table: ({ children }) => (
-                        <div className='mb-4 overflow-x-auto rounded-lg border border-gray-100'>
+                        <div className='mb-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-white/5'>
                           <table className='min-w-full divide-y divide-gray-100 text-left text-xs'>
                             {children}
                           </table>
                         </div>
                       ),
                       thead: ({ children }) => (
-                        <thead className='bg-gray-50'>{children}</thead>
+                        <thead className='bg-zinc-50 dark:bg-white/5'>{children}</thead>
                       ),
                       th: ({ children }) => (
-                        <th className='px-3 py-2 font-semibold text-gray-700'>
+                        <th className='px-3 py-2 font-semibold text-zinc-700 dark:text-zinc-300'>
                           {children}
                         </th>
                       ),
                       td: ({ children }) => (
-                        <td className='border-t border-gray-100 px-3 py-2 align-top text-gray-700'>
+                        <td className='border-t border-zinc-200 dark:border-white/5 px-3 py-2 align-top text-zinc-700 dark:text-zinc-300'>
                           {children}
                         </td>
                       ),
                       code: ({ children }) => (
-                        <code className='rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-800'>
+                        <code className='rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
                           {children}
                         </code>
                       ),
@@ -3000,7 +3040,7 @@ export default function ProjectDetailPage() {
                   </ReactMarkdown>
                 </div>
               ) : (
-                <div className='flex flex-col items-center justify-center h-full text-gray-400'>
+                <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500'>
                   <FileText size={32} className='mb-2 opacity-40' />
                   <p className='text-sm'>No requirements yet</p>
                   <p className='text-xs mt-1'>
@@ -3013,7 +3053,7 @@ export default function ProjectDetailPage() {
             {/* Uploaded files */}
             <div className='flex-shrink-0'>
               <div className='flex items-center justify-between mb-2'>
-                <p className='text-xs font-semibold text-gray-500 uppercase tracking-wide'>
+                <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide'>
                   Uploaded documents
                 </p>
                 {canProject("document:upload") && (
@@ -3043,7 +3083,7 @@ export default function ProjectDetailPage() {
                 {project.documents?.filter(
                   (d: any) => d.originalName !== "requirements.md",
                 ).length === 0 ? (
-                  <p className='text-xs text-gray-400 text-center py-2'>
+                  <p className='text-xs text-zinc-400 dark:text-zinc-500 text-center py-2'>
                     No documents yet
                   </p>
                 ) : (
@@ -3052,17 +3092,17 @@ export default function ProjectDetailPage() {
                     .map((d: any) => (
                       <div
                         key={d.id}
-                        className='bg-white border border-gray-100 rounded-lg px-3 py-2 flex items-center gap-2'
+                        className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-lg px-3 py-2 flex items-center gap-2'
                       >
                         <FileText
                           className='text-blue-400 flex-shrink-0'
                           size={14}
                         />
                         <div className='flex-1 min-w-0'>
-                          <p className='text-xs font-medium text-gray-800 truncate'>
+                          <p className='text-xs font-medium text-gray-800 truncate dark:text-zinc-200'>
                             {d.originalName}
                           </p>
-                          <p className='text-xs text-gray-400'>
+                          <p className='text-xs text-zinc-400 dark:text-zinc-500'>
                             {(d.size / 1024).toFixed(1)} KB
                           </p>
                         </div>
@@ -3088,16 +3128,16 @@ export default function ProjectDetailPage() {
 
       {tab === "settings" && canProject("project:update") && (
         <div className='space-y-4'>
-          <div className='bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
             <div className='max-w-2xl space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-gray-400'>
+              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500'>
                 Project Settings
               </p>
               <div>
-                <h2 className='text-lg font-semibold text-gray-900'>
+                <h2 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
                   Project task workflow
                 </h2>
-                <p className='text-sm text-gray-500 mt-1'>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 mt-1'>
                   The workflow has been moved out of the task screen. Only
                   members with project settings access can view and edit it.
                 </p>
@@ -3113,16 +3153,16 @@ export default function ProjectDetailPage() {
             </div>
           </div>
 
-          <div className='bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
             <div className='max-w-2xl space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-gray-400'>
+              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500'>
                 Task Fields
               </p>
               <div>
-                <h2 className='text-lg font-semibold text-gray-900'>
+                <h2 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
                   Epics, labels, and naming rule
                 </h2>
-                <p className='text-sm text-gray-500 mt-1'>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 mt-1'>
                   Manage the dropdown values used by tasks and the title format
                   applied when tasks are created or updated.
                 </p>
@@ -3154,13 +3194,13 @@ export default function ProjectDetailPage() {
             </button>
           </div>
 
-          <div className='bg-white rounded-2xl border border-gray-100 overflow-hidden'>
-            <div className='px-5 py-4 border-b border-gray-100 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl border border-zinc-200 dark:border-white/5 overflow-hidden'>
+            <div className='px-5 py-4 border-b border-zinc-200 dark:border-white/5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
               <div>
-                <p className='text-xs font-semibold uppercase tracking-[0.18em] text-gray-400'>
+                <p className='text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500'>
                   Workflow Canvas
                 </p>
-                <p className='text-sm text-gray-500 mt-1'>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 mt-1'>
                   Drag statuses, connect transitions, and color each node in the
                   builder.
                 </p>
@@ -3190,9 +3230,9 @@ export default function ProjectDetailPage() {
       {/* Members Tab */}
       {tab === "members" && (
         <div className='space-y-3'>
-          <div className='bg-white rounded-xl border border-gray-100 p-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between'>
             <div className='space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-gray-500'>
+              <p className='text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400'>
                 Project roles
               </p>
               <div className='flex flex-wrap gap-2'>
@@ -3205,7 +3245,7 @@ export default function ProjectDetailPage() {
                   </span>
                 ))}
               </div>
-              <p className='text-xs text-gray-400'>
+              <p className='text-xs text-zinc-400 dark:text-zinc-500'>
                 Project managers can create and name custom roles for each
                 project.
               </p>
@@ -3213,7 +3253,7 @@ export default function ProjectDetailPage() {
             {canProject("project:update") && (
               <button
                 onClick={openRolesEditor}
-                className='self-start px-3 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50'
+                className='self-start px-3 py-2 text-sm border border-zinc-200 dark:border-white/10 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
               >
                 Manage roles
               </button>
@@ -3221,7 +3261,7 @@ export default function ProjectDetailPage() {
           </div>
           {canProject("project:update") && (
             <div>
-              <p className='text-sm font-medium text-gray-700 mb-2'>
+              <p className='text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2'>
                 Add member
               </p>
               <div className='flex flex-wrap gap-2'>
@@ -3234,7 +3274,7 @@ export default function ProjectDetailPage() {
                         setAddMemberDialog({ userId: u.id, name: u.name });
                         setAddMemberRole(projectRoles[0] || "");
                       }}
-                      className='flex items-center gap-2 px-3 py-1.5 border border-dashed border-gray-300 rounded-full text-sm text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors'
+                      className='flex items-center gap-2 px-3 py-1.5 border border-dashed border-gray-300 rounded-full text-sm text-zinc-600 dark:text-zinc-400 hover:border-blue-400 hover:text-blue-600 transition-colors'
                     >
                       <Plus size={12} /> {u.name}
                     </button>
@@ -3242,9 +3282,9 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           )}
-          <div className='bg-white rounded-xl border border-gray-100 divide-y divide-gray-50'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 divide-y divide-gray-50'>
             {project.members?.length === 0 ? (
-              <p className='text-center text-gray-400 py-8'>No members yet</p>
+              <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>No members yet</p>
             ) : (
               project.members.map((m: any) => (
                 <div
@@ -3255,7 +3295,7 @@ export default function ProjectDetailPage() {
                     {m.user.name.charAt(0).toUpperCase()}
                   </div>
                   <div className='flex-1'>
-                    <p className='font-medium text-gray-900 text-sm'>
+                    <p className='font-medium text-zinc-900 dark:text-zinc-100 text-sm'>
                       {m.user.name}
                     </p>
                     {editingRole?.userId === m.userId ? (
@@ -3279,7 +3319,7 @@ export default function ProjectDetailPage() {
                           className='text-xs border border-blue-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400 w-36'
                         >
                           {projectRoles.map((role: string) => (
-                            <option key={role} value={role}>
+                            <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
                               {role}
                             </option>
                           ))}
@@ -3297,7 +3337,7 @@ export default function ProjectDetailPage() {
                         </button>
                         <button
                           onClick={() => setEditingRole(null)}
-                          className='text-xs text-gray-400 hover:text-gray-600'
+                          className='text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:text-zinc-400'
                         >
                           Cancel
                         </button>
@@ -3332,7 +3372,7 @@ export default function ProjectDetailPage() {
                   {canProject("project:update") && (
                     <button
                       onClick={() => removeMemberMutation.mutate(m.userId)}
-                      className='p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded'
+                      className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-red-500 hover:bg-red-50 rounded'
                     >
                       <X size={14} />
                     </button>
@@ -3347,18 +3387,18 @@ export default function ProjectDetailPage() {
       {/* Add Member Dialog */}
       {addMemberDialog && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6'>
-            <h3 className='font-semibold text-gray-900 mb-1'>Add member</h3>
-            <p className='text-sm text-gray-500 mb-4'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-sm p-6'>
+            <h3 className='font-semibold text-zinc-900 dark:text-zinc-100 mb-1'>Add member</h3>
+            <p className='text-sm text-zinc-500 dark:text-zinc-400 mb-4'>
               Set the role for{" "}
-              <span className='font-medium text-gray-800'>
+              <span className='font-medium text-gray-800 dark:text-zinc-200'>
                 {addMemberDialog.name}
               </span>{" "}
               in this project.
             </p>
             <div className='space-y-3'>
               <div>
-                <label className='text-xs font-medium text-gray-600 block mb-1'>
+                <label className='text-xs font-medium text-zinc-600 dark:text-zinc-400 block mb-1'>
                   Project role
                 </label>
                 {canProject("project:update") && (
@@ -3378,10 +3418,10 @@ export default function ProjectDetailPage() {
                 <select
                   value={addMemberRole}
                   onChange={(e) => setAddMemberRole(e.target.value)}
-                  className='w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+                  className='w-full text-sm border border-zinc-200 dark:border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
                 >
                   {projectRoles.map((role: string) => (
-                    <option key={role} value={role}>
+                    <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
                       {role}
                     </option>
                   ))}
@@ -3391,7 +3431,7 @@ export default function ProjectDetailPage() {
             <div className='flex gap-2 mt-5'>
               <button
                 onClick={() => setAddMemberDialog(null)}
-                className='flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50'
+                className='flex-1 px-4 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
               >
                 Cancel
               </button>
@@ -3419,20 +3459,20 @@ export default function ProjectDetailPage() {
       {/* AI Task Review Modal */}
       {reviewTasks && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 md:p-6'>
-          <div className='bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden'>
-            <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden'>
+            <div className='flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-white/5 flex-shrink-0'>
               <div className='flex items-center gap-2'>
                 <BrandLogo size={24} />
                 <div>
                   <div className='flex items-center gap-2'>
-                    <span className='font-semibold text-gray-900'>
+                    <span className='font-semibold text-zinc-900 dark:text-zinc-100'>
                       Review suggested tasks
                     </span>
                     <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full font-semibold'>
                       {reviewTasks.length} tasks
                     </span>
                   </div>
-                  <p className='text-xs text-gray-500 mt-1'>
+                  <p className='text-xs text-zinc-500 dark:text-zinc-400 mt-1'>
                     AI generated a draft task list. Review and edit it here
                     before creating tasks.
                   </p>
@@ -3440,20 +3480,20 @@ export default function ProjectDetailPage() {
               </div>
               <button
                 onClick={() => setReviewTasks(null)}
-                className='text-gray-400 hover:text-gray-700'
+                className='text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className='flex-1 overflow-y-auto p-5 md:p-6 space-y-4 bg-gray-50/60'>
+            <div className='flex-1 overflow-y-auto p-5 md:p-6 space-y-4 bg-zinc-50 dark:bg-white/5/60'>
               {reviewTasks.map((task, idx) => (
                 <div
                   key={idx}
-                  className='border border-gray-200 bg-white rounded-2xl p-4 md:p-5 space-y-4 shadow-sm'
+                  className='border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl p-4 md:p-5 space-y-4 shadow-sm'
                 >
                   <div className='flex items-start gap-2'>
-                    <span className='text-xs font-bold text-gray-400 mt-2 w-5 flex-shrink-0'>
+                    <span className='text-xs font-bold text-zinc-400 dark:text-zinc-500 mt-2 w-5 flex-shrink-0'>
                       {idx + 1}
                     </span>
                     <input
@@ -3465,7 +3505,7 @@ export default function ProjectDetailPage() {
                           ),
                         )
                       }
-                      className='flex-1 text-sm font-semibold border-0 border-b border-gray-200 focus:outline-none focus:border-sky-400 py-1'
+                      className='flex-1 text-sm font-semibold border-0 border-b border-zinc-200 dark:border-white/10 focus:outline-none focus:border-sky-400 py-1'
                       placeholder='Task title *'
                     />
                     <button
@@ -3490,13 +3530,13 @@ export default function ProjectDetailPage() {
                       )
                     }
                     rows={2}
-                    className='w-full text-xs border border-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-sky-300 text-gray-600 ml-7'
+                    className='w-full text-xs border border-zinc-200 dark:border-white/5 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-sky-300 text-zinc-600 dark:text-zinc-400 ml-7'
                     placeholder='Task description...'
                   />
 
                   <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3 ml-7'>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Priority</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Priority</p>
                       <select
                         value={task.priority || "MEDIUM"}
                         onChange={(e) =>
@@ -3508,15 +3548,15 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
-                        <option value='HIGH'>HIGH</option>
-                        <option value='MEDIUM'>MEDIUM</option>
-                        <option value='LOW'>LOW</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
                       </select>
                     </div>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Deadline</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Deadline</p>
                       <input
                         type='date'
                         value={task.dueDate?.slice(0, 10) || ""}
@@ -3529,11 +3569,11 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       />
                     </div>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Epic</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Epic</p>
                       <select
                         value={task.epic || ""}
                         onChange={(e) =>
@@ -3545,21 +3585,21 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
-                        <option value=''>- No epic -</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- No epic -</option>
                         {allEpics.map((epic: string) => (
-                          <option key={epic} value={epic}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
                             {epic}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Labels</p>
-                      <div className='flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-gray-200 bg-white p-1.5'>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Labels</p>
+                      <div className='flex min-h-[38px] flex-wrap gap-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-1.5'>
                         {allLabels.length === 0 ? (
-                          <span className='px-1 text-xs text-gray-400'>
+                          <span className='px-1 text-xs text-zinc-400 dark:text-zinc-500'>
                             No labels
                           </span>
                         ) : (
@@ -3588,7 +3628,7 @@ export default function ProjectDetailPage() {
                                 className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
                                   checked
                                     ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+                                    : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10"
                                 }`}
                               >
                                 {label}
@@ -3599,7 +3639,7 @@ export default function ProjectDetailPage() {
                       </div>
                     </div>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Sprint</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Sprint</p>
                       <select
                         value={task.sprint || ""}
                         onChange={(e) =>
@@ -3611,18 +3651,18 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
-                        <option value=''>- Không có sprint -</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- Không có sprint -</option>
                         {allSprints.map((s) => (
-                          <option key={s} value={s}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={s} value={s}>
                             {s}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div className='xl:col-span-2'>
-                      <p className='text-xs text-gray-400 mb-1'>Estimate</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Estimate</p>
                       <div className='grid grid-cols-3 gap-1.5'>
                         <input
                           type='number'
@@ -3639,7 +3679,7 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -3657,7 +3697,7 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -3675,12 +3715,12 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                       </div>
                     </div>
                     <div className='xl:col-span-2'>
-                      <p className='text-xs text-gray-400 mb-1'>Logged</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Logged</p>
                       <div className='grid grid-cols-3 gap-1.5'>
                         <input
                           type='number'
@@ -3695,7 +3735,7 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -3713,7 +3753,7 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -3731,12 +3771,12 @@ export default function ProjectDetailPage() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                       </div>
                     </div>
                     <div>
-                      <p className='text-xs text-gray-400 mb-1'>Assignee</p>
+                      <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Assignee</p>
                       <select
                         value={task.assigneeId ?? ""}
                         onChange={(e) =>
@@ -3753,11 +3793,11 @@ export default function ProjectDetailPage() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       >
-                        <option value=''>- Unassigned</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- Unassigned</option>
                         {(project?.members || []).map((m: any) => (
-                          <option key={m.userId} value={m.userId}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={m.userId} value={m.userId}>
                             {m.user?.name || `User ${m.userId}`}
                           </option>
                         ))}
@@ -3767,16 +3807,16 @@ export default function ProjectDetailPage() {
                 </div>
               ))}
               {reviewTasks.length === 0 && (
-                <p className='text-center text-sm text-gray-400 py-8'>
+                <p className='text-center text-sm text-zinc-400 dark:text-zinc-500 py-8'>
                   All tasks were removed
                 </p>
               )}
             </div>
 
-            <div className='flex items-center justify-between px-5 py-4 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-3xl'>
+            <div className='flex items-center justify-between px-5 py-4 border-t border-zinc-200 dark:border-white/5 flex-shrink-0 bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-b-3xl'>
               <button
                 onClick={() => setReviewTasks(null)}
-                className='text-sm text-gray-500 hover:text-gray-700 px-4 py-2'
+                className='text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 px-4 py-2'
               >
                 Cancel
               </button>
@@ -3808,22 +3848,22 @@ export default function ProjectDetailPage() {
           onClick={() => setPreviewVersion(null)}
         >
           <div
-            className='bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col mx-4'
+            className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col mx-4'
             onClick={(e) => e.stopPropagation()}
           >
-            <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100'>
+            <div className='flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-white/5'>
               <div className='flex items-center gap-2'>
                 <History size={16} className='text-sky-600' />
-                <span className='font-semibold text-gray-900 text-sm'>
+                <span className='font-semibold text-zinc-900 dark:text-zinc-100 text-sm'>
                   Version v{previewVersion.version}
                 </span>
-                <span className='text-xs text-gray-400'>
+                <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                   | {formatDateTime(previewVersion.createdAt)}
                 </span>
               </div>
               <button
                 onClick={() => setPreviewVersion(null)}
-                className='text-gray-400 hover:text-gray-700'
+                className='text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
               >
                 <X size={18} />
               </button>
@@ -3839,7 +3879,7 @@ export default function ProjectDetailPage() {
               </div>
             )}
             <div className='flex-1 overflow-y-auto p-5'>
-              <pre className='text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed'>
+              <pre className='text-xs text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono leading-relaxed'>
                 {previewVersion.content}
               </pre>
             </div>
@@ -3855,18 +3895,18 @@ export default function ProjectDetailPage() {
       />
       {showRolesModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col'>
-            <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col'>
+            <div className='flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-white/5'>
               <div>
-                <h3 className='font-semibold text-gray-900'>Project roles</h3>
-                <p className='text-sm text-gray-500'>
+                <h3 className='font-semibold text-zinc-900 dark:text-zinc-100'>Project roles</h3>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400'>
                   Create custom project roles and define permissions for each
                   one.
                 </p>
               </div>
               <button
                 onClick={() => setShowRolesModal(false)}
-                className='text-gray-400 hover:text-gray-700'
+                className='text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:text-zinc-300'
               >
                 <X size={18} />
               </button>
@@ -3876,7 +3916,7 @@ export default function ProjectDetailPage() {
               {roleDraft.map((role, index) => (
                 <div
                   key={`${role.name}-${index}`}
-                  className='border border-gray-200 rounded-xl p-3 space-y-3'
+                  className='border border-zinc-200 dark:border-white/10 rounded-xl p-3 space-y-3'
                 >
                   <div className='flex items-center gap-2'>
                     <span className='w-7 h-7 rounded-full bg-slate-100 text-slate-500 text-xs font-semibold flex items-center justify-center'>
@@ -3893,7 +3933,7 @@ export default function ProjectDetailPage() {
                           ),
                         )
                       }
-                      className='flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+                      className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
                       placeholder='Role name'
                     />
                     <button
@@ -3912,7 +3952,7 @@ export default function ProjectDetailPage() {
                   <div className='space-y-2'>
                     {PROJECT_ROLE_PERMISSION_GROUPS.map((group) => (
                       <div key={`${role.name}-${group.label}`}>
-                        <p className='text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5'>
+                        <p className='text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5'>
                           {group.label}
                         </p>
                         <div className='flex flex-wrap gap-2'>
@@ -3948,7 +3988,7 @@ export default function ProjectDetailPage() {
                                   "text-xs px-2.5 py-1 rounded-full border transition-colors",
                                   checked
                                     ? "bg-blue-600 text-white border-blue-600"
-                                    : "bg-white text-gray-600 border-gray-200 hover:border-blue-300",
+                                    : "bg-white dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-white/10 hover:border-blue-300",
                                 )}
                               >
                                 {permission}
@@ -3978,7 +4018,7 @@ export default function ProjectDetailPage() {
                       setNewProjectRole("");
                     }
                   }}
-                  className='flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+                  className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
                   placeholder='Add a new role...'
                 />
                 <button
@@ -3998,18 +4038,18 @@ export default function ProjectDetailPage() {
                 </button>
               </div>
 
-              <p className='text-xs text-gray-400'>
+              <p className='text-xs text-zinc-400 dark:text-zinc-500'>
                 Each role can enable or disable individual actions in the
                 project. If a role is still assigned to members, the backend
                 blocks deletion until those members are reassigned.
               </p>
             </div>
 
-            <div className='flex justify-end gap-2 px-5 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl'>
+            <div className='flex justify-end gap-2 px-5 py-4 border-t border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5 rounded-b-2xl'>
               <button
                 type='button'
                 onClick={() => setShowRolesModal(false)}
-                className='px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100'
+                className='px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10'
               >
                 Cancel
               </button>
@@ -4030,17 +4070,17 @@ export default function ProjectDetailPage() {
       )}
       {showTaskModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4'>
-          <div className='flex w-full max-w-7xl max-h-[92vh] flex-col overflow-hidden rounded-xl bg-white text-gray-900 shadow-2xl'>
-            <div className='flex items-center justify-between border-b border-gray-100 px-6 py-4'>
+          <div className='flex w-full max-w-7xl max-h-[92vh] flex-col overflow-hidden rounded-xl bg-white dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-900 dark:text-zinc-100 shadow-2xl'>
+            <div className='flex items-center justify-between border-b border-zinc-200 dark:border-white/5 px-6 py-4'>
               <div className='min-w-0'>
-                <div className='mb-2 flex min-w-0 items-center gap-2 text-xs text-gray-500'>
+                <div className='mb-2 flex min-w-0 items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400'>
                   <span>Spaces</span>
                   <span>/</span>
                   <span className='truncate'>{project.name}</span>
                   <span>/</span>
-                  <span>{editTask ? `TASK-${editTask.id}` : "NEW-TASK"}</span>
+                  <span>{editTask ? editTask.id : "NEW-TASK"}</span>
                 </div>
-                <h3 className='font-semibold text-gray-900'>
+                <h3 className='font-semibold text-zinc-900 dark:text-zinc-100'>
                   {editTask ? "Task detail" : "Add new task"}
                 </h3>
               </div>
@@ -4050,7 +4090,7 @@ export default function ProjectDetailPage() {
                   setShowTaskModal(false);
                   setEditTask(null);
                 }}
-                className='rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700'
+                className='rounded-md p-2 text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-700 dark:text-zinc-300'
               >
                 <X size={18} />
               </button>
@@ -4065,49 +4105,49 @@ export default function ProjectDetailPage() {
                     required: true,
                     onBlur: autoSaveTask,
                   })}
-                  className='w-full bg-transparent text-2xl font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:ring-0'
+                  className='w-full bg-transparent text-2xl font-semibold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400 dark:text-zinc-500 focus:ring-0'
                   placeholder='Task title'
                 />
                 <div className='mt-8 space-y-8'>
                   <section>
-                    <div className='mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900'>
-                      <ChevronDown size={16} className='text-gray-400' />
+                    <div className='mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
+                      <ChevronDown size={16} className='text-zinc-400 dark:text-zinc-500' />
                       <span>Key details</span>
                     </div>
                     <div className='grid gap-x-10 gap-y-5 text-sm md:grid-cols-[180px_minmax(0,1fr)]'>
-                      <span className='text-gray-500'>Assignee</span>
+                      <span className='text-zinc-500 dark:text-zinc-400'>Assignee</span>
                       <select
                         {...register("assigneeId", { onBlur: autoSaveTask })}
-                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-gray-900 hover:border-gray-200 hover:bg-gray-50 focus:border-blue-300 focus:bg-white focus:outline-none'
+                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-zinc-900 dark:text-zinc-100 hover:border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:bg-white/5 focus:border-blue-300 focus:bg-white dark:bg-zinc-900/95 backdrop-blur-xl focus:outline-none'
                       >
-                        <option value=''>Unassigned</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Unassigned</option>
                         {project.members?.map((m: any) => (
-                          <option key={m.userId} value={m.userId}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={m.userId} value={m.userId}>
                             {m.user.name}
                           </option>
                         ))}
                       </select>
 
-                      <span className='text-gray-500'>Due date</span>
+                      <span className='text-zinc-500 dark:text-zinc-400'>Due date</span>
                       <input
                         type='date'
                         {...register("dueDate", { onBlur: autoSaveTask })}
-                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-gray-900 hover:border-gray-200 hover:bg-gray-50 focus:border-blue-300 focus:bg-white focus:outline-none'
+                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-zinc-900 dark:text-zinc-100 hover:border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:bg-white/5 focus:border-blue-300 focus:bg-white dark:bg-zinc-900/95 backdrop-blur-xl focus:outline-none'
                       />
 
-                      <span className='text-gray-500'>Original estimate</span>
-                      <span className='text-gray-900'>
+                      <span className='text-zinc-500 dark:text-zinc-400'>Original estimate</span>
+                      <span className='text-zinc-900 dark:text-zinc-100'>
                         {watchedEstimateInput || "None"}
                       </span>
 
-                      <span className='text-gray-500'>Time spent</span>
-                      <span className='text-gray-900'>
+                      <span className='text-zinc-500 dark:text-zinc-400'>Time spent</span>
+                      <span className='text-zinc-900 dark:text-zinc-100'>
                         {watchedLoggedInput || "None"}
                       </span>
                     </div>
                   </section>
                   <div>
-                    <label className='mb-2 block text-sm font-semibold text-gray-900'>
+                    <label className='mb-2 block text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
                       Description
                     </label>
                     <input type='hidden' {...register("description")} />
@@ -4136,18 +4176,18 @@ export default function ProjectDetailPage() {
                     />
                   </div>
                   <section className='space-y-3'>
-                    <h4 className='text-sm font-semibold text-gray-900'>
+                    <h4 className='text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
                       Subtasks
                     </h4>
                     <button
                       type='button'
-                      className='text-sm text-gray-500 hover:text-gray-800'
+                      className='text-sm text-zinc-500 dark:text-zinc-400 hover:text-gray-800'
                     >
                       Add subtask
                     </button>
                   </section>
                   <section className='space-y-3'>
-                    <h4 className='text-sm font-semibold text-gray-900'>
+                    <h4 className='text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
                       Activity
                     </h4>
                     <div className='flex flex-wrap gap-2'>
@@ -4163,8 +4203,8 @@ export default function ProjectDetailPage() {
                             onClick={() => setActivityTab(key as ActivityTab)}
                             className={`rounded-md border px-3 py-1.5 text-xs font-medium transition ${
                               activityTab === key
-                                ? "border-blue-500 bg-blue-50 text-blue-700"
-                                : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                                ? "border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400"
+                                : "border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5"
                             }`}
                           >
                             {label}
@@ -4175,7 +4215,7 @@ export default function ProjectDetailPage() {
                       <div className='space-y-4'>
                         {(activityTab === "comments" ||
                           activityTab === "all") && (
-                          <div className='rounded-lg border border-gray-200 bg-white p-3'>
+                          <div className='rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-3'>
                             <textarea
                               value={commentDraft}
                               onChange={(event) =>
@@ -4183,7 +4223,7 @@ export default function ProjectDetailPage() {
                               }
                               placeholder='Add a comment...'
                               rows={3}
-                              className='w-full resize-none rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                              className='w-full bg-transparent resize-none rounded-md border border-zinc-200 dark:border-white/10 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                             />
                             <div className='mt-2 flex justify-end'>
                               <button
@@ -4202,7 +4242,7 @@ export default function ProjectDetailPage() {
                         )}
                         {(activityTab === "worklog" ||
                           activityTab === "all") && (
-                          <div className='rounded-lg border border-gray-200 bg-white p-3'>
+                          <div className='rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-3'>
                             <div className='grid gap-2 md:grid-cols-[160px_minmax(0,1fr)_auto]'>
                               <input
                                 value={workLogDraft}
@@ -4210,7 +4250,7 @@ export default function ProjectDetailPage() {
                                   setWorkLogDraft(event.target.value)
                                 }
                                 placeholder='1h 30m'
-                                className='rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                className='bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                               />
                               <input
                                 value={workLogNote}
@@ -4218,7 +4258,7 @@ export default function ProjectDetailPage() {
                                   setWorkLogNote(event.target.value)
                                 }
                                 placeholder='Work log note'
-                                className='rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                className='bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                               />
                               <button
                                 type='button'
@@ -4236,28 +4276,28 @@ export default function ProjectDetailPage() {
                         )}
                         <div className='space-y-2'>
                           {loadingTaskActivities ? (
-                            <div className='flex items-center gap-2 text-sm text-gray-500'>
+                            <div className='flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400'>
                               <Loader2 size={14} className='animate-spin' />
                               Loading activity...
                             </div>
                           ) : filteredTaskActivities.length === 0 ? (
-                            <p className='text-sm text-gray-500'>
+                            <p className='text-sm text-zinc-500 dark:text-zinc-400'>
                               No activity yet.
                             </p>
                           ) : (
                             filteredTaskActivities.map((activity) => (
                               <div
                                 key={activity.id}
-                                className='rounded-lg border border-gray-100 bg-white px-3 py-2'
+                                className='rounded-lg border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-3 py-2'
                               >
-                                <div className='mb-1 flex flex-wrap items-center gap-2 text-xs text-gray-500'>
-                                  <span className='font-medium text-gray-700'>
+                                <div className='mb-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400'>
+                                  <span className='font-medium text-zinc-700 dark:text-zinc-300'>
                                     {activity.user?.name ||
                                       activity.user?.email ||
                                       "System"}
                                   </span>
                                   <span>{formatDateTime(activity.createdAt)}</span>
-                                  <span className='rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-600'>
+                                  <span className='rounded bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 font-medium text-zinc-600 dark:text-zinc-400'>
                                     {activity.type === "WORK_LOG"
                                       ? "Work log"
                                       : activity.type === "COMMENT"
@@ -4265,7 +4305,7 @@ export default function ProjectDetailPage() {
                                         : "History"}
                                   </span>
                                 </div>
-                                <p className='whitespace-pre-wrap text-sm text-gray-800'>
+                                <p className='whitespace-pre-wrap text-sm text-gray-800 dark:text-zinc-200'>
                                   {describeActivity(activity)}
                                 </p>
                               </div>
@@ -4274,7 +4314,7 @@ export default function ProjectDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className='text-sm text-gray-500'>
+                      <p className='text-sm text-zinc-500 dark:text-zinc-400'>
                         Create the task to start comments, history, and work
                         logs.
                       </p>
@@ -4282,7 +4322,7 @@ export default function ProjectDetailPage() {
                   </section>
                 </div>
               </div>
-              <aside className='min-h-0 overflow-y-auto border-t border-gray-100 bg-gray-50 p-5 lg:border-l lg:border-t-0'>
+              <aside className='min-h-0 overflow-y-auto border-t border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5 p-5 lg:border-l lg:border-t-0'>
                 <div className='mb-4 flex items-center gap-2'>
                   <div className='relative'>
                     <button
@@ -4297,7 +4337,7 @@ export default function ProjectDetailPage() {
                     {showStatusDropdown && (
                       <>
                         <div className='fixed inset-0 z-[9]' onClick={() => setShowStatusDropdown(false)} />
-                        <div className='absolute left-0 top-full z-10 mt-1 min-w-[160px] rounded-md border border-gray-200 bg-white py-1 shadow-lg'>
+                        <div className='absolute left-0 top-full z-10 mt-1 min-w-[160px] rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl py-1 shadow-lg'>
                           {workflowStatuses.map((status: string) => (
                             <button
                               key={status}
@@ -4307,7 +4347,7 @@ export default function ProjectDetailPage() {
                                 setShowStatusDropdown(false);
                                 autoSaveTask();
                               }}
-                              className='flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-gray-50'
+                              className='flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-zinc-50 dark:bg-white/5'
                             >
                               <span
                                 className='inline-block rounded-full border px-2 py-0.5 text-xs font-semibold'
@@ -4322,51 +4362,51 @@ export default function ProjectDetailPage() {
                     )}
                   </div>
                   {workflowStatuses.indexOf(watch("status")) === workflowStatuses.length - 1 && (
-                    <span className='text-xs text-gray-500'>Done</span>
+                    <span className='text-xs text-zinc-500 dark:text-zinc-400'>Done</span>
                   )}
                 </div>
-                <div className='rounded-lg border border-gray-200 bg-white'>
-                  <div className='border-b border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900'>
+                <div className='rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'>
+                  <div className='border-b border-zinc-200 dark:border-white/5 px-4 py-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
                     Details
                   </div>
                   <div className='space-y-4 p-4'>
                     <div>
-                      <label className='text-xs font-medium text-gray-500'>
+                      <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Priority
                       </label>
                       <select
                         {...register("priority", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
                       >
-                        <option value='LOW'>LOW</option>
-                        <option value='MEDIUM'>MEDIUM</option>
-                        <option value='HIGH'>HIGH</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
                       </select>
                     </div>
                     <div>
-                      <label className='text-xs font-medium text-gray-500'>
+                      <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Epic
                       </label>
                       <select
                         {...register("epic", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
                       >
-                        <option value=''>No epic</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>No epic</option>
                         {allEpics.map((epic: string) => (
-                          <option key={epic} value={epic}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
                             {epic}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className='text-xs font-medium text-gray-500'>
+                      <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Labels
                       </label>
                       <input type='hidden' {...register("labels")} />
-                      <div className='mt-1 flex min-h-[38px] flex-wrap gap-1.5 rounded-md border border-gray-200 bg-white p-2'>
+                      <div className='mt-1 flex min-h-[38px] flex-wrap gap-1.5 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-2'>
                         {allLabels.length === 0 ? (
-                          <span className='text-sm text-gray-400'>None</span>
+                          <span className='text-sm text-zinc-400 dark:text-zinc-500'>None</span>
                         ) : (
                           allLabels.map((label: string) => {
                             const checked = selectedTaskLabels.includes(label);
@@ -4378,7 +4418,7 @@ export default function ProjectDetailPage() {
                                 className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
                                   checked
                                     ? "border-sky-200 bg-sky-50 text-sky-700"
-                                    : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+                                    : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10"
                                 }`}
                               >
                                 {label}
@@ -4389,23 +4429,23 @@ export default function ProjectDetailPage() {
                       </div>
                     </div>
                     <div>
-                      <label className='text-xs font-medium text-gray-500'>
+                      <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Sprint
                       </label>
                       <select
                         {...register("sprint", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
                       >
-                        <option value=''>No sprint</option>
+                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>No sprint</option>
                         {allSprints.map((s) => (
-                          <option key={s} value={s}>
+                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={s} value={s}>
                             {s}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className='text-xs font-medium text-gray-500'>
+                      <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Time tracking
                       </label>
                       <div className='mt-1 grid grid-cols-2 gap-2'>
@@ -4414,14 +4454,14 @@ export default function ProjectDetailPage() {
                             onBlur: autoSaveTask,
                           })}
                           placeholder='Estimate'
-                          className='rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          className='rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                         />
                         <input
                           {...register("loggedInput", {
                             onBlur: autoSaveTask,
                           })}
                           placeholder='Logged'
-                          className='rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          className='rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
                         />
                       </div>
                     </div>
@@ -4450,13 +4490,13 @@ export default function ProjectDetailPage() {
       {/* Epic & Label Manager Modal */}
       {showTaxonomyModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4'>
-          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 w-full max-w-2xl'>
             <div className='flex items-center justify-between mb-5'>
               <div>
-                <h3 className='font-bold text-lg text-gray-900 flex items-center gap-2'>
+                <h3 className='font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2'>
                   <Tags size={18} className='text-indigo-500' /> Epics & Labels
                 </h3>
-                <p className='text-sm text-gray-500 mt-1'>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 mt-1'>
                   Create project fields before assigning them to tasks.
                 </p>
               </div>
@@ -4466,20 +4506,20 @@ export default function ProjectDetailPage() {
                   setNewEpicName("");
                   setNewLabelName("");
                 }}
-                className='p-1.5 rounded-lg hover:bg-gray-100 text-gray-400'
+                className='p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-400 dark:text-zinc-500'
               >
                 <X size={16} />
               </button>
             </div>
 
             <div className='grid gap-5 md:grid-cols-2'>
-              <div className='md:col-span-2 rounded-xl border border-gray-100 bg-gray-50 p-4'>
+              <div className='md:col-span-2 rounded-xl border border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5 p-4'>
                 <div className='flex items-start justify-between gap-3'>
                   <div>
-                    <h4 className='text-sm font-semibold text-gray-800'>
+                    <h4 className='text-sm font-semibold text-gray-800 dark:text-zinc-200'>
                       Task naming rule
                     </h4>
-                    <p className='mt-1 text-xs text-gray-500'>
+                    <p className='mt-1 text-xs text-zinc-500 dark:text-zinc-400'>
                       Tokens: {"{firstLabel}"}, {"{epic}"},{" "}
                       {"{remainingLabels}"}, {"{labels}"}, {"{title}"},{" "}
                       {"{sprint}"}, {"{priority}"}
@@ -4497,11 +4537,11 @@ export default function ProjectDetailPage() {
                   value={taskNamingRuleDraft}
                   onChange={(e) => setTaskNamingRuleDraft(e.target.value)}
                   placeholder='[{firstLabel}][{epic}][{remainingLabels}] {title}'
-                  className='mt-3 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                  className='mt-3 w-full rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500'
                 />
-                <div className='mt-3 rounded-lg bg-white px-3 py-2 text-xs text-gray-500'>
+                <div className='mt-3 rounded-lg bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400'>
                   Preview:{" "}
-                  <span className='font-semibold text-gray-800'>
+                  <span className='font-semibold text-gray-800 dark:text-zinc-200'>
                     {previewTaskNamingRule(taskNamingRuleDraft, {
                       title: "Optimize Buggy Service List API Performance",
                       epic: allEpics[0] || "Admin",
@@ -4516,7 +4556,7 @@ export default function ProjectDetailPage() {
               <div>
                 <div className='flex items-center gap-2 mb-3'>
                   <Layers size={16} className='text-indigo-500' />
-                  <h4 className='text-sm font-semibold text-gray-800'>Epics</h4>
+                  <h4 className='text-sm font-semibold text-gray-800 dark:text-zinc-200'>Epics</h4>
                 </div>
                 <div className='flex gap-2 mb-3'>
                   <input
@@ -4549,7 +4589,7 @@ export default function ProjectDetailPage() {
                 </div>
                 <div className='space-y-1.5 max-h-64 overflow-y-auto'>
                   {allEpics.length === 0 ? (
-                    <p className='text-sm text-gray-400 py-3'>No epics yet</p>
+                    <p className='text-sm text-zinc-400 dark:text-zinc-500 py-3'>No epics yet</p>
                   ) : (
                     allEpics.map((epic: string) => {
                       const taskCount =
@@ -4558,11 +4598,11 @@ export default function ProjectDetailPage() {
                       return (
                         <div
                           key={epic}
-                          className='flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2'
+                          className='flex items-center justify-between rounded-lg border border-zinc-200 dark:border-white/5 px-3 py-2'
                         >
-                          <span className='text-sm text-gray-700'>{epic}</span>
+                          <span className='text-sm text-zinc-700 dark:text-zinc-300'>{epic}</span>
                           <div className='flex items-center gap-2'>
-                            <span className='text-xs text-gray-400'>
+                            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                               {taskCount} task
                             </span>
                             <button
@@ -4594,7 +4634,7 @@ export default function ProjectDetailPage() {
               <div>
                 <div className='flex items-center gap-2 mb-3'>
                   <Tags size={16} className='text-slate-500' />
-                  <h4 className='text-sm font-semibold text-gray-800'>
+                  <h4 className='text-sm font-semibold text-gray-800 dark:text-zinc-200'>
                     Labels
                   </h4>
                 </div>
@@ -4629,7 +4669,7 @@ export default function ProjectDetailPage() {
                 </div>
                 <div className='space-y-1.5 max-h-64 overflow-y-auto'>
                   {allLabels.length === 0 ? (
-                    <p className='text-sm text-gray-400 py-3'>No labels yet</p>
+                    <p className='text-sm text-zinc-400 dark:text-zinc-500 py-3'>No labels yet</p>
                   ) : (
                     allLabels.map((label: string) => {
                       const taskCount =
@@ -4639,13 +4679,13 @@ export default function ProjectDetailPage() {
                       return (
                         <div
                           key={label}
-                          className='flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2'
+                          className='flex items-center justify-between rounded-lg border border-zinc-200 dark:border-white/5 px-3 py-2'
                         >
                           <span className='rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600'>
                             {label}
                           </span>
                           <div className='flex items-center gap-2'>
-                            <span className='text-xs text-gray-400'>
+                            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                               {taskCount} task
                             </span>
                             <button
@@ -4681,9 +4721,9 @@ export default function ProjectDetailPage() {
       {/* Sprint Manager Modal */}
       {showSprintModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
-          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm'>
+          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 w-full max-w-sm'>
             <div className='flex items-center justify-between mb-4'>
-              <h3 className='font-bold text-lg text-gray-900 flex items-center gap-2'>
+              <h3 className='font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2'>
                 <GitBranch size={18} className='text-blue-500' /> Quản lý Sprint
               </h3>
               <button
@@ -4691,7 +4731,7 @@ export default function ProjectDetailPage() {
                   setShowSprintModal(false);
                   setNewSprintName("");
                 }}
-                className='p-1.5 rounded-lg hover:bg-gray-100 text-gray-400'
+                className='p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-400 dark:text-zinc-500'
               >
                 <X size={16} />
               </button>
@@ -4732,7 +4772,7 @@ export default function ProjectDetailPage() {
 
             {/* Sprint list */}
             {allSprints.length === 0 ? (
-              <p className='text-sm text-gray-400 text-center py-4'>
+              <p className='text-sm text-zinc-400 dark:text-zinc-500 text-center py-4'>
                 Chưa có sprint nào
               </p>
             ) : (
@@ -4744,14 +4784,14 @@ export default function ProjectDetailPage() {
                   return (
                     <div
                       key={s}
-                      className='flex items-center gap-3 px-3 py-2 rounded-lg border border-gray-100 hover:bg-gray-50'
+                      className='flex items-center gap-3 px-3 py-2 rounded-lg border border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:bg-white/5'
                     >
                       <GitBranch
                         size={13}
-                        className='text-gray-400 flex-shrink-0'
+                        className='text-zinc-400 dark:text-zinc-500 flex-shrink-0'
                       />
-                      <span className='flex-1 text-sm text-gray-800'>{s}</span>
-                      <span className='text-xs text-gray-400'>
+                      <span className='flex-1 text-sm text-gray-800 dark:text-zinc-200'>{s}</span>
+                      <span className='text-xs text-zinc-400 dark:text-zinc-500'>
                         {taskCount} tasks
                       </span>
                       <button
@@ -4780,7 +4820,7 @@ export default function ProjectDetailPage() {
                   setShowSprintModal(false);
                   setNewSprintName("");
                 }}
-                className='px-4 py-2 text-sm text-gray-600 border rounded-lg hover:bg-gray-50'
+                className='px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 border rounded-lg hover:bg-zinc-50 dark:bg-white/5'
               >
                 Đóng
               </button>
@@ -4791,24 +4831,24 @@ export default function ProjectDetailPage() {
 
       {pendingUploadFile && (
         <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4'>
-          <div className='w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl'>
+          <div className='w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-6 shadow-2xl'>
             <div className='flex items-start gap-3'>
               <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700'>
                 <Upload size={18} />
               </div>
               <div className='min-w-0 flex-1'>
-                <h3 className='text-base font-semibold text-gray-900'>
+                <h3 className='text-base font-semibold text-zinc-900 dark:text-zinc-100'>
                   Confirm document upload
                 </h3>
-                <p className='mt-1 text-sm text-gray-500'>
+                <p className='mt-1 text-sm text-zinc-500 dark:text-zinc-400'>
                   Upload this document to the project? It can be used as source
                   material when requirements are updated.
                 </p>
-                <div className='mt-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2'>
-                  <p className='truncate text-sm font-medium text-gray-800'>
+                <div className='mt-3 rounded-lg border border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5 px-3 py-2'>
+                  <p className='truncate text-sm font-medium text-gray-800 dark:text-zinc-200'>
                     {pendingUploadFile.name}
                   </p>
-                  <p className='mt-0.5 text-xs text-gray-400'>
+                  <p className='mt-0.5 text-xs text-zinc-400 dark:text-zinc-500'>
                     {(pendingUploadFile.size / 1024).toFixed(1)} KB
                   </p>
                 </div>
@@ -4819,7 +4859,7 @@ export default function ProjectDetailPage() {
                 type='button'
                 onClick={cancelFileUpload}
                 disabled={uploading}
-                className='rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
+                className='rounded-lg border border-zinc-200 dark:border-white/10 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5 disabled:opacity-50'
               >
                 Cancel
               </button>
@@ -4839,16 +4879,16 @@ export default function ProjectDetailPage() {
 
       {showUpdateRequirementsConfirm && (
         <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4'>
-          <div className='w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl'>
+          <div className='w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-6 shadow-2xl'>
             <div className='flex items-start gap-3'>
               <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700'>
                 <RefreshCw size={18} />
               </div>
               <div className='min-w-0 flex-1'>
-                <h3 className='text-base font-semibold text-gray-900'>
+                <h3 className='text-base font-semibold text-zinc-900 dark:text-zinc-100'>
                   Confirm requirements update
                 </h3>
-                <p className='mt-1 text-sm text-gray-500'>
+                <p className='mt-1 text-sm text-zinc-500 dark:text-zinc-400'>
                   AI will read the latest project documents and update the
                   shared requirements file. A new version will be added to the
                   requirements history.
@@ -4860,7 +4900,7 @@ export default function ProjectDetailPage() {
                 type='button'
                 onClick={() => setShowUpdateRequirementsConfirm(false)}
                 disabled={updateReqMutation.isPending}
-                className='rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50'
+                className='rounded-lg border border-zinc-200 dark:border-white/10 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5 disabled:opacity-50'
               >
                 Cancel
               </button>

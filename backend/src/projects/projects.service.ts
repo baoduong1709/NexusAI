@@ -24,6 +24,7 @@ import {
   normalizeProjectRole,
   ProjectRoleConfig,
 } from "./project-roles";
+import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
 
 const PROJECT_INCLUDE = {
   members: {
@@ -83,6 +84,7 @@ export class ProjectsService {
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
+    private projectAiIndex: ProjectAiIndexService,
   ) {}
 
   async create(dto: CreateProjectDto) {
@@ -127,6 +129,7 @@ export class ProjectsService {
         /* non-blocking */
       });
 
+    this.projectAiIndex.rebuildSoon(project.id);
     return this.attachProjectMetadata(project);
   }
 
@@ -247,6 +250,7 @@ export class ProjectsService {
       include: PROJECT_INCLUDE,
     });
 
+    this.projectAiIndex.rebuildSoon(id);
     return this.attachProjectMetadata(updatedProject);
   }
 
@@ -325,6 +329,7 @@ export class ProjectsService {
       }
     });
 
+    this.projectAiIndex.rebuildSoon(id);
     return this.findOne(id);
   }
 
@@ -411,6 +416,7 @@ export class ProjectsService {
       }
     });
 
+    this.projectAiIndex.rebuildSoon(id);
     return this.findOne(id);
   }
 
@@ -421,13 +427,15 @@ export class ProjectsService {
 
   async addMember(projectId: number, userId: number, projectRole?: string) {
     await this.ensureProjectRoleExists(projectId, projectRole);
-    return this.prisma.projectMember.create({
+    const member = await this.prisma.projectMember.create({
       data: {
         projectId,
         userId,
         projectRole: normalizeProjectRole(projectRole),
       },
     });
+    this.projectAiIndex.rebuildSoon(projectId);
+    return member;
   }
 
   async updateMemberRole(
@@ -436,16 +444,20 @@ export class ProjectsService {
     projectRole: string,
   ) {
     await this.ensureProjectRoleExists(projectId, projectRole);
-    return this.prisma.projectMember.update({
+    const member = await this.prisma.projectMember.update({
       where: { projectId_userId: { projectId, userId } },
       data: { projectRole: normalizeProjectRole(projectRole) },
     });
+    this.projectAiIndex.rebuildSoon(projectId);
+    return member;
   }
 
   async removeMember(projectId: number, userId: number) {
-    return this.prisma.projectMember.delete({
+    const member = await this.prisma.projectMember.delete({
       where: { projectId_userId: { projectId, userId } },
     });
+    this.projectAiIndex.rebuildSoon(projectId);
+    return member;
   }
 
   private async ensureProjectRoleExists(

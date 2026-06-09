@@ -1,4 +1,5 @@
-import { Module } from "@nestjs/common";
+const fs = require('fs');
+let code = `import { Module } from "@nestjs/common";
 import { AiController } from "./ai.controller";
 import { AiService } from "./ai.service";
 import { AiDataAccessService } from "./ai-data-access.service";
@@ -12,4 +13,5 @@ import { RagService } from "./rag.service";
   providers: [AiService, AiDataAccessService, RagService],
   exports: [AiService, RagService],
 })
-export class AiModule {}
+export class AiModule {}`;
+fs.writeFileSync('src/ai/ai.module.ts', code);

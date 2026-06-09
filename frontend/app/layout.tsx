@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "sonner";
 import QueryProvider from "@/components/providers/query-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +21,14 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
-        <QueryProvider>
-          <AuthProvider>
-            {children}
-            <Toaster richColors position='top-right' />
-          </AuthProvider>
-        </QueryProvider>
+        <ThemeProvider defaultTheme="system">
+          <QueryProvider>
+            <AuthProvider>
+              {children}
+              <Toaster richColors position='top-right' />
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -39,7 +39,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   suggestedTasks?: SuggestedTask[];
-  tasksCreated?: { id: number; title: string }[];
+  tasksCreated?: { id: string; title: string }[];
 }
 
 interface ChatSession {
@@ -93,6 +93,7 @@ export default function AiChatBubble() {
   const [activeSession, setActiveSession] = useState<ChatSession | null>(null);
   const [input, setInput] = useState("");
   const [reviewTasks, setReviewTasks] = useState<SuggestedTask[] | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [showSessions, setShowSessions] = useState(false);
 
   const messages = (activeSession?.messages ?? []) as ChatMessage[];
@@ -337,7 +338,7 @@ export default function AiChatBubble() {
 
   const send = () => {
     const msg = input.trim();
-    if (!msg || !selectedProjectId || !activeSession || chatMutation.isPending)
+    if (!msg || !selectedProjectId || !activeSession || isStreaming)
       return;
     setInput("");
     chatMutation.mutate(msg);
@@ -790,7 +791,7 @@ export default function AiChatBubble() {
                                 key={t.id}
                                 className='text-green-700 flex items-center gap-1'
                               >
-                                <CheckCircle size={9} /> {t.title}
+                                <CheckCircle size={9} /> {t.id} {t.title}
                               </p>
                             ))}
                           </div>
@@ -804,7 +805,7 @@ export default function AiChatBubble() {
                     </div>
                   ))
                 )}
-                {chatMutation.isPending && (
+                {isStreaming && (
                   <div className='flex gap-2'>
                     <div className='w-6 h-6 bg-sky-100 rounded-full flex items-center justify-center flex-shrink-0'>
                       <Bot size={12} className='text-sky-700' />
@@ -845,7 +846,7 @@ export default function AiChatBubble() {
                   disabled={
                     !input.trim() ||
                     !selectedProjectId ||
-                    chatMutation.isPending
+                    isStreaming
                   }
                   className='flex-shrink-0 bg-slate-900 text-white px-3 rounded-lg hover:bg-slate-800 disabled:opacity-40'
                 >

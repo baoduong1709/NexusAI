@@ -4,10 +4,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersApi, rolesApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Loader2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Search, X, Mail, ShieldAlert, Award, Power } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
 import { getInitials, cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function UsersPage() {
   const { hasPermission } = useAuth();
@@ -30,30 +31,30 @@ export default function UsersPage() {
     mutationFn: (data: any) => usersApi.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User created");
+      toast.success("User created successfully");
       setShowModal(false);
     },
-    onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
+    onError: (e: any) => toast.error(e.response?.data?.message || "Error creating user"),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: any) => usersApi.update(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User updated");
+      toast.success("User updated successfully");
       setShowModal(false);
       setEditUser(null);
     },
-    onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
+    onError: (e: any) => toast.error(e.response?.data?.message || "Error updating user"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => usersApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
-      toast.success("User deleted");
+      toast.success("User deleted successfully");
     },
-    onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
+    onError: (e: any) => toast.error(e.response?.data?.message || "Error deleting user"),
   });
 
   const { register, handleSubmit, reset } = useForm<any>();
@@ -101,243 +102,346 @@ export default function UsersPage() {
       u.email.toLowerCase().includes(search.toLowerCase()),
   );
 
+  // Framer Motion animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+    },
+  };
+
   return (
-    <div className='space-y-4'>
-      <div className='flex items-center justify-between'>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-6 max-w-7xl mx-auto"
+    >
+      {/* Page Header */}
+      <motion.div
+        variants={itemVariants}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4"
+      >
         <div>
-          <h1 className='text-2xl font-bold text-gray-900'>User Management</h1>
-          <p className='text-gray-500 text-sm mt-1'>{users.length} users</p>
+          <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
+            Users & Members
+          </h1>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-2 font-medium">
+            Manage user accounts, system roles, and specialized skill tags
+          </p>
         </div>
         {hasPermission("user:create") && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={openCreate}
-            className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium'
+            className="flex items-center justify-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-2xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-xl shadow-black/5 dark:shadow-black/20 text-sm font-bold"
           >
             <Plus size={16} /> Add User
-          </button>
+          </motion.button>
         )}
-      </div>
+      </motion.div>
 
-      <div className='relative'>
-        <Search className='absolute left-3 top-2.5 text-gray-400' size={16} />
+      {/* Search Bar */}
+      <motion.div variants={itemVariants} className="relative">
+        <Search className="absolute left-4 top-3.5 text-zinc-400 dark:text-zinc-500" size={18} />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder='Search by name or email...'
-          className='w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+          placeholder="Search by name or email..."
+          className="w-full pl-12 pr-4 py-3.5 bg-card/85 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-indigo-500/30 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-all shadow-lg shadow-black/5"
         />
-      </div>
+      </motion.div>
 
-      <div className='bg-white rounded-xl border border-gray-100 overflow-hidden'>
+      {/* Table Section */}
+      <motion.div
+        variants={itemVariants}
+        className="bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden relative z-10"
+      >
         {isLoading ? (
-          <div className='py-12 flex justify-center'>
-            <Loader2 className='animate-spin text-blue-500' />
+          <div className="py-24 flex flex-col justify-center items-center gap-3">
+            <Loader2 className="animate-spin text-indigo-500" size={32} />
+            <span className="text-sm text-zinc-500 font-medium">Loading organization directory...</span>
           </div>
         ) : (
-          <table className='w-full'>
-            <thead className='bg-gray-50 border-b border-gray-100'>
-              <tr>
-                {["User", "Email", "Role", "Skills", "Status", ""].map((h) => (
-                  <th
-                    key={h}
-                    className='px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className='divide-y divide-gray-50'>
-              {filtered.map((u: any) => (
-                <tr key={u.id} className='hover:bg-gray-50'>
-                  <td className='px-4 py-3'>
-                    <div className='flex items-center gap-3'>
-                      <div className='bg-blue-100 text-blue-700 font-semibold rounded-full w-8 h-8 flex items-center justify-center text-xs flex-shrink-0'>
-                        {getInitials(u.name)}
-                      </div>
-                      <span className='font-medium text-gray-900 text-sm'>
-                        {u.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className='px-4 py-3 text-sm text-gray-500'>{u.email}</td>
-                  <td className='px-4 py-3'>
-                    {u.role ? (
-                      <span className='bg-indigo-50 text-indigo-700 text-xs px-2 py-1 rounded-full font-medium'>
-                        {u.role.name}
-                      </span>
-                    ) : (
-                      <span className='text-gray-400 text-xs'>-</span>
-                    )}
-                  </td>
-                  <td className='px-4 py-3'>
-                    <div className='flex flex-wrap gap-1'>
-                      {u.skills?.slice(0, 3).map((s: string) => (
-                        <span
-                          key={s}
-                          className='bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded'
-                        >
-                          {s}
-                        </span>
-                      ))}
-                      {u.skills?.length > 3 && (
-                        <span className='text-xs text-gray-400'>
-                          +{u.skills.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className='px-4 py-3'>
-                    <span
-                      className={cn(
-                        "text-xs px-2 py-1 rounded-full font-medium",
-                        u.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-500",
-                      )}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-white/[0.02]">
+                  {["User Profile", "Email Address", "System Role", "Specialized Skills", "Status", ""].map((h) => (
+                    <th
+                      key={h}
+                      className="px-6 py-4 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
                     >
-                      {u.isActive ? "Active" : "Disabled"}
-                    </span>
-                  </td>
-                  <td className='px-4 py-3'>
-                    <div className='flex gap-1 justify-end'>
-                      {hasPermission("user:update") && (
-                        <button
-                          onClick={() => openEdit(u)}
-                          className='p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded'
-                        >
-                          <Pencil size={14} />
-                        </button>
-                      )}
-                      {hasPermission("user:delete") && (
-                        <button
-                          onClick={() =>
-                            confirm(`Delete ${u.name}?`) &&
-                            deleteMutation.mutate(u.id)
-                          }
-                          className='p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded'
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className='py-8 text-center text-gray-400'>
-                    No users found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {showModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
-          <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md'>
-            <h3 className='font-bold text-lg text-gray-900 mb-4'>
-              {editUser ? "Edit User" : "Add New User"}
-            </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Full Name *
-                </label>
-                <input
-                  {...register("name", { required: true })}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Email *
-                </label>
-                <input
-                  {...register("email", { required: true })}
-                  type='email'
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  {editUser
-                    ? "New Password (leave empty to keep current password)"
-                    : "Password *"}
-                </label>
-                <input
-                  {...register("password", { required: !editUser })}
-                  type='password'
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Role
-                </label>
-                <select
-                  {...register("roleId")}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  <option value=''>-- None --</option>
-                  {roles.map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
+                      {h}
+                    </th>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className='text-sm font-medium text-gray-700'>
-                  Skills (comma-separated)
-                </label>
-                <input
-                  {...register("skills")}
-                  className='w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  placeholder='React, Node.js, SQL'
-                />
-              </div>
-              {editUser && (
-                <div className='flex items-center gap-2'>
-                  <input
-                    {...register("isActive")}
-                    type='checkbox'
-                    id='isActive'
-                    className='rounded'
-                  />
-                  <label htmlFor='isActive' className='text-sm text-gray-700'>
-                    Active
-                  </label>
-                </div>
-              )}
-              <div className='flex gap-2 justify-end mt-4'>
-                <button
-                  type='button'
-                  onClick={() => setShowModal(false)}
-                  className='px-4 py-2 text-sm text-gray-600 border rounded-lg hover:bg-gray-50'
-                >
-                  Cancel
-                </button>
-                <button
-                  type='submit'
-                  disabled={
-                    createMutation.isPending || updateMutation.isPending
-                  }
-                  className='px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50'
-                >
-                  {(createMutation.isPending || updateMutation.isPending) && (
-                    <Loader2 className='animate-spin' size={14} />
-                  )}
-                  {editUser ? "Save Changes" : "Create User"}
-                </button>
-              </div>
-            </form>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-100 dark:divide-white/5">
+                {filtered.map((u: any) => (
+                  <tr
+                    key={u.id}
+                    className="hover:bg-zinc-50/50 dark:hover:bg-white/[0.02] transition-colors"
+                  >
+                    {/* User Profile */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-bold rounded-xl w-10 h-10 flex items-center justify-center text-sm shadow-md shadow-indigo-500/20 ring-2 ring-white/50 dark:ring-white/5">
+                          {getInitials(u.name)}
+                        </div>
+                        <span className="font-bold text-zinc-900 dark:text-white text-sm">
+                          {u.name}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Email */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <Mail size={14} className="text-zinc-400" />
+                        {u.email}
+                      </div>
+                    </td>
+
+                    {/* Role */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {u.role ? (
+                        <span className="inline-flex items-center gap-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-indigo-500/10">
+                          {u.role.name}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-400 dark:text-zinc-600 text-xs italic">No Role Assigned</span>
+                      )}
+                    </td>
+
+                    {/* Skills */}
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-1.5 max-w-xs">
+                        {u.skills?.slice(0, 3).map((s: string) => (
+                          <span
+                            key={s}
+                            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs px-2 py-0.5 rounded-lg border border-zinc-200/50 dark:border-white/5 font-semibold"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                        {u.skills?.length > 3 && (
+                          <span className="text-[10px] bg-indigo-500/5 text-indigo-500 dark:text-indigo-400 px-1.5 py-0.5 rounded-md border border-indigo-500/10 font-bold">
+                            +{u.skills.length - 3}
+                          </span>
+                        )}
+                        {(!u.skills || u.skills.length === 0) && (
+                          <span className="text-zinc-400 dark:text-zinc-600 text-xs italic">-</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border",
+                          u.isActive
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                            : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                        )}
+                      >
+                        <span className={cn("w-1.5 h-1.5 rounded-full", u.isActive ? "bg-emerald-500" : "bg-zinc-500")} />
+                        {u.isActive ? "Active" : "Disabled"}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                      <div className="flex gap-1 justify-end">
+                        {hasPermission("user:update") && (
+                          <button
+                            onClick={() => openEdit(u)}
+                            className="p-2 text-zinc-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-xl transition-all"
+                            title="Edit User"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                        )}
+                        {hasPermission("user:delete") && (
+                          <button
+                            onClick={() =>
+                              confirm(`Delete ${u.name}?`) &&
+                              deleteMutation.mutate(u.id)
+                            }
+                            className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                            title="Delete User"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="py-16 text-center text-zinc-500 dark:text-zinc-400 font-medium">
+                      No team members found matching your search.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </motion.div>
+
+      {/* Edit/Create Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-[#0a0a0a] border border-black/5 dark:border-white/10 rounded-[2rem] shadow-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="font-black text-2xl text-zinc-900 dark:text-white">
+                    {editUser ? "Edit User Profile" : "Register New User"}
+                  </h3>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {editUser ? "Update credentials and access configuration" : "Create a new team member account"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    {...register("name", { required: true })}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="e.g. Alan Turing"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    {...register("email", { required: true })}
+                    type="email"
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="e.g. alan@nexusai.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    {editUser
+                      ? "New Password (leave empty to keep current password)"
+                      : "Password *"}
+                  </label>
+                  <input
+                    {...register("password", { required: !editUser })}
+                    type="password"
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    System Role
+                  </label>
+                  <select
+                    {...register("roleId")}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                  >
+                    <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value="">-- None --</option>
+                    {roles.map((r: any) => (
+                      <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={r.id} value={r.id}>
+                        {r.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Skills (comma-separated)
+                  </label>
+                  <input
+                    {...register("skills")}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="React, Node.js, SQL"
+                  />
+                </div>
+
+                {editUser && (
+                  <div className="flex items-center gap-3 py-2">
+                    <input
+                      {...register("isActive")}
+                      type="checkbox"
+                      id="isActive"
+                      className="rounded border-zinc-300 dark:border-white/10 text-indigo-500 focus:ring-indigo-500 w-4 h-4"
+                    />
+                    <label htmlFor="isActive" className="text-sm font-bold text-zinc-700 dark:text-zinc-300 select-none">
+                      Enable Account Access (Active)
+                    </label>
+                  </div>
+                )}
+
+                <div className="flex gap-3 justify-end mt-8 border-t border-zinc-200 dark:border-white/10 pt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-6 py-3 text-sm text-zinc-500 font-bold hover:text-zinc-900 dark:hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={createMutation.isPending || updateMutation.isPending}
+                    className="px-6 py-3 text-sm bg-indigo-500 text-white rounded-xl font-bold flex items-center gap-2 disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                  >
+                    {(createMutation.isPending || updateMutation.isPending) && (
+                      <Loader2 className="animate-spin" size={16} />
+                    )}
+                    {editUser ? "Save Changes" : "Create User"}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
+

@@ -50,14 +50,14 @@ export class TasksController {
 
   @Get(":id")
   @RequirePermissions("task:read")
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id") id: string) {
     return this.tasksService.findOne(id);
   }
 
   @Put(":id")
   @RequirePermissions("task:update")
   update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: CreateTaskDto,
     @CurrentUser() user: { id: number },
   ) {
@@ -68,7 +68,7 @@ export class TasksController {
   @RequirePermissions("task:update")
   @ApiOperation({ summary: "Update task status" })
   updateStatus(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: UpdateTaskStatusDto,
     @CurrentUser() user: { id: number },
   ) {
@@ -80,7 +80,7 @@ export class TasksController {
   @ApiOperation({ summary: "Get task activity" })
   getActivities(
     @Param("projectId", ParseIntPipe) projectId: number,
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
   ) {
     return this.tasksService.getActivities(projectId, id);
   }
@@ -90,7 +90,7 @@ export class TasksController {
   @ApiOperation({ summary: "Add task comment" })
   addComment(
     @Param("projectId", ParseIntPipe) projectId: number,
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: CreateTaskCommentDto,
     @CurrentUser() user: { id: number },
   ) {
@@ -102,7 +102,7 @@ export class TasksController {
   @ApiOperation({ summary: "Add task work log" })
   addWorkLog(
     @Param("projectId", ParseIntPipe) projectId: number,
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: CreateTaskWorkLogDto,
     @CurrentUser() user: { id: number },
   ) {
@@ -111,7 +111,7 @@ export class TasksController {
 
   @Delete(":id")
   @RequirePermissions("task:delete")
-  remove(@Param("id", ParseIntPipe) id: number) {
+  remove(@Param("id") id: string) {
     return this.tasksService.remove(id);
   }
 }

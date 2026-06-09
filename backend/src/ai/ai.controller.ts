@@ -8,7 +8,9 @@ import {
   Param,
   ParseIntPipe,
   UseGuards,
+  Res,
 } from "@nestjs/common";
+import { Response } from "express";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { AiService } from "./ai.service";
 import {

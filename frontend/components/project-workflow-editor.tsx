@@ -183,7 +183,7 @@ function WorkflowGraph({
     <div
       ref={containerRef}
       className={cn(
-        "relative rounded-2xl border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(148,163,184,0.12),_transparent_32%),linear-gradient(180deg,_#fff,_#f8fafc)]",
+        "relative rounded-2xl border border-slate-200 dark:border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(148,163,184,0.12),_transparent_32%),linear-gradient(180deg,_#fff,_#f8fafc)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.05),_transparent_32%),linear-gradient(180deg,_#18181b,_#09090b)]",
         fitToView ? "overflow-hidden" : "overflow-auto",
         className,
       )}
@@ -477,13 +477,13 @@ export function ProjectWorkflowEditor({
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4'>
-      <div className='flex h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[28px] bg-white shadow-2xl'>
-        <div className='flex items-center justify-between border-b border-slate-200 px-6 py-4'>
+      <div className='flex h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[28px] bg-white dark:bg-zinc-900 shadow-2xl'>
+        <div className='flex items-center justify-between border-b border-slate-200 dark:border-white/10 px-6 py-4'>
           <div>
-            <h3 className='text-lg font-semibold text-slate-900'>
+            <h3 className='text-lg font-semibold text-slate-900 dark:text-slate-100'>
               Workflow Builder
             </h3>
-            <p className='text-sm text-slate-500'>
+            <p className='text-sm text-slate-500 dark:text-slate-400'>
               Drag nodes, connect transitions, and choose a color for each
               status.
             </p>
@@ -491,15 +491,15 @@ export function ProjectWorkflowEditor({
           <button
             type='button'
             onClick={onClose}
-            className='rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50'
+            className='rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5'
           >
             Close
           </button>
         </div>
 
         <div className='grid flex-1 gap-0 lg:grid-cols-[minmax(0,1fr)_320px]'>
-          <div className='flex min-h-0 flex-col border-r border-slate-200'>
-            <div className='flex items-center gap-2 border-b border-slate-200 px-5 py-3'>
+          <div className='flex min-h-0 flex-col border-r border-slate-200 dark:border-white/10'>
+            <div className='flex items-center gap-2 border-b border-slate-200 dark:border-white/10 px-5 py-3'>
               <button
                 type='button'
                 onClick={addNode}
@@ -516,12 +516,12 @@ export function ProjectWorkflowEditor({
                     nodes: autoLayout(current.nodes),
                   }))
                 }
-                className='inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50'
+                className='inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5'
               >
                 <WandSparkles size={14} />
                 Auto layout
               </button>
-              <div className='ml-auto text-xs text-slate-400'>
+              <div className='ml-auto text-xs text-slate-400 dark:text-slate-500'>
                 {connectingFromId
                   ? "Select a target node to create a transition"
                   : "Drag and drop cards to arrange the flow"}
@@ -565,9 +565,9 @@ export function ProjectWorkflowEditor({
             </div>
           </div>
 
-          <div className='flex min-h-0 flex-col bg-slate-50/70'>
-            <div className='border-b border-slate-200 px-5 py-4'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+          <div className='flex min-h-0 flex-col bg-slate-50 dark:bg-white/5/70'>
+            <div className='border-b border-slate-200 dark:border-white/10 px-5 py-4'>
+              <p className='text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400'>
                 {selectedEdgeId ? "Connection Detail" : "Status Detail"}
               </p>
             </div>
@@ -586,8 +586,8 @@ export function ProjectWorkflowEditor({
                   if (!edge || !sourceNode || !targetNode) return null;
                   return (
                     <div className='space-y-4'>
-                      <div className='rounded-2xl border border-slate-200 bg-white p-4 space-y-3'>
-                        <div className='flex items-center gap-2 text-sm text-slate-600'>
+                      <div className='rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-4 space-y-3'>
+                        <div className='flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400'>
                           <span
                             className='rounded-md px-2 py-1 text-xs font-semibold'
                             style={getTaskStatusInlineStyle(
@@ -597,7 +597,7 @@ export function ProjectWorkflowEditor({
                           >
                             {sourceNode.name}
                           </span>
-                          <span className='text-slate-400'>→</span>
+                          <span className='text-slate-400 dark:text-slate-500'>→</span>
                           <span
                             className='rounded-md px-2 py-1 text-xs font-semibold'
                             style={getTaskStatusInlineStyle(
@@ -608,7 +608,7 @@ export function ProjectWorkflowEditor({
                             {targetNode.name}
                           </span>
                         </div>
-                        <p className='text-xs text-slate-400'>
+                        <p className='text-xs text-slate-400 dark:text-slate-500'>
                           Nhấn nút bên dưới hoặc click vào dấu × trên mũi tên để
                           xóa liên kết này.
                         </p>
@@ -629,7 +629,7 @@ export function ProjectWorkflowEditor({
               ) : selectedNode ? (
                 <>
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>
+                    <label className='text-xs font-medium text-slate-500 dark:text-slate-400'>
                       Status name
                     </label>
                     <input
@@ -644,15 +644,15 @@ export function ProjectWorkflowEditor({
                           ),
                         }))
                       }
-                      className='w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400'
+                      className='w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400'
                     />
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>
+                    <label className='text-xs font-medium text-slate-500 dark:text-slate-400'>
                       Status color
                     </label>
-                    <div className='flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5'>
+                    <div className='flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-3 py-2.5'>
                       <input
                         type='color'
                         value={selectedNode.color}
@@ -725,10 +725,10 @@ export function ProjectWorkflowEditor({
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-xs font-medium text-slate-500'>
+                    <label className='text-xs font-medium text-slate-500 dark:text-slate-400'>
                       Transitions
                     </label>
-                    <div className='space-y-2 rounded-2xl border border-slate-200 bg-white p-3'>
+                    <div className='space-y-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-3'>
                       <button
                         type='button'
                         onClick={() =>
@@ -742,7 +742,7 @@ export function ProjectWorkflowEditor({
                           "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium",
                           connectingFromId === selectedNode.id
                             ? "bg-emerald-600 text-white"
-                            : "border border-slate-200 text-slate-600 hover:bg-slate-50",
+                            : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5",
                         )}
                       >
                         <Link2 size={14} />
@@ -763,9 +763,9 @@ export function ProjectWorkflowEditor({
                             return (
                               <div
                                 key={edge.id}
-                                className='flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-sm'
+                                className='flex items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 px-3 py-2 text-sm'
                               >
-                                <span className='text-slate-600'>
+                                <span className='text-slate-600 dark:text-slate-400'>
                                   {targetNode.name}
                                 </span>
                                 <button
@@ -778,7 +778,7 @@ export function ProjectWorkflowEditor({
                                       ),
                                     }))
                                   }
-                                  className='rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600'
+                                  className='rounded-md p-1 text-slate-400 dark:text-slate-500 hover:bg-red-50 hover:text-red-600'
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -788,7 +788,7 @@ export function ProjectWorkflowEditor({
                         {workflow.edges.filter(
                           (edge) => edge.source === selectedNode.id,
                         ).length === 0 && (
-                          <p className='text-xs text-slate-400'>
+                          <p className='text-xs text-slate-400 dark:text-slate-500'>
                             No outgoing transitions from this status yet.
                           </p>
                         )}
@@ -809,7 +809,7 @@ export function ProjectWorkflowEditor({
                   </div>
                 </>
               ) : (
-                <div className='rounded-2xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-400'>
+                <div className='rounded-2xl border border-dashed border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-5 text-sm text-slate-400 dark:text-slate-500'>
                   {selectedEdgeId
                     ? "Liên kết đã được chọn."
                     : "Select a status on the canvas to edit its name, color, and transitions."}
@@ -817,10 +817,10 @@ export function ProjectWorkflowEditor({
               )}
 
               <div className='space-y-2'>
-                <p className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+                <p className='text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400'>
                   Status Order
                 </p>
-                <div className='space-y-2 rounded-2xl border border-slate-200 bg-white p-3'>
+                <div className='space-y-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-3'>
                   {sortNodesByCanvasPosition(workflow.nodes).map(
                     (node, index) => (
                       <button
@@ -831,10 +831,10 @@ export function ProjectWorkflowEditor({
                           "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm",
                           selectedNodeId === node.id
                             ? "border-sky-300 bg-sky-50"
-                            : "border-transparent hover:border-slate-200 hover:bg-slate-50",
+                            : "border-transparent hover:border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5",
                         )}
                       >
-                        <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500'>
+                        <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500 dark:text-slate-400'>
                           {index + 1}
                         </span>
                         <span
@@ -850,11 +850,11 @@ export function ProjectWorkflowEditor({
               </div>
             </div>
 
-            <div className='flex items-center justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4'>
+            <div className='flex items-center justify-end gap-2 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-5 py-4'>
               <button
                 type='button'
                 onClick={onClose}
-                className='rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50'
+                className='rounded-lg border border-slate-200 dark:border-white/10 px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5'
               >
                 Cancel
               </button>

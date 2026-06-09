@@ -77,20 +77,20 @@ export const tasksApi = {
   getAll: (projectId: number) => api.get(`/projects/${projectId}/tasks`),
   create: (projectId: number, data: any) =>
     api.post(`/projects/${projectId}/tasks`, data),
-  update: (projectId: number, taskId: number, data: any) =>
+  update: (projectId: number, taskId: string, data: any) =>
     api.put(`/projects/${projectId}/tasks/${taskId}`, data),
-  updateStatus: (projectId: number, taskId: number, status: string) =>
+  updateStatus: (projectId: number, taskId: string, status: string) =>
     api.patch(`/projects/${projectId}/tasks/${taskId}/status`, { status }),
-  getActivities: (projectId: number, taskId: number) =>
+  getActivities: (projectId: number, taskId: string) =>
     api.get(`/projects/${projectId}/tasks/${taskId}/activities`),
-  addComment: (projectId: number, taskId: number, body: string) =>
+  addComment: (projectId: number, taskId: string, body: string) =>
     api.post(`/projects/${projectId}/tasks/${taskId}/comments`, { body }),
   addWorkLog: (
     projectId: number,
-    taskId: number,
+    taskId: string,
     data: { durationHours: number; note?: string },
   ) => api.post(`/projects/${projectId}/tasks/${taskId}/worklogs`, data),
-  delete: (projectId: number, taskId: number) =>
+  delete: (projectId: number, taskId: string) =>
     api.delete(`/projects/${projectId}/tasks/${taskId}`),
 };
 

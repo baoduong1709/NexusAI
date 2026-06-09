@@ -23,7 +23,7 @@ import { BrandLogo } from "@/components/brand-logo";
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
-  tasksCreated?: { id: number; title: string }[];
+  tasksCreated?: { id: string; title: string }[];
 }
 
 export default function AiAnalysisPage() {
@@ -122,7 +122,7 @@ export default function AiAnalysisPage() {
         <div className='flex items-center gap-2'>
           <BrandLogo size={36} />
           <div>
-            <h1 className='text-xl font-bold text-gray-900'>AI Assistant</h1>
+            <h1 className='text-xl font-bold text-gray-900 dark:text-zinc-200'>AI Assistant</h1>
             <p className='text-sm text-gray-400'>{project?.name}</p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function AiAnalysisPage() {
         <div className='flex-1 flex items-center justify-center'>
           <div className='bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-10 text-center max-w-lg w-full'>
             <BrandLogo size={56} className='mx-auto mb-4' />
-            <h2 className='text-lg font-semibold text-gray-800 mb-2'>
+            <h2 className='text-lg font-semibold text-gray-800 mb-2 dark:text-zinc-200'>
               Analyze project documents
             </h2>
             <p className='text-gray-500 text-sm mb-6'>
@@ -234,7 +234,7 @@ export default function AiAnalysisPage() {
                             key={t.id}
                             className='text-xs text-green-700 flex items-center gap-1'
                           >
-                            <CheckCircle size={11} /> {t.title}
+                            <CheckCircle size={11} /> {t.id} {t.title}
                           </li>
                         ))}
                       </ul>
@@ -254,7 +254,7 @@ export default function AiAnalysisPage() {
                 <div className='flex-shrink-0 w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center'>
                   <Bot size={16} className='text-sky-700' />
                 </div>
-                <div className='bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm'>
+                <div className='bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm dark:bg-zinc-900 dark:border-white/10'>
                   <Loader2 size={16} className='animate-spin text-sky-500' />
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function AiAnalysisPage() {
               onKeyDown={handleKeyDown}
               placeholder='Example: "Create tasks for the login module", "Create API QA tasks"...'
               rows={2}
-              className='flex-1 resize-none border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 bg-white'
+              className='flex-1 resize-none border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 bg-white dark:bg-zinc-900 dark:border-white/10'
             />
             <button
               onClick={sendMessage}

@@ -15,6 +15,7 @@ import {
   isTaskTransitionAllowed,
   normalizeTaskWorkflow,
 } from "../projects/project-workflow";
+import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
 
 const TASK_INCLUDE = {
   assignee: { select: { id: true, name: true, email: true } },
@@ -72,6 +73,15 @@ function buildTaskTitle(
     .trim();
 }
 
+function buildProjectTaskPrefix(projectName: string) {
+  return (
+    projectName
+      .replace(/[^a-zA-Z0-9]+/g, "")
+      .toUpperCase()
+      .slice(0, 8) || "PRJ"
+  );
+}
+
 const TRACKED_TASK_FIELDS = [
   "title",
   "description",
@@ -99,31 +109,55 @@ function valuesEqual(left: unknown, right: unknown) {
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private projectAiIndex: ProjectAiIndexService,
+  ) {}
 
   async create(projectId: number, dto: CreateTaskDto, userId?: number) {
     const workflowStatus = await this.resolveWorkflowStatus(projectId, dto.status);
     const projectMetadata = await this.validateTaskMetadata(projectId, dto);
     const title = buildTaskTitle(projectMetadata.taskNamingRule, dto);
 
-    const task = await this.prisma.task.create({
-      data: {
-        ...dto,
-        title,
-        projectId,
-        status: workflowStatus,
-        dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
-      },
-      include: TASK_INCLUDE,
+    const task = await this.prisma.$transaction(async (tx) => {
+      const latestTask = await tx.task.findFirst({
+        where: { projectId },
+        orderBy: { sequence: "desc" },
+        select: { sequence: true },
+      });
+      let sequence = (latestTask?.sequence ?? 0) + 1;
+      const prefix = buildProjectTaskPrefix(projectMetadata.name);
+      let id = `${prefix}-${sequence}`;
+      while (await tx.task.findUnique({ where: { id }, select: { id: true } })) {
+        sequence += 1;
+        id = `${prefix}-${sequence}`;
+      }
+      const created = await tx.task.create({
+        data: {
+          ...dto,
+          id,
+          sequence,
+          title,
+          projectId,
+          status: workflowStatus,
+          dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
+        },
+        include: TASK_INCLUDE,
+      });
+
+      await (tx as any).taskActivity.create({
+        data: {
+          taskId: created.id,
+          userId,
+          type: "HISTORY",
+          body: "Task created",
+        },
+      });
+
+      return created;
     });
 
-    await this.createActivity({
-      taskId: task.id,
-      userId,
-      type: "HISTORY",
-      body: "Task created",
-    });
-
+    this.projectAiIndex.rebuildSoon(projectId);
     return task;
   }
 
@@ -145,7 +179,7 @@ export class TasksService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: TASK_INCLUDE,
@@ -154,7 +188,7 @@ export class TasksService {
     return task;
   }
 
-  async update(id: number, dto: Partial<CreateTaskDto>, userId?: number) {
+  async update(id: string, dto: Partial<CreateTaskDto>, userId?: number) {
     const task = await this.findOne(id);
     const workflowStatus =
       dto.status !== undefined
@@ -208,10 +242,11 @@ export class TasksService {
       await (this.prisma as any).taskActivity.createMany({ data: changes });
     }
 
+    this.projectAiIndex.rebuildSoon(task.projectId);
     return updated;
   }
 
-  async updateStatus(id: number, dto: UpdateTaskStatusDto, userId?: number) {
+  async updateStatus(id: string, dto: UpdateTaskStatusDto, userId?: number) {
     const task = await this.findOne(id);
     const project = await this.getProjectWorkflow(task.projectId);
     const workflowStatus = await this.resolveWorkflowStatus(
@@ -243,22 +278,26 @@ export class TasksService {
       });
     }
 
+    this.projectAiIndex.rebuildSoon(task.projectId);
     return updated;
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
-    return this.prisma.task.delete({ where: { id } });
+  async remove(id: string) {
+    const task = await this.findOne(id);
+    const removed = await this.prisma.task.delete({ where: { id } });
+    this.projectAiIndex.rebuildSoon(task.projectId);
+    return removed;
   }
 
   async bulkCreate(projectId: number, tasks: CreateTaskDto[]) {
-    const created = await Promise.all(
-      tasks.map((dto) => this.create(projectId, dto)),
-    );
+    const created = [];
+    for (const dto of tasks) {
+      created.push(await this.create(projectId, dto));
+    }
     return created;
   }
 
-  async getActivities(projectId: number, taskId: number) {
+  async getActivities(projectId: number, taskId: string) {
     await this.ensureTaskInProject(projectId, taskId);
 
     return (this.prisma as any).taskActivity.findMany({
@@ -272,7 +311,7 @@ export class TasksService {
 
   async addComment(
     projectId: number,
-    taskId: number,
+    taskId: string,
     userId: number | undefined,
     dto: CreateTaskCommentDto,
   ) {
@@ -290,13 +329,13 @@ export class TasksService {
 
   async addWorkLog(
     projectId: number,
-    taskId: number,
+    taskId: string,
     userId: number | undefined,
     dto: CreateTaskWorkLogDto,
   ) {
     await this.ensureTaskInProject(projectId, taskId);
 
-    return this.prisma.$transaction(async (tx) => {
+    const activity = await this.prisma.$transaction(async (tx) => {
       const task = await tx.task.update({
         where: { id: taskId },
         data: { loggedHours: { increment: dto.durationHours } },
@@ -320,6 +359,9 @@ export class TasksService {
 
       return activity;
     });
+
+    this.projectAiIndex.rebuildSoon(projectId);
+    return activity;
   }
 
   private async getProjectWorkflow(projectId: number) {
@@ -335,7 +377,7 @@ export class TasksService {
   private async validateTaskMetadata(projectId: number, dto: Partial<CreateTaskDto>) {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
-      select: { epics: true, labels: true, taskNamingRule: true },
+      select: { name: true, epics: true, labels: true, taskNamingRule: true },
     });
 
     if (!project) throw new NotFoundException("Project not found");
@@ -370,7 +412,7 @@ export class TasksService {
     return workflowStatus;
   }
 
-  private async ensureTaskInProject(projectId: number, taskId: number) {
+  private async ensureTaskInProject(projectId: number, taskId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id: taskId, projectId },
       select: { id: true },
@@ -380,7 +422,7 @@ export class TasksService {
   }
 
   private createActivity(data: {
-    taskId: number;
+    taskId: string;
     userId?: number;
     type: "COMMENT" | "HISTORY" | "WORK_LOG";
     field?: string;
