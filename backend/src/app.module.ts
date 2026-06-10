@@ -9,6 +9,7 @@ import { TasksModule } from "./tasks/tasks.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { AiModule } from "./ai/ai.module";
 import { LoggingMiddleware } from "./common/middleware/logging.middleware";
+import { StorageModule } from "./common/storage/storage.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { LoggingMiddleware } from "./common/middleware/logging.middleware";
     TasksModule,
     DocumentsModule,
     AiModule,
+    StorageModule,
   ],
 })
 export class AppModule implements NestModule {

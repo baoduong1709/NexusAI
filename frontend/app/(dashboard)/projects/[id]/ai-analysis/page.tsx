@@ -84,6 +84,7 @@ export default function AiAnalysisPage() {
     let assistantContent = "";
     let suggestedTasksLocal: any[] = [];
     let assistantLogsLocal: any[] = [];
+    const language = (typeof window !== "undefined" ? localStorage.getItem("nexusai_chat_lang") : null) || "vi";
 
     try {
       await aiApi.chatStream(
@@ -157,7 +158,8 @@ export default function AiAnalysisPage() {
             }
             return next;
           });
-        }
+        },
+        language
       );
     } catch (e: any) {
       console.error("Failed to initiate stream", e);
@@ -312,23 +314,32 @@ export default function AiAnalysisPage() {
                           <ChevronDown size={11} className="ml-auto transition-transform group-open:rotate-180" />
                         </summary>
                         <div className="mt-2 pl-3 border-l-2 border-indigo-500/20 space-y-2 max-h-48 overflow-y-auto">
-                          {msg.agentLogs.map((log, lIdx) => (
-                            <div key={lIdx} className="text-[11px]">
-                              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 font-semibold">
-                                <span className={cn(log.type === "llm_call" ? "text-indigo-600 dark:text-indigo-400" : "text-emerald-600 dark:text-emerald-450")}>
-                                  {log.name}
-                                </span>
-                                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono bg-zinc-100 dark:bg-white/5 px-1 py-0.5 rounded">
-                                  {log.duration}ms
-                                </span>
+                          {msg.agentLogs.map((log, lIdx) => {
+                            const isLlm = log.type === "llm_call";
+                            const cleanName = log.name.replace(/\s*\(Lượt\s*\d+\)/gi, "");
+                            return (
+                              <div key={lIdx} className="text-[11px]">
+                                <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 font-semibold">
+                                  <span className={cn(isLlm ? "text-indigo-600 dark:text-indigo-400" : "text-emerald-600 dark:text-emerald-450", "flex items-center gap-1.5")}>
+                                    <span>{cleanName}</span>
+                                    {isLlm && log.details && (
+                                      <span className="text-zinc-400 dark:text-zinc-500 font-normal">
+                                        ({log.details.replace("Model: ", "")})
+                                      </span>
+                                    )}
+                                  </span>
+                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono bg-zinc-100 dark:bg-white/5 px-1 py-0.5 rounded">
+                                    {log.duration}ms
+                                  </span>
+                                </div>
+                                {!isLlm && log.details && (
+                                  <pre className="mt-1 p-2 rounded-xl bg-zinc-50 dark:bg-black/15 text-[10px] text-zinc-500 dark:text-zinc-500 overflow-x-auto font-mono whitespace-pre-wrap break-all border border-zinc-200/40 dark:border-white/5">
+                                    {log.details}
+                                  </pre>
+                                )}
                               </div>
-                              {log.details && (
-                                <pre className="mt-1 p-2 rounded-xl bg-zinc-50 dark:bg-black/15 text-[10px] text-zinc-500 dark:text-zinc-500 overflow-x-auto font-mono whitespace-pre-wrap break-all border border-zinc-200/40 dark:border-white/5">
-                                  {log.details}
-                                </pre>
-                              )}
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </details>
                     </div>

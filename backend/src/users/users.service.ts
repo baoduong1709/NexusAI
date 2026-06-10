@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateChatSettingsDto } from "./dto/update-chat-settings.dto";
 import * as bcrypt from "bcrypt";
 
 const USER_SELECT = {
@@ -67,5 +68,33 @@ export class UsersService {
   async remove(id: number) {
     await this.findOne(id);
     return this.prisma.user.delete({ where: { id }, select: USER_SELECT });
+  }
+
+  async getChatSettings(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        chatLanguage: true,
+        chatDescription: true,
+      },
+    });
+    if (!user) throw new NotFoundException("User not found");
+    return user;
+  }
+
+  async updateChatSettings(userId: number, dto: UpdateChatSettingsDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException("User not found");
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: dto,
+      select: {
+        chatLanguage: true,
+        chatDescription: true,
+      },
+    });
   }
 }

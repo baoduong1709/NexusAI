@@ -1,4 +1,4 @@
-import {
+﻿import {
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -133,6 +133,11 @@ export class AiChatDto {
   @IsString()
   @IsOptional()
   summary?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  language?: string;
 }
 
 export class AiSummarizeDto {
@@ -171,3 +176,5 @@ export class UpdateSessionDto {
   @IsOptional()
   messages?: any[];
 }
+
+

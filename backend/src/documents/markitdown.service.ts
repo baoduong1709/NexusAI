@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { exec } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs";
@@ -9,13 +10,17 @@ const execAsync = promisify(exec);
 export class MarkitdownService implements OnModuleInit {
   private readonly logger = new Logger(MarkitdownService.name);
   private isAvailable = false;
+  private commandPrefix: "python -m markitdown" | "markitdown" | null = null;
+
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
     await this.checkAndInstallMarkitdown();
   }
 
   /**
-   * Checks if markitdown CLI is available. If not, attempts to install it via pip.
+   * Checks if markitdown CLI is available. Installation is opt-in because package
+   * installation during application startup is slow and changes the host environment.
    */
   private async checkAndInstallMarkitdown() {
     try {
@@ -23,6 +28,7 @@ export class MarkitdownService implements OnModuleInit {
       // Check using python module execution first as it's more reliable across environments
       await execAsync("python -m markitdown --version");
       this.isAvailable = true;
+      this.commandPrefix = "python -m markitdown";
       this.logger.log("Microsoft MarkItDown is available via python module.");
       return;
     } catch {
@@ -32,10 +38,22 @@ export class MarkitdownService implements OnModuleInit {
     try {
       await execAsync("markitdown --version");
       this.isAvailable = true;
+      this.commandPrefix = "markitdown";
       this.logger.log("Microsoft MarkItDown is available via direct CLI.");
       return;
     } catch {
-      this.logger.warn("Microsoft MarkItDown CLI is not installed. Attempting auto-installation...");
+      this.logger.warn("Microsoft MarkItDown CLI is not installed.");
+    }
+
+    const autoInstallEnabled =
+      this.configService
+        .get<string>("MARKITDOWN_AUTO_INSTALL", "false")
+        .toLowerCase() === "true";
+    if (!autoInstallEnabled) {
+      this.logger.warn(
+        "Document conversion is disabled. Install MarkItDown manually or set MARKITDOWN_AUTO_INSTALL=true.",
+      );
+      return;
     }
 
     try {
@@ -47,10 +65,12 @@ export class MarkitdownService implements OnModuleInit {
       try {
         await execAsync("python -m markitdown --version");
         this.isAvailable = true;
+        this.commandPrefix = "python -m markitdown";
         this.logger.log("Microsoft MarkItDown installed successfully!");
       } catch {
         await execAsync("markitdown --version");
         this.isAvailable = true;
+        this.commandPrefix = "markitdown";
         this.logger.log("Microsoft MarkItDown installed successfully!");
       }
     } catch (error) {
@@ -60,6 +80,7 @@ export class MarkitdownService implements OnModuleInit {
         }`
       );
       this.isAvailable = false;
+      this.commandPrefix = null;
     }
   }
 
@@ -77,7 +98,7 @@ export class MarkitdownService implements OnModuleInit {
    * @returns true if successful, false otherwise
    */
   async convertToMarkdown(inputPath: string, outputPath: string): Promise<boolean> {
-    if (!this.isAvailable) {
+    if (!this.isAvailable || !this.commandPrefix) {
       this.logger.warn(`Skipping conversion. MarkItDown is not available. File: ${inputPath}`);
       return false;
     }
@@ -90,8 +111,7 @@ export class MarkitdownService implements OnModuleInit {
     try {
       this.logger.log(`Converting file to Markdown: ${inputPath} -> ${outputPath}`);
       
-      // Use python -m markitdown if it was found, otherwise use direct cli
-      let command = `python -m markitdown "${inputPath}" -o "${outputPath}"`;
+      const command = `${this.commandPrefix} "${inputPath}" -o "${outputPath}"`;
       
       // Run the command
       await execAsync(command);

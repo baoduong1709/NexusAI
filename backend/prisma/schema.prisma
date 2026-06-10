@@ -21,49 +21,52 @@ model Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  isActive  Boolean  @default(true) @map("is_active")
-  skills    String[] @default([])
-  roleId    Int?     @map("role_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  password        String
+  isActive        Boolean  @default(true) @map("is_active")
+  skills          String[] @default([])
+  roleId          Int?     @map("role_id")
+  chatLanguage    String   @default("vi") @map("chat_language")
+  chatDescription String?  @db.Text @map("chat_description")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   role           Role?           @relation(fields: [roleId], references: [id])
   projectMembers ProjectMember[]
   assignedTasks  Task[]          @relation("AssignedTasks")
   aiChatSessions AiChatSession[]
   taskActivities TaskActivity[]
+  aiTokenLogs    AiTokenLog[]
 
   @@map("users")
 }
 
 model Project {
-  id           Int      @id @default(autoincrement())
-  name         String
-  description  String?
-  budget       Float?
-  startDate    DateTime? @map("start_date")
-  endDate      DateTime? @map("end_date")
-  status       ProjectStatus @default(ACTIVE)
-  projectRoles String[] @default(["Developer", "Tech Lead", "Designer", "Tester", "PM", "BA", "DevOps"]) @map("project_roles")
-  projectRoleConfigs Json @default("[]") @map("project_role_configs")
-  taskStatuses String[] @default(["TODO", "IN_PROGRESS", "DONE"]) @map("task_statuses")
-  taskWorkflow Json?    @map("task_workflow")
-  epics        String[] @default([])
-  labels       String[] @default([])
-  taskNamingRule String? @map("task_naming_rule")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id             Int           @id @default(autoincrement())
+  name           String
+  description    String?
+  budget         Float?
+  startDate      DateTime?     @map("start_date")
+  endDate        DateTime?     @map("end_date")
+  status         ProjectStatus @default(ACTIVE)
+  projectRoles   String[]      @default(["Developer", "Tech Lead", "Designer", "Tester", "PM", "BA", "DevOps"]) @map("project_roles")
+  projectRoleConfigs Json        @default("[]") @map("project_role_configs")
+  taskStatuses   String[]      @default(["TODO", "IN_PROGRESS", "DONE"]) @map("task_statuses")
+  taskWorkflow   Json?         @map("task_workflow")
+  epics          String[]      @default([])
+  labels         String[]      @default([])
+  taskNamingRule String?       @map("task_naming_rule")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  members   ProjectMember[]
-  tasks     Task[]
-  documents Document[]
+  members             ProjectMember[]
+  tasks               Task[]
+  documents           Document[]
   requirementsHistory RequirementsHistory[]
-  aiChatSessions AiChatSession[]
-  aiIndex ProjectAiIndex?
+  aiChatSessions      AiChatSession[]
+  aiIndex             ProjectAiIndex?
 
   @@map("projects")
 }
@@ -93,14 +96,14 @@ model ProjectMember {
 }
 
 model Document {
-  id          Int      @id @default(autoincrement())
-  projectId   Int      @map("project_id")
-  filename    String
-  originalName String  @map("original_name")
-  mimeType    String   @map("mime_type")
-  size        Int
-  path        String
-  createdAt   DateTime @default(now()) @map("created_at")
+  id           Int      @id @default(autoincrement())
+  projectId    Int      @map("project_id")
+  filename     String
+  originalName String   @map("original_name")
+  mimeType     String   @map("mime_type")
+  size         Int
+  path         String
+  createdAt    DateTime @default(now()) @map("created_at")
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -121,26 +124,26 @@ model RequirementsHistory {
 }
 
 model Task {
-  id            String     @id
+  id            String    @id
   sequence      Int
-  projectId     Int        @map("project_id")
+  projectId     Int       @map("project_id")
   title         String
   description   String?
-  assigneeId    Int?       @map("assignee_id")
-  status        String     @default("TODO")
-  priority      Priority   @default(MEDIUM)
-  isAiGenerated Boolean    @default(false) @map("is_ai_generated")
-  dueDate       DateTime?  @map("due_date")
+  assigneeId    Int?      @map("assignee_id")
+  status        String    @default("TODO")
+  priority      Priority  @default(MEDIUM)
+  isAiGenerated Boolean   @default(false) @map("is_ai_generated")
+  dueDate       DateTime? @map("due_date")
   epic          String?
-  labels        String[]   @default([])
+  labels        String[]  @default([])
   sprint        String?
-  estimateHours Float      @default(0) @map("estimate_hours")
-  loggedHours   Float      @default(0) @map("logged_hours")
-  createdAt     DateTime   @default(now()) @map("created_at")
-  updatedAt     DateTime   @updatedAt @map("updated_at")
+  estimateHours Float     @default(0) @map("estimate_hours")
+  loggedHours   Float     @default(0) @map("logged_hours")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee User?   @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee   User?        @relation("AssignedTasks", fields: [assigneeId], references: [id])
   activities TaskActivity[]
 
   @@unique([projectId, sequence])
@@ -159,7 +162,7 @@ model TaskActivity {
   durationHours Float?           @map("duration_hours")
   createdAt     DateTime         @default(now()) @map("created_at")
 
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([taskId, createdAt])
@@ -199,4 +202,29 @@ enum TaskActivityType {
   COMMENT
   HISTORY
   WORK_LOG
+}
+
+model SystemConfig {
+  key       String   @id
+  value     String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+model AiTokenLog {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  model            String
+  promptTokens     Int      @map("prompt_tokens")
+  completionTokens Int      @map("completion_tokens")
+  totalTokens      Int      @map("total_tokens")
+  requestType      String   @map("request_type")
+  promptLength     Int      @map("prompt_length")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_token_logs")
 }

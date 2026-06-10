@@ -30,6 +30,8 @@ import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
+import TiptapImage from "@tiptap/extension-image";
+import { Image as LucideImage } from "lucide-react";
 import {
   Loader2,
   Plus,
@@ -392,6 +394,7 @@ type DescriptionEditorProps = {
   improving: boolean;
   mentionItems: { id: string; label: string }[];
   disabled?: boolean;
+  projectId: number;
 };
 
 function DescriptionEditor({
@@ -405,6 +408,7 @@ function DescriptionEditor({
   improving,
   mentionItems,
   disabled,
+  projectId,
 }: DescriptionEditorProps) {
   const [aiInput, setAiInput] = useState("");
   const [selectedMention, setSelectedMention] = useState("");
@@ -413,6 +417,8 @@ function DescriptionEditor({
   const [dateToInsert, setDateToInsert] = useState("");
   const [isTableActive, setIsTableActive] = useState(false);
   const [showTableMenu, setShowTableMenu] = useState(false);
+
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -442,6 +448,11 @@ function DescriptionEditor({
           ];
         },
       }),
+      TiptapImage.configure({
+        HTMLAttributes: {
+          class: "editor-image rounded-md max-w-full my-2 border border-zinc-200 dark:border-white/10",
+        },
+      }),
       InfoPanelNode,
       DateBadgeNode,
       StatusBadgeNode,
@@ -468,6 +479,45 @@ function DescriptionEditor({
       attributes: {
         class:
           "min-h-[180px] px-3 py-2 text-sm leading-6 text-zinc-900 dark:text-zinc-100 focus:outline-none",
+      },
+      handleDOMEvents: {
+        paste: (view, event) => {
+          const files = Array.from(event.clipboardData?.files || []);
+          const items = Array.from(event.clipboardData?.items || []);
+          const imageFiles: File[] = [];
+
+          for (const file of files) {
+            if (file.type.startsWith("image/")) {
+              imageFiles.push(file);
+            }
+          }
+
+          for (const item of items) {
+            if (item.type.startsWith("image/")) {
+              const file = item.getAsFile();
+              if (file && !imageFiles.some((f) => f.name === file.name && f.size === file.size)) {
+                imageFiles.push(file);
+              }
+            }
+          }
+
+          if (imageFiles.length === 0) return false;
+          event.preventDefault();
+          for (const file of imageFiles) {
+            uploadAndInsertImage(view, projectId, file);
+          }
+          return true;
+        },
+        drop: (view, event) => {
+          const files = Array.from(event.dataTransfer?.files || []);
+          const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+          if (imageFiles.length === 0) return false;
+          event.preventDefault();
+          for (const file of imageFiles) {
+            uploadAndInsertImage(view, projectId, file);
+          }
+          return true;
+        },
       },
     },
   });
@@ -599,6 +649,28 @@ function DescriptionEditor({
           </button>
         ))}
         <span className='mx-1 h-5 w-px bg-gray-200' />
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            if (disabled) return;
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (file && editor) {
+                uploadAndInsertImage(editor.view, projectId, file);
+              }
+            };
+            input.click();
+          }}
+          disabled={disabled}
+          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
+          title='Insert image'
+        >
+          <LucideImage size={14} />
+        </button>
         <button
           type='button'
           onMouseDown={(e) => {
@@ -962,6 +1034,227 @@ function DescriptionEditor({
   );
 }
 
+function isHtmlEmpty(html: string) {
+  if (!html) return true;
+  const stripped = html.replace(/<[^>]+>/g, "").trim();
+  return stripped === "" && !html.includes("<img");
+}
+
+async function uploadAndInsertImage(view: any, projectId: number, file: File) {
+  try {
+    let processedFile = file;
+    // Check if filename has extension, otherwise determine from mime type
+    if (!file.name || !file.name.includes(".")) {
+      let ext = ".png";
+      if (file.type === "image/jpeg") ext = ".jpg";
+      else if (file.type === "image/gif") ext = ".gif";
+      else if (file.type === "image/webp") ext = ".webp";
+      processedFile = new File([file], `pasted-image-${Date.now()}${ext}`, { type: file.type });
+    }
+
+    console.log("Uploading rich text image:", processedFile.name, processedFile.type);
+    const res = await documentsApi.upload(projectId, processedFile);
+    const filename = res.data.filename;
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace(/\/api$/, "");
+    const imageUrl = `${baseUrl}/uploads/project-${projectId}/${filename}`;
+
+    console.log("Uploaded rich text image URL:", imageUrl);
+    const { schema } = view.state;
+    const node = schema.nodes.image.create({ src: imageUrl, alt: processedFile.name });
+    const transaction = view.state.tr.replaceSelectionWith(node);
+    view.dispatch(transaction);
+  } catch (error: any) {
+    console.error("Failed to upload/insert image:", error);
+    toast.error("Failed to upload image: " + (error?.response?.data?.message || error.message || "Unknown error"));
+  }
+}
+
+type CommentEditorProps = {
+  value: string;
+  onChange: (next: string) => void;
+  onSubmit: () => void;
+  projectId: number;
+  disabled?: boolean;
+};
+
+function CommentEditor({
+  value,
+  onChange,
+  onSubmit,
+  projectId,
+  disabled,
+}: CommentEditorProps) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+      }),
+      UnderlineExt,
+      TiptapImage.configure({
+        HTMLAttributes: {
+          class: "editor-image rounded-md max-w-full my-2 border border-zinc-200 dark:border-white/10",
+        },
+      }),
+      Placeholder.configure({
+        placeholder: "Add a comment...",
+      }),
+    ],
+    content: value || "",
+    editable: !disabled,
+    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      if (editor.isFocused) {
+        onChange(sanitizeRichTextHtml(editor.getHTML()));
+      }
+    },
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[80px] px-3 py-2 text-sm leading-6 text-zinc-900 dark:text-zinc-100 focus:outline-none",
+      },
+      handleDOMEvents: {
+        paste: (view, event) => {
+          const files = Array.from(event.clipboardData?.files || []);
+          const items = Array.from(event.clipboardData?.items || []);
+          const imageFiles: File[] = [];
+
+          for (const file of files) {
+            if (file.type.startsWith("image/")) {
+              imageFiles.push(file);
+            }
+          }
+
+          for (const item of items) {
+            if (item.type.startsWith("image/")) {
+              const file = item.getAsFile();
+              if (file && !imageFiles.some((f) => f.name === file.name && f.size === file.size)) {
+                imageFiles.push(file);
+              }
+            }
+          }
+
+          if (imageFiles.length === 0) return false;
+          event.preventDefault();
+          for (const file of imageFiles) {
+            uploadAndInsertImage(view, projectId, file);
+          }
+          return true;
+        },
+        drop: (view, event) => {
+          const files = Array.from(event.dataTransfer?.files || []);
+          const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+          if (imageFiles.length === 0) return false;
+          event.preventDefault();
+          for (const file of imageFiles) {
+            uploadAndInsertImage(view, projectId, file);
+          }
+          return true;
+        },
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!disabled);
+  }, [editor, disabled]);
+
+  useEffect(() => {
+    if (!editor) return;
+    const current = sanitizeRichTextHtml(editor.getHTML());
+    const next = sanitizeRichTextHtml(value || "");
+    if (current !== next) {
+      editor.commands.setContent(next || "<p></p>", false);
+    }
+  }, [editor, value]);
+
+  const insertImage = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (file && editor) {
+        uploadAndInsertImage(editor.view, projectId, file);
+      }
+    };
+    input.click();
+  };
+
+  return (
+    <div className='mt-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'>
+      <div className='flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-white/5 p-1.5'>
+        {[
+          {
+            icon: Bold,
+            active: !!editor?.isActive("bold"),
+            action: () => editor?.chain().focus().toggleBold().run(),
+            title: "Bold",
+          },
+          {
+            icon: Italic,
+            active: !!editor?.isActive("italic"),
+            action: () => editor?.chain().focus().toggleItalic().run(),
+            title: "Italic",
+          },
+          {
+            icon: Underline,
+            active: !!editor?.isActive("underline"),
+            action: () => editor?.chain().focus().toggleUnderline().run(),
+            title: "Underline",
+          },
+        ].map((item, idx) => (
+          <button
+            key={`${idx}`}
+            type='button'
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (disabled) return;
+              item.action();
+            }}
+            disabled={disabled}
+            className={cn(
+              "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
+              item.active && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
+            )}
+            title={item.title}
+          >
+            <item.icon size={13} />
+          </button>
+        ))}
+        <span className='mx-1 h-4 w-px bg-gray-200' />
+        <button
+          type='button'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            if (disabled) return;
+            insertImage();
+          }}
+          disabled={disabled}
+          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
+          title='Insert image'
+        >
+          <LucideImage size={13} />
+        </button>
+      </div>
+      <EditorContent editor={editor} />
+      <div className='mt-1.5 flex justify-end border-t border-zinc-100 dark:border-white/5 p-2'>
+        <button
+          type='button'
+          onClick={onSubmit}
+          disabled={
+            isHtmlEmpty(value) ||
+            disabled
+          }
+          className='rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50'
+        >
+          Comment
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const projectId = Number(id);
@@ -1318,6 +1611,7 @@ export default function ProjectDetailPage() {
     let assistantContent = "";
     let suggestedTasksLocal: SuggestedTask[] = [];
     let assistantLogsLocal: any[] = [];
+    const language = (typeof window !== "undefined" ? localStorage.getItem("nexusai_chat_lang") : null) || "vi";
 
     try {
       await aiApi.chatStream(
@@ -1380,7 +1674,8 @@ export default function ProjectDetailPage() {
             }
             return next;
           });
-        }
+        },
+        language
       );
     } catch (e: any) {
       console.error("Failed to initiate stream", e);
@@ -1748,7 +2043,7 @@ export default function ProjectDetailPage() {
       toast.error("Create the task before adding comments");
       return;
     }
-    if (!body || addTaskCommentMutation.isPending) return;
+    if (isHtmlEmpty(body) || addTaskCommentMutation.isPending) return;
     addTaskCommentMutation.mutate(body);
   };
 
@@ -3399,7 +3694,7 @@ export default function ProjectDetailPage() {
                               });
                             if (e.key === "Escape") setEditingRole(null);
                           }}
-                          className='text-xs border border-blue-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400 w-36'
+                          className='text-xs bg-transparent dark:text-zinc-100 border border-blue-300 dark:border-blue-500/50 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400 w-36'
                         >
                           {projectRoles.map((role: string) => (
                             <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
@@ -3501,7 +3796,7 @@ export default function ProjectDetailPage() {
                 <select
                   value={addMemberRole}
                   onChange={(e) => setAddMemberRole(e.target.value)}
-                  className='w-full text-sm border border-zinc-200 dark:border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+                  className='w-full bg-transparent text-sm border border-zinc-200 dark:border-white/10 dark:text-zinc-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
                 >
                   {projectRoles.map((role: string) => (
                     <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
@@ -4235,6 +4530,7 @@ export default function ProjectDetailPage() {
                     </label>
                     <input type='hidden' {...register("description")} />
                     <DescriptionEditor
+                      projectId={projectId}
                       value={descriptionHtml}
                       onChange={(next) => {
                         setDescriptionHtml(next);
@@ -4298,30 +4594,13 @@ export default function ProjectDetailPage() {
                       <div className='space-y-4'>
                         {(activityTab === "comments" ||
                           activityTab === "all") && (
-                          <div className='rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-3'>
-                            <textarea
-                              value={commentDraft}
-                              onChange={(event) =>
-                                setCommentDraft(event.target.value)
-                              }
-                              placeholder='Add a comment...'
-                              rows={3}
-                              className='w-full bg-transparent resize-none rounded-md border border-zinc-200 dark:border-white/10 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                            />
-                            <div className='mt-2 flex justify-end'>
-                              <button
-                                type='button'
-                                onClick={addTaskComment}
-                                disabled={
-                                  !commentDraft.trim() ||
-                                  addTaskCommentMutation.isPending
-                                }
-                                className='rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50'
-                              >
-                                Comment
-                              </button>
-                            </div>
-                          </div>
+                          <CommentEditor
+                            value={commentDraft}
+                            onChange={setCommentDraft}
+                            onSubmit={addTaskComment}
+                            projectId={projectId}
+                            disabled={addTaskCommentMutation.isPending}
+                          />
                         )}
                         {(activityTab === "worklog" ||
                           activityTab === "all") && (
@@ -4390,7 +4669,12 @@ export default function ProjectDetailPage() {
                                 </div>
                                 <div className='mt-1 text-sm text-zinc-700 dark:text-zinc-300'>
                                   {activity.type === "COMMENT" && (
-                                    <p className='whitespace-pre-wrap'>{activity.body}</p>
+                                    <div 
+                                      className='rich-text-preview text-sm text-zinc-700 dark:text-zinc-300'
+                                      dangerouslySetInnerHTML={{ 
+                                        __html: sanitizeRichTextHtml(activity.body || "") 
+                                      }} 
+                                    />
                                   )}
                                   {activity.type === "WORK_LOG" && (
                                     <p className='whitespace-pre-wrap'>

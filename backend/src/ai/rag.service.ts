@@ -7,18 +7,44 @@ import { AiLogger } from "./ai-logger.util";
 @Injectable()
 export class RagService {
   private readonly logger = new Logger(RagService.name);
-  private openai: OpenAI;
+  private embeddingUnavailableModel?: string;
+  private embeddingUnavailableUntil = 0;
+  private embeddingProbeLock?: Promise<void>;
 
   constructor(
     private config: ConfigService,
     private prisma: PrismaService,
-  ) {
-    let apiBase = this.config.get("AI_API_BASE") || "https://api.ai-box.vn/v1";
+  ) {}
+
+  private async getSystemConfig(
+    key: string,
+    defaultValue: string,
+  ): Promise<string> {
+    try {
+      const stored = await this.prisma.systemConfig.findUnique({
+        where: { key },
+      });
+      return stored?.value || defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  private async getOpenAIClient(): Promise<OpenAI> {
+    const apiKey = await this.getSystemConfig(
+      "AI_API_KEY",
+      this.config.get("AI_API_KEY", ""),
+    );
+    let apiBase = await this.getSystemConfig(
+      "AI_API_BASE",
+      this.config.get("AI_API_BASE", "https://api.ai-box.vn/v1"),
+    );
     if (apiBase && !apiBase.endsWith("/v1") && !apiBase.endsWith("/v1/")) {
       apiBase = apiBase.replace(/\/$/, "") + "/v1";
     }
-    this.openai = new OpenAI({
-      apiKey: this.config.get("AI_API_KEY") || "dummy",
+
+    return new OpenAI({
+      apiKey,
       baseURL: apiBase,
     });
   }
@@ -26,29 +52,72 @@ export class RagService {
   // 1. Generate Embedding
   async generateEmbedding(text: string): Promise<number[]> {
     const startTime = Date.now();
+    const model = await this.getSystemConfig(
+      "AI_EMBEDDING_MODEL",
+      this.config.get("AI_EMBEDDING_MODEL", "text-embedding-3-small"),
+    );
+    if (["disabled", "none", "off"].includes(model.trim().toLowerCase())) {
+      return [];
+    }
+    if (
+      this.embeddingUnavailableModel === model &&
+      Date.now() < this.embeddingUnavailableUntil
+    ) {
+      return [];
+    }
+
+    while (this.embeddingProbeLock) {
+      await this.embeddingProbeLock;
+      if (
+        this.embeddingUnavailableModel === model &&
+        Date.now() < this.embeddingUnavailableUntil
+      ) {
+        return [];
+      }
+    }
+
+    let releaseProbe: () => void = () => undefined;
+    this.embeddingProbeLock = new Promise<void>((resolve) => {
+      releaseProbe = resolve;
+    });
     try {
-      const response = await this.openai.embeddings.create({
-        model: "text-embedding-3-small", // Standard embedding model
+      const openai = await this.getOpenAIClient();
+      const response = await openai.embeddings.create({
+        model,
         input: text,
       });
       const durationMs = Date.now() - startTime;
       AiLogger.log({
         type: "embeddings",
-        request: { model: "text-embedding-3-small", inputLength: text.length },
+        request: { model, inputLength: text.length },
         response: { embeddingLength: response.data[0]?.embedding?.length || 0 },
         durationMs,
       });
+      this.embeddingUnavailableModel = undefined;
+      this.embeddingUnavailableUntil = 0;
       return response.data[0].embedding;
     } catch (error: any) {
       const durationMs = Date.now() - startTime;
       AiLogger.log({
         type: "embeddings",
-        request: { model: "text-embedding-3-small", inputLength: text.length },
+        request: { model, inputLength: text.length },
         error: error.message || error,
         durationMs,
       });
-      this.logger.error("Failed to generate embedding", error);
+      const status = error?.status || error?.response?.status;
+      if (status === 404 || status === 503) {
+        this.embeddingUnavailableModel = model;
+        this.embeddingUnavailableUntil = Date.now() + 5 * 60 * 1000;
+        this.logger.warn(
+          `Embedding model ${model} is unavailable; using keyword search for 5 minutes`,
+        );
+      } else {
+        this.logger.error("Failed to generate embedding", error);
+      }
       return [];
+    } finally {
+      this.embeddingProbeLock = undefined;
+      releaseProbe();
     }
   }
 
@@ -144,28 +213,36 @@ export class RagService {
       }
     }
     
-    return matchCount / queryWords.size;
+    return Math.min(1, matchCount / queryWords.size);
   }
 
   // 4. Generate Document Summary
   async generateDocumentSummary(content: string, title: string): Promise<string> {
-    const prompt = `Bạn là một AI Agent phân tích tài liệu chuyên nghiệp. 
-Hãy tóm tắt tài liệu "${title}" sau đây một cách cô đọng nhưng đầy đủ thông tin bằng tiếng Việt (khoảng 150-250 từ).
-Tập trung vào:
-- Loại tài liệu (ví dụ: Yêu cầu khách hàng, Đặc tả nghiệp vụ, API, Thiết kế...).
-- Mục tiêu chính của tài liệu.
-- Các module nghiệp vụ hoặc chức năng cốt lõi được đề cập.
-- Các quy định, ràng buộc kỹ thuật hoặc lưu ý đặc biệt (nếu có).
+    const prompt = `You are a professional document analysis AI Agent.
+Summarize the following document "${title}" concisely but with complete information in Vietnamese (around 150-250 words).
+Focus on:
+- Document type (e.g., Client Requirements, Business Specification, API, Design...).
+- Main objective of the document.
+- Core business modules or features mentioned.
+- Any regulations, technical constraints, or special notes (if any).
 
-Nội dung tài liệu:
+Document content:
 ${content.slice(0, 10000)}
 
-Tóm tắt của bạn (Trả về văn bản thuần túy, không có định dạng markdown tiêu đề):`;
+Your summary (Return plain text, without markdown headers format):`;
 
     const startTime = Date.now();
     try {
-      const model = this.config.get("AI_MODEL", "deepseek-v4-pro[1m]");
-      const response = await this.openai.chat.completions.create({
+      const defaultSummaryModel =
+        this.config.get<string>("AI_SUMMARY_MODEL") ||
+        this.config.get<string>("AI_MODEL") ||
+        "deepseek-v4-flash[1m]";
+      const model = await this.getSystemConfig(
+        "AI_SUMMARY_MODEL",
+        defaultSummaryModel,
+      );
+      const openai = await this.getOpenAIClient();
+      const response = await openai.chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3,

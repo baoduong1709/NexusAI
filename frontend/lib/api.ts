@@ -131,6 +131,9 @@ export const aiApi = {
     projectId: number,
     payload: { title?: string; description: string; instruction: string },
   ) => api.post(`/projects/${projectId}/ai/description/assist`, payload),
+  getChatSettings: () => api.get("/users/me/chat-settings"),
+  updateChatSettings: (payload: { chatLanguage?: string; chatDescription?: string }) =>
+    api.put("/users/me/chat-settings", payload),
   chatStream: async (
     projectId: number,
     messages: { role: string; content: string }[],
@@ -140,6 +143,8 @@ export const aiApi = {
     onDone?: () => void,
     onError?: (error: any) => void,
     onAgentLog?: (log: any) => void,
+    language?: string,
+    onWaitingMessage?: (text: string) => void,
   ) => {
     const token = typeof window !== "undefined" ? localStorage.getItem("nexusai_token") : null;
     const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/projects/${projectId}/ai/chat-stream`;
@@ -151,7 +156,7 @@ export const aiApi = {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",
         },
-        body: JSON.stringify({ messages, summary }),
+        body: JSON.stringify({ messages, summary, language }),
       });
 
       if (!response.ok) {
@@ -211,6 +216,13 @@ export const aiApi = {
             } catch (e) {
               console.error("Failed to parse agent_log data", e);
             }
+          } else if (event === "waiting_message") {
+            try {
+              const parsed = JSON.parse(data);
+              if (onWaitingMessage) onWaitingMessage(parsed.text);
+            } catch (e) {
+              if (onWaitingMessage) onWaitingMessage(data);
+            }
           } else if (event === "error") {
             try {
               const errObj = JSON.parse(data);
@@ -258,6 +270,13 @@ export const aiApi = {
             const log = JSON.parse(data);
             if (onAgentLog) onAgentLog(log);
           } catch (e) {}
+        } else if (event === "waiting_message") {
+          try {
+            const parsed = JSON.parse(data);
+            if (onWaitingMessage) onWaitingMessage(parsed.text);
+          } catch (e) {
+            if (onWaitingMessage) onWaitingMessage(data);
+          }
         } else if (event === "done") {
           if (onDone) onDone();
         } else if (event === "message" || !event) {
@@ -302,4 +321,10 @@ export const aiApi = {
   ) => api.put(`/projects/${projectId}/ai/sessions/${sessionId}`, data),
   deleteSession: (projectId: number, sessionId: number) =>
     api.delete(`/projects/${projectId}/ai/sessions/${sessionId}`),
+  getSystemConfigs: () => api.get("/ai/system-configs"),
+  updateSystemConfigs: (payload: any) => api.put("/ai/system-configs", payload),
+  getTokenSummary: (userId?: number) => api.get("/ai/token-stats/summary", { params: { userId } }),
+  getTokenCharts: (userId?: number) => api.get("/ai/token-stats/charts", { params: { userId } }),
+  getTokenHistory: (userId?: number, page?: number, limit?: number) =>
+    api.get("/ai/token-stats/history", { params: { userId, page, limit } }),
 };

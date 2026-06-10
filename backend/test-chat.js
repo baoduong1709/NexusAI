@@ -1,15 +1,17 @@
 const { OpenAI } = require("openai");
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const openai = new OpenAI({
-  apiKey: "sk-1O6r1xOga2yJzGzMxm8bqVbtsVXt8i8JaukGhHiA37BZb43L",
-  baseURL: "https://api.ai-box.vn/v1",
+  apiKey: process.env.AI_API_KEY,
+  baseURL: process.env.AI_API_BASE || "https://api.ai-box.vn/v1",
 });
 
 async function main() {
   try {
     console.log("Calling OpenAI API...");
     const stream = await openai.chat.completions.create({
-      model: "deepseek-v4-flash[1m]",
+      model: process.env.AI_MODEL || "deepseek-v4-flash[1m]",
       messages: [
         { role: "user", content: "chào bạn" }
       ],

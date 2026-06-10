@@ -142,7 +142,7 @@ export class AiController {
     @CurrentUser() user: { id: number },
     @Body() dto: AiChatDto,
   ) {
-    return this.aiService.chat(projectId, user.id, dto.messages, dto.summary);
+    return this.aiService.chat(projectId, user.id, dto.messages, dto.summary, dto.language);
   }
 
   @Post("chat-stream")
@@ -165,6 +165,7 @@ export class AiController {
       dto.messages,
       dto.summary,
       res,
+      dto.language,
     );
   }
 

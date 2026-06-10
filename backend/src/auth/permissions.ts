@@ -19,6 +19,9 @@ export const AVAILABLE_PERMISSIONS = [
   "document:upload",
   "document:delete",
   "ai:analyze",
+  "system:config:write",
+  "system:config:read",
+  "token:read",
 ] as const;
 
 export const PROJECT_SCOPED_PERMISSIONS = [

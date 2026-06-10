@@ -37,11 +37,11 @@ const PROJECT_ROLE_PERMISSION_TEMPLATES: Record<string, string[]> = {
     "document:upload",
     "ai:analyze",
   ],
-  developer: ["project:read", "task:read", "task:update"],
-  designer: ["project:read", "task:read", "task:update"],
-  tester: ["project:read", "task:read", "task:update"],
-  ba: ["project:read", "task:read", "task:update"],
-  devops: ["project:read", "task:read", "task:update"],
+  developer: ["project:read", "task:read", "task:update", "document:upload"],
+  designer: ["project:read", "task:read", "task:update", "document:upload"],
+  tester: ["project:read", "task:read", "task:update", "document:upload"],
+  ba: ["project:read", "task:read", "task:update", "document:upload"],
+  devops: ["project:read", "task:read", "task:update", "document:upload"],
 };
 
 export const DEFAULT_PROJECT_ROLES = [

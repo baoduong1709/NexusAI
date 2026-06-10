@@ -5,33 +5,40 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create default roles
+  const adminPermissions = [
+    "user:create",
+    "user:read",
+    "user:update",
+    "user:delete",
+    "role:create",
+    "role:read",
+    "role:update",
+    "role:delete",
+    "project:create",
+    "project:read",
+    "project:update",
+    "project:delete",
+    "task:create",
+    "task:read",
+    "task:update",
+    "task:delete",
+    "task:approve_ai",
+    "document:upload",
+    "document:delete",
+    "ai:analyze",
+    "system:config:write",
+    "system:config:read",
+    "token:read",
+  ];
+
   const adminRole = await prisma.role.upsert({
     where: { name: "Admin" },
-    update: {},
+    update: {
+      permissions: adminPermissions,
+    },
     create: {
       name: "Admin",
-      permissions: [
-        "user:create",
-        "user:read",
-        "user:update",
-        "user:delete",
-        "role:create",
-        "role:read",
-        "role:update",
-        "role:delete",
-        "project:create",
-        "project:read",
-        "project:update",
-        "project:delete",
-        "task:create",
-        "task:read",
-        "task:update",
-        "task:delete",
-        "task:approve_ai",
-        "document:upload",
-        "document:delete",
-        "ai:analyze",
-      ],
+      permissions: adminPermissions,
     },
   });
 
@@ -78,7 +85,7 @@ async function main() {
     update: {},
     create: {
       name: "Developer",
-      permissions: ["project:read", "task:read", "task:update"],
+      permissions: ["project:read", "task:read", "task:update", "document:upload"],
     },
   });
 
@@ -87,7 +94,7 @@ async function main() {
     update: {},
     create: {
       name: "Designer",
-      permissions: ["project:read", "task:read", "task:update"],
+      permissions: ["project:read", "task:read", "task:update", "document:upload"],
     },
   });
 
@@ -96,7 +103,7 @@ async function main() {
     update: {},
     create: {
       name: "Tester",
-      permissions: ["project:read", "task:read", "task:update"],
+      permissions: ["project:read", "task:read", "task:update", "document:upload"],
     },
   });
 

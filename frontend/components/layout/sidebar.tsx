@@ -8,7 +8,8 @@ import {
   Settings,
   Users,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Cpu
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { motion } from "framer-motion";
@@ -20,6 +21,7 @@ const navigation = [
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "Users", href: "/users", icon: Users },
   { name: "Roles", href: "/roles", icon: Settings },
+  { name: "AI Settings", href: "/ai-settings", icon: Cpu },
 ];
 
 export default function Sidebar() {
