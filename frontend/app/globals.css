@@ -267,3 +267,42 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
+
+/* Styling for Rich Text Previews in History Logs */
+.rich-text-preview p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+.rich-text-preview ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.rich-text-preview ol {
+  list-style-type: decimal;
+  margin-left: 1.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.rich-text-preview li {
+  margin-top: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+.rich-text-preview strong {
+  font-weight: 600;
+  color: inherit;
+}
+.rich-text-preview code {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #0369a1;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  font-family: monospace;
+}
+.dark .rich-text-preview code {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #38bdf8;
+}

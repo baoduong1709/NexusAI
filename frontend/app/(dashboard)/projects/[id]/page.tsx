@@ -125,6 +125,7 @@ interface ChatMessage {
   content: string;
   tasksCreated?: { id: string; title: string }[];
   suggestedTasks?: SuggestedTask[];
+  agentLogs?: { type: string; name: string; duration: number; details?: string }[];
 }
 
 interface DescriptionAiMessage {
@@ -454,7 +455,9 @@ function DescriptionEditor({
     editable: !disabled,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      onChange(sanitizeRichTextHtml(editor.getHTML()));
+      if (editor.isFocused) {
+        onChange(sanitizeRichTextHtml(editor.getHTML()));
+      }
       setIsTableActive(editor.isActive("table"));
     },
     onSelectionUpdate: ({ editor }) => {
@@ -518,6 +521,7 @@ function DescriptionEditor({
       <div className='flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-white/5 p-2'>
         <button
           type='button'
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onImprove}
           disabled={disabled || improving}
           className='inline-flex items-center gap-1.5 rounded-md border border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-2.5 py-1.5 text-xs font-medium text-sky-700 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 disabled:opacity-50'
@@ -939,6 +943,7 @@ function DescriptionEditor({
           />
           <button
             type='button'
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
               const instruction = aiInput.trim();
               if (!instruction || disabled || assisting) return;
@@ -1122,7 +1127,27 @@ export default function ProjectDetailPage() {
       qc.invalidateQueries({
         queryKey: ["task-activities", projectId, response?.data?.id],
       });
-      if (response?.data) setEditTask(response.data);
+      if (response?.data) {
+        setEditTask(response.data);
+        const t = response.data;
+        // Synchronize editor HTML display state with the updated database value
+        setDescriptionHtml(t.description || "");
+        reset({
+          title: t.title,
+          description: t.description || "",
+          priority: t.priority,
+          status: t.status,
+          assigneeId: t.assignee?.id || "",
+          dueDate: t.dueDate ? t.dueDate.slice(0, 10) : "",
+          epic: t.epic || "",
+          labels: t.labels || [],
+          sprint: t.sprint || "",
+          estimateInput: toHours(t.estimateHours)
+            ? formatDuration(t.estimateHours)
+            : "",
+          loggedInput: toHours(t.loggedHours) ? formatDuration(t.loggedHours) : "",
+        });
+      }
     },
     onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
   });
@@ -1249,36 +1274,8 @@ export default function ProjectDetailPage() {
       toast.error(e.response?.data?.message || "Failed to add work log"),
   });
 
-  const chatMutation = useMutation({
-    mutationFn: (userMsg: string) => {
-      const newMessages = [
-        ...chatMessages,
-        { role: "user" as const, content: userMsg },
-      ];
-      return aiApi
-        .chat(
-          projectId,
-          newMessages.map((m) => ({ role: m.role, content: m.content })),
-        )
-        .then((r) => ({ userMsg, data: r.data }));
-    },
-    onSuccess: ({ userMsg, data }) => {
-      setChatMessagesAndSave((prev) => [
-        ...prev,
-        { role: "user", content: userMsg },
-        {
-          role: "assistant",
-          content: data.message,
-          suggestedTasks: data.suggestedTasks,
-        },
-      ]);
-      if (data.suggestedTasks?.length) {
-        setReviewTasks(data.suggestedTasks);
-      }
-    },
-    onError: (e: any) =>
-      toast.error(e.response?.data?.message || "Chat failed"),
-  });
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatMutation = { isPending: chatLoading };
 
   const confirmReviewMutation = useMutation({
     mutationFn: (tasks: SuggestedTask[]) =>
@@ -1306,11 +1303,90 @@ export default function ProjectDetailPage() {
       toast.error(e.response?.data?.message || "Failed to create tasks"),
   });
 
-  const sendChat = () => {
+  const sendChat = async () => {
     const msg = chatInput.trim();
-    if (!msg || chatMutation.isPending) return;
+    if (!msg || chatLoading) return;
     setChatInput("");
-    chatMutation.mutate(msg);
+    setChatLoading(true);
+
+    const userMessage: ChatMessage = { role: "user", content: msg };
+    const assistantPlaceholder: ChatMessage = { role: "assistant", content: "", agentLogs: [] };
+
+    const newMessages = [...chatMessages, userMessage];
+    setChatMessagesAndSave(() => [...newMessages, assistantPlaceholder]);
+
+    let assistantContent = "";
+    let suggestedTasksLocal: SuggestedTask[] = [];
+    let assistantLogsLocal: any[] = [];
+
+    try {
+      await aiApi.chatStream(
+        projectId,
+        newMessages.map((m) => ({ role: m.role, content: m.content })),
+        undefined,
+        (chunk) => {
+          assistantContent += chunk;
+          setChatMessages((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                content: assistantContent,
+              };
+            }
+            return next;
+          });
+        },
+        (tasks) => {
+          suggestedTasksLocal = tasks;
+        },
+        async () => {
+          setChatMessagesAndSave((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                content: assistantContent,
+                suggestedTasks: suggestedTasksLocal.length ? suggestedTasksLocal : undefined,
+                agentLogs: assistantLogsLocal.length ? assistantLogsLocal : undefined,
+              };
+            }
+            return next;
+          });
+
+          if (suggestedTasksLocal.length > 0) {
+            setReviewTasks(suggestedTasksLocal);
+          }
+
+          setChatLoading(false);
+        },
+        (error) => {
+          console.error("Stream error", error);
+          toast.error(error.message || "Stream connection lost");
+          if (!assistantContent) {
+            setChatMessagesAndSave((prev) => prev.slice(0, -1));
+          }
+          setChatLoading(false);
+        },
+        (log) => {
+          assistantLogsLocal.push(log);
+          setChatMessages((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                agentLogs: [...assistantLogsLocal],
+              };
+            }
+            return next;
+          });
+        }
+      );
+    } catch (e: any) {
+      console.error("Failed to initiate stream", e);
+      toast.error(e.message || "Failed to initiate stream");
+      setChatLoading(false);
+    }
   };
 
   const addMemberMutation = useMutation({
@@ -1352,8 +1428,15 @@ export default function ProjectDetailPage() {
     },
   });
 
-  const { register, handleSubmit, reset, getValues, setValue, watch } =
-    useForm<any>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { isDirty },
+  } = useForm<any>();
   const projectRoleConfigs = normalizeProjectRoleConfigs(
     project?.projectRoleConfigs?.length
       ? project.projectRoleConfigs
@@ -1462,12 +1545,12 @@ export default function ProjectDetailPage() {
     "calendar",
   ].includes(tab);
 
-  const toHours = (value: any) => {
+  function toHours(value: any) {
     const hours = Number(value);
     return Number.isFinite(hours) ? hours : 0;
-  };
+  }
 
-  const durationFromHours = (value: any) => {
+  function durationFromHours(value: any) {
     const totalMinutes = Math.max(0, Math.round(toHours(value) * 60));
     const minutesPerDay = HOURS_PER_WORK_DAY * 60;
     const days = Math.floor(totalMinutes / minutesPerDay);
@@ -1476,17 +1559,17 @@ export default function ProjectDetailPage() {
     const minutes = remainingMinutes % 60;
 
     return { days, hours, minutes };
-  };
+  }
 
-  const durationToHours = (days: any, hours: any, minutes: any) => {
+  function durationToHours(days: any, hours: any, minutes: any) {
     const total =
       toHours(days) * HOURS_PER_WORK_DAY +
       toHours(hours) +
       toHours(minutes) / 60;
     return Math.round(total * 10000) / 10000;
-  };
+  }
 
-  const parseDurationInput = (value: any) => {
+  function parseDurationInput(value: any) {
     const text = String(value ?? "")
       .trim()
       .toLowerCase();
@@ -1507,9 +1590,9 @@ export default function ProjectDetailPage() {
     if (leftover) return null;
 
     return Math.round(total * 10000) / 10000;
-  };
+  }
 
-  const formatDuration = (value: any) => {
+  function formatDuration(value: any) {
     const { days, hours, minutes } = durationFromHours(value);
     const parts = [
       days ? `${days}d` : "",
@@ -1518,7 +1601,7 @@ export default function ProjectDetailPage() {
     ].filter(Boolean);
 
     return parts.length ? parts.join(" ") : "0m";
-  };
+  }
 
   const totalEstimateHours =
     filteredTasks.reduce(
@@ -1651,7 +1734,7 @@ export default function ProjectDetailPage() {
   };
 
   const autoSaveTask = () => {
-    if (!editTask || updateTaskMutation.isPending) return;
+    if (!editTask || updateTaskMutation.isPending || !isDirty) return;
     onTaskSubmit(getValues());
   };
 
@@ -2967,7 +3050,7 @@ export default function ProjectDetailPage() {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       h1: ({ children }) => (
-                        <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950'>
+                        <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950 dark:text-zinc-50'>
                           {children}
                         </h1>
                       ),
@@ -3000,13 +3083,13 @@ export default function ProjectDetailPage() {
                         </li>
                       ),
                       blockquote: ({ children }) => (
-                        <blockquote className='mb-3 border-l-4 border-sky-200 bg-sky-50 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
+                        <blockquote className='mb-3 border-l-4 border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
                           {children}
                         </blockquote>
                       ),
                       table: ({ children }) => (
                         <div className='mb-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-white/5'>
-                          <table className='min-w-full divide-y divide-gray-100 text-left text-xs'>
+                          <table className='min-w-full divide-y divide-gray-100 dark:divide-white/5 text-left text-xs'>
                             {children}
                           </table>
                         </div>
@@ -3025,7 +3108,7 @@ export default function ProjectDetailPage() {
                         </td>
                       ),
                       code: ({ children }) => (
-                        <code className='rounded bg-gray-100 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
+                        <code className='rounded bg-gray-100 dark:bg-white/10 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
                           {children}
                         </code>
                       ),
@@ -4305,9 +4388,67 @@ export default function ProjectDetailPage() {
                                         : "History"}
                                   </span>
                                 </div>
-                                <p className='whitespace-pre-wrap text-sm text-gray-800 dark:text-zinc-200'>
-                                  {describeActivity(activity)}
-                                </p>
+                                <div className='mt-1 text-sm text-zinc-700 dark:text-zinc-300'>
+                                  {activity.type === "COMMENT" && (
+                                    <p className='whitespace-pre-wrap'>{activity.body}</p>
+                                  )}
+                                  {activity.type === "WORK_LOG" && (
+                                    <p className='whitespace-pre-wrap'>
+                                      <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                                        Logged {formatDuration(activity.durationHours || 0)}
+                                      </span>
+                                      {activity.body ? `: ${activity.body}` : ""}
+                                    </p>
+                                  )}
+                                  {activity.type === "HISTORY" && (
+                                    <>
+                                      {activity.body ? (
+                                        <p className='whitespace-pre-wrap'>{activity.body}</p>
+                                      ) : activity.field === "description" ? (
+                                        <div className='mt-2 space-y-2'>
+                                          <div className='text-xs font-semibold text-zinc-500 dark:text-zinc-400'>
+                                            Changed <span className="text-zinc-800 dark:text-zinc-200 font-semibold">description</span>:
+                                          </div>
+                                          <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                                            <div className='rounded-lg border border-zinc-200 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5 p-3'>
+                                              <div className='mb-1.5 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider'>
+                                                Before
+                                              </div>
+                                              <div 
+                                                className='rich-text-preview max-h-48 overflow-y-auto text-xs text-zinc-700 dark:text-zinc-300'
+                                                dangerouslySetInnerHTML={{ 
+                                                  __html: sanitizeRichTextHtml(activity.fromValue || "") || "<p class='text-zinc-400 italic'>None</p>" 
+                                                }} 
+                                              />
+                                            </div>
+                                            <div className='rounded-lg border border-sky-100 dark:border-sky-500/10 bg-sky-50/30 dark:bg-sky-500/5 p-3'>
+                                              <div className='mb-1.5 text-[10px] font-bold text-sky-400 dark:text-sky-400 uppercase tracking-wider'>
+                                                After
+                                              </div>
+                                              <div 
+                                                className='rich-text-preview max-h-48 overflow-y-auto text-xs text-zinc-700 dark:text-zinc-300'
+                                                dangerouslySetInnerHTML={{ 
+                                                  __html: sanitizeRichTextHtml(activity.toValue || "") || "<p class='text-zinc-400 italic'>None</p>" 
+                                                }} 
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <p className='whitespace-pre-wrap'>
+                                          Changed <span className="font-semibold text-zinc-800 dark:text-zinc-200">{activity.field}</span> from{" "}
+                                          <span className="inline-block font-medium text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/20 px-1.5 py-0.5 rounded text-xs">
+                                            {activity.fromValue || "None"}
+                                          </span>{" "}
+                                          to{" "}
+                                          <span className="inline-block font-medium text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/20 px-1.5 py-0.5 rounded text-xs">
+                                            {activity.toValue || "None"}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             ))
                           )}

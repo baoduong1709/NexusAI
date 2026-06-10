@@ -145,6 +145,29 @@ export class AiController {
     return this.aiService.chat(projectId, user.id, dto.messages, dto.summary);
   }
 
+  @Post("chat-stream")
+  @RequirePermissions("ai:analyze")
+  @ApiOperation({ summary: "Chat with AI as a real-time stream" })
+  async chatStream(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @CurrentUser() user: { id: number },
+    @Body() dto: AiChatDto,
+    @Res() res: Response,
+  ) {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+
+    await this.aiService.chatStream(
+      projectId,
+      user.id,
+      dto.messages,
+      dto.summary,
+      res,
+    );
+  }
+
   @Post("summarize")
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Summarize chat history into a compressed memory" })

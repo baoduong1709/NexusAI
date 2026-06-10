@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/auth";
 import { Loader2, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { motion } from "framer-motion";
+import { BrandLogo } from "@/components/brand-logo";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -69,9 +70,9 @@ export default function LoginPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-6"
+                className="mb-6"
               >
-                <span className="text-white font-bold text-2xl">N</span>
+                <BrandLogo size={48} />
               </motion.div>
               <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
                 Log in

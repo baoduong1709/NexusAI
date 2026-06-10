@@ -8,12 +8,12 @@ import {
   Settings,
   Users,
   LogOut,
-  ChevronRight,
-  Sparkles
+  ChevronRight
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/brand-logo";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -35,9 +35,7 @@ export default function Sidebar() {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-3"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <span className="text-white font-bold text-lg">N</span>
-          </div>
+          <BrandLogo size={32} />
           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400">
             NexusAI
           </span>
@@ -87,22 +85,22 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Model info footer */}
-      <div className="p-4 border-t border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-black/20">
-        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white dark:bg-zinc-900/5 border border-zinc-100 dark:border-white/10">
-          <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
-            <Sparkles size={14} className="animate-pulse" />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 leading-none">
-              POWERED BY
-            </p>
-            <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-1">
-              Gemma LLM
-            </p>
-          </div>
-        </div>
+      {/* Logout Button */}
+      <div className="p-4 border-t border-zinc-100 dark:border-zinc-800/50 mt-auto">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={logout}
+          className="w-full group flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 dark:hover:bg-rose-500/10"
+        >
+          <LogOut
+            size={18}
+            className="transition-transform duration-200 group-hover:translate-x-1"
+          />
+          <span className="flex-1 text-left tracking-wide">Logout</span>
+        </motion.button>
       </div>
+
     </aside>
   );
 }

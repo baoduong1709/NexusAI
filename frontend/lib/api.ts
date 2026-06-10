@@ -131,6 +131,152 @@ export const aiApi = {
     projectId: number,
     payload: { title?: string; description: string; instruction: string },
   ) => api.post(`/projects/${projectId}/ai/description/assist`, payload),
+  chatStream: async (
+    projectId: number,
+    messages: { role: string; content: string }[],
+    summary?: string,
+    onChunk?: (text: string) => void,
+    onTasksSuggested?: (tasks: any[]) => void,
+    onDone?: () => void,
+    onError?: (error: any) => void,
+    onAgentLog?: (log: any) => void,
+  ) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("nexusai_token") : null;
+    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/projects/${projectId}/ai/chat-stream`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ messages, summary }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("No readable stream in response");
+      }
+
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          let event = "message";
+          let data = "";
+
+          const eventMatch = line.match(/^event:\s*(.*)$/m);
+          if (eventMatch) {
+            event = eventMatch[1].trim();
+          }
+
+          const dataMatch = line.match(/^data:\s*(.*)$/m);
+          if (dataMatch) {
+            data = dataMatch[1].trim();
+          } else {
+            const dataLines = line
+              .split("\n")
+              .filter((l) => l.startsWith("data:"))
+              .map((l) => l.substring(5).trim());
+            data = dataLines.join("");
+          }
+
+          if (event === "suggest_tasks") {
+            try {
+              const tasks = JSON.parse(data);
+              if (onTasksSuggested) onTasksSuggested(tasks);
+            } catch (e) {
+              console.error("Failed to parse suggest_tasks data", e);
+            }
+          } else if (event === "agent_log") {
+            try {
+              const log = JSON.parse(data);
+              if (onAgentLog) onAgentLog(log);
+            } catch (e) {
+              console.error("Failed to parse agent_log data", e);
+            }
+          } else if (event === "error") {
+            try {
+              const errObj = JSON.parse(data);
+              if (onError) onError(errObj);
+            } catch {
+              if (onError) onError(new Error(data));
+            }
+          } else if (event === "done") {
+            if (onDone) onDone();
+          } else if (event === "message" || !event) {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.text && onChunk) {
+                onChunk(parsed.text);
+              }
+            } catch {
+              if (onChunk && data) onChunk(data);
+            }
+          }
+        }
+      }
+
+      if (buffer.trim()) {
+        const line = buffer;
+        let event = "message";
+        let data = "";
+
+        const eventMatch = line.match(/^event:\s*(.*)$/m);
+        if (eventMatch) {
+          event = eventMatch[1].trim();
+        }
+
+        const dataMatch = line.match(/^data:\s*(.*)$/m);
+        if (dataMatch) {
+          data = dataMatch[1].trim();
+        }
+
+        if (event === "suggest_tasks") {
+          try {
+            const tasks = JSON.parse(data);
+            if (onTasksSuggested) onTasksSuggested(tasks);
+          } catch (e) {}
+        } else if (event === "agent_log") {
+          try {
+            const log = JSON.parse(data);
+            if (onAgentLog) onAgentLog(log);
+          } catch (e) {}
+        } else if (event === "done") {
+          if (onDone) onDone();
+        } else if (event === "message" || !event) {
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.text && onChunk) onChunk(parsed.text);
+          } catch {
+            if (onChunk && data) onChunk(data);
+          }
+        }
+      }
+    } catch (error) {
+      if (onError) {
+        onError(error);
+      } else {
+        console.error("chatStream error", error);
+      }
+    }
+  },
   chat: (
     projectId: number,
     messages: { role: string; content: string }[],

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { existsSync, mkdirSync, unlinkSync } from "fs";
 import { join, extname } from "path";
@@ -20,8 +20,20 @@ const CONVERTIBLE_EXTS = new Set([
   ".htm",
 ]);
 
+const DIRECTLY_INDEXABLE_EXTS = new Set([
+  ".txt",
+  ".md",
+  ".csv",
+  ".json",
+  ".xml",
+  ".yaml",
+  ".yml",
+]);
+
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger(DocumentsService.name);
+
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
@@ -42,22 +54,42 @@ export class DocumentsService {
       },
     });
 
-    // Start background conversion to markdown if file is convertible
     const ext = extname(file.originalname).toLowerCase();
     if (CONVERTIBLE_EXTS.has(ext)) {
+      this.logger.log(`Start background conversion and indexing for convertible file: ${file.originalname}`);
       this.markitdownService
         .convertToMarkdown(file.path, `${file.path}.md`)
-        .then(() => {
-           // Read markdown and index it
+        .then(async () => {
            try {
              const mdContent = fs.readFileSync(`${file.path}.md`, "utf-8");
-             this.ragService.indexDocument(projectId, document.id, mdContent, document.originalName);
-           } catch(e) {}
+             await this.ragService.indexDocument(projectId, document.id, mdContent, document.originalName);
+             this.projectAiIndex.rebuildSoon(projectId); // Rebuild after index completes
+           } catch (e: any) {
+             this.logger.error(`Failed to index converted markdown content: ${e.message}`);
+           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          this.logger.error(`Failed to convert file to markdown: ${err.message}`);
+        });
+    } else if (DIRECTLY_INDEXABLE_EXTS.has(ext)) {
+      this.logger.log(`Start direct indexing for text file: ${file.originalname}`);
+      fs.readFile(file.path, "utf-8", async (err, content) => {
+        if (err) {
+          this.logger.error(`Failed to read text file: ${err.message}`);
+          return;
+        }
+        try {
+          await this.ragService.indexDocument(projectId, document.id, content, document.originalName);
+          this.projectAiIndex.rebuildSoon(projectId); // Rebuild after index completes
+        } catch (e: any) {
+          this.logger.error(`Failed to index text file: ${e.message}`);
+        }
+      });
+    } else {
+      this.logger.log(`Binary or unsupported file uploaded: ${file.originalname}, rebuilding project index`);
+      this.projectAiIndex.rebuildSoon(projectId);
     }
 
-    this.projectAiIndex.rebuildSoon(projectId);
     return document;
   }
 

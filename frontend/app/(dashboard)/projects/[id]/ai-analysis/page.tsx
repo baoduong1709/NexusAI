@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   Loader2,
   ChevronLeft,
+  ChevronDown,
   Sparkles,
   CheckCircle,
   AlertCircle,
@@ -24,6 +25,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   tasksCreated?: { id: string; title: string }[];
+  agentLogs?: { type: string; name: string; duration: number; details?: string }[];
 }
 
 export default function AiAnalysisPage() {
@@ -64,43 +66,104 @@ export default function AiAnalysisPage() {
       toast.error(e.response?.data?.message || "Analysis failed"),
   });
 
-  const chatMutation = useMutation({
-    mutationFn: (userMsg: string) => {
-      const newMessages: ChatMessage[] = [
-        ...messages,
-        { role: "user", content: userMsg },
-      ];
-      return aiApi
-        .chat(
-          projectId,
-          newMessages.map((m) => ({ role: m.role, content: m.content })),
-        )
-        .then((r) => ({ userMsg, data: r.data }));
-    },
-    onSuccess: ({ userMsg, data }) => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: userMsg },
-        {
-          role: "assistant",
-          content: data.message,
-          tasksCreated: data.tasksCreated,
-        },
-      ]);
-      if (data.tasksCreated?.length) {
-        qc.invalidateQueries({ queryKey: ["project", projectId] });
-        toast.success(`${data.tasksCreated.length} tasks created`);
-      }
-    },
-    onError: (e: any) =>
-      toast.error(e.response?.data?.message || "Failed to send message"),
-  });
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatMutation = { isPending: chatLoading };
 
-  const sendMessage = () => {
-    if (!input.trim() || chatMutation.isPending) return;
+  const sendMessage = async () => {
     const msg = input.trim();
+    if (!msg || chatLoading) return;
     setInput("");
-    chatMutation.mutate(msg);
+    setChatLoading(true);
+
+    const userMessage: ChatMessage = { role: "user", content: msg };
+    const assistantPlaceholder: ChatMessage = { role: "assistant", content: "", agentLogs: [] };
+
+    const newMessages = [...messages, userMessage];
+    setMessages([...newMessages, assistantPlaceholder]);
+
+    let assistantContent = "";
+    let suggestedTasksLocal: any[] = [];
+    let assistantLogsLocal: any[] = [];
+
+    try {
+      await aiApi.chatStream(
+        projectId,
+        newMessages.map((m) => ({ role: m.role, content: m.content })),
+        undefined,
+        (chunk) => {
+          assistantContent += chunk;
+          setMessages((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                content: assistantContent,
+              };
+            }
+            return next;
+          });
+        },
+        (tasks) => {
+          suggestedTasksLocal = tasks;
+        },
+        async () => {
+          let createdTasks: any[] = [];
+          if (suggestedTasksLocal.length > 0) {
+            try {
+              const responseData = await aiApi.confirmTasks(projectId, suggestedTasksLocal).then((r) => r.data);
+              createdTasks = responseData || [];
+              qc.invalidateQueries({ queryKey: ["project", projectId] });
+              toast.success(`Created ${createdTasks.length} tasks`);
+            } catch (e: any) {
+              console.error("Failed to auto-create tasks", e);
+              toast.error(e.response?.data?.message || "Failed to create tasks");
+            }
+          }
+
+          setMessages((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                content: assistantContent,
+                tasksCreated: createdTasks.length
+                  ? createdTasks.map((t) => ({ id: t.id, title: t.title }))
+                  : undefined,
+                agentLogs: assistantLogsLocal.length ? assistantLogsLocal : undefined,
+              };
+            }
+            return next;
+          });
+
+          setChatLoading(false);
+        },
+        (error) => {
+          console.error("Stream error", error);
+          toast.error(error.message || "Stream connection lost");
+          if (!assistantContent) {
+            setMessages((prev) => prev.slice(0, -1));
+          }
+          setChatLoading(false);
+        },
+        (log) => {
+          assistantLogsLocal.push(log);
+          setMessages((prev) => {
+            const next = [...prev];
+            if (next.length > 0 && next[next.length - 1].role === "assistant") {
+              next[next.length - 1] = {
+                ...next[next.length - 1],
+                agentLogs: [...assistantLogsLocal],
+              };
+            }
+            return next;
+          });
+        }
+      );
+    } catch (e: any) {
+      console.error("Failed to initiate stream", e);
+      toast.error(e.message || "Failed to initiate stream");
+      setChatLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -238,6 +301,36 @@ export default function AiAnalysisPage() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+                  {msg.agentLogs && msg.agentLogs.length > 0 && (
+                    <div className="mt-3 pt-2.5 border-t border-zinc-150/80 dark:border-zinc-800/40">
+                      <details className="group">
+                        <summary className="flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 cursor-pointer select-none font-semibold">
+                          <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Agent Logs ({msg.agentLogs.reduce((sum, l) => sum + l.duration, 0)}ms)</span>
+                          <ChevronDown size={11} className="ml-auto transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="mt-2 pl-3 border-l-2 border-indigo-500/20 space-y-2 max-h-48 overflow-y-auto">
+                          {msg.agentLogs.map((log, lIdx) => (
+                            <div key={lIdx} className="text-[11px]">
+                              <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 font-semibold">
+                                <span className={cn(log.type === "llm_call" ? "text-indigo-600 dark:text-indigo-400" : "text-emerald-600 dark:text-emerald-450")}>
+                                  {log.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono bg-zinc-100 dark:bg-white/5 px-1 py-0.5 rounded">
+                                  {log.duration}ms
+                                </span>
+                              </div>
+                              {log.details && (
+                                <pre className="mt-1 p-2 rounded-xl bg-zinc-50 dark:bg-black/15 text-[10px] text-zinc-500 dark:text-zinc-500 overflow-x-auto font-mono whitespace-pre-wrap break-all border border-zinc-200/40 dark:border-white/5">
+                                  {log.details}
+                                </pre>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
                     </div>
                   )}
                 </div>

@@ -382,17 +382,36 @@ export class TasksService {
 
     if (!project) throw new NotFoundException("Project not found");
 
+    let updatedEpics = [...project.epics];
+    let updatedLabels = [...project.labels];
+    let projectNeedsUpdate = false;
+
+    // Automatically append new epic if it does not exist in the project
     if (dto.epic && !project.epics.includes(dto.epic)) {
-      throw new BadRequestException(`Epic "${dto.epic}" does not exist in this project`);
+      updatedEpics.push(dto.epic);
+      projectNeedsUpdate = true;
     }
 
+    // Automatically append any new labels that do not exist in the project
     const unknownLabels = (dto.labels || []).filter(
       (label) => !project.labels.includes(label),
     );
     if (unknownLabels.length) {
-      throw new BadRequestException(
-        `Labels do not exist in this project: ${unknownLabels.join(", ")}`,
-      );
+      updatedLabels.push(...unknownLabels);
+      projectNeedsUpdate = true;
+    }
+
+    if (projectNeedsUpdate) {
+      await this.prisma.project.update({
+        where: { id: projectId },
+        data: {
+          epics: updatedEpics,
+          labels: updatedLabels,
+        },
+      });
+      // Update local object to reflect database changes
+      project.epics = updatedEpics;
+      project.labels = updatedLabels;
     }
 
     return project;

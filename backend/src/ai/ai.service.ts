@@ -14,6 +14,7 @@ import OpenAI from "openai";
 import * as fs from "fs";
 import * as path from "path";
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
+import { AiLogger } from "./ai-logger.util";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -101,9 +102,13 @@ export class AiService {
     private ragService: RagService,
     private projectAiIndex: ProjectAiIndexService,
   ) {
+    let apiBase = this.config.get("AI_API_BASE", "https://api.ai-box.vn/v1");
+    if (apiBase && !apiBase.endsWith("/v1") && !apiBase.endsWith("/v1/")) {
+      apiBase = apiBase.replace(/\/$/, "") + "/v1";
+    }
     this.openai = new OpenAI({
       apiKey: this.config.get("AI_API_KEY", ""),
-      baseURL: this.config.get("AI_API_BASE", "https://api.ai-box.vn/v1"),
+      baseURL: apiBase,
     });
   }
 
@@ -133,9 +138,12 @@ export class AiService {
     messages: { role: "system" | "user" | "assistant"; content: string }[],
     context: string,
     temperature = 0.3,
+    projectId?: number,
+    userId?: number,
   ): Promise<string> {
     const model = this.config.get("AI_MODEL", "deepseek-v4-pro[1m]");
     let lastError: any;
+    const startTime = Date.now();
 
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
@@ -151,6 +159,17 @@ export class AiService {
           const content = chunk.choices[0]?.delta?.content || "";
           text += content;
         }
+
+        const durationMs = Date.now() - startTime;
+        AiLogger.log({
+          type: `non_streaming_completions: ${context}`,
+          projectId,
+          userId,
+          request: { model, messages, temperature },
+          response: text,
+          durationMs,
+        });
+
         return text;
       } catch (error: any) {
         lastError = error;
@@ -164,6 +183,16 @@ export class AiService {
         await sleep(500 * attempt);
       }
     }
+
+    const durationMs = Date.now() - startTime;
+    AiLogger.log({
+      type: `non_streaming_completions: ${context}`,
+      projectId,
+      userId,
+      request: { model, messages, temperature },
+      error: lastError?.message || lastError,
+      durationMs,
+    });
 
     throw new BadGatewayException({
       message: "AI provider temporarily failed. Please try again in a moment.",
@@ -367,11 +396,11 @@ Please analyze the above and respond with a JSON object in this exact format:
   "keyRequirements": ["requirement 1", "requirement 2", "..."],
   "suggestedTasks": [
     {
-      "title": "Task title",
+      "title": "Task title (clean and concise; do NOT include or append epic name, labels, or priority into the title string)",
       "description": "Detailed task description. Include Acceptance Criteria and Source refs from requirements.md plus source files.",
       "priority": "HIGH|MEDIUM|LOW",
-      "epic": "One of the available epics or null",
-      "labels": ["Only labels from the available labels list"],
+      "epic": "One of the available epics, or a new logical epic name if none fits (e.g. 'Quản lý người dùng nội bộ')",
+      "labels": ["Labels for the task (can propose new labels if needed)"],
       "suggestedRole": "Developer|Designer|Tester|PM|Lead"
     }
   ]
@@ -385,6 +414,8 @@ Please analyze the above and respond with a JSON object in this exact format:
         ],
         "project analysis",
         0.3,
+        projectId,
+        userId,
       );
 
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -486,6 +517,8 @@ Return a JSON array of up to 3 best-suited member IDs in order of suitability:
         [{ role: "user", content: prompt }],
         "suggest assignee",
         0.2,
+        projectId,
+        userId,
       );
 
       const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -532,6 +565,8 @@ Rules:
       [{ role: "user", content: prompt }],
       "description improve",
       0.2,
+      projectId,
+      userId,
     );
 
     return { description: improved.trim() };
@@ -575,6 +610,8 @@ Rules:
       [{ role: "user", content: prompt }],
       "description assist",
       0.2,
+      projectId,
+      userId,
     );
 
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -718,6 +755,8 @@ Suggested baseline sections when no better domain-specific structure exists:
       [{ role: "user", content: prompt }],
       "requirements update",
       0.3,
+      projectId,
+      userId,
     );
 
     // Strip possible ```markdown fences
@@ -744,6 +783,8 @@ Trả về danh sách các thay đổi (mỗi dòng bắt đầu bằng "- "):`;
           [{ role: "user", content: diffPrompt }],
           "requirements diff summary",
           0.2,
+          projectId,
+          userId,
         );
         changesSummary = diffText
           .replace(/^```[\s\S]*?\n/, "")
@@ -928,7 +969,6 @@ Routing plan:
 Permissions:
 ${this.buildPermissionHints(ctx)}
 
-${summary ? `Conversation summary:\n${summary}\n` : ""}
 Project:
 - name: ${ctx.project.name}
 - description: ${ctx.project.description || "N/A"}
@@ -942,7 +982,9 @@ ${ctx.tasks ? `Task counts:\n${Object.entries(taskCounts).map(([status, count]) 
 ${ctx.tasks && needs.has("tasks") ? `Tasks:\n${tasks || "No tasks."}` : ""}
 ${ctx.requirementsContent ? `Requirements:\n${ctx.requirementsContent}` : ""}
 ${includeDocuments ? `Documents:\n${this.buildSourceManifest(docContents.sources) || "No uploaded source files."}` : ""}
-${includeDocuments && docContents.textDocs.length > 0 ? `Document text:\n${docContents.textDocs.join("\n\n")}` : ""}`;
+${includeDocuments && docContents.textDocs.length > 0 ? `Document text:\n${docContents.textDocs.join("\n\n")}` : ""}
+
+${summary ? `Conversation summary:\n${summary}` : ""}`;
 
       const rawText = await this.generateAiText(
         [
@@ -954,6 +996,8 @@ ${includeDocuments && docContents.textDocs.length > 0 ? `Document text:\n${docCo
         ],
         "planned chat response",
         0.3,
+        projectId,
+        userId,
       );
       const parsed = this.parseJsonObject(rawText);
       return { message: parsed?.message || rawText.trim() };
@@ -1002,7 +1046,6 @@ ${permissionHints}
 Project AI index:
 ${projectIndex ? JSON.stringify(projectIndex).slice(0, 6000) : "No index available."}
 
-${summary ? `📝 Tóm tắt lịch sử trò chuyện trước:\n${summary}\n` : ""}
 ${ctx.members ? `Thành viên dự án:\n${teamInfo || "Chưa có thành viên"}` : ""}
 
 ${ctx.tasks ? `Tasks hiện tại:\n${existingTasks || "Chưa có task nào"}` : ""}
@@ -1022,19 +1065,19 @@ Task creation rules:
 - Use detailed source files only to clarify missing detail, edge cases, acceptance criteria, dependencies, and business rules.
 - Avoid duplicate tasks already present in the project.
 - Every task description must include measurable Acceptance Criteria and a Source refs line.
-- Set "epic" from available epics only. Use null when no available epic fits.
-- Set "labels" from available labels only. Use an empty array when no available label fits.
+- Set "epic" using one of the available epics, or propose a new logical epic name if none of the available epics fits. Do NOT append the epic name, labels, or priority into the "title" string. Keep the "title" clean and concise.
+- Set "labels" using available labels, or propose new labels if needed. Do NOT append labels into the "title" string.
 Khi người dùng yêu cầu tạo task (ví dụ: "tạo task cho module X", "tạo task cho tính năng Y"), 
 hãy ĐỀ XUẤT task (chưa tạo ngay) và phản hồi JSON theo định dạng sau (KHÔNG bọc trong markdown code block):
 {
   "message": "Đề xuất X task cho...",
   "createTasks": [
     {
-      "title": "Tên task",
+      "title": "Tên task (sạch sẽ, ngắn gọn, KHÔNG tự ý nối thêm tên Epic, Labels hay Priority vào tiêu đề)",
       "description": "Mô tả chi tiết",
       "priority": "HIGH|MEDIUM|LOW",
       "dueDate": "YYYY-MM-DD hoặc null",
-      "epic": "Tên epic hoặc null",
+      "epic": "Tên epic (có thể chọn từ Available epics hoặc tự đề xuất Epic mới phù hợp)",
       "labels": ["FE", "BE"],
       "sprint": "Sprint 1 hoặc null",
       "estimateHours": <estimated hours or 0>,
@@ -1044,6 +1087,8 @@ hãy ĐỀ XUẤT task (chưa tạo ngay) và phản hồi JSON theo định d�
   ]
 }
 
+
+${summary ? `📝 Tóm tắt lịch sử trò chuyện trước:\n${summary}\n` : ""}
 Nếu chỉ trả lời câu hỏi (không đề xuất task), phản hồi JSON:
 {
   "message": "Nội dung câu trả lời"
@@ -1131,6 +1176,7 @@ Trả về chỉ đoạn tóm tắt, không giải thích thêm.`;
         [{ role: "user", content: prompt }],
         "chat summary",
         0.2,
+        projectId,
       );
       return result?.trim() || currentSummary;
     } catch {
@@ -1289,36 +1335,42 @@ Trả về chỉ đoạn tóm tắt, không giải thích thêm.`;
     summary: string | undefined,
     res: any
   ) {
-    const ctx = await this.dataAccess.getFilteredProjectContext(
-      projectId,
-      userId,
-    );
-    const docContents = await this.dataAccess.getFilteredDocumentContents(
-      projectId,
-      userId,
-    );
+    const chatStreamStartTime = Date.now();
+    const [ctx, docContents, projectIndexRaw] = await Promise.all([
+      this.dataAccess.getFilteredProjectContext(projectId, userId),
+      this.dataAccess.getFilteredDocumentContents(projectId, userId),
+      this.projectAiIndex.get(projectId),
+    ]);
+    const projectIndex = projectIndexRaw as any;
+    const documentSummaries = projectIndex?.documentSummaries || {};
     const sourceManifest = this.buildSourceManifest(docContents.sources);
 
     const permissionHints = this.buildPermissionHints(ctx);
 
-    const systemPrompt = `Bạn là AI assistant quản lý dự án "${ctx.project.name}". 
-Bạn có thể trả lời câu hỏi và ĐỀ XUẤT TASK khi người dùng yêu cầu.
+    const systemPrompt = `Bạn là một AI Agent quản lý dự án thông minh và chủ động cho dự án "${ctx.project.name}".
+Bạn có thể trả lời câu hỏi, tra cứu tài liệu và ĐỀ XUẤT TASK khi người dùng yêu cầu.
 
-⚠️ QUAN TRỌNG — GIỚI HẠN DỮ LIỆU & TOOLS:
-Bạn CHỈ được sử dụng thông tin được cung cấp. Bạn có thể sử dụng các function (tools) để tìm kiếm thông tin về members, tasks, và nội dung TÀI LIỆU YÊU CẦU (document) khi cần thiết.
+🧠 HƯỚNG DẪN TƯ DUY & CHỌN CÔNG CỤ (AGENTIC WORKFLOW):
+1. **Suy nghĩ từng bước (Chain of Thought):** Trước khi trả lời, hãy tự phân tích yêu cầu của người dùng để xác định các thông tin cần thu thập.
+2. **Chọn công cụ (Tools) tối ưu:**
+   - Để có cái nhìn tổng quan về tất cả các tài liệu hiện có trong dự án hoặc tìm xem tài liệu nào chứa thông tin cần tra cứu: Hãy gọi \`get_document_summaries\`.
+   - Để tìm kiếm chi tiết kỹ thuật, quy định nghiệp vụ hoặc các đoạn đặc tả cụ thể trong tài liệu: Hãy gọi \`search_document\` (Vector RAG Search).
+   - Để tìm hiểu thành viên phù hợp giao việc: Hãy gọi \`get_project_members\`.
+   - Để kiểm tra các task hiện có tránh tạo trùng lặp: Hãy gọi \`get_project_tasks\`.
+3. **Trích dẫn nguồn chính xác:** Khi trả lời sử dụng thông tin từ tài liệu, hãy LUÔN LUÔN trích dẫn rõ ràng tên tài liệu nguồn bằng định dạng \`[Tên tài liệu]\` (ví dụ: \`[00_project_overview.md]\`).
+
+⚠️ QUAN TRỌNG — GIỚI HẠN DỮ LIỆU:
 Dữ liệu đã được lọc theo quyền của người dùng hiện tại (role: ${ctx.userProjectRole || "không xác định"}).
 ${permissionHints}
 
-${summary ? `📝 Tóm tắt lịch sử trò chuyện trước:\n${summary}\n` : ""}
-
-${ctx.requirementsContent ? `Tài liệu yêu cầu:\n${ctx.requirementsContent}` : ""}
-
+${ctx.requirementsContent ? `Tài liệu yêu cầu:\n${ctx.requirementsContent}\n` : ""}
 Available epics: ${ctx.project.epics.length ? ctx.project.epics.join(", ") : "None"}
 Available labels: ${ctx.project.labels.length ? ctx.project.labels.join(", ") : "None"}
 
 Detailed source files:
 ${sourceManifest || "No uploaded source files."}
-${docContents.textDocs.length > 0 ? `\n${docContents.textDocs.join("\n\n")}` : ""}
+
+${summary ? `📝 Tóm tắt lịch sử trò chuyện trước:\n${summary}\n` : ""}
 
 Task creation rules:
 - Hãy trả lời bằng văn bản Markdown tự nhiên. KHÔNG bọc toàn bộ câu trả lời trong JSON.
@@ -1348,7 +1400,7 @@ Task creation rules:
         type: "function" as const,
         function: {
           name: "search_document",
-          description: "Tìm kiếm thông tin trong tài liệu yêu cầu (requirements/documents) của dự án. TRUY VẤN BẰNG TIẾNG ANH HOẶC TIẾNG VIỆT ĐỀU ĐƯỢC.",
+          description: "Tìm kiếm thông tin chi tiết trong tài liệu yêu cầu (requirements/documents) của dự án bằng Vector RAG Search. Sử dụng khi cần tìm thông số, quy tắc chi tiết.",
           parameters: {
             type: "object",
             properties: {
@@ -1356,6 +1408,14 @@ Task creation rules:
             },
             required: ["query"]
           },
+        },
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "get_document_summaries",
+          description: "Lấy danh sách tất cả tài liệu kèm tóm tắt nội dung của từng tài liệu. Sử dụng khi cần có cái nhìn tổng quan về tài liệu dự án.",
+          parameters: { type: "object", properties: {}, required: [] },
         },
       },
       {
@@ -1393,7 +1453,10 @@ Task creation rules:
     try {
       let finalFullText = "";
 
+      let loopCount = 0;
       while (true) {
+        loopCount++;
+        const startLlmTime = Date.now();
         const stream = await this.openai.chat.completions.create({
           model: this.config.get("AI_MODEL", "deepseek-v4-pro[1m]"),
           messages: currentMessages,
@@ -1426,6 +1489,9 @@ Task creation rules:
           }
         }
 
+        const llmDuration = Date.now() - startLlmTime;
+        res.write(`event: agent_log\ndata: ${JSON.stringify({ type: "llm_call", name: `LLM Chat Completion (Lượt ${loopCount})`, duration: llmDuration, details: `Model: ${this.config.get("AI_MODEL", "deepseek-v4-pro[1m]")}` })}\n\n`);
+
         finalFullText += fullText;
 
         if (toolCalls.length > 0) {
@@ -1438,11 +1504,20 @@ Task creation rules:
           });
 
           for (const tc of toolCalls) {
+            const startToolTime = Date.now();
             let result = "";
             try {
               const args = JSON.parse(tc.function.arguments || "{}");
               if (tc.function.name === "get_project_members") {
                  result = JSON.stringify(ctx.members?.map(m => ({ id: m.userId, name: m.name, role: m.projectRole, skills: m.skills })) || []);
+              } else if (tc.function.name === "get_document_summaries") {
+                 const summariesList = docContents.sources.map(s => ({
+                   id: s.id,
+                   title: s.originalName,
+                   size: s.size,
+                   summary: documentSummaries[s.id] || "Chưa có bản tóm tắt."
+                 }));
+                 result = JSON.stringify(summariesList);
               } else if (tc.function.name === "search_document") {
                  const searchResults = await this.ragService.searchDocuments(projectId, args.query);
                  result = JSON.stringify(searchResults);
@@ -1455,6 +1530,9 @@ Task creation rules:
             } catch (e: any) {
               result = `Error: ${e.message}`;
             }
+            const toolDuration = Date.now() - startToolTime;
+            res.write(`event: agent_log\ndata: ${JSON.stringify({ type: "tool_call", name: `Tool Call: ${tc.function.name}`, duration: toolDuration, details: `Arguments: ${tc.function.arguments || "{}"}` })}\n\n`);
+
             currentMessages.push({
               role: "tool",
               tool_call_id: tc.id,
@@ -1493,10 +1571,29 @@ Task creation rules:
         }
       }
 
+      const durationMs = Date.now() - chatStreamStartTime;
+      AiLogger.log({
+        type: "chat_stream",
+        projectId,
+        userId,
+        request: { messages, summary },
+        response: { content: finalFullText, messageHistoryWithTools: currentMessages },
+        durationMs,
+      });
+
       res.write('event: done\ndata: {}\n\n');
       res.end();
     } catch (error: any) {
       this.logger.error("chatStream failed", error);
+      const durationMs = Date.now() - chatStreamStartTime;
+      AiLogger.log({
+        type: "chat_stream",
+        projectId,
+        userId,
+        request: { messages, summary },
+        error: error.message || error,
+        durationMs,
+      });
       res.write(`event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`);
       res.end();
     }

@@ -196,6 +196,12 @@ export class ProjectAiIndexService {
         )
         .slice(0, 30)
         .map((task) => task.id);
+      // Read current index to preserve documentEmbeddings and documentSummaries
+      const existingIndex = await this.prisma.projectAiIndex.findUnique({
+        where: { projectId },
+      });
+      const existingData = (existingIndex?.data as any) || {};
+
       const data = {
         project: {
           id: project.id,
@@ -219,13 +225,19 @@ export class ProjectAiIndexService {
               updatedAt: latestRequirements.createdAt,
             }
           : null,
-        documentManifest: documents.map((document) => ({
-          id: document.id,
-          originalName: document.originalName,
-          mimeType: document.mimeType,
-          size: document.size,
-          createdAt: document.createdAt,
-        })),
+        documentManifest: documents.map((document) => {
+          const docSummary = existingData.documentSummaries?.[document.id] || null;
+          return {
+            id: document.id,
+            originalName: document.originalName,
+            mimeType: document.mimeType,
+            size: document.size,
+            createdAt: document.createdAt,
+            summary: docSummary,
+          };
+        }),
+        documentEmbeddings: existingData.documentEmbeddings || [],
+        documentSummaries: existingData.documentSummaries || {},
         generatedAt: now,
       };
 
