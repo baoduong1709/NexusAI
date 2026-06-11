@@ -10,7 +10,7 @@ const execAsync = promisify(exec);
 export class MarkitdownService implements OnModuleInit {
   private readonly logger = new Logger(MarkitdownService.name);
   private isAvailable = false;
-  private commandPrefix: "python -m markitdown" | "markitdown" | null = null;
+  private commandPrefix: "python3 -m markitdown" | "python -m markitdown" | "markitdown" | null = null;
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -25,7 +25,18 @@ export class MarkitdownService implements OnModuleInit {
   private async checkAndInstallMarkitdown() {
     try {
       this.logger.log("Checking if 'markitdown' CLI is available...");
-      // Check using python module execution first as it's more reliable across environments
+      // Check using python3 module execution first as it's the default on Linux/Ubuntu
+      await execAsync("python3 -m markitdown --version");
+      this.isAvailable = true;
+      this.commandPrefix = "python3 -m markitdown";
+      this.logger.log("Microsoft MarkItDown is available via python3 module.");
+      return;
+    } catch {
+      this.logger.warn("MarkItDown not found via python3 module. Checking python module...");
+    }
+
+    try {
+      // Check using python module execution (common on Windows)
       await execAsync("python -m markitdown --version");
       this.isAvailable = true;
       this.commandPrefix = "python -m markitdown";
