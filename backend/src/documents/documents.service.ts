@@ -90,7 +90,12 @@ export class DocumentsService {
       this.logger.log(`Start background conversion and indexing for convertible file: ${file.originalname}`);
       this.markitdownService
         .convertToMarkdown(file.path, `${file.path}.md`)
-        .then(async () => {
+        .then(async (success) => {
+           if (!success) {
+             this.logger.warn(`Conversion failed or was skipped for file: ${file.originalname}`);
+             cleanLocalTempFile();
+             return;
+           }
            try {
              const mdContent = fs.readFileSync(`${file.path}.md`, "utf-8");
              await this.ragService.indexDocument(projectId, document.id, mdContent, document.originalName);
