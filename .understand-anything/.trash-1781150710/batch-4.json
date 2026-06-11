@@ -1,0 +1,900 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/projects/dto/create-project.dto.ts",
+      "type": "file",
+      "name": "create-project.dto.ts",
+      "summary": "Định nghĩa các đối tượng truyền dữ liệu (DTO) phục vụ việc tạo và cập nhật thông tin dự án.",
+      "tags": [
+        "dto",
+        "validation",
+        "class-validator",
+        "project-management",
+        "nestjs"
+      ],
+      "complexity": "simple",
+      "language": "typescript",
+      "filePath": "backend/src/projects/dto/create-project.dto.ts",
+      "startLine": 1,
+      "endLine": 73,
+      "languageNotes": "Sử dụng class-validator và @nestjs/swagger decorator để cấu hình validation và OpenAPI documentation."
+    },
+    {
+      "id": "class:backend/src/projects/dto/create-project.dto.ts:CreateProjectDto",
+      "type": "class",
+      "name": "CreateProjectDto",
+      "summary": "Lớp DTO dùng để validate dữ liệu đầu vào khi tạo dự án mới, bao gồm tên, mô tả, ngân sách, ngày bắt đầu/kết thúc, danh sách thành viên và các cấu hình vai trò, trạng thái công việc.",
+      "tags": [
+        "class",
+        "dto",
+        "validation",
+        "project-creation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/projects/dto/create-project.dto.ts:UpdateProjectDto",
+      "type": "class",
+      "name": "UpdateProjectDto",
+      "summary": "Lớp DTO dùng để cập nhật thông tin dự án, kế thừa các thuộc tính tùy chọn từ CreateProjectDto thông qua PartialType.",
+      "tags": [
+        "class",
+        "dto",
+        "partial-type",
+        "project-update"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/dto/update-project-roles.dto.ts",
+      "type": "file",
+      "name": "update-project-roles.dto.ts",
+      "summary": "Định nghĩa các DTO cho việc cập nhật vai trò (roles) và phân quyền của thành viên trong dự án.",
+      "tags": [
+        "dto",
+        "validation",
+        "roles",
+        "permissions",
+        "nestjs"
+      ],
+      "complexity": "simple",
+      "language": "typescript",
+      "filePath": "backend/src/projects/dto/update-project-roles.dto.ts",
+      "startLine": 1,
+      "endLine": 29,
+      "languageNotes": "Sử dụng class-transformer để chuyển đổi và validate các object lồng nhau."
+    },
+    {
+      "id": "class:backend/src/projects/dto/update-project-roles.dto.ts:ProjectRoleConfigDto",
+      "type": "class",
+      "name": "ProjectRoleConfigDto",
+      "summary": "Lớp DTO định nghĩa cấu hình cho một vai trò cụ thể trong dự án gồm tên vai trò và danh sách quyền hạn đi kèm.",
+      "tags": [
+        "class",
+        "dto",
+        "role-config",
+        "permissions"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/projects/dto/update-project-roles.dto.ts:UpdateProjectRolesDto",
+      "type": "class",
+      "name": "UpdateProjectRolesDto",
+      "summary": "Lớp DTO chứa danh sách các vai trò cần cập nhật cho dự án.",
+      "tags": [
+        "class",
+        "dto",
+        "roles-update"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "type": "file",
+      "name": "update-project-workflow.dto.ts",
+      "summary": "Định nghĩa các DTO để cấu hình và cập nhật workflow (quy trình trạng thái công việc) của dự án.",
+      "tags": [
+        "dto",
+        "workflow",
+        "validation",
+        "nestjs"
+      ],
+      "complexity": "simple",
+      "language": "typescript",
+      "filePath": "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "startLine": 1,
+      "endLine": 65,
+      "languageNotes": "Sử dụng regex validation để đảm bảo định dạng mã màu hexa cho các status node."
+    },
+    {
+      "id": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowNodeDto",
+      "type": "class",
+      "name": "WorkflowNodeDto",
+      "summary": "Lớp DTO biểu diễn một nút trạng thái (status node) trong biểu đồ workflow, gồm id, tên, màu sắc hiển thị và tọa độ (x, y).",
+      "tags": [
+        "class",
+        "dto",
+        "workflow-node"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowEdgeDto",
+      "type": "class",
+      "name": "WorkflowEdgeDto",
+      "summary": "Lớp DTO biểu diễn liên kết chuyển trạng thái (transition edge) giữa hai trạng thái trong workflow.",
+      "tags": [
+        "class",
+        "dto",
+        "workflow-edge"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/projects/dto/update-project-workflow.dto.ts:UpdateProjectWorkflowDto",
+      "type": "class",
+      "name": "UpdateProjectWorkflowDto",
+      "summary": "Lớp DTO chính nhận danh sách các nodes và edges cấu thành nên workflow mới của dự án.",
+      "tags": [
+        "class",
+        "dto",
+        "workflow-update"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/project-workflow.ts",
+      "type": "file",
+      "name": "project-workflow.ts",
+      "summary": "Cung cấp các hàm chuẩn hóa và quản lý quy trình trạng thái (workflow) của công việc trong hệ thống dự án.",
+      "tags": [
+        "workflow",
+        "validation",
+        "normalization",
+        "utility"
+      ],
+      "complexity": "moderate",
+      "language": "typescript",
+      "filePath": "backend/src/projects/project-workflow.ts",
+      "startLine": 1,
+      "endLine": 202,
+      "languageNotes": "Định nghĩa các interface cho cấu trúc dữ liệu workflow (ProjectWorkflow, ProjectWorkflowNode, ProjectWorkflowEdge) và xuất các hàm kiểm tra logic chuyển đổi trạng thái."
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:normalizeTaskStatuses",
+      "type": "function",
+      "name": "normalizeTaskStatuses",
+      "summary": "Chuẩn hóa và lọc danh sách các tên trạng thái công việc, đảm bảo tính duy nhất và không rỗng.",
+      "tags": [
+        "function",
+        "normalization",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:createDefaultTaskWorkflow",
+      "type": "function",
+      "name": "createDefaultTaskWorkflow",
+      "summary": "Tạo cấu hình workflow mặc định dựa trên danh sách trạng thái đầu vào (mặc định là TODO, IN_PROGRESS, DONE) với tọa độ và đường nối tuần tự.",
+      "tags": [
+        "function",
+        "workflow-creation",
+        "default-setup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:normalizeTaskWorkflow",
+      "type": "function",
+      "name": "normalizeTaskWorkflow",
+      "summary": "Chuẩn hóa đối tượng workflow phức tạp, tự động thiết lập tọa độ, sinh id cho các nodes/edges chưa hoàn thiện và lọc bỏ các liên kết không hợp lệ.",
+      "tags": [
+        "function",
+        "workflow-normalization",
+        "data-repair"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:getTaskWorkflowStatusNames",
+      "type": "function",
+      "name": "getTaskWorkflowStatusNames",
+      "summary": "Lấy danh sách tên tất cả các trạng thái đang có trong cấu hình workflow.",
+      "tags": [
+        "function",
+        "utility",
+        "workflow-query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:getDefaultTaskStatus",
+      "type": "function",
+      "name": "getDefaultTaskStatus",
+      "summary": "Trả về trạng thái mặc định cho công việc mới tạo (thường là trạng thái đầu tiên trong danh sách workflow).",
+      "tags": [
+        "function",
+        "utility",
+        "default-status"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:buildWorkflowRenameMap",
+      "type": "function",
+      "name": "buildWorkflowRenameMap",
+      "summary": "So sánh workflow hiện tại và workflow mới để tạo bản đồ ánh xạ các trạng thái bị đổi tên (nhằm phục vụ việc cập nhật dữ liệu Task cũ).",
+      "tags": [
+        "function",
+        "workflow-migration",
+        "state-comparison"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:isTaskTransitionAllowed",
+      "type": "function",
+      "name": "isTaskTransitionAllowed",
+      "summary": "Kiểm tra xem một lượt chuyển dịch trạng thái công việc (từ trạng thái A sang B) có được cho phép bởi biểu đồ edges của workflow hay không.",
+      "tags": [
+        "function",
+        "state-transition",
+        "authorization-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-workflow.ts:getWorkflowAsJson",
+      "type": "function",
+      "name": "getWorkflowAsJson",
+      "summary": "Chuyển đổi kiểu dữ liệu workflow về dạng JSON thô (raw record) để tương thích với cơ sở dữ liệu.",
+      "tags": [
+        "function",
+        "utility",
+        "json-cast"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/projects.controller.ts",
+      "type": "file",
+      "name": "projects.controller.ts",
+      "summary": "Bộ điều khiển (controller) xử lý các API endpoint liên quan đến quản lý dự án (CRUD, Workflow, Roles, Members).",
+      "tags": [
+        "controller",
+        "routing",
+        "api-endpoints",
+        "nestjs"
+      ],
+      "complexity": "moderate",
+      "language": "typescript",
+      "filePath": "backend/src/projects/projects.controller.ts",
+      "startLine": 1,
+      "endLine": 114,
+      "languageNotes": "Sử dụng các decorator định tuyến HTTP của NestJS kết hợp phân quyền qua JWT Guard và Custom Permissions Guard."
+    },
+    {
+      "id": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "type": "class",
+      "name": "ProjectsController",
+      "summary": "Lớp controller định nghĩa các route cho tài nguyên dự án (projects), thực hiện tiêm dịch vụ ProjectsService và phân quyền ở cấp độ route.",
+      "tags": [
+        "class",
+        "controller",
+        "api-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:create",
+      "type": "endpoint",
+      "name": "POST /projects",
+      "summary": "Endpoint tạo dự án mới với thông tin cấu hình ban đầu.",
+      "tags": [
+        "endpoint",
+        "project-creation",
+        "post-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:findAll",
+      "type": "endpoint",
+      "name": "GET /projects",
+      "summary": "Endpoint lấy danh sách dự án mà người dùng hiện tại có quyền truy cập.",
+      "tags": [
+        "endpoint",
+        "project-list",
+        "get-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:findOne",
+      "type": "endpoint",
+      "name": "GET /projects/:id",
+      "summary": "Endpoint lấy thông tin chi tiết của một dự án theo mã ID.",
+      "tags": [
+        "endpoint",
+        "project-detail",
+        "get-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:update",
+      "type": "endpoint",
+      "name": "PUT /projects/:id",
+      "summary": "Endpoint cập nhật thông tin cơ bản của một dự án.",
+      "tags": [
+        "endpoint",
+        "project-update",
+        "put-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:updateWorkflow",
+      "type": "endpoint",
+      "name": "PATCH /projects/:id/workflow",
+      "summary": "Endpoint cập nhật luồng công việc (workflow trạng thái) của dự án.",
+      "tags": [
+        "endpoint",
+        "workflow-update",
+        "patch-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:updateRoles",
+      "type": "endpoint",
+      "name": "PATCH /projects/:id/roles",
+      "summary": "Endpoint cập nhật cấu hình vai trò thành viên trong dự án.",
+      "tags": [
+        "endpoint",
+        "roles-update",
+        "patch-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:remove",
+      "type": "endpoint",
+      "name": "DELETE /projects/:id",
+      "summary": "Endpoint xóa bỏ một dự án.",
+      "tags": [
+        "endpoint",
+        "project-deletion",
+        "delete-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:addMember",
+      "type": "endpoint",
+      "name": "POST /projects/:id/members/:userId",
+      "summary": "Endpoint thêm một thành viên mới vào dự án với vai trò xác định.",
+      "tags": [
+        "endpoint",
+        "member-addition",
+        "post-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:updateMemberRole",
+      "type": "endpoint",
+      "name": "PATCH /projects/:id/members/:userId",
+      "summary": "Endpoint thay đổi vai trò dự án của một thành viên cụ thể.",
+      "tags": [
+        "endpoint",
+        "member-role-update",
+        "patch-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/projects/projects.controller.ts:removeMember",
+      "type": "endpoint",
+      "name": "DELETE /projects/:id/members/:userId",
+      "summary": "Endpoint loại bỏ thành viên ra khỏi dự án.",
+      "tags": [
+        "endpoint",
+        "member-removal",
+        "delete-request"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/projects.service.ts",
+      "type": "file",
+      "name": "projects.service.ts",
+      "summary": "Lớp dịch vụ (service) chứa logic xử lý chính của dự án, bao gồm CRUD dự án, quản lý thành viên, xử lý an toàn cập nhật vai trò và quy trình (workflow).",
+      "tags": [
+        "service",
+        "business-logic",
+        "project-management",
+        "nestjs"
+      ],
+      "complexity": "complex",
+      "language": "typescript",
+      "filePath": "backend/src/projects/projects.service.ts",
+      "startLine": 1,
+      "endLine": 511,
+      "languageNotes": "Tích hợp Prisma để truy vấn dữ liệu dự án/thành viên và thực hiện các transaction cập nhật đồng bộ các Task/Member bị ảnh hưởng khi đổi tên Workflow/Roles."
+    },
+    {
+      "id": "service:backend/src/projects/projects.service.ts",
+      "type": "service",
+      "name": "ProjectsService",
+      "summary": "Dịch vụ chịu trách nhiệm thực thi các quy trình nghiệp vụ liên quan đến dự án, vai trò thành viên và luồng workflow, tương tác trực tiếp với cơ sở dữ liệu qua Prisma.",
+      "tags": [
+        "service",
+        "project-logic",
+        "database-operation",
+        "business-rules"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/src/projects/projects.service.ts:sortTasksByWorkflow",
+      "type": "function",
+      "name": "sortTasksByWorkflow",
+      "summary": "Sắp xếp danh sách công việc theo trình tự được định nghĩa trong workflow và thời gian khởi tạo.",
+      "tags": [
+        "function",
+        "sorting",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/projects.service.ts:normalizeProjectList",
+      "type": "function",
+      "name": "normalizeProjectList",
+      "summary": "Chuẩn hóa danh sách chuỗi đầu vào (epics hoặc labels) bằng cách loại bỏ các khoảng trắng dư thừa và các phần tử trùng lặp.",
+      "tags": [
+        "function",
+        "normalization",
+        "helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/projects.service.ts:normalizeTaskNamingRule",
+      "type": "function",
+      "name": "normalizeTaskNamingRule",
+      "summary": "Chuẩn hóa quy tắc đặt tên công việc của dự án.",
+      "tags": [
+        "function",
+        "normalization",
+        "helper"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/projects/dto/create-project.dto.ts",
+      "target": "class:backend/src/projects/dto/create-project.dto.ts:CreateProjectDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/create-project.dto.ts",
+      "target": "class:backend/src/projects/dto/create-project.dto.ts:UpdateProjectDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/update-project-roles.dto.ts",
+      "target": "class:backend/src/projects/dto/update-project-roles.dto.ts:ProjectRoleConfigDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/update-project-roles.dto.ts",
+      "target": "class:backend/src/projects/dto/update-project-roles.dto.ts:UpdateProjectRolesDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "target": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowNodeDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "target": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowEdgeDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "target": "class:backend/src/projects/dto/update-project-workflow.dto.ts:UpdateProjectWorkflowDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:normalizeTaskStatuses",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:createDefaultTaskWorkflow",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:normalizeTaskWorkflow",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:getTaskWorkflowStatusNames",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:getDefaultTaskStatus",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:buildWorkflowRenameMap",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:isTaskTransitionAllowed",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/project-workflow.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:getWorkflowAsJson",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:create",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:findAll",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:findOne",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:update",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateWorkflow",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateRoles",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:remove",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:addMember",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateMemberRole",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:removeMember",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:sortTasksByWorkflow",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:normalizeProjectList",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:normalizeTaskNamingRule",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:create",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:findAll",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:findOne",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:update",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateWorkflow",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateRoles",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:remove",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:addMember",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:updateMemberRole",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "target": "endpoint:backend/src/projects/projects.controller.ts:removeMember",
+      "type": "routes"
+    },
+    {
+      "source": "class:backend/src/projects/dto/create-project.dto.ts:UpdateProjectDto",
+      "target": "class:backend/src/projects/dto/create-project.dto.ts:CreateProjectDto",
+      "type": "inherits"
+    },
+    {
+      "source": "class:backend/src/projects/dto/update-project-workflow.dto.ts:UpdateProjectWorkflowDto",
+      "target": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowNodeDto",
+      "type": "depends_on"
+    },
+    {
+      "source": "class:backend/src/projects/dto/update-project-workflow.dto.ts:UpdateProjectWorkflowDto",
+      "target": "class:backend/src/projects/dto/update-project-workflow.dto.ts:WorkflowEdgeDto",
+      "type": "depends_on"
+    },
+    {
+      "source": "class:backend/src/projects/dto/update-project-roles.dto.ts:UpdateProjectRolesDto",
+      "target": "class:backend/src/projects/dto/update-project-roles.dto.ts:ProjectRoleConfigDto",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/projects/projects.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/projects/dto/create-project.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/projects/dto/update-project-roles.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/projects/project-workflow.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/projects/dto/create-project.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/projects/dto/update-project-roles.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/projects/dto/update-project-workflow.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/ai/ai.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/projects/projects.service.ts",
+      "target": "file:backend/src/projects/project-roles.ts",
+      "type": "imports"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:create",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:findAll",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:findOne",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:update",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:updateWorkflow",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:updateRoles",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:remove",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:addMember",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:updateMemberRole",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/projects/projects.controller.ts:removeMember",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:sortTasksByWorkflow",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:normalizeProjectList",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/projects.service.ts:normalizeTaskNamingRule",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:normalizeTaskStatuses",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:createDefaultTaskWorkflow",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:normalizeTaskWorkflow",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:getTaskWorkflowStatusNames",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:buildWorkflowRenameMap",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "function:backend/src/projects/project-workflow.ts:getWorkflowAsJson",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "service:backend/src/ai/ai.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "service:backend/src/projects/projects.service.ts",
+      "target": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:backend/src/projects/project-workflow.ts:createDefaultTaskWorkflow",
+      "target": "function:backend/src/projects/project-workflow.ts:normalizeTaskStatuses",
+      "type": "calls"
+    },
+    {
+      "source": "function:backend/src/projects/project-workflow.ts:normalizeTaskWorkflow",
+      "target": "function:backend/src/projects/project-workflow.ts:createDefaultTaskWorkflow",
+      "type": "calls"
+    }
+  ]
+}

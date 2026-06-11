@@ -1,0 +1,6950 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "67113e328a793bcc5853240bbabcaff1ec43dc55",
+  "generatedAt": "2026-06-11T04:05:09.980Z",
+  "files": {
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "17d70753f6e2fad49a18ca7a9f7976b4dee53ea65ab9c713db8734c6450e28f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/config.json": {
+      "filePath": ".understand-anything/config.json",
+      "contentHash": "e1030bde3d61df567ec5632ce69d5a7b3406ea69884b87710576b26375238389",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/tmp/generate-ignore.js": {
+      "filePath": ".understand-anything/tmp/generate-ignore.js",
+      "contentHash": "370fcbde9cce93699b077e152c76daa3c769d08b02065eabe0730f8ac56175a1",
+      "functions": [
+        {
+          "name": "norm",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "96705bb96781516f60ba35d5c77594aecd8444378f79be2a56918dff3fd01122",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "backend/.env.example": {
+      "filePath": "backend/.env.example",
+      "contentHash": "8e47507b753bb1ed79938bb0b60ba2ce8db8278b3ce913ab51e081f0abdcbe00",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "backend/check_project.js": {
+      "filePath": "backend/check_project.js",
+      "contentHash": "6ba87cd79fd4b07bcd2b997195565560379e797834af96cdea9316f1a58387e4",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "backend/check_task.js": {
+      "filePath": "backend/check_task.js",
+      "contentHash": "fae0ceaed2acba12cf33024467479b35d5628114dd306c5ff6396c092ff4de7e",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 34
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "backend/eval/agent-eval.js": {
+      "filePath": "backend/eval/agent-eval.js",
+      "contentHash": "9c1478fb84b1453d769453c90f9d5f0467a7bef1f43c589fd1422a3fdb591e8a",
+      "functions": [
+        {
+          "name": "check",
+          "params": [
+            "name",
+            "passed",
+            "detail"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "selectEvaluationContext",
+          "params": [
+            "prisma",
+            "dataAccess"
+          ],
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "runWithTimeout",
+          "params": [
+            "promise"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 162
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 251,
+      "hasStructuralAnalysis": true
+    },
+    "backend/fix_module.js": {
+      "filePath": "backend/fix_module.js",
+      "contentHash": "88f6cee4f820870c83dcbd6f2cbc05cb3e7099ec0700aaab1e7aae08bf2bb0b1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/fix_rag.js": {
+      "filePath": "backend/fix_rag.js",
+      "contentHash": "0c63d01f8e65e30df75348512de6a6286d952c032b66850f75d9b9e6cec689b8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "backend/fix.js": {
+      "filePath": "backend/fix.js",
+      "contentHash": "aae59909ffd5c8028e31cf8c7f35eae275fb8868820fc88149b8a4b4496e32b1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "backend/package.json": {
+      "filePath": "backend/package.json",
+      "contentHash": "78485347d1a426080e2854996fc1578aaa5d94dec67af1ba202175b58b2d3c3b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260417044832_init/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "contentHash": "f11e58e09d7e70ef7c9a4f58512f90fcd21181f2dc9f47492d024bcc489bf7dd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 114,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "contentHash": "91c3e9ab129c2e28ef6ba09baf78b68aa65e8a6d32fa173772b966544940fc60",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "contentHash": "e0c5f1a63524f3710d7626b4cf28fc93d010c697d34c59edb9ca10095b713e82",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "contentHash": "4f954f717c549cdef489229a2eb6e347ba0de5a4c57acd12e53a744e2b5691af",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "contentHash": "927b5bccb0c5a6760835fd72848ca381ef8c79b082babe31574d7b73fa793ef8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "contentHash": "fe587721db17c4c0b9296f2b7095bda484dbcb856df98c08b9d14d276daf15be",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "contentHash": "d9be36a92ec0fecff0709613029ed0f21af47a020ea4c4b4f08fa9585c17f287",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "contentHash": "8f04b965026f27a4f23609ebeded6e86b769014fb7ba35760769834146ff3c68",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "contentHash": "1636978f16b6788a2af4d57acb6d57c6058a4a736cdc6324d5d84010d94c927c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "contentHash": "dfbad59023d52c8dd641eb28cb953510a5d01df75119f7c3d1aa2fcae20acbfd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "contentHash": "1cab033d8cc28594a6238993ae0317efc553a553babf2f4afee374e39837bd4d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "contentHash": "cd0a05942979acc51aefeb5092f180b6ed571e50a889114d74d3baf3377810a1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "contentHash": "261b92579fb269a53e7d4cfd23cfa9e7bf8335bcef372d7f4393d6b50dd92a01",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "contentHash": "17db14ff624fa0853c7f92f8b3d6c7e87d48ac0fa87457c06a96b06d225d8b7d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "contentHash": "db0ca127f749d2eb69a29d06a7e2174a241da0b2c15b955dabd74cfe7bd79dc5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "contentHash": "3ae3ebd196c5cc53dceffb1fb70b93e37f73f2203e1172927553a680f4edb1b1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+      "contentHash": "e11910349db136a78c5eb19db6099d7c0a1c7b7388b2e7cfa5f2fea4467e25a7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+      "contentHash": "2adca20cc68fcc6189c6542822d9a96b14d9aa79c747084b5367ffd2c68e8343",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+      "contentHash": "72e55ad5ce415ad149f5730e516f3c8940d88572a40b68d10cb0716caac7fd17",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql": {
+      "filePath": "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+      "contentHash": "70d2c6722f93273704d66bb66aac9a48e0bfa2b022b417065fdcc5908552bb39",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/migrations/migration_lock.toml": {
+      "filePath": "backend/prisma/migrations/migration_lock.toml",
+      "contentHash": "693566b52c49db47a2b0901d12400aa3d710d13a49f4a2a154b80c0505ed737c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/schema.prisma": {
+      "filePath": "backend/prisma/schema.prisma",
+      "contentHash": "bee29e75dbc2ccac20aba2e4a76f574e6b0ab299edb3c7ecbd2c3e4826597d18",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 236,
+      "hasStructuralAnalysis": false
+    },
+    "backend/prisma/seed-employees.ts": {
+      "filePath": "backend/prisma/seed-employees.ts",
+      "contentHash": "4e79ed01a90872cdeda96513c9824ef1788bcd0a3b2b7ba0a510c846088fad09",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 177
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "PrismaClient"
+          ]
+        },
+        {
+          "source": "bcrypt",
+          "specifiers": [
+            "* as bcrypt"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 192,
+      "hasStructuralAnalysis": true
+    },
+    "backend/prisma/seed.ts": {
+      "filePath": "backend/prisma/seed.ts",
+      "contentHash": "52ec5d1f567314f78023006b59ec73d0ee5b2d78835772ea7fe2ae2f18d89a98",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 121
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "PrismaClient"
+          ]
+        },
+        {
+          "source": "bcrypt",
+          "specifiers": [
+            "* as bcrypt"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "backend/search-glapp-2.js": {
+      "filePath": "backend/search-glapp-2.js",
+      "contentHash": "1b68e46a28bcf555acec565965be16788ac18464789043d33480bd3eb79797ec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/agent-runtime.util.test.ts": {
+      "filePath": "backend/src/ai/agent-runtime.util.test.ts",
+      "contentHash": "bd5d89b543a2b4e3518872e5acd6c19895ae5d47bcce33dd28238a453e58c8c4",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "describe",
+            "it"
+          ]
+        },
+        {
+          "source": "./agent-runtime.util",
+          "specifiers": [
+            "shouldReportToolRoundLimit",
+            "truncateAgentMessages"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 96,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/agent-runtime.util.ts": {
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "contentHash": "222dddea5f15c67eb4a999d0aa58fbc6071792bed22ac26b473d82acb20550a7",
+      "functions": [
+        {
+          "name": "estimateMessageTokens",
+          "params": [
+            "message",
+            "charsPerToken"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "estimateAgentMessageTokens",
+          "params": [
+            "messages",
+            "charsPerToken"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "groupConversationTurns",
+          "params": [
+            "messages"
+          ],
+          "returnType": "AgentRuntimeMessage[][]",
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "truncateAgentMessages",
+          "params": [
+            "messages",
+            "maxTokens",
+            "charsPerToken",
+            "minimumRecentTurns"
+          ],
+          "returnType": "{ trimmed: AgentRuntimeMessage[]; truncatedCount: number }",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "shouldReportToolRoundLimit",
+          "params": [
+            "options"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "estimateAgentMessageTokens",
+        "truncateAgentMessages",
+        "shouldReportToolRoundLimit"
+      ],
+      "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/agent-security.util.test.ts": {
+      "filePath": "backend/src/ai/agent-security.util.test.ts",
+      "contentHash": "00791ff3be6e9100ae600236e525a991027eb59781f171e50e027a7464f289ca",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "describe",
+            "it"
+          ]
+        },
+        {
+          "source": "./agent-security.util",
+          "specifiers": [
+            "wrapUntrustedToolResult"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/agent-security.util.ts": {
+      "filePath": "backend/src/ai/agent-security.util.ts",
+      "contentHash": "9ed5c0bcfef5fdea3fef20a9567900789baad2de09673c140e13d1e0100e2308",
+      "functions": [
+        {
+          "name": "wrapUntrustedToolResult",
+          "params": [
+            "toolName",
+            "rawResult"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "wrapUntrustedToolResult"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/ai-data-access.service.ts": {
+      "filePath": "backend/src/ai/ai-data-access.service.ts",
+      "contentHash": "4dced622a5654bc7763e8034f793fedd2ac3521a1f3071e2c52b2e2dfc9ba388",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiDataAccessService",
+          "methods": [
+            "constructor",
+            "resolveUserPermissions",
+            "getFilteredProjectContext",
+            "getFilteredDocumentContents"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 303
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger",
+            "NotFoundException"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "../projects/project-roles",
+          "specifiers": [
+            "getProjectRolePermissions",
+            "normalizeProjectRoleConfigs"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "* as path"
+          ]
+        }
+      ],
+      "exports": [
+        "AiDataAccessService"
+      ],
+      "totalLines": 389,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/ai-logger.util.ts": {
+      "filePath": "backend/src/ai/ai-logger.util.ts",
+      "contentHash": "a9ccc981fa94ae3856e8300cb2be870738832fadae800ae15198d2f473c29ba7",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiLogger",
+          "methods": [
+            "log",
+            "scheduleFlush",
+            "flush"
+          ],
+          "properties": [
+            "logFilePath",
+            "buffer",
+            "flushTimer",
+            "FLUSH_INTERVAL_MS",
+            "MAX_BUFFER_SIZE",
+            "isFlushing"
+          ],
+          "exported": true,
+          "lineCount": 102
+        }
+      ],
+      "imports": [
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "* as path"
+          ]
+        }
+      ],
+      "exports": [
+        "AiLogger"
+      ],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/ai.controller.ts": {
+      "filePath": "backend/src/ai/ai.controller.ts",
+      "contentHash": "c0f4f2f08c0a7a85926a26e4987b789f5c9fe3c148487a9867c944dee84f6f5b",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiController",
+          "methods": [
+            "constructor",
+            "analyze",
+            "getRequirements",
+            "getHistory",
+            "getVersion",
+            "updateRequirements",
+            "confirmTasks",
+            "suggestAssignee",
+            "improveDescription",
+            "assistDescription",
+            "chat",
+            "chatStream",
+            "summarize",
+            "listSessions",
+            "createSession",
+            "updateSession",
+            "deleteSession"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 195
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Put",
+            "Delete",
+            "Body",
+            "Param",
+            "ParseIntPipe",
+            "UseGuards",
+            "Res"
+          ]
+        },
+        {
+          "source": "express",
+          "specifiers": [
+            "Response"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "./ai.service",
+          "specifiers": [
+            "AiService"
+          ]
+        },
+        {
+          "source": "./dto/ai.dto",
+          "specifiers": [
+            "ConfirmAiTasksDto",
+            "SuggestAssigneeDto",
+            "ImproveDescriptionDto",
+            "AssistDescriptionDto",
+            "AiChatDto",
+            "AiSummarizeDto",
+            "CreateSessionDto",
+            "UpdateSessionDto"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../auth/decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        }
+      ],
+      "exports": [
+        "AiController"
+      ],
+      "totalLines": 230,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/ai.module.ts": {
+      "filePath": "backend/src/ai/ai.module.ts",
+      "contentHash": "bba0273c3697a454042ca68b5bdae3503241514ff8e70243a1e517b38072e5c8",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./ai.controller",
+          "specifiers": [
+            "AiController"
+          ]
+        },
+        {
+          "source": "./system-configs.controller",
+          "specifiers": [
+            "SystemConfigsController"
+          ]
+        },
+        {
+          "source": "./token-stats.controller",
+          "specifiers": [
+            "TokenStatsController"
+          ]
+        },
+        {
+          "source": "./ai.service",
+          "specifiers": [
+            "AiService"
+          ]
+        },
+        {
+          "source": "./ai-data-access.service",
+          "specifiers": [
+            "AiDataAccessService"
+          ]
+        },
+        {
+          "source": "../tasks/tasks.module",
+          "specifiers": [
+            "TasksModule"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.module",
+          "specifiers": [
+            "ProjectAiIndexModule"
+          ]
+        },
+        {
+          "source": "./rag.service",
+          "specifiers": [
+            "RagService"
+          ]
+        }
+      ],
+      "exports": [
+        "AiModule"
+      ],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/ai.service.ts": {
+      "filePath": "backend/src/ai/ai.service.ts",
+      "contentHash": "c61462327c12311986af748306c4546915272f7af7d9610b881ba672d7fa050a",
+      "functions": [
+        {
+          "name": "formatRequirementTimestamp",
+          "params": [
+            "date"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "sleep",
+          "params": [
+            "ms"
+          ],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "BufferedChatStreamResponse",
+          "methods": [
+            "on",
+            "write",
+            "end",
+            "toChatResponse"
+          ],
+          "properties": [
+            "text",
+            "suggestedTasks",
+            "errorMessage"
+          ],
+          "exported": false,
+          "lineCount": 59
+        },
+        {
+          "name": "AiService",
+          "methods": [
+            "constructor",
+            "getSystemConfig",
+            "getOpenAIClient",
+            "logTokenUsage",
+            "determineModel",
+            "getAiErrorStatus",
+            "isRetryableAiError",
+            "getAiErrorMessage",
+            "generateAiText",
+            "parseJsonObject",
+            "finalizeTaskSuggestionWithFlash",
+            "fallbackChatPlan",
+            "normalizeChatPlan",
+            "classifyChatRequest",
+            "analyzeProject",
+            "confirmAndCreateTasks",
+            "suggestAssignees",
+            "improveTaskDescription",
+            "assistTaskDescription",
+            "initRequirements",
+            "updateRequirements",
+            "getRequirementsContent",
+            "getRequirementsHistory",
+            "getRequirementsVersion",
+            "saveRequirementsFile",
+            "chat",
+            "summarize",
+            "buildSourceManifest",
+            "buildPermissionHints",
+            "estimateMessageTokens",
+            "truncateMessages",
+            "buildRequirementsMarkdown",
+            "listSessions",
+            "createSession",
+            "updateSession",
+            "deleteSession",
+            "chatStream"
+          ],
+          "properties": [
+            "logger",
+            "openai",
+            "MAX_TOOL_CALL_ROUNDS",
+            "CHARS_PER_TOKEN_ESTIMATE",
+            "MAX_CONTEXT_TOKENS"
+          ],
+          "exported": true,
+          "lineCount": 2207
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger",
+            "NotFoundException",
+            "ForbiddenException",
+            "BadGatewayException"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "../tasks/tasks.service",
+          "specifiers": [
+            "TasksService"
+          ]
+        },
+        {
+          "source": "./ai-data-access.service",
+          "specifiers": [
+            "AiDataAccessService",
+            "FilteredProjectContext"
+          ]
+        },
+        {
+          "source": "./rag.service",
+          "specifiers": [
+            "RagService"
+          ]
+        },
+        {
+          "source": "openai",
+          "specifiers": [
+            "OpenAI"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "* as path"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.service",
+          "specifiers": [
+            "ProjectAiIndexService"
+          ]
+        },
+        {
+          "source": "./ai-logger.util",
+          "specifiers": [
+            "AiLogger"
+          ]
+        },
+        {
+          "source": "./agent-runtime.util",
+          "specifiers": [
+            "estimateAgentMessageTokens",
+            "shouldReportToolRoundLimit",
+            "truncateAgentMessages"
+          ]
+        },
+        {
+          "source": "./task-suggestion.util",
+          "specifiers": [
+            "ValidatedTaskSuggestionPayload",
+            "validateTaskSuggestionPayload"
+          ]
+        },
+        {
+          "source": "./agent-security.util",
+          "specifiers": [
+            "wrapUntrustedToolResult"
+          ]
+        }
+      ],
+      "exports": [
+        "AiService"
+      ],
+      "totalLines": 2371,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/dto/ai.dto.ts": {
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "contentHash": "da6ae7d03be109d0bbfa61fdb1220982095fb1ee7f38d80a6a21123b8081a2a2",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ConfirmTaskDto",
+          "methods": [],
+          "properties": [
+            "title",
+            "description",
+            "priority",
+            "assigneeId",
+            "dueDate",
+            "sprint",
+            "epic",
+            "labels",
+            "estimateHours",
+            "loggedHours"
+          ],
+          "exported": false,
+          "lineCount": 54
+        },
+        {
+          "name": "ConfirmAiTasksDto",
+          "methods": [],
+          "properties": [
+            "tasks"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "SuggestAssigneeDto",
+          "methods": [],
+          "properties": [
+            "taskDescription"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ImproveDescriptionDto",
+          "methods": [],
+          "properties": [
+            "title",
+            "description"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "AssistDescriptionDto",
+          "methods": [],
+          "properties": [
+            "title",
+            "description",
+            "instruction"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "ChatMessageDto",
+          "methods": [],
+          "properties": [
+            "role",
+            "content"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "AiChatDto",
+          "methods": [],
+          "properties": [
+            "messages",
+            "summary",
+            "language"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "AiSummarizeDto",
+          "methods": [],
+          "properties": [
+            "currentSummary",
+            "messages"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "CreateSessionDto",
+          "methods": [],
+          "properties": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "UpdateSessionDto",
+          "methods": [],
+          "properties": [
+            "name",
+            "summary",
+            "messages"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsArray",
+            "IsInt",
+            "IsNotEmpty",
+            "IsNumber",
+            "IsOptional",
+            "IsString",
+            "Min",
+            "ValidateNested"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty",
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        }
+      ],
+      "exports": [
+        "ConfirmAiTasksDto",
+        "SuggestAssigneeDto",
+        "ImproveDescriptionDto",
+        "AssistDescriptionDto",
+        "AiChatDto",
+        "AiSummarizeDto",
+        "CreateSessionDto",
+        "UpdateSessionDto"
+      ],
+      "totalLines": 181,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/dto/system-config.dto.ts": {
+      "filePath": "backend/src/ai/dto/system-config.dto.ts",
+      "contentHash": "ee67b2849d533684940230918e32340c63df37fcb897debeab4ae641d47dc812",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UpdateSystemConfigsDto",
+          "methods": [],
+          "properties": [
+            "AI_API_KEY",
+            "AI_API_BASE",
+            "AI_PRO_MODEL",
+            "AI_FLASH_MODEL",
+            "AI_SUMMARY_MODEL",
+            "AI_EMBEDDING_MODEL"
+          ],
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsOptional",
+            "IsString"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        }
+      ],
+      "exports": [
+        "UpdateSystemConfigsDto"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/rag.service.ts": {
+      "filePath": "backend/src/ai/rag.service.ts",
+      "contentHash": "67b165a52c22b114c7311d6719622a29f826e13e469d1b4e101d91bbd7538b42",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RagService",
+          "methods": [
+            "constructor",
+            "getSystemConfig",
+            "getOpenAIClient",
+            "generateEmbedding",
+            "chunkText",
+            "cosineSimilarity",
+            "normalizeText",
+            "getKeywordSimilarity",
+            "generateDocumentSummary",
+            "indexDocument",
+            "searchDocuments"
+          ],
+          "properties": [
+            "logger",
+            "embeddingUnavailableModel",
+            "embeddingUnavailableUntil",
+            "embeddingProbeLock"
+          ],
+          "exported": true,
+          "lineCount": 360
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "openai",
+          "specifiers": [
+            "OpenAI"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./ai-logger.util",
+          "specifiers": [
+            "AiLogger"
+          ]
+        }
+      ],
+      "exports": [
+        "RagService"
+      ],
+      "totalLines": 368,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/system-configs.controller.ts": {
+      "filePath": "backend/src/ai/system-configs.controller.ts",
+      "contentHash": "d9b742804a4b30aa3d96ca8dbfa60514602b9771cfb4a03253309bc9bf36df47",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SystemConfigsController",
+          "methods": [
+            "constructor",
+            "getConfigs",
+            "updateConfigs"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 71
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Put",
+            "Body",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/system-config.dto",
+          "specifiers": [
+            "UpdateSystemConfigsDto"
+          ]
+        }
+      ],
+      "exports": [
+        "SystemConfigsController"
+      ],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/task-suggestion.util.test.ts": {
+      "filePath": "backend/src/ai/task-suggestion.util.test.ts",
+      "contentHash": "8ed5214a693b4fe7bcafa14505761d56c39889b9620ba6387add54c6d4ae6ba5",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "describe",
+            "it"
+          ]
+        },
+        {
+          "source": "./task-suggestion.util",
+          "specifiers": [
+            "validateTaskSuggestionPayload"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/task-suggestion.util.ts": {
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "contentHash": "61e95953580d53fd778feb85748ccabc5dba1dc85931857f7dc4440c44b4330a",
+      "functions": [
+        {
+          "name": "optionalString",
+          "params": [
+            "value"
+          ],
+          "returnType": "string | undefined",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "nonNegativeNumber",
+          "params": [
+            "value"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "sanitizeUserFacingMessage",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "validateTaskSuggestionPayload",
+          "params": [
+            "value"
+          ],
+          "returnType": "ValidatedTaskSuggestionPayload",
+          "exported": true,
+          "lineCount": 66
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "validateTaskSuggestionPayload"
+      ],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/ai/token-stats.controller.ts": {
+      "filePath": "backend/src/ai/token-stats.controller.ts",
+      "contentHash": "abe55ae1a1f72aa50cff6fa99a9aa9fcc71622505df3b7c80c58e6d31b591a28",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TokenStatsController",
+          "methods": [
+            "constructor",
+            "hasAdminPermission",
+            "getSummary",
+            "getCharts",
+            "getHistory"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 186
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Query",
+            "UseGuards",
+            "Request",
+            "ParseIntPipe"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation",
+            "ApiQuery"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        }
+      ],
+      "exports": [
+        "TokenStatsController"
+      ],
+      "totalLines": 198,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/app.module.ts": {
+      "filePath": "backend/src/app.module.ts",
+      "contentHash": "a344cef2d20bc254c2ce7624b47ae0c1693dff8297b5a77c51742914d45c46f6",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AppModule",
+          "methods": [
+            "configure"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module",
+            "NestModule",
+            "MiddlewareConsumer"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigModule"
+          ]
+        },
+        {
+          "source": "./prisma/prisma.module",
+          "specifiers": [
+            "PrismaModule"
+          ]
+        },
+        {
+          "source": "./auth/auth.module",
+          "specifiers": [
+            "AuthModule"
+          ]
+        },
+        {
+          "source": "./users/users.module",
+          "specifiers": [
+            "UsersModule"
+          ]
+        },
+        {
+          "source": "./roles/roles.module",
+          "specifiers": [
+            "RolesModule"
+          ]
+        },
+        {
+          "source": "./projects/projects.module",
+          "specifiers": [
+            "ProjectsModule"
+          ]
+        },
+        {
+          "source": "./tasks/tasks.module",
+          "specifiers": [
+            "TasksModule"
+          ]
+        },
+        {
+          "source": "./documents/documents.module",
+          "specifiers": [
+            "DocumentsModule"
+          ]
+        },
+        {
+          "source": "./ai/ai.module",
+          "specifiers": [
+            "AiModule"
+          ]
+        },
+        {
+          "source": "./common/middleware/logging.middleware",
+          "specifiers": [
+            "LoggingMiddleware"
+          ]
+        },
+        {
+          "source": "./common/storage/storage.module",
+          "specifiers": [
+            "StorageModule"
+          ]
+        }
+      ],
+      "exports": [
+        "AppModule"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/auth.controller.ts": {
+      "filePath": "backend/src/auth/auth.controller.ts",
+      "contentHash": "82e174b579023d4f387ceadc3c2cd909d977c14da200fef8f6fb261213b01b4c",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AuthController",
+          "methods": [
+            "constructor",
+            "login",
+            "getProfile"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Post",
+            "Body",
+            "Get",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiOperation",
+            "ApiBearerAuth"
+          ]
+        },
+        {
+          "source": "./auth.service",
+          "specifiers": [
+            "AuthService"
+          ]
+        },
+        {
+          "source": "./dto/login.dto",
+          "specifiers": [
+            "LoginDto"
+          ]
+        },
+        {
+          "source": "./guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "./decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthController"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/auth.module.ts": {
+      "filePath": "backend/src/auth/auth.module.ts",
+      "contentHash": "c8475569744ce4bfd170478480da948f3bddd31505f914b2a2223eaa1f0e7eba",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AuthModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "@nestjs/jwt",
+          "specifiers": [
+            "JwtModule"
+          ]
+        },
+        {
+          "source": "@nestjs/passport",
+          "specifiers": [
+            "PassportModule"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigModule",
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "./auth.controller",
+          "specifiers": [
+            "AuthController"
+          ]
+        },
+        {
+          "source": "./auth.service",
+          "specifiers": [
+            "AuthService"
+          ]
+        },
+        {
+          "source": "./strategies/jwt.strategy",
+          "specifiers": [
+            "JwtStrategy"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthModule"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/auth.service.ts": {
+      "filePath": "backend/src/auth/auth.service.ts",
+      "contentHash": "796dda614f3adca926115517578f3e450f9dc8a395753a1d930044ade15d6643",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AuthService",
+          "methods": [
+            "constructor",
+            "login",
+            "getProfile"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 57
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "UnauthorizedException"
+          ]
+        },
+        {
+          "source": "@nestjs/jwt",
+          "specifiers": [
+            "JwtService"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/login.dto",
+          "specifiers": [
+            "LoginDto"
+          ]
+        },
+        {
+          "source": "bcrypt",
+          "specifiers": [
+            "* as bcrypt"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthService"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/decorators/current-user.decorator.ts": {
+      "filePath": "backend/src/auth/decorators/current-user.decorator.ts",
+      "contentHash": "5ed683139f9c352a0473ca427478b77a66cd86cc80f4ef19689909c4a2737c55",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "createParamDecorator",
+            "ExecutionContext"
+          ]
+        }
+      ],
+      "exports": [
+        "CurrentUser"
+      ],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/decorators/permissions.decorator.ts": {
+      "filePath": "backend/src/auth/decorators/permissions.decorator.ts",
+      "contentHash": "1165d61515a441f40447d7fdcaa31de60ccc8d524100204a327bba151e0bd37b",
+      "functions": [
+        {
+          "name": "RequirePermissions",
+          "params": [
+            "...permissions"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "SetMetadata"
+          ]
+        }
+      ],
+      "exports": [
+        "PERMISSIONS_KEY",
+        "RequirePermissions"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/dto/login.dto.ts": {
+      "filePath": "backend/src/auth/dto/login.dto.ts",
+      "contentHash": "cfc0ab73aa89271d13a12209dcda0d164f98c6d07a6eddc257cf1617da0e9c35",
+      "functions": [],
+      "classes": [
+        {
+          "name": "LoginDto",
+          "methods": [],
+          "properties": [
+            "email",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsEmail",
+            "IsNotEmpty",
+            "IsString",
+            "MinLength"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginDto"
+      ],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/guards/jwt-auth.guard.ts": {
+      "filePath": "backend/src/auth/guards/jwt-auth.guard.ts",
+      "contentHash": "6a84b1b554d0f45c7911ebedaa644de5816a2fc8f772d1ba932c2b293e149a03",
+      "functions": [],
+      "classes": [
+        {
+          "name": "JwtAuthGuard",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/passport",
+          "specifiers": [
+            "AuthGuard"
+          ]
+        }
+      ],
+      "exports": [
+        "JwtAuthGuard"
+      ],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/guards/permissions.guard.ts": {
+      "filePath": "backend/src/auth/guards/permissions.guard.ts",
+      "contentHash": "f3155f4d0ad7a5b32963959c99d02a9c728d27ae4cdc31ebbf737df5f804faee",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PermissionsGuard",
+          "methods": [
+            "constructor",
+            "canActivate",
+            "getProjectPermissions",
+            "resolveProjectId"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 102
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "CanActivate",
+            "ExecutionContext",
+            "ForbiddenException"
+          ]
+        },
+        {
+          "source": "@nestjs/core",
+          "specifiers": [
+            "Reflector"
+          ]
+        },
+        {
+          "source": "../decorators/permissions.decorator",
+          "specifiers": [
+            "PERMISSIONS_KEY"
+          ]
+        },
+        {
+          "source": "../../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "../permissions",
+          "specifiers": [
+            "PROJECT_SCOPED_PERMISSIONS"
+          ]
+        },
+        {
+          "source": "../../projects/project-roles",
+          "specifiers": [
+            "getProjectRolePermissions",
+            "normalizeProjectRoleConfigs"
+          ]
+        }
+      ],
+      "exports": [
+        "PermissionsGuard"
+      ],
+      "totalLines": 119,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/permissions.ts": {
+      "filePath": "backend/src/auth/permissions.ts",
+      "contentHash": "bf3d7cee0ababb617d4b0f3b772f011d4f1d05af53d270682c2e72352aeadd0f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "AVAILABLE_PERMISSIONS",
+        "PROJECT_SCOPED_PERMISSIONS"
+      ],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/auth/strategies/jwt.strategy.ts": {
+      "filePath": "backend/src/auth/strategies/jwt.strategy.ts",
+      "contentHash": "8cca635740ab2838db27f1a877e6b0ddc9346f8165007718c56fd858c3edf889",
+      "functions": [],
+      "classes": [
+        {
+          "name": "JwtStrategy",
+          "methods": [
+            "constructor",
+            "validate"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable"
+          ]
+        },
+        {
+          "source": "@nestjs/passport",
+          "specifiers": [
+            "PassportStrategy"
+          ]
+        },
+        {
+          "source": "passport-jwt",
+          "specifiers": [
+            "ExtractJwt",
+            "Strategy"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        }
+      ],
+      "exports": [
+        "JwtStrategy"
+      ],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/dto/paginated-query.dto.ts": {
+      "filePath": "backend/src/common/dto/paginated-query.dto.ts",
+      "contentHash": "65296c227fcb47801ad38ee030d9e04857e4644912245c1108ca3dfb95c65b71",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PaginatedQueryDto",
+          "methods": [],
+          "properties": [
+            "skip",
+            "take"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsInt",
+            "IsOptional",
+            "Min"
+          ]
+        },
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        }
+      ],
+      "exports": [
+        "PaginatedQueryDto"
+      ],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/dto/paginated-response.ts": {
+      "filePath": "backend/src/common/dto/paginated-response.ts",
+      "contentHash": "56b89160ef9cc4b7babc9374354404dc78883a3e28f399f003a4f317ccbf3485",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/middleware/logging.middleware.ts": {
+      "filePath": "backend/src/common/middleware/logging.middleware.ts",
+      "contentHash": "25604e73152f8895a5b7a857f567d5d926c9c10d87ceec0921aa8ba2faa46bd4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "LoggingMiddleware",
+          "methods": [
+            "use"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "NestMiddleware",
+            "Logger"
+          ]
+        },
+        {
+          "source": "express",
+          "specifiers": [
+            "Request",
+            "Response",
+            "NextFunction"
+          ]
+        }
+      ],
+      "exports": [
+        "LoggingMiddleware"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/storage/hybrid-storage.service.ts": {
+      "filePath": "backend/src/common/storage/hybrid-storage.service.ts",
+      "contentHash": "b32eee8043e3c2c2926c62343ca1ec922d3165f73b23b115c18bd25b6d17ae9a",
+      "functions": [],
+      "classes": [
+        {
+          "name": "HybridStorageService",
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 51
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger"
+          ]
+        },
+        {
+          "source": "./storage.service",
+          "specifiers": [
+            "StorageService"
+          ]
+        },
+        {
+          "source": "./local-storage.service",
+          "specifiers": [
+            "LocalStorageService"
+          ]
+        },
+        {
+          "source": "./s3-storage.service",
+          "specifiers": [
+            "S3StorageService"
+          ]
+        }
+      ],
+      "exports": [
+        "HybridStorageService"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/storage/local-storage.service.ts": {
+      "filePath": "backend/src/common/storage/local-storage.service.ts",
+      "contentHash": "34d1c562a06cabf2b0b0a8d084490107c519a06f8d6957f39da0ac1483107f3f",
+      "functions": [],
+      "classes": [
+        {
+          "name": "LocalStorageService",
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable"
+          ]
+        },
+        {
+          "source": "./storage.service",
+          "specifiers": [
+            "StorageService"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        }
+      ],
+      "exports": [
+        "LocalStorageService"
+      ],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/storage/s3-storage.service.ts": {
+      "filePath": "backend/src/common/storage/s3-storage.service.ts",
+      "contentHash": "f6eac9a7bd2c92b9d972d68b8458d4339099a0edbd7c9aa61c2c8940cec350f0",
+      "functions": [],
+      "classes": [
+        {
+          "name": "S3StorageService",
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": [
+            "logger",
+            "s3Client",
+            "bucketName",
+            "publicUrl"
+          ],
+          "exported": true,
+          "lineCount": 85
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger"
+          ]
+        },
+        {
+          "source": "./storage.service",
+          "specifiers": [
+            "StorageService"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "@aws-sdk/client-s3",
+          "specifiers": [
+            "S3Client",
+            "PutObjectCommand",
+            "DeleteObjectCommand"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        }
+      ],
+      "exports": [
+        "S3StorageService"
+      ],
+      "totalLines": 93,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/storage/storage.module.ts": {
+      "filePath": "backend/src/common/storage/storage.module.ts",
+      "contentHash": "5a13279548903eb03e1c2f883aa4d46fa331ccd7653b4b745dae611dd389f5a3",
+      "functions": [],
+      "classes": [
+        {
+          "name": "StorageModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module",
+            "Global"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigModule"
+          ]
+        },
+        {
+          "source": "./storage.service",
+          "specifiers": [
+            "StorageService"
+          ]
+        },
+        {
+          "source": "./local-storage.service",
+          "specifiers": [
+            "LocalStorageService"
+          ]
+        },
+        {
+          "source": "./s3-storage.service",
+          "specifiers": [
+            "S3StorageService"
+          ]
+        },
+        {
+          "source": "./hybrid-storage.service",
+          "specifiers": [
+            "HybridStorageService"
+          ]
+        }
+      ],
+      "exports": [
+        "StorageModule"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/common/storage/storage.service.ts": {
+      "filePath": "backend/src/common/storage/storage.service.ts",
+      "contentHash": "05f6758358eaf0e39b0e980ffa9e602617b14c570aef4412558666b201112c3a",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/documents/documents.controller.ts": {
+      "filePath": "backend/src/documents/documents.controller.ts",
+      "contentHash": "c431a32edc828c3008dd49da735faed431b92c5fc8346a2ff6004f401e6d64fd",
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsController",
+          "methods": [
+            "constructor",
+            "upload",
+            "getFolders",
+            "findByFolder",
+            "findAll",
+            "remove"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 66
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Delete",
+            "Param",
+            "ParseIntPipe",
+            "UseGuards",
+            "UseInterceptors",
+            "UploadedFile",
+            "Body",
+            "Query",
+            "Res"
+          ]
+        },
+        {
+          "source": "@nestjs/platform-express",
+          "specifiers": [
+            "FileInterceptor"
+          ]
+        },
+        {
+          "source": "multer",
+          "specifiers": [
+            "diskStorage"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "extname",
+            "join"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "mkdirSync",
+            "existsSync"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation",
+            "ApiConsumes",
+            "ApiBody"
+          ]
+        },
+        {
+          "source": "express",
+          "specifiers": [
+            "Response"
+          ]
+        },
+        {
+          "source": "./documents.service",
+          "specifiers": [
+            "DocumentsService"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../auth/decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        },
+        {
+          "source": "./dto/documents-query.dto",
+          "specifiers": [
+            "DocumentsQueryDto"
+          ]
+        }
+      ],
+      "exports": [
+        "DocumentsController"
+      ],
+      "totalLines": 119,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/documents/documents.module.ts": {
+      "filePath": "backend/src/documents/documents.module.ts",
+      "contentHash": "d75a3bc870e329f4393705ff6eb5c1a6d9f2c192b1105381c54d05b911b9758d",
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module",
+            "forwardRef"
+          ]
+        },
+        {
+          "source": "@nestjs/platform-express",
+          "specifiers": [
+            "MulterModule"
+          ]
+        },
+        {
+          "source": "./documents.controller",
+          "specifiers": [
+            "DocumentsController"
+          ]
+        },
+        {
+          "source": "./documents.service",
+          "specifiers": [
+            "DocumentsService"
+          ]
+        },
+        {
+          "source": "./markitdown.service",
+          "specifiers": [
+            "MarkitdownService"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.module",
+          "specifiers": [
+            "ProjectAiIndexModule"
+          ]
+        },
+        {
+          "source": "../ai/ai.module",
+          "specifiers": [
+            "AiModule"
+          ]
+        }
+      ],
+      "exports": [
+        "DocumentsModule"
+      ],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/documents/documents.service.ts": {
+      "filePath": "backend/src/documents/documents.service.ts",
+      "contentHash": "3d9ef5c73ea60978c8edaf284b35e5b3791b4433077e1c5c33dfe2d7eca86655",
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsService",
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "getFileUrl",
+            "findByProject",
+            "getFolders",
+            "remove",
+            "getDocumentContent"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 238
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger",
+            "NotFoundException"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "existsSync",
+            "unlinkSync"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "extname"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.service",
+          "specifiers": [
+            "ProjectAiIndexService"
+          ]
+        },
+        {
+          "source": "./markitdown.service",
+          "specifiers": [
+            "MarkitdownService"
+          ]
+        },
+        {
+          "source": "../ai/rag.service",
+          "specifiers": [
+            "RagService"
+          ]
+        },
+        {
+          "source": "../common/storage/storage.service",
+          "specifiers": [
+            "StorageService"
+          ]
+        },
+        {
+          "source": "./dto/documents-query.dto",
+          "specifiers": [
+            "DocumentsQueryDto"
+          ]
+        },
+        {
+          "source": "../common/dto/paginated-response",
+          "specifiers": [
+            "PaginatedResponse"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        }
+      ],
+      "exports": [
+        "DocumentsService"
+      ],
+      "totalLines": 275,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/documents/dto/documents-query.dto.ts": {
+      "filePath": "backend/src/documents/dto/documents-query.dto.ts",
+      "contentHash": "bc98577eb9efa0feadadee335cac1e9e52afa56754de774ffaccd5e2f650de22",
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsQueryDto",
+          "methods": [],
+          "properties": [
+            "folder"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsOptional",
+            "IsString"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "../../common/dto/paginated-query.dto",
+          "specifiers": [
+            "PaginatedQueryDto"
+          ]
+        }
+      ],
+      "exports": [
+        "DocumentsQueryDto"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/documents/markitdown.service.ts": {
+      "filePath": "backend/src/documents/markitdown.service.ts",
+      "contentHash": "cd5443a967a54df02f36c36a3c7b54914b50518a6b7a0fca8a08ae3b05b83755",
+      "functions": [],
+      "classes": [
+        {
+          "name": "MarkitdownService",
+          "methods": [
+            "constructor",
+            "onModuleInit",
+            "checkAndInstallMarkitdown",
+            "isMarkitdownAvailable",
+            "convertToMarkdown"
+          ],
+          "properties": [
+            "logger",
+            "isAvailable",
+            "commandPrefix"
+          ],
+          "exported": true,
+          "lineCount": 122
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger",
+            "OnModuleInit"
+          ]
+        },
+        {
+          "source": "@nestjs/config",
+          "specifiers": [
+            "ConfigService"
+          ]
+        },
+        {
+          "source": "child_process",
+          "specifiers": [
+            "exec"
+          ]
+        },
+        {
+          "source": "util",
+          "specifiers": [
+            "promisify"
+          ]
+        },
+        {
+          "source": "fs",
+          "specifiers": [
+            "* as fs"
+          ]
+        }
+      ],
+      "exports": [
+        "MarkitdownService"
+      ],
+      "totalLines": 132,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/main.ts": {
+      "filePath": "backend/src/main.ts",
+      "contentHash": "0f08a96a358a02b8c5a5b1e3a1470ea15a4f008f63055fce504f555cf60327de",
+      "functions": [
+        {
+          "name": "bootstrap",
+          "params": [],
+          "exported": false,
+          "lineCount": 35
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/core",
+          "specifiers": [
+            "NestFactory"
+          ]
+        },
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "ValidationPipe"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "SwaggerModule",
+            "DocumentBuilder"
+          ]
+        },
+        {
+          "source": "./app.module",
+          "specifiers": [
+            "AppModule"
+          ]
+        },
+        {
+          "source": "express",
+          "specifiers": [
+            "* as express"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "join"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/prisma/prisma.module.ts": {
+      "filePath": "backend/src/prisma/prisma.module.ts",
+      "contentHash": "055c98ed728b361d1eadee549fc400293d11bcb34f415be9c8fd5cf24ce9f1a4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PrismaModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Global",
+            "Module"
+          ]
+        },
+        {
+          "source": "./prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        }
+      ],
+      "exports": [
+        "PrismaModule"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/prisma/prisma.service.ts": {
+      "filePath": "backend/src/prisma/prisma.service.ts",
+      "contentHash": "b07ba95b1c2c5828389af972e94db2ec899591b521d8d543f70aaaeeed961cdf",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PrismaService",
+          "methods": [
+            "constructor",
+            "onModuleInit",
+            "onModuleDestroy"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 35
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger",
+            "OnModuleInit",
+            "OnModuleDestroy"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "PrismaClient"
+          ]
+        }
+      ],
+      "exports": [
+        "PrismaService"
+      ],
+      "totalLines": 45,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/project-ai-index/project-ai-index.module.ts": {
+      "filePath": "backend/src/project-ai-index/project-ai-index.module.ts",
+      "contentHash": "63896ffce2f7ca7c67d51dabf88fe991ee26607d679e653a0c8667be723bea44",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectAiIndexModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./project-ai-index.service",
+          "specifiers": [
+            "ProjectAiIndexService"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectAiIndexModule"
+      ],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/project-ai-index/project-ai-index.service.ts": {
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "contentHash": "65e930bb8bfb093de56c3350a8d41b5dc8f86fc9a3897cb9b3fe948f1ea1f79e",
+      "functions": [
+        {
+          "name": "isDoneStatus",
+          "params": [
+            "status"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "isInProgressStatus",
+          "params": [
+            "status"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "isBlockedStatus",
+          "params": [
+            "status"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "compactKeyword",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProjectAiIndexService",
+          "methods": [
+            "constructor",
+            "get",
+            "rebuild",
+            "rebuildSoon"
+          ],
+          "properties": [
+            "logger"
+          ],
+          "exported": true,
+          "lineCount": 244
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "Logger"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "Prisma"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectAiIndexService"
+      ],
+      "totalLines": 270,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/dto/create-project.dto.ts": {
+      "filePath": "backend/src/projects/dto/create-project.dto.ts",
+      "contentHash": "11e8e493a594ba77ff0fbec2c3e7750c6231cf901f5d2fd31bcf04d9072fdf65",
+      "functions": [],
+      "classes": [
+        {
+          "name": "CreateProjectDto",
+          "methods": [],
+          "properties": [
+            "name",
+            "description",
+            "budget",
+            "startDate",
+            "endDate",
+            "memberIds",
+            "projectRoles",
+            "taskStatuses",
+            "epics",
+            "labels",
+            "taskNamingRule"
+          ],
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "UpdateProjectDto",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsArray",
+            "IsDateString",
+            "IsNotEmpty",
+            "IsNumber",
+            "IsOptional",
+            "IsString"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty",
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "PartialType"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateProjectDto",
+        "UpdateProjectDto"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/dto/update-project-roles.dto.ts": {
+      "filePath": "backend/src/projects/dto/update-project-roles.dto.ts",
+      "contentHash": "77c66e64df955c2f8b27ef85fdbcf1703d88d0653ca42597ac650d3e828f3a87",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectRoleConfigDto",
+          "methods": [],
+          "properties": [
+            "name",
+            "permissions"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "UpdateProjectRolesDto",
+          "methods": [],
+          "properties": [
+            "roles"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        },
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "ArrayMinSize",
+            "IsArray",
+            "IsString",
+            "ValidateNested"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectRoleConfigDto",
+        "UpdateProjectRolesDto"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/dto/update-project-workflow.dto.ts": {
+      "filePath": "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "contentHash": "7f9cb84a2dc6f9cd05300af32388efdb5b9e59b9612d1a099427c2377d388eec",
+      "functions": [],
+      "classes": [
+        {
+          "name": "WorkflowNodeDto",
+          "methods": [],
+          "properties": [
+            "id",
+            "name",
+            "color",
+            "x",
+            "y"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "WorkflowEdgeDto",
+          "methods": [],
+          "properties": [
+            "id",
+            "source",
+            "target"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "UpdateProjectWorkflowDto",
+          "methods": [],
+          "properties": [
+            "nodes",
+            "edges"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        },
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "ArrayMinSize",
+            "IsArray",
+            "IsNumber",
+            "IsOptional",
+            "IsString",
+            "Matches",
+            "ValidateNested"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty",
+            "ApiPropertyOptional"
+          ]
+        }
+      ],
+      "exports": [
+        "UpdateProjectWorkflowDto"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/project-roles.ts": {
+      "filePath": "backend/src/projects/project-roles.ts",
+      "contentHash": "b357b51b92da77cac2fa8f752ff46cd6331d9a0205787d6dfcb2ca89636da050",
+      "functions": [
+        {
+          "name": "uniquePermissions",
+          "params": [
+            "permissions"
+          ],
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "getDefaultProjectRolePermissions",
+          "params": [
+            "roleName"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "normalizeProjectRoles",
+          "params": [
+            "roles"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "normalizeProjectRoleConfigs",
+          "params": [
+            "roles",
+            "fallbackRoles"
+          ],
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "getProjectRoleNames",
+          "params": [
+            "roleConfigs"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeProjectRole",
+          "params": [
+            "role"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "getProjectRolePermissions",
+          "params": [
+            "roleConfigs",
+            "roleName"
+          ],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "BadRequestException"
+          ]
+        },
+        {
+          "source": "../auth/permissions",
+          "specifiers": [
+            "PROJECT_SCOPED_PERMISSIONS"
+          ]
+        }
+      ],
+      "exports": [
+        "DEFAULT_PROJECT_ROLES",
+        "DEFAULT_PROJECT_ROLE_CONFIGS",
+        "getDefaultProjectRolePermissions",
+        "normalizeProjectRoles",
+        "normalizeProjectRoleConfigs",
+        "getProjectRoleNames",
+        "normalizeProjectRole",
+        "getProjectRolePermissions"
+      ],
+      "totalLines": 183,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/project-workflow.ts": {
+      "filePath": "backend/src/projects/project-workflow.ts",
+      "contentHash": "2750e424347e02cb14b6da45843abc86689602cd205abe81d5305797685dced6",
+      "functions": [
+        {
+          "name": "normalizeColor",
+          "params": [
+            "color",
+            "index"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "normalizeNumber",
+          "params": [
+            "value",
+            "fallback"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "createNodeId",
+          "params": [
+            "index"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "createEdgeId",
+          "params": [
+            "source",
+            "target",
+            "index"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeTaskStatuses",
+          "params": [
+            "statuses"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "createDefaultTaskWorkflow",
+          "params": [
+            "statuses"
+          ],
+          "returnType": "ProjectWorkflow",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "normalizeTaskWorkflow",
+          "params": [
+            "workflow",
+            "fallbackStatuses"
+          ],
+          "returnType": "ProjectWorkflow",
+          "exported": true,
+          "lineCount": 74
+        },
+        {
+          "name": "getTaskWorkflowStatusNames",
+          "params": [
+            "workflow"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getDefaultTaskStatus",
+          "params": [
+            "workflow"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "buildWorkflowRenameMap",
+          "params": [
+            "currentWorkflow",
+            "nextWorkflow"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "isTaskTransitionAllowed",
+          "params": [
+            "workflow",
+            "fromStatus",
+            "toStatus"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "getWorkflowAsJson",
+          "params": [
+            "workflow"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "BadRequestException"
+          ]
+        }
+      ],
+      "exports": [
+        "DEFAULT_TASK_STATUSES",
+        "normalizeTaskStatuses",
+        "createDefaultTaskWorkflow",
+        "normalizeTaskWorkflow",
+        "getTaskWorkflowStatusNames",
+        "getDefaultTaskStatus",
+        "buildWorkflowRenameMap",
+        "isTaskTransitionAllowed",
+        "getWorkflowAsJson"
+      ],
+      "totalLines": 202,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/projects.controller.ts": {
+      "filePath": "backend/src/projects/projects.controller.ts",
+      "contentHash": "92ba57193ee7874fe6a47addc62ea700ae376c054da702a70ff36858a321fbf6",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectsController",
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateWorkflow",
+            "updateRoles",
+            "remove",
+            "addMember",
+            "updateMemberRole",
+            "removeMember"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 87
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Put",
+            "Patch",
+            "Delete",
+            "Body",
+            "Param",
+            "ParseIntPipe",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "./projects.service",
+          "specifiers": [
+            "ProjectsService"
+          ]
+        },
+        {
+          "source": "./dto/create-project.dto",
+          "specifiers": [
+            "CreateProjectDto",
+            "UpdateProjectDto"
+          ]
+        },
+        {
+          "source": "./dto/update-project-workflow.dto",
+          "specifiers": [
+            "UpdateProjectWorkflowDto"
+          ]
+        },
+        {
+          "source": "./dto/update-project-roles.dto",
+          "specifiers": [
+            "UpdateProjectRolesDto"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../auth/decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectsController"
+      ],
+      "totalLines": 114,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/projects.module.ts": {
+      "filePath": "backend/src/projects/projects.module.ts",
+      "contentHash": "b9e0fbe67858907b0260f4d0d8b08eae97ddc7ff7e2fff491fc7c55af670cf5f",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectsModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./projects.controller",
+          "specifiers": [
+            "ProjectsController"
+          ]
+        },
+        {
+          "source": "./projects.service",
+          "specifiers": [
+            "ProjectsService"
+          ]
+        },
+        {
+          "source": "../ai/ai.module",
+          "specifiers": [
+            "AiModule"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.module",
+          "specifiers": [
+            "ProjectAiIndexModule"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectsModule"
+      ],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/projects/projects.service.ts": {
+      "filePath": "backend/src/projects/projects.service.ts",
+      "contentHash": "16ba264f10463a5577e7d5e60eb6d76856205048b2f8cd4143736c1b11ae1c98",
+      "functions": [
+        {
+          "name": "getStatusOrder",
+          "params": [
+            "status",
+            "taskStatuses"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "sortTasksByWorkflow",
+          "params": [
+            "tasks",
+            "taskStatuses"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "sortProjectRoleConfigs",
+          "params": [
+            "roleConfigs"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeProjectList",
+          "params": [
+            "values"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "normalizeTaskNamingRule",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProjectsService",
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateWorkflow",
+            "updateRoles",
+            "remove",
+            "addMember",
+            "updateMemberRole",
+            "removeMember",
+            "ensureProjectRoleExists",
+            "attachProjectMetadata"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 428
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "BadRequestException",
+            "Injectable",
+            "NotFoundException"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "Prisma"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/create-project.dto",
+          "specifiers": [
+            "CreateProjectDto"
+          ]
+        },
+        {
+          "source": "../ai/ai.service",
+          "specifiers": [
+            "AiService"
+          ]
+        },
+        {
+          "source": "./dto/update-project-workflow.dto",
+          "specifiers": [
+            "UpdateProjectWorkflowDto"
+          ]
+        },
+        {
+          "source": "./dto/update-project-roles.dto",
+          "specifiers": [
+            "UpdateProjectRolesDto"
+          ]
+        },
+        {
+          "source": "./project-workflow",
+          "specifiers": [
+            "buildWorkflowRenameMap",
+            "createDefaultTaskWorkflow",
+            "getTaskWorkflowStatusNames",
+            "getWorkflowAsJson",
+            "normalizeTaskStatuses",
+            "normalizeTaskWorkflow"
+          ]
+        },
+        {
+          "source": "./project-roles",
+          "specifiers": [
+            "getProjectRolePermissions",
+            "getProjectRoleNames",
+            "normalizeProjectRoleConfigs",
+            "normalizeProjectRole",
+            "ProjectRoleConfig"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.service",
+          "specifiers": [
+            "ProjectAiIndexService"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectsService"
+      ],
+      "totalLines": 511,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/roles/dto/create-role.dto.ts": {
+      "filePath": "backend/src/roles/dto/create-role.dto.ts",
+      "contentHash": "f4571a48b25a47adb2c091b3cd407b4de6da2a39e06ad78fd950c1ad86378dcc",
+      "functions": [],
+      "classes": [
+        {
+          "name": "CreateRoleDto",
+          "methods": [],
+          "properties": [
+            "name",
+            "permissions"
+          ],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsArray",
+            "IsNotEmpty",
+            "IsString"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateRoleDto"
+      ],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/roles/roles.controller.ts": {
+      "filePath": "backend/src/roles/roles.controller.ts",
+      "contentHash": "53b1a1cff0a102b322e5a14fcbffa842fbdca2c8f518ef26a7fd8fcccb171377",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RolesController",
+          "methods": [
+            "constructor",
+            "getPermissions",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "remove"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Put",
+            "Delete",
+            "Body",
+            "Param",
+            "ParseIntPipe",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "./roles.service",
+          "specifiers": [
+            "RolesService"
+          ]
+        },
+        {
+          "source": "./dto/create-role.dto",
+          "specifiers": [
+            "CreateRoleDto"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        }
+      ],
+      "exports": [
+        "RolesController"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/roles/roles.module.ts": {
+      "filePath": "backend/src/roles/roles.module.ts",
+      "contentHash": "7ae925a70488a00cb4b62523951d5554a8345581baa5865aa39d179bf1fd9e09",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RolesModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./roles.controller",
+          "specifiers": [
+            "RolesController"
+          ]
+        },
+        {
+          "source": "./roles.service",
+          "specifiers": [
+            "RolesService"
+          ]
+        }
+      ],
+      "exports": [
+        "RolesModule"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/roles/roles.service.ts": {
+      "filePath": "backend/src/roles/roles.service.ts",
+      "contentHash": "6a36bbcd798b792a7eabec53e962dc049cda0715a25805fb97749a0ab5b3a6eb",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RolesService",
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "remove",
+            "getAvailablePermissions"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 35
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "NotFoundException",
+            "ConflictException"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/create-role.dto",
+          "specifiers": [
+            "CreateRoleDto"
+          ]
+        },
+        {
+          "source": "../auth/permissions",
+          "specifiers": [
+            "AVAILABLE_PERMISSIONS"
+          ]
+        }
+      ],
+      "exports": [
+        "RolesService"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/tasks/dto/create-task.dto.ts": {
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "contentHash": "99b807c00d6191a76f5d9b9c8d9767abbb358b38468c05bacde1308f97efcb67",
+      "functions": [],
+      "classes": [
+        {
+          "name": "CreateTaskDto",
+          "methods": [],
+          "properties": [
+            "title",
+            "description",
+            "assigneeId",
+            "priority",
+            "dueDate",
+            "isAiGenerated",
+            "sprint",
+            "epic",
+            "labels",
+            "estimateHours",
+            "loggedHours",
+            "status"
+          ],
+          "exported": true,
+          "lineCount": 67
+        },
+        {
+          "name": "UpdateTaskStatusDto",
+          "methods": [],
+          "properties": [
+            "status"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "CreateTaskCommentDto",
+          "methods": [],
+          "properties": [
+            "body"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "CreateTaskWorkLogDto",
+          "methods": [],
+          "properties": [
+            "durationHours",
+            "note"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsBoolean",
+            "IsDateString",
+            "IsEnum",
+            "IsInt",
+            "IsNotEmpty",
+            "IsNumber",
+            "IsOptional",
+            "IsString",
+            "Min",
+            "IsArray"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty",
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "Priority"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateTaskDto",
+        "UpdateTaskStatusDto",
+        "CreateTaskCommentDto",
+        "CreateTaskWorkLogDto"
+      ],
+      "totalLines": 111,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/tasks/dto/tasks-query.dto.ts": {
+      "filePath": "backend/src/tasks/dto/tasks-query.dto.ts",
+      "contentHash": "7fcd5e213ceedd355c59ffeb406163c0cbe5aadb6d15bea35a5327c5829e9988",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TasksQueryDto",
+          "methods": [],
+          "properties": [
+            "status",
+            "search",
+            "priority",
+            "epic",
+            "sprint",
+            "assigneeId",
+            "labels",
+            "dueFrom",
+            "dueTo",
+            "ai"
+          ],
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsEnum",
+            "IsOptional",
+            "IsString"
+          ]
+        },
+        {
+          "source": "class-transformer",
+          "specifiers": [
+            "Type"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "Priority"
+          ]
+        },
+        {
+          "source": "../../common/dto/paginated-query.dto",
+          "specifiers": [
+            "PaginatedQueryDto"
+          ]
+        }
+      ],
+      "exports": [
+        "TasksQueryDto"
+      ],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/tasks/tasks.controller.ts": {
+      "filePath": "backend/src/tasks/tasks.controller.ts",
+      "contentHash": "eae68838fa14a472e18667b9c97f7e434979b0a5f53999d872b4a1fa7e5f9fa5",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TasksController",
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateStatus",
+            "getActivities",
+            "addComment",
+            "addWorkLog",
+            "remove"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 91
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Put",
+            "Patch",
+            "Delete",
+            "Body",
+            "Param",
+            "Query",
+            "ParseIntPipe",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "./tasks.service",
+          "specifiers": [
+            "TasksService"
+          ]
+        },
+        {
+          "source": "./dto/create-task.dto",
+          "specifiers": [
+            "CreateTaskCommentDto",
+            "CreateTaskDto",
+            "CreateTaskWorkLogDto",
+            "UpdateTaskStatusDto"
+          ]
+        },
+        {
+          "source": "./dto/tasks-query.dto",
+          "specifiers": [
+            "TasksQueryDto"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../auth/decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        }
+      ],
+      "exports": [
+        "TasksController"
+      ],
+      "totalLines": 123,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/tasks/tasks.module.ts": {
+      "filePath": "backend/src/tasks/tasks.module.ts",
+      "contentHash": "441e63012d390eecb9dbb2f983e427f2d373d3c2217f6a640ffaa4fefb9c93a5",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TasksModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./tasks.controller",
+          "specifiers": [
+            "TasksController"
+          ]
+        },
+        {
+          "source": "./tasks.service",
+          "specifiers": [
+            "TasksService"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.module",
+          "specifiers": [
+            "ProjectAiIndexModule"
+          ]
+        }
+      ],
+      "exports": [
+        "TasksModule"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/tasks/tasks.service.ts": {
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "contentHash": "202c147a1f1f184edb2d50eebcc4b1b810ba3892d245579ed9047dbc121ab954",
+      "functions": [
+        {
+          "name": "getStatusOrder",
+          "params": [
+            "status",
+            "taskStatuses"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "stripGeneratedTaskPrefix",
+          "params": [
+            "title"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "renderToken",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "buildTaskTitle",
+          "params": [
+            "rule",
+            "task"
+          ],
+          "exported": false,
+          "lineCount": 27
+        },
+        {
+          "name": "buildProjectTaskPrefix",
+          "params": [
+            "projectName"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "serializeActivityValue",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "valuesEqual",
+          "params": [
+            "left",
+            "right"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "toNumber",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "TasksService",
+          "methods": [
+            "constructor",
+            "create",
+            "findByProject",
+            "findOne",
+            "update",
+            "updateStatus",
+            "remove",
+            "bulkCreate",
+            "getActivities",
+            "addComment",
+            "addWorkLog",
+            "getProjectWorkflow",
+            "validateTaskMetadata",
+            "resolveWorkflowStatus",
+            "ensureTaskInProject",
+            "createActivity"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 400
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "BadRequestException",
+            "Injectable",
+            "NotFoundException"
+          ]
+        },
+        {
+          "source": "@prisma/client",
+          "specifiers": [
+            "Prisma"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/create-task.dto",
+          "specifiers": [
+            "CreateTaskCommentDto",
+            "CreateTaskDto",
+            "CreateTaskWorkLogDto",
+            "UpdateTaskStatusDto"
+          ]
+        },
+        {
+          "source": "./dto/tasks-query.dto",
+          "specifiers": [
+            "TasksQueryDto"
+          ]
+        },
+        {
+          "source": "../common/dto/paginated-response",
+          "specifiers": [
+            "PaginatedResponse"
+          ]
+        },
+        {
+          "source": "../projects/project-workflow",
+          "specifiers": [
+            "getDefaultTaskStatus",
+            "isTaskTransitionAllowed",
+            "normalizeTaskWorkflow"
+          ]
+        },
+        {
+          "source": "../project-ai-index/project-ai-index.service",
+          "specifiers": [
+            "ProjectAiIndexService"
+          ]
+        }
+      ],
+      "exports": [
+        "TasksService"
+      ],
+      "totalLines": 519,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/dto/create-user.dto.ts": {
+      "filePath": "backend/src/users/dto/create-user.dto.ts",
+      "contentHash": "8717648a4cf8b488c4be70a9e8547c3d9cfafdd43a84809282aded3c1c565b51",
+      "functions": [],
+      "classes": [
+        {
+          "name": "CreateUserDto",
+          "methods": [],
+          "properties": [
+            "name",
+            "email",
+            "password",
+            "roleId",
+            "skills"
+          ],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "imports": [
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsEmail",
+            "IsNotEmpty",
+            "IsString",
+            "IsOptional",
+            "IsInt",
+            "IsBoolean",
+            "IsArray",
+            "MinLength"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiProperty",
+            "ApiPropertyOptional"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateUserDto"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/dto/update-chat-settings.dto.ts": {
+      "filePath": "backend/src/users/dto/update-chat-settings.dto.ts",
+      "contentHash": "7cff4f0ccd5bc0262f858df450b1f52b49b3022d07cc7f35f3e43e627f663ad8",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UpdateChatSettingsDto",
+          "methods": [],
+          "properties": [
+            "chatLanguage",
+            "chatDescription"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsString",
+            "IsOptional",
+            "IsIn"
+          ]
+        }
+      ],
+      "exports": [
+        "UpdateChatSettingsDto"
+      ],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/dto/update-user.dto.ts": {
+      "filePath": "backend/src/users/dto/update-user.dto.ts",
+      "contentHash": "621468cdb9914e2fc975a79896e5b8a2ed9468ba2fca5ff3630e85a4828fb7b6",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UpdateUserDto",
+          "methods": [],
+          "properties": [
+            "isActive",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "PartialType",
+            "OmitType"
+          ]
+        },
+        {
+          "source": "class-validator",
+          "specifiers": [
+            "IsBoolean",
+            "IsOptional"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiPropertyOptional"
+          ]
+        },
+        {
+          "source": "./create-user.dto",
+          "specifiers": [
+            "CreateUserDto"
+          ]
+        }
+      ],
+      "exports": [
+        "UpdateUserDto"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/users.controller.ts": {
+      "filePath": "backend/src/users/users.controller.ts",
+      "contentHash": "5c04b2983be45ebe5bcd1a1a4137abbe9044c4516acb820add4a379f56664c49",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UsersController",
+          "methods": [
+            "constructor",
+            "create",
+            "getMyChatSettings",
+            "updateMyChatSettings",
+            "findAll",
+            "findOne",
+            "update",
+            "remove"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 53
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Controller",
+            "Get",
+            "Post",
+            "Put",
+            "Delete",
+            "Body",
+            "Param",
+            "ParseIntPipe",
+            "UseGuards"
+          ]
+        },
+        {
+          "source": "@nestjs/swagger",
+          "specifiers": [
+            "ApiTags",
+            "ApiBearerAuth",
+            "ApiOperation"
+          ]
+        },
+        {
+          "source": "./users.service",
+          "specifiers": [
+            "UsersService"
+          ]
+        },
+        {
+          "source": "./dto/create-user.dto",
+          "specifiers": [
+            "CreateUserDto"
+          ]
+        },
+        {
+          "source": "./dto/update-user.dto",
+          "specifiers": [
+            "UpdateUserDto"
+          ]
+        },
+        {
+          "source": "../auth/guards/jwt-auth.guard",
+          "specifiers": [
+            "JwtAuthGuard"
+          ]
+        },
+        {
+          "source": "../auth/guards/permissions.guard",
+          "specifiers": [
+            "PermissionsGuard"
+          ]
+        },
+        {
+          "source": "../auth/decorators/permissions.decorator",
+          "specifiers": [
+            "RequirePermissions"
+          ]
+        },
+        {
+          "source": "../auth/decorators/current-user.decorator",
+          "specifiers": [
+            "CurrentUser"
+          ]
+        },
+        {
+          "source": "./dto/update-chat-settings.dto",
+          "specifiers": [
+            "UpdateChatSettingsDto"
+          ]
+        }
+      ],
+      "exports": [
+        "UsersController"
+      ],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/users.module.ts": {
+      "filePath": "backend/src/users/users.module.ts",
+      "contentHash": "079be4546cff141596300d61a623d9a7c2a19635657fe65c0148cbbbbb45c3bf",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UsersModule",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Module"
+          ]
+        },
+        {
+          "source": "./users.controller",
+          "specifiers": [
+            "UsersController"
+          ]
+        },
+        {
+          "source": "./users.service",
+          "specifiers": [
+            "UsersService"
+          ]
+        }
+      ],
+      "exports": [
+        "UsersModule"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/users/users.service.ts": {
+      "filePath": "backend/src/users/users.service.ts",
+      "contentHash": "59e3a55ae157c7d42a1d26401daf200af0a78cf10343ffdcad8949575a2c45ca",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UsersService",
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "remove",
+            "getChatSettings",
+            "updateChatSettings"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 78
+        }
+      ],
+      "imports": [
+        {
+          "source": "@nestjs/common",
+          "specifiers": [
+            "Injectable",
+            "ConflictException",
+            "NotFoundException"
+          ]
+        },
+        {
+          "source": "../prisma/prisma.service",
+          "specifiers": [
+            "PrismaService"
+          ]
+        },
+        {
+          "source": "./dto/create-user.dto",
+          "specifiers": [
+            "CreateUserDto"
+          ]
+        },
+        {
+          "source": "./dto/update-user.dto",
+          "specifiers": [
+            "UpdateUserDto"
+          ]
+        },
+        {
+          "source": "./dto/update-chat-settings.dto",
+          "specifiers": [
+            "UpdateChatSettingsDto"
+          ]
+        },
+        {
+          "source": "bcrypt",
+          "specifiers": [
+            "* as bcrypt"
+          ]
+        }
+      ],
+      "exports": [
+        "UsersService"
+      ],
+      "totalLines": 101,
+      "hasStructuralAnalysis": true
+    },
+    "backend/test-chat.js": {
+      "filePath": "backend/test-chat.js",
+      "contentHash": "c6fe388a14a59a3d3f68e4391d21cdfa6a37d96c220504799e4c27fc3bd07eb3",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "backend/test-local.js": {
+      "filePath": "backend/test-local.js",
+      "contentHash": "d49d2b5429f5a04ee961c537fe472f507fdf6a238b0cacf1bf840f27de63de76",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 97
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "backend/tsconfig.json": {
+      "filePath": "backend/tsconfig.json",
+      "contentHash": "97a695e15e247fc62aeb8bd451cbdb4854214e7353bd02cd7d853afc7db0d265",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "backend/update_agent.js": {
+      "filePath": "backend/update_agent.js",
+      "contentHash": "e5fbc32d66bd9a367744e36c483ae9256ef00554bcb2377dfe1a603569713d9f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 218,
+      "hasStructuralAnalysis": true
+    },
+    "backend/update_ai_service_rag.js": {
+      "filePath": "backend/update_ai_service_rag.js",
+      "contentHash": "ac698ad158a6d4404c569a77919dbf521d00a4d7c2a0837cc0ff3e342e4a8a94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 71,
+      "hasStructuralAnalysis": true
+    },
+    "backend/update_controller.js": {
+      "filePath": "backend/update_controller.js",
+      "contentHash": "0ad02db2cf70c82b3a72370eb079fdbb13e4075f295ee8237494a65b36766c28",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "backend/update_docs_service.js": {
+      "filePath": "backend/update_docs_service.js",
+      "contentHash": "62a04000b6521c423c18a3e8884e44ece0a445c6133a51bd4d096d39c316d364",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "backend/update_service.js": {
+      "filePath": "backend/update_service.js",
+      "contentHash": "9d79eea2ed9c951d339e618493694cb465776b2614291320a3671af55ae81b4d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 161,
+      "hasStructuralAnalysis": true
+    },
+    "docker-compose.yml": {
+      "filePath": "docker-compose.yml",
+      "contentHash": "c7886930745267e9eeb72a056c258d2dc41fc89a669fcfcca4a4728d3f8a99db",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "document.md": {
+      "filePath": "document.md",
+      "contentHash": "4034ea110face49180ba9896c5795afdfd34299c7099e7fee9357f98ee87df17",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(auth)/layout.tsx": {
+      "filePath": "frontend/app/(auth)/layout.tsx",
+      "contentHash": "bcbf6c4fb4e8b3db9d3a6660dfd40a73d9eb27f77e23d63c6a9b7ea6fb139296",
+      "functions": [
+        {
+          "name": "AuthLayout",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthLayout"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(auth)/login/page.tsx": {
+      "filePath": "frontend/app/(auth)/login/page.tsx",
+      "contentHash": "30a17463456c1811f6c0cd81611c38d0ef2764c89f17d632e7c2372f9e638a60",
+      "functions": [
+        {
+          "name": "LoginPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 123
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react-hook-form",
+          "specifiers": [
+            "useForm"
+          ]
+        },
+        {
+          "source": "@hookform/resolvers/zod",
+          "specifiers": [
+            "zodResolver"
+          ]
+        },
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Loader2",
+            "Sun",
+            "Moon"
+          ]
+        },
+        {
+          "source": "@/components/providers/theme-provider",
+          "specifiers": [
+            "useTheme"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "@/components/brand-logo",
+          "specifiers": [
+            "BrandLogo"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginPage"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/ai-settings/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/ai-settings/page.tsx",
+      "contentHash": "76a782eedd355d2bacdb05f5602c0501b1db8fd06a82310dc66d039e1b6cee75",
+      "functions": [
+        {
+          "name": "AiSettingsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 498
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "aiApi",
+            "usersApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Cpu",
+            "Key",
+            "Globe",
+            "Database",
+            "BarChart3",
+            "History",
+            "Settings",
+            "Users",
+            "Eye",
+            "EyeOff",
+            "ChevronLeft",
+            "ChevronRight",
+            "Loader2",
+            "Info"
+          ]
+        }
+      ],
+      "exports": [
+        "AiSettingsPage"
+      ],
+      "totalLines": 556,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/dashboard/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/dashboard/page.tsx",
+      "contentHash": "bfe8451b6d34372ac64b4037099541965327fb561ff5d40c4f808629e92ea6a3",
+      "functions": [
+        {
+          "name": "DashboardPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 190
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "projectsApi",
+            "usersApi"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "FolderKanban",
+            "Users",
+            "CheckCircle",
+            "Clock",
+            "Loader2",
+            "ArrowUpRight"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "formatDate",
+            "PROJECT_STATUS_COLORS",
+            "cn"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        }
+      ],
+      "exports": [
+        "DashboardPage"
+      ],
+      "totalLines": 202,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/layout.tsx": {
+      "filePath": "frontend/app/(dashboard)/layout.tsx",
+      "contentHash": "4e0db3a4be95dd4fe94197419a27cad842559e84f0109968962a81229878d71e",
+      "functions": [
+        {
+          "name": "DashboardLayout",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/components/layout/sidebar",
+          "specifiers": [
+            "Sidebar"
+          ]
+        },
+        {
+          "source": "@/components/layout/header",
+          "specifiers": [
+            "Header"
+          ]
+        },
+        {
+          "source": "@/components/ai-chat-bubble",
+          "specifiers": [
+            "AiChatBubble"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Loader2"
+          ]
+        }
+      ],
+      "exports": [
+        "DashboardLayout"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "contentHash": "256c5d670d3b3cf4482a6d6e47c134b53f1bf9ce6d19258dcf558d4cedcb223d",
+      "functions": [
+        {
+          "name": "AiAnalysisPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 363
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useRef",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "aiApi",
+            "projectsApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useParams",
+            "useRouter"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Loader2",
+            "ChevronLeft",
+            "ChevronDown",
+            "Sparkles",
+            "CheckCircle",
+            "AlertCircle",
+            "Send",
+            "FileText",
+            "Bot",
+            "User",
+            "ListChecks"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        },
+        {
+          "source": "@/components/brand-logo",
+          "specifiers": [
+            "BrandLogo"
+          ]
+        }
+      ],
+      "exports": [
+        "AiAnalysisPage"
+      ],
+      "totalLines": 394,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/projects/[id]/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "contentHash": "1cc7cafd0343e3ca457636855017386a89a38f70bd47583f2fb2c8801e01a523",
+      "functions": [
+        {
+          "name": "ExpandBlockView",
+          "params": [
+            "{ node, updateAttributes }"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "parseTaskLabels",
+          "params": [
+            "value"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "stripTaskPrefix",
+          "params": [
+            "title"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "previewTaskNamingRule",
+          "params": [
+            "rule",
+            "sample"
+          ],
+          "exported": false,
+          "lineCount": 25
+        },
+        {
+          "name": "sanitizeRichTextHtml",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "stripHtmlTags",
+          "params": [
+            "input"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "DescriptionEditor",
+          "params": [
+            "{\n  value,\n  onChange,\n  onBlur,\n  onImprove,\n  onAssist,\n  aiMessages,\n  assisting,\n  improving,\n  mentionItems,\n  disabled,\n  projectId,\n}"
+          ],
+          "exported": false,
+          "lineCount": 671
+        },
+        {
+          "name": "isHtmlEmpty",
+          "params": [
+            "html"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "collectImageDocIds",
+          "params": [
+            "html"
+          ],
+          "returnType": "number[]",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "deleteDocument",
+          "params": [
+            "projectId",
+            "docId"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "uploadAndInsertImage",
+          "params": [
+            "view",
+            "projectId",
+            "file",
+            "onDocId"
+          ],
+          "exported": false,
+          "lineCount": 39
+        },
+        {
+          "name": "CommentEditor",
+          "params": [
+            "{\n  value,\n  onChange,\n  onSubmit,\n  projectId,\n  disabled,\n}"
+          ],
+          "exported": false,
+          "lineCount": 212
+        },
+        {
+          "name": "ProjectDetailPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 4112
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useMutation",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "projectsApi",
+            "tasksApi",
+            "documentsApi",
+            "usersApi",
+            "aiApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useRef",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useParams",
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "ReactMarkdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        },
+        {
+          "source": "@tiptap/react",
+          "specifiers": [
+            "EditorContent",
+            "NodeViewWrapper",
+            "ReactNodeViewRenderer",
+            "useEditor"
+          ]
+        },
+        {
+          "source": "@tiptap/core",
+          "specifiers": [
+            "Node",
+            "mergeAttributes"
+          ]
+        },
+        {
+          "source": "@tiptap/starter-kit",
+          "specifiers": [
+            "StarterKit"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-underline",
+          "specifiers": [
+            "UnderlineExt"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-placeholder",
+          "specifiers": [
+            "Placeholder"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-mention",
+          "specifiers": [
+            "Mention"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-task-list",
+          "specifiers": [
+            "TaskList"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-task-item",
+          "specifiers": [
+            "TaskItem"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-table",
+          "specifiers": [
+            "Table"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-table-row",
+          "specifiers": [
+            "TableRow"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-table-header",
+          "specifiers": [
+            "TableHeader"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-table-cell",
+          "specifiers": [
+            "TableCell"
+          ]
+        },
+        {
+          "source": "@tiptap/extension-image",
+          "specifiers": [
+            "TiptapImage"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LucideImage"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Loader2",
+            "Plus",
+            "Trash2",
+            "Pencil",
+            "Upload",
+            "FileText",
+            "Users",
+            "ChevronLeft",
+            "ChevronRight",
+            "X",
+            "CheckCircle",
+            "Send",
+            "Bot",
+            "User",
+            "ListChecks",
+            "RefreshCw",
+            "History",
+            "ChevronDown",
+            "Settings2",
+            "BarChart2",
+            "GitBranch",
+            "LayoutGrid",
+            "CalendarDays",
+            "Layers",
+            "Tags",
+            "Bold",
+            "Italic",
+            "Underline",
+            "List",
+            "ListOrdered",
+            "Quote",
+            "Code2",
+            "Undo2",
+            "Redo2",
+            "WandSparkles",
+            "Minus",
+            "CheckSquare"
+          ]
+        },
+        {
+          "source": "react-hook-form",
+          "specifiers": [
+            "useForm"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "getAllowedTransitionStatuses",
+            "getTaskStatusInlineStyle",
+            "normalizeTaskWorkflow",
+            "cn",
+            "formatDate",
+            "formatDateTime",
+            "PRIORITY_COLORS"
+          ]
+        },
+        {
+          "source": "@/components/project-workflow-editor",
+          "specifiers": [
+            "ProjectWorkflowEditor",
+            "WorkflowPreview"
+          ]
+        },
+        {
+          "source": "@/lib/project-roles",
+          "specifiers": [
+            "DEFAULT_PROJECT_ROLE_CONFIGS",
+            "getProjectRolePermissions",
+            "normalizeProjectRoleConfigs",
+            "ProjectRoleConfig",
+            "PROJECT_ROLE_PERMISSION_GROUPS"
+          ]
+        },
+        {
+          "source": "@/components/brand-logo",
+          "specifiers": [
+            "BrandLogo"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectDetailPage"
+      ],
+      "totalLines": 5475,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/projects/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/projects/page.tsx",
+      "contentHash": "d42c8098fd0d5b9bec3e9d73aaf3bf71a801045a47589d063a6979c6dc283483",
+      "functions": [
+        {
+          "name": "ProjectsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 353
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useMutation",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "projectsApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Plus",
+            "Loader2",
+            "FolderKanban",
+            "Users",
+            "FileText",
+            "ArrowRight",
+            "Calendar",
+            "X",
+            "PlusCircle",
+            "Trash"
+          ]
+        },
+        {
+          "source": "react-hook-form",
+          "specifiers": [
+            "useForm"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "formatDate",
+            "PROJECT_STATUS_COLORS",
+            "cn"
+          ]
+        },
+        {
+          "source": "@/lib/project-roles",
+          "specifiers": [
+            "DEFAULT_PROJECT_ROLES",
+            "normalizeProjectRoles"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectsPage"
+      ],
+      "totalLines": 382,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/roles/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/roles/page.tsx",
+      "contentHash": "5efa74cec3fe91d34cb6a7bd232c4b69d784261907761dbe254735af4e20eafb",
+      "functions": [
+        {
+          "name": "RolesPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 347
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useMutation",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "rolesApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Plus",
+            "Pencil",
+            "Trash2",
+            "Loader2",
+            "Shield",
+            "X",
+            "Users",
+            "FolderKanban",
+            "ListChecks",
+            "FileText",
+            "Bot",
+            "Lock"
+          ]
+        },
+        {
+          "source": "react-hook-form",
+          "specifiers": [
+            "useForm"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        }
+      ],
+      "exports": [
+        "RolesPage"
+      ],
+      "totalLines": 384,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/(dashboard)/users/page.tsx": {
+      "filePath": "frontend/app/(dashboard)/users/page.tsx",
+      "contentHash": "62292904f7ec65497a22ac2b3296d0adb9020e8d8da6e8f9776e583d1da97da1",
+      "functions": [
+        {
+          "name": "UsersPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 434
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useMutation",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "usersApi",
+            "rolesApi"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Plus",
+            "Pencil",
+            "Trash2",
+            "Loader2",
+            "Search",
+            "X",
+            "Mail",
+            "ShieldAlert",
+            "Award",
+            "Power"
+          ]
+        },
+        {
+          "source": "react-hook-form",
+          "specifiers": [
+            "useForm"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "getInitials",
+            "cn"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        }
+      ],
+      "exports": [
+        "UsersPage"
+      ],
+      "totalLines": 448,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/globals.css": {
+      "filePath": "frontend/app/globals.css",
+      "contentHash": "47d5567f9fda107c3d9227229740a51ca651f5e1b2785c49e643ff913089dc20",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 322,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/app/layout.tsx": {
+      "filePath": "frontend/app/layout.tsx",
+      "contentHash": "b0041618da02f73fdefdabb7a0a55f4cfa7ecbf87601b16976ec9fb8eaa00a3a",
+      "functions": [
+        {
+          "name": "RootLayout",
+          "params": [
+            "{\n  children,\n}"
+          ],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "next/font/google",
+          "specifiers": [
+            "Inter"
+          ]
+        },
+        {
+          "source": "./globals.css",
+          "specifiers": []
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "AuthProvider"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "Toaster"
+          ]
+        },
+        {
+          "source": "@/components/providers/query-provider",
+          "specifiers": [
+            "QueryProvider"
+          ]
+        },
+        {
+          "source": "@/components/providers/theme-provider",
+          "specifiers": [
+            "ThemeProvider"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "RootLayout"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/app/page.tsx": {
+      "filePath": "frontend/app/page.tsx",
+      "contentHash": "220db073f090cdeef27b4c28193a49904ee52fff16213b1d8bdadca0df000a12",
+      "functions": [
+        {
+          "name": "Home",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        }
+      ],
+      "exports": [
+        "Home"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/ai-chat-bubble.tsx": {
+      "filePath": "frontend/components/ai-chat-bubble.tsx",
+      "contentHash": "091a1dfc173de4c835dcc94c12a564a2f62e2368a328be7d74e2f7794ff424e4",
+      "functions": [
+        {
+          "name": "sessionName",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "toHours",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "durationFromHours",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "durationToHours",
+          "params": [
+            "days",
+            "hours",
+            "minutes"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "stripTasksJson",
+          "params": [
+            "content"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "AiChatBubble",
+          "params": [],
+          "exported": true,
+          "lineCount": 1190
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useRef",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "ReactMarkdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "usePathname"
+          ]
+        },
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useMutation",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@/lib/api",
+          "specifiers": [
+            "projectsApi",
+            "aiApi"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "X",
+            "Send",
+            "Bot",
+            "User",
+            "Loader2",
+            "ChevronDown",
+            "Trash2",
+            "MessageSquare",
+            "ListChecks",
+            "CheckCircle",
+            "ChevronLeft",
+            "ChevronRight",
+            "Plus",
+            "History",
+            "Settings"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        },
+        {
+          "source": "sonner",
+          "specifiers": [
+            "toast"
+          ]
+        },
+        {
+          "source": "@/components/brand-logo",
+          "specifiers": [
+            "BrandLogo"
+          ]
+        }
+      ],
+      "exports": [
+        "AiChatBubble"
+      ],
+      "totalLines": 1288,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/brand-logo.tsx": {
+      "filePath": "frontend/components/brand-logo.tsx",
+      "contentHash": "ed56cc69ad1c3b5eb7de6572108519bfa4b626727df128dbdd762e701baeeff9",
+      "functions": [
+        {
+          "name": "BrandLogo",
+          "params": [
+            "{ size = 36, className }"
+          ],
+          "exported": true,
+          "lineCount": 69
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        }
+      ],
+      "exports": [
+        "BrandLogo"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/layout/header.tsx": {
+      "filePath": "frontend/components/layout/header.tsx",
+      "contentHash": "4cd78eafd452451f0376982eea8cd2d1687dc944f3615106cfcc6800a5906c12",
+      "functions": [
+        {
+          "name": "Header",
+          "params": [],
+          "exported": true,
+          "lineCount": 106
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LogOut",
+            "User",
+            "Sun",
+            "Moon",
+            "Bell"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "getInitials"
+          ]
+        },
+        {
+          "source": "@/components/providers/theme-provider",
+          "specifiers": [
+            "useTheme"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion",
+            "AnimatePresence"
+          ]
+        }
+      ],
+      "exports": [
+        "Header"
+      ],
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/layout/sidebar.tsx": {
+      "filePath": "frontend/components/layout/sidebar.tsx",
+      "contentHash": "e72dffcacfb5769dc93f73b7d536c1ee1128d8ada81df2647edb975a72259162",
+      "functions": [
+        {
+          "name": "Sidebar",
+          "params": [],
+          "exported": true,
+          "lineCount": 82
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "usePathname"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LayoutDashboard",
+            "FolderKanban",
+            "Settings",
+            "Users",
+            "LogOut",
+            "ChevronRight",
+            "Cpu"
+          ]
+        },
+        {
+          "source": "@/lib/auth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "framer-motion",
+          "specifiers": [
+            "motion"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        },
+        {
+          "source": "@/components/brand-logo",
+          "specifiers": [
+            "BrandLogo"
+          ]
+        }
+      ],
+      "exports": [
+        "Sidebar"
+      ],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/project-workflow-editor.tsx": {
+      "filePath": "frontend/components/project-workflow-editor.tsx",
+      "contentHash": "deafc06d4317854fa1ec2c8be99617ed180fbbc0d15e230ffa81b52545fcd99d",
+      "functions": [
+        {
+          "name": "createNodeId",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "createEdgeId",
+          "params": [
+            "source",
+            "target"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getConnectorPath",
+          "params": [
+            "source",
+            "target"
+          ],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "autoLayout",
+          "params": [
+            "nodes"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "sortNodesByCanvasPosition",
+          "params": [
+            "nodes"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "useElementSize",
+          "params": [],
+          "exported": false,
+          "lineCount": 25
+        },
+        {
+          "name": "WorkflowGraph",
+          "params": [
+            "{\n  workflow,\n  selectedNodeId,\n  selectedEdgeId,\n  connectingFromId,\n  onNodeMouseDown,\n  onNodeClick,\n  onEdgeClick,\n  className,\n  fitToView = false,\n}"
+          ],
+          "exported": false,
+          "lineCount": 200
+        },
+        {
+          "name": "WorkflowPreview",
+          "params": [
+            "{\n  workflow,\n  className,\n}"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "ProjectWorkflowEditor",
+          "params": [
+            "{\n  open,\n  initialWorkflow,\n  isSaving,\n  onClose,\n  onSave,\n}"
+          ],
+          "exported": true,
+          "lineCount": 556
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useMemo",
+            "useRef",
+            "useState",
+            "ReactMouseEvent"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Link2",
+            "Plus",
+            "Trash2",
+            "WandSparkles"
+          ]
+        },
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn",
+            "getTaskStatusInlineStyle",
+            "normalizeTaskWorkflow",
+            "TaskWorkflow",
+            "TaskWorkflowNode"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkflowPreview",
+        "ProjectWorkflowEditor"
+      ],
+      "totalLines": 876,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/providers/query-provider.tsx": {
+      "filePath": "frontend/components/providers/query-provider.tsx",
+      "contentHash": "1c34d6102ba07037673e47d6fe9437b84bedfc5453dd3ff87bc364081950aedb",
+      "functions": [
+        {
+          "name": "QueryProvider",
+          "params": [
+            "{\r\n  children,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "QueryClient",
+            "QueryClientProvider"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        }
+      ],
+      "exports": [
+        "QueryProvider"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/components/providers/theme-provider.tsx": {
+      "filePath": "frontend/components/providers/theme-provider.tsx",
+      "contentHash": "84b1dd456f69cacdb2a870a5114b57e5002c2315a202cbe4a637832c94c7b20f",
+      "functions": [
+        {
+          "name": "ThemeProvider",
+          "params": [
+            "{\n  children,\n  defaultTheme = \"system\",\n  storageKey = \"nexus-ui-theme\",\n  ...props\n}"
+          ],
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "useTheme",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useEffect",
+            "useState"
+          ]
+        }
+      ],
+      "exports": [
+        "ThemeProvider",
+        "useTheme"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/lib/api.ts": {
+      "filePath": "frontend/lib/api.ts",
+      "contentHash": "a64a53fa28c344be3344d1401cbc2e06df4d6e2420c4fb310fb7a99d2b555750",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "axios",
+          "specifiers": [
+            "axios"
+          ]
+        }
+      ],
+      "exports": [
+        "authApi",
+        "usersApi",
+        "rolesApi",
+        "projectsApi",
+        "tasksApi",
+        "documentsApi",
+        "aiApi"
+      ],
+      "totalLines": 348,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/lib/auth.tsx": {
+      "filePath": "frontend/lib/auth.tsx",
+      "contentHash": "edb69201c0363c5bc8313244e93d02e55b1c593a1bd203cdfa8d0278a9737648",
+      "functions": [
+        {
+          "name": "AuthProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "useAuth",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useEffect",
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "./api",
+          "specifiers": [
+            "authApi"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthProvider",
+        "useAuth"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/lib/project-roles.ts": {
+      "filePath": "frontend/lib/project-roles.ts",
+      "contentHash": "dd9c958444fcb5211123ba424d67db8457e5fec28648a78a456f06dccefe3f51",
+      "functions": [
+        {
+          "name": "uniquePermissions",
+          "params": [
+            "permissions"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getDefaultProjectRolePermissions",
+          "params": [
+            "roleName"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "normalizeProjectRoleConfigs",
+          "params": [
+            "roles"
+          ],
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "normalizeProjectRoles",
+          "params": [
+            "roles"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getProjectRolePermissions",
+          "params": [
+            "roleConfigs",
+            "roleName"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "PROJECT_ROLE_PERMISSION_GROUPS",
+        "DEFAULT_PROJECT_ROLES",
+        "DEFAULT_PROJECT_ROLE_CONFIGS",
+        "getDefaultProjectRolePermissions",
+        "normalizeProjectRoleConfigs",
+        "normalizeProjectRoles",
+        "getProjectRolePermissions"
+      ],
+      "totalLines": 153,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/lib/utils.ts": {
+      "filePath": "frontend/lib/utils.ts",
+      "contentHash": "d1c60737f6053c9be191e99bf733f9b23cf797e42cc2f52f6b2c67b0bcd2d207",
+      "functions": [
+        {
+          "name": "cn",
+          "params": [
+            "...inputs"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "formatDate",
+          "params": [
+            "date"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "formatDateTime",
+          "params": [
+            "date"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "formatCurrency",
+          "params": [
+            "amount"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "getInitials",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "normalizeWorkflowColor",
+          "params": [
+            "color",
+            "index"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "getTextColorForBackground",
+          "params": [
+            "hexColor"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "createDefaultTaskWorkflow",
+          "params": [
+            "statuses"
+          ],
+          "returnType": "TaskWorkflow",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "normalizeTaskWorkflow",
+          "params": [
+            "workflow",
+            "fallbackStatuses"
+          ],
+          "returnType": "TaskWorkflow",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "getTaskWorkflowNode",
+          "params": [
+            "status",
+            "workflow"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "getTaskStatusInlineStyle",
+          "params": [
+            "status",
+            "workflow"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "getTaskStatusColorClass",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getAllowedTransitionStatuses",
+          "params": [
+            "workflow",
+            "currentStatus"
+          ],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "clsx",
+          "specifiers": [
+            "ClassValue",
+            "clsx"
+          ]
+        },
+        {
+          "source": "tailwind-merge",
+          "specifiers": [
+            "twMerge"
+          ]
+        }
+      ],
+      "exports": [
+        "cn",
+        "formatDate",
+        "formatDateTime",
+        "formatCurrency",
+        "getInitials",
+        "PRIORITY_COLORS",
+        "createDefaultTaskWorkflow",
+        "normalizeTaskWorkflow",
+        "getTaskWorkflowNode",
+        "getTaskStatusInlineStyle",
+        "getTaskStatusColorClass",
+        "getAllowedTransitionStatuses",
+        "PROJECT_STATUS_COLORS"
+      ],
+      "totalLines": 220,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/next-env.d.ts": {
+      "filePath": "frontend/next-env.d.ts",
+      "contentHash": "8964d295a9047c3a222af813b7d37deb57b835fd0942d89222e7def0aed136cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/next.config.mjs": {
+      "filePath": "frontend/next.config.mjs",
+      "contentHash": "b7300b7157be35952d51accbc9e19b9b084228fec714911182dc7b00a8095986",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/package.json": {
+      "filePath": "frontend/package.json",
+      "contentHash": "cd59dbe781d71cccba75c7ef17a7d374936e3d70ec2146972d509e70cb5af46c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/postcss.config.js": {
+      "filePath": "frontend/postcss.config.js",
+      "contentHash": "b78f5d0a0a449ecf58b6b6252e26cd2216c7aa41235e2d6d01a26b9a065cd439",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tailwind.config.ts": {
+      "filePath": "frontend/tailwind.config.ts",
+      "contentHash": "5476b61c60fffc34621e9bd6cc4a9c4838acb83775e24c384500049078e222b8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 71,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tsconfig.json": {
+      "filePath": "frontend/tsconfig.json",
+      "contentHash": "e3e822b20e8ac3596e7a73bd27508ccf6c15605cacc22c1e1e3dd7e619612414",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "ce00b257ee5b1b6cba58935b5d57826914f5f0e9de1e4fa87b8b952e7a7455a6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 124,
+      "hasStructuralAnalysis": true
+    },
+    "scratch/check_task.js": {
+      "filePath": "scratch/check_task.js",
+      "contentHash": "f51ad2ce7b42371b3999668487f20f49dcf5642aa937e6ffd3ca43971cffd4de",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

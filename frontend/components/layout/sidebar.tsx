@@ -16,17 +16,41 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/brand-logo";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  permission?: string | ((hasPermission: (p: string) => boolean) => boolean);
+}
+
+const navigation: NavigationItem[] = [
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "user:read" },
   { name: "Projects", href: "/projects", icon: FolderKanban },
-  { name: "Users", href: "/users", icon: Users },
-  { name: "Roles", href: "/roles", icon: Settings },
-  { name: "AI Settings", href: "/ai-settings", icon: Cpu },
+  { name: "Users", href: "/users", icon: Users, permission: "user:read" },
+  { name: "Roles", href: "/roles", icon: Settings, permission: "role:read" },
+  {
+    name: "AI Settings",
+    href: "/ai-settings",
+    icon: Cpu,
+    permission: (hasPermission) =>
+      hasPermission("token:read") ||
+      hasPermission("system:config:read") ||
+      hasPermission("system:config:write"),
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, hasPermission } = useAuth();
+
+  // Filter navigation items based on user permissions
+  const visibleNavigation = navigation.filter((item) => {
+    if (!item.permission) return true;
+    if (typeof item.permission === "function") {
+      return item.permission(hasPermission);
+    }
+    return hasPermission(item.permission);
+  });
 
   return (
     <aside className="w-64 h-[calc(100vh-2rem)] my-4 ml-4 flex flex-col bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl shadow-2xl relative overflow-hidden">
@@ -46,7 +70,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
-        {navigation.map((item) => {
+        {visibleNavigation.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link

@@ -1,0 +1,147 @@
+{
+  "nodes": [
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Tài liệu đặc tả chính sách thực thi lệnh cục bộ cho các tác nhân AI trong dự án, quy định quyền chạy lệnh tự động mà không cần xác nhận trực tiếp từ người dùng.",
+      "tags": ["tai-lieu", "agents", "execution-policy", "quy-dinh"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Tài liệu hướng dẫn tổng quan về dự án NexusAI, bao gồm Tech Stack (Next.js, NestJS, Prisma, Gemma), cấu trúc thư mục, hướng dẫn cài đặt chạy thử và danh sách các API endpoints.",
+      "tags": ["tai-lieu", "readme", "tong-quan-du-an", "huong-dan-cai-dat"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:docker-compose.yml",
+      "type": "config",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "File cấu hình Docker Compose định nghĩa môi trường container đa dịch vụ bao gồm PostgreSQL database, Backend API (NestJS) và Frontend App (Next.js) phục vụ cho phát triển cục bộ.",
+      "tags": ["cau-hinh", "docker-compose", "ha-tang", "database", "container"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:document.md",
+      "type": "document",
+      "name": "document.md",
+      "filePath": "document.md",
+      "summary": "Tài liệu đặc tả nghiệp vụ dự án (Project Specification) mô tả các tính năng chính như RBAC, quản lý dự án, tích hợp AI tự động hóa task, kiến trúc hệ thống và thiết kế cơ sở dữ liệu mẫu.",
+      "tags": ["tai-lieu", "specification", "yeu-cau-he-thong", "nghiep-vu", "thiet-ke-db"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:docker-compose.yml",
+      "target": "file:backend/src/main.ts",
+      "type": "deploys"
+    },
+    {
+      "source": "config:docker-compose.yml",
+      "target": "file:frontend/app/layout.tsx",
+      "type": "deploys"
+    },
+    {
+      "source": "config:docker-compose.yml",
+      "target": "file:backend/prisma/schema.prisma",
+      "type": "configures"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/main.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:frontend/app/layout.tsx",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/prisma/schema.prisma",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/auth/auth.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/users/users.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/roles/roles.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/projects/projects.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/tasks/tasks.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/documents/documents.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:backend/src/ai/ai.module.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/prisma/schema.prisma",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/src/roles/roles.service.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/src/projects/projects.service.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/src/tasks/tasks.service.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/src/ai/ai.service.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "file:backend/src/users/users.service.ts",
+      "type": "documents"
+    },
+    {
+      "source": "document:document.md",
+      "target": "document:README.md",
+      "type": "related"
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:README.md",
+      "type": "related"
+    }
+  ]
+}

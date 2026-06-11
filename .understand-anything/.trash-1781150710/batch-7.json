@@ -1,0 +1,264 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/common/storage/storage.service.ts",
+      "type": "file",
+      "name": "storage.service.ts",
+      "summary": "Khai báo lớp trừu tượng StorageService định nghĩa giao diện chung cho các dịch vụ lưu trữ dữ liệu trong hệ thống.",
+      "tags": ["abstract-class", "storage-service", "nestjs-provider"],
+      "complexity": "simple",
+      "filePath": "backend/src/common/storage/storage.service.ts"
+    },
+    {
+      "id": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "class",
+      "name": "StorageService",
+      "summary": "Lớp trừu tượng cung cấp khuôn mẫu cho các phương thức tải lên (uploadFile) và xóa (deleteFile) tệp tin.",
+      "tags": ["abstract-class", "storage-api", "interface"],
+      "complexity": "simple",
+      "filePath": "backend/src/common/storage/storage.service.ts"
+    },
+    {
+      "id": "file:backend/src/common/storage/local-storage.service.ts",
+      "type": "file",
+      "name": "local-storage.service.ts",
+      "summary": "Triển khai chi tiết của StorageService để lưu trữ tệp tin trực tiếp trên ổ đĩa cục bộ của máy chủ.",
+      "tags": ["local-storage", "file-system", "nestjs-service"],
+      "complexity": "simple",
+      "filePath": "backend/src/common/storage/local-storage.service.ts"
+    },
+    {
+      "id": "class:backend/src/common/storage/local-storage.service.ts:LocalStorageService",
+      "type": "class",
+      "name": "LocalStorageService",
+      "summary": "Dịch vụ NestJS quản lý việc lưu và xóa tệp tin cục bộ sử dụng module hệ thống tệp tin (fs) của Node.js.",
+      "tags": ["local-upload", "file-deletion", "fs-module"],
+      "complexity": "simple",
+      "filePath": "backend/src/common/storage/local-storage.service.ts"
+    },
+    {
+      "id": "file:backend/src/common/storage/s3-storage.service.ts",
+      "type": "file",
+      "name": "s3-storage.service.ts",
+      "summary": "Triển khai chi tiết của StorageService để lưu trữ tệp tin từ xa sử dụng dịch vụ đám mây Amazon S3.",
+      "tags": ["s3-storage", "cloud-storage", "aws-sdk", "nestjs-service"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/s3-storage.service.ts"
+    },
+    {
+      "id": "class:backend/src/common/storage/s3-storage.service.ts:S3StorageService",
+      "type": "class",
+      "name": "S3StorageService",
+      "summary": "Dịch vụ NestJS sử dụng S3Client để thực hiện tải tệp lên và xóa tệp khỏi bucket S3 được cấu hình.",
+      "tags": ["aws-s3-client", "s3-upload", "cloud-integration"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/s3-storage.service.ts"
+    },
+    {
+      "id": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "type": "file",
+      "name": "hybrid-storage.service.ts",
+      "summary": "Triển khai dịch vụ lưu trữ lai, tự động phân phối hình ảnh lên đám mây S3 và các tài liệu khác về máy chủ cục bộ.",
+      "tags": ["hybrid-storage", "file-routing", "nestjs-service"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/hybrid-storage.service.ts"
+    },
+    {
+      "id": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "type": "class",
+      "name": "HybridStorageService",
+      "summary": "Dịch vụ NestJS kế thừa StorageService để điều hướng các yêu cầu lưu trữ đến Local hoặc S3 dựa trên mimetype của tệp tin.",
+      "tags": ["file-routing", "multer-file", "dependency-injection"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/hybrid-storage.service.ts"
+    },
+    {
+      "id": "file:backend/src/common/storage/storage.module.ts",
+      "type": "file",
+      "name": "storage.module.ts",
+      "summary": "Module định nghĩa và cấu hình các nhà cung cấp dịch vụ lưu trữ trong ứng dụng NestJS.",
+      "tags": ["nestjs-module", "storage-config", "global-decorator"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/storage.module.ts"
+    },
+    {
+      "id": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "type": "class",
+      "name": "StorageModule",
+      "summary": "Module NestJS đánh dấu toàn cục (Global) đăng ký LocalStorageService, S3StorageService và cung cấp StorageService thông qua HybridStorageService.",
+      "tags": ["global-module", "provider-factory", "dependency-injection"],
+      "complexity": "moderate",
+      "filePath": "backend/src/common/storage/storage.module.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/common/storage/storage.service.ts",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/src/common/storage/local-storage.service.ts",
+      "target": "class:backend/src/common/storage/local-storage.service.ts:LocalStorageService",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/src/common/storage/local-storage.service.ts",
+      "target": "file:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/common/storage/local-storage.service.ts:LocalStorageService",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "inherits",
+      "weight": 0.9
+    },
+    {
+      "source": "file:backend/src/common/storage/s3-storage.service.ts",
+      "target": "class:backend/src/common/storage/s3-storage.service.ts:S3StorageService",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/src/common/storage/s3-storage.service.ts",
+      "target": "file:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/common/storage/s3-storage.service.ts:S3StorageService",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "inherits",
+      "weight": 0.9
+    },
+    {
+      "source": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "target": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "target": "file:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "target": "file:backend/src/common/storage/local-storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "target": "file:backend/src/common/storage/s3-storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "inherits",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "target": "class:backend/src/common/storage/local-storage.service.ts:LocalStorageService",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "target": "class:backend/src/common/storage/s3-storage.service.ts:S3StorageService",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/common/storage/storage.module.ts",
+      "target": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/src/common/storage/storage.module.ts",
+      "target": "file:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/common/storage/storage.module.ts",
+      "target": "file:backend/src/common/storage/local-storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/common/storage/storage.module.ts",
+      "target": "file:backend/src/common/storage/s3-storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/common/storage/storage.module.ts",
+      "target": "file:backend/src/common/storage/hybrid-storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "target": "class:backend/src/common/storage/local-storage.service.ts:LocalStorageService",
+      "type": "configures",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "target": "class:backend/src/common/storage/s3-storage.service.ts:S3StorageService",
+      "type": "configures",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "target": "class:backend/src/common/storage/hybrid-storage.service.ts:HybridStorageService",
+      "type": "configures",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "exports",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/common/storage/storage.module.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/app.module.ts:AppModule",
+      "target": "class:backend/src/common/storage/storage.module.ts:StorageModule",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:backend/src/documents/documents.service.ts",
+      "target": "file:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/src/documents/documents.service.ts:DocumentsService",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/src/documents/documents.service.ts:DocumentsService",
+      "target": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "type": "calls",
+      "weight": 0.8
+    }
+  ]
+}

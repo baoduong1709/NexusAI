@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "file:scratch/check_task.js",
+      "type": "file",
+      "name": "check_task.js",
+      "filePath": "scratch/check_task.js",
+      "summary": "Script tiện ích dùng để truy vấn cơ sở dữ liệu qua Prisma Client nhằm kiểm tra chi tiết và lịch sử hoạt động của một Task cụ thể.",
+      "tags": [
+        "scratch-script",
+        "utility",
+        "prisma-client",
+        "database-query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:scratch/check_task.js:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scratch/check_task.js",
+      "summary": "Hàm chính thực hiện truy vấn thông tin Task 'GLAPP-2' và in thông tin chi tiết cùng 10 hoạt động gần nhất của nó ra console.",
+      "tags": [
+        "async-function",
+        "database-query",
+        "console-log"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:scratch/check_task.js",
+      "target": "function:scratch/check_task.js:main",
+      "type": "contains"
+    },
+    {
+      "source": "file:scratch/check_task.js",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "depends_on"
+    },
+    {
+      "source": "function:scratch/check_task.js:main",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "depends_on"
+    }
+  ]
+}

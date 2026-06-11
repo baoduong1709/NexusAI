@@ -1,0 +1,1620 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/ai/ai.controller.ts",
+      "type": "file",
+      "name": "ai.controller.ts",
+      "filePath": "backend/src/ai/ai.controller.ts",
+      "summary": "Controller xử lý các API endpoint liên quan đến tính năng AI, bao gồm phân tích dự án, gợi ý người thực hiện, trợ giúp viết mô tả công việc và quản lý phiên chat với AI.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "ai-integration",
+        "typescript"
+      ],
+      "complexity": "complex",
+      "languageNotes": "NestJS Controller sử dụng decorator để định nghĩa API endpoint và tích hợp guards để xác thực quyền."
+    },
+    {
+      "id": "file:backend/src/ai/dto/ai.dto.ts",
+      "type": "file",
+      "name": "ai.dto.ts",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "summary": "Định nghĩa các DTO (Data Transfer Object) để validate và chuyển cấu trúc dữ liệu cho các yêu cầu và phản hồi của tính năng AI.",
+      "tags": [
+        "data-model",
+        "validation",
+        "type-definition",
+        "dto"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Sử dụng class-validator và class-transformer để xác thực dữ liệu đầu vào trong NestJS."
+    },
+    {
+      "id": "file:backend/src/ai/dto/system-config.dto.ts",
+      "type": "file",
+      "name": "system-config.dto.ts",
+      "filePath": "backend/src/ai/dto/system-config.dto.ts",
+      "summary": "DTO dùng để validate dữ liệu cấu hình hệ thống AI như API Key, Base URL và các model AI sử dụng.",
+      "tags": [
+        "dto",
+        "validation",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/ai/system-configs.controller.ts",
+      "type": "file",
+      "name": "system-configs.controller.ts",
+      "filePath": "backend/src/ai/system-configs.controller.ts",
+      "summary": "Controller quản lý các API endpoint liên quan đến cấu hình hệ thống AI, cho phép quản trị viên xem và cập nhật cấu hình trong cơ sở dữ liệu.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "configuration",
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Sử dụng Prisma transaction để cập nhật đồng thời nhiều bản ghi cấu hình hệ thống."
+    },
+    {
+      "id": "file:backend/src/ai/token-stats.controller.ts",
+      "type": "file",
+      "name": "token-stats.controller.ts",
+      "filePath": "backend/src/ai/token-stats.controller.ts",
+      "summary": "Controller quản lý các API endpoint liên quan đến thống kê sử dụng token của AI, cung cấp dữ liệu biểu đồ và lịch sử cho quản trị viên.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "monitoring",
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Thực hiện truy vấn gom nhóm (groupBy) và tổng hợp (aggregate) dữ liệu qua Prisma để lập báo cáo sử dụng."
+    },
+    {
+      "id": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "file",
+      "name": "current-user.decorator.ts",
+      "filePath": "backend/src/auth/decorators/current-user.decorator.ts",
+      "summary": "Custom decorator giúp trích xuất thông tin người dùng hiện tại từ request object trong NestJS.",
+      "tags": [
+        "utility",
+        "middleware",
+        "security",
+        "typescript"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "file",
+      "name": "permissions.decorator.ts",
+      "filePath": "backend/src/auth/decorators/permissions.decorator.ts",
+      "summary": "Custom decorator để yêu cầu các quyền truy cập cụ thể cho các endpoint trong NestJS.",
+      "tags": [
+        "utility",
+        "middleware",
+        "security",
+        "typescript"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "file",
+      "name": "jwt-auth.guard.ts",
+      "filePath": "backend/src/auth/guards/jwt-auth.guard.ts",
+      "summary": "Guard xác thực JWT mặc định của NestJS để bảo vệ các API endpoint khỏi truy cập trái phép.",
+      "tags": [
+        "middleware",
+        "security",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "file",
+      "name": "permissions.guard.ts",
+      "filePath": "backend/src/auth/guards/permissions.guard.ts",
+      "summary": "Guard kiểm tra quyền hạn của người dùng đối với dự án trước khi cho phép truy cập endpoint.",
+      "tags": [
+        "middleware",
+        "security",
+        "authorization"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Sử dụng NestJS Reflector để đọc các permission metadata được gán trên route handler và lớp controller."
+    },
+    {
+      "id": "file:backend/src/auth/permissions.ts",
+      "type": "file",
+      "name": "permissions.ts",
+      "filePath": "backend/src/auth/permissions.ts",
+      "summary": "Khai báo danh sách các quyền hạn được hệ thống hỗ trợ, bao gồm các quyền phạm vi hệ thống và phạm vi dự án.",
+      "tags": [
+        "configuration",
+        "security",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/common/dto/paginated-query.dto.ts",
+      "type": "file",
+      "name": "paginated-query.dto.ts",
+      "filePath": "backend/src/common/dto/paginated-query.dto.ts",
+      "summary": "DTO cơ sở chứa các tham số phân trang như skip và take để tái sử dụng trong các API truy vấn danh sách.",
+      "tags": [
+        "dto",
+        "validation",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/documents/documents.controller.ts",
+      "type": "file",
+      "name": "documents.controller.ts",
+      "filePath": "backend/src/documents/documents.controller.ts",
+      "summary": "Controller xử lý các API endpoint liên quan đến tài liệu, cho phép tải lên, xóa và lấy tài liệu theo dự án hoặc thư mục.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "document-management",
+        "typescript"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Sử dụng NestJS FileInterceptor để xử lý tải lên file đơn lẻ."
+    },
+    {
+      "id": "file:backend/src/documents/dto/documents-query.dto.ts",
+      "type": "file",
+      "name": "documents-query.dto.ts",
+      "filePath": "backend/src/documents/dto/documents-query.dto.ts",
+      "summary": "DTO phục vụ việc truy vấn danh sách tài liệu, hỗ trợ lọc theo thư mục và kế thừa phân trang.",
+      "tags": [
+        "dto",
+        "validation",
+        "document-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/project-roles.ts",
+      "type": "file",
+      "name": "project-roles.ts",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "summary": "Định nghĩa các vai trò mặc định trong dự án và các hàm tiện ích để chuẩn hóa cấu hình vai trò cùng danh sách quyền hạn.",
+      "tags": [
+        "configuration",
+        "utility",
+        "security",
+        "typescript"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/roles/dto/create-role.dto.ts",
+      "type": "file",
+      "name": "create-role.dto.ts",
+      "filePath": "backend/src/roles/dto/create-role.dto.ts",
+      "summary": "DTO chứa thông tin và quy tắc validate để tạo hoặc cập nhật một vai trò hệ thống mới.",
+      "tags": [
+        "dto",
+        "validation",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/roles/roles.controller.ts",
+      "type": "file",
+      "name": "roles.controller.ts",
+      "filePath": "backend/src/roles/roles.controller.ts",
+      "summary": "Controller xử lý các API endpoint liên quan đến vai trò hệ thống (system roles) như CRUD vai trò và lấy danh sách quyền khả dụng.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "role-management",
+        "typescript"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/roles/roles.module.ts",
+      "type": "file",
+      "name": "roles.module.ts",
+      "filePath": "backend/src/roles/roles.module.ts",
+      "summary": "Module đăng ký các controller và service liên quan đến quản lý vai trò trong ứng dụng NestJS.",
+      "tags": [
+        "configuration",
+        "role-management",
+        "typescript"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/roles/roles.service.ts",
+      "type": "file",
+      "name": "roles.service.ts",
+      "filePath": "backend/src/roles/roles.service.ts",
+      "summary": "Service thực hiện các thao tác CRUD và logic nghiệp vụ liên quan đến vai trò hệ thống thông qua Prisma.",
+      "tags": [
+        "service",
+        "role-management",
+        "typescript"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/tasks/dto/tasks-query.dto.ts",
+      "type": "file",
+      "name": "tasks-query.dto.ts",
+      "filePath": "backend/src/tasks/dto/tasks-query.dto.ts",
+      "summary": "DTO chứa các tham số lọc và phân trang phục vụ cho việc truy vấn danh sách công việc (tasks).",
+      "tags": [
+        "dto",
+        "validation",
+        "task-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/tasks/tasks.controller.ts",
+      "type": "file",
+      "name": "tasks.controller.ts",
+      "filePath": "backend/src/tasks/tasks.controller.ts",
+      "summary": "Controller xử lý các API endpoint liên quan đến công việc (tasks), bao gồm quản lý bình luận, ghi nhận giờ làm (worklog) và cập nhật trạng thái.",
+      "tags": [
+        "api-handler",
+        "controller",
+        "task-management",
+        "typescript"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/ai/ai.controller.ts:AiController",
+      "type": "class",
+      "name": "AiController",
+      "filePath": "backend/src/ai/ai.controller.ts",
+      "lineRange": [
+        35,
+        229
+      ],
+      "summary": "Class controller cung cấp các API endpoint để tương tác với các tính năng AI thông qua AiService.",
+      "tags": [
+        "controller",
+        "ai-integration",
+        "api-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:ConfirmTaskDto",
+      "type": "class",
+      "name": "ConfirmTaskDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        14,
+        67
+      ],
+      "summary": "DTO đại diện cho thông tin một công việc được xác nhận từ đề xuất của AI.",
+      "tags": [
+        "dto",
+        "validation",
+        "task-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:ConfirmAiTasksDto",
+      "type": "class",
+      "name": "ConfirmAiTasksDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        69,
+        75
+      ],
+      "summary": "DTO dùng để validate danh sách các công việc cần tạo từ đề xuất của AI.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:SuggestAssigneeDto",
+      "type": "class",
+      "name": "SuggestAssigneeDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        77,
+        82
+      ],
+      "summary": "DTO chứa mô tả công việc để AI phân tích và gợi ý người thực hiện phù hợp.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:ImproveDescriptionDto",
+      "type": "class",
+      "name": "ImproveDescriptionDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        84,
+        94
+      ],
+      "summary": "DTO chứa tiêu đề và mô tả công việc hiện tại để AI cải thiện và chuẩn hóa.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:AssistDescriptionDto",
+      "type": "class",
+      "name": "AssistDescriptionDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        96,
+        111
+      ],
+      "summary": "DTO chứa thông tin công việc và hướng dẫn bổ sung để AI hỗ trợ viết lại mô tả chi tiết.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:AiChatDto",
+      "type": "class",
+      "name": "AiChatDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        125,
+        141
+      ],
+      "summary": "DTO chứa lịch sử tin nhắn và ngữ cảnh phục vụ cho tính năng chat với AI.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:AiSummarizeDto",
+      "type": "class",
+      "name": "AiSummarizeDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        143,
+        154
+      ],
+      "summary": "DTO chứa tóm tắt hiện tại và tin nhắn mới để AI tạo tóm tắt cập nhật.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:CreateSessionDto",
+      "type": "class",
+      "name": "CreateSessionDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        156,
+        161
+      ],
+      "summary": "DTO yêu cầu tạo phiên làm việc (session) mới với trợ lý AI.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/ai.dto.ts:UpdateSessionDto",
+      "type": "class",
+      "name": "UpdateSessionDto",
+      "filePath": "backend/src/ai/dto/ai.dto.ts",
+      "lineRange": [
+        163,
+        178
+      ],
+      "summary": "DTO cập nhật thông tin tên, tóm tắt hoặc tin nhắn của một phiên làm việc AI.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/dto/system-config.dto.ts:UpdateSystemConfigsDto",
+      "type": "class",
+      "name": "UpdateSystemConfigsDto",
+      "filePath": "backend/src/ai/dto/system-config.dto.ts",
+      "lineRange": [
+        4,
+        34
+      ],
+      "summary": "Class định nghĩa các trường cấu hình AI cần cập nhật và các quy tắc validate tương ứng.",
+      "tags": [
+        "dto",
+        "validation",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/system-configs.controller.ts:SystemConfigsController",
+      "type": "class",
+      "name": "SystemConfigsController",
+      "filePath": "backend/src/ai/system-configs.controller.ts",
+      "lineRange": [
+        13,
+        83
+      ],
+      "summary": "Class controller quản lý API xem và cập nhật cấu hình hệ thống AI thông qua Prisma.",
+      "tags": [
+        "controller",
+        "api-handler",
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/ai/token-stats.controller.ts:TokenStatsController",
+      "type": "class",
+      "name": "TokenStatsController",
+      "filePath": "backend/src/ai/token-stats.controller.ts",
+      "lineRange": [
+        12,
+        197
+      ],
+      "summary": "Class controller cung cấp các API lấy tổng quan, biểu đồ và lịch sử sử dụng token AI.",
+      "tags": [
+        "controller",
+        "api-handler",
+        "monitoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/auth/decorators/permissions.decorator.ts:RequirePermissions",
+      "type": "function",
+      "name": "RequirePermissions",
+      "filePath": "backend/src/auth/decorators/permissions.decorator.ts",
+      "lineRange": [
+        4,
+        5
+      ],
+      "summary": "Hàm decorator gán metadata các quyền truy cập cần thiết vào endpoint.",
+      "tags": [
+        "utility",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/guards/jwt-auth.guard.ts:JwtAuthGuard",
+      "type": "class",
+      "name": "JwtAuthGuard",
+      "filePath": "backend/src/auth/guards/jwt-auth.guard.ts",
+      "lineRange": [
+        3,
+        3
+      ],
+      "summary": "Guard kế thừa từ AuthGuard của Passport để xác thực token JWT.",
+      "tags": [
+        "middleware",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/guards/permissions.guard.ts:PermissionsGuard",
+      "type": "class",
+      "name": "PermissionsGuard",
+      "filePath": "backend/src/auth/guards/permissions.guard.ts",
+      "lineRange": [
+        17,
+        118
+      ],
+      "summary": "Class guard thực thi logic kiểm tra quyền dự án của người dùng hiện tại.",
+      "tags": [
+        "middleware",
+        "security",
+        "authorization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/common/dto/paginated-query.dto.ts:PaginatedQueryDto",
+      "type": "class",
+      "name": "PaginatedQueryDto",
+      "filePath": "backend/src/common/dto/paginated-query.dto.ts",
+      "lineRange": [
+        5,
+        19
+      ],
+      "summary": "DTO định nghĩa tham số phân trang với các ràng buộc validate kiểu số.",
+      "tags": [
+        "dto",
+        "validation",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/documents/documents.controller.ts:DocumentsController",
+      "type": "class",
+      "name": "DocumentsController",
+      "filePath": "backend/src/documents/documents.controller.ts",
+      "lineRange": [
+        53,
+        118
+      ],
+      "summary": "Class controller quản lý API tải tài liệu lên và truy xuất tài liệu của dự án.",
+      "tags": [
+        "controller",
+        "api-handler",
+        "document-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/documents/dto/documents-query.dto.ts:DocumentsQueryDto",
+      "type": "class",
+      "name": "DocumentsQueryDto",
+      "filePath": "backend/src/documents/dto/documents-query.dto.ts",
+      "lineRange": [
+        5,
+        10
+      ],
+      "summary": "DTO lọc danh sách tài liệu theo đường dẫn thư mục tùy chọn.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:uniquePermissions",
+      "type": "function",
+      "name": "uniquePermissions",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        64,
+        82
+      ],
+      "summary": "Loại bỏ các phần tử trùng lặp và lọc bỏ các quyền không hợp lệ trong danh sách quyền dự án.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:getDefaultProjectRolePermissions",
+      "type": "function",
+      "name": "getDefaultProjectRolePermissions",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        84,
+        92
+      ],
+      "summary": "Lấy danh sách các quyền mặc định tương ứng với một tên vai trò cụ thể.",
+      "tags": [
+        "utility",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:normalizeProjectRoles",
+      "type": "function",
+      "name": "normalizeProjectRoles",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        94,
+        101
+      ],
+      "summary": "Chuẩn hóa danh sách tên vai trò thành cấu hình vai trò đầy đủ kèm quyền mặc định.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:normalizeProjectRoleConfigs",
+      "type": "function",
+      "name": "normalizeProjectRoleConfigs",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        103,
+        159
+      ],
+      "summary": "Chuẩn hóa và validate mảng cấu hình vai trò dự án đầu vào, loại bỏ các mục lỗi.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:getProjectRoleNames",
+      "type": "function",
+      "name": "getProjectRoleNames",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        161,
+        163
+      ],
+      "summary": "Lấy danh sách tên vai trò từ danh sách cấu hình vai trò.",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:normalizeProjectRole",
+      "type": "function",
+      "name": "normalizeProjectRole",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        165,
+        168
+      ],
+      "summary": "Định dạng lại tên vai trò thành dạng chuẩn hóa (không khoảng trắng thừa).",
+      "tags": [
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/projects/project-roles.ts:getProjectRolePermissions",
+      "type": "function",
+      "name": "getProjectRolePermissions",
+      "filePath": "backend/src/projects/project-roles.ts",
+      "lineRange": [
+        170,
+        182
+      ],
+      "summary": "Lấy danh sách quyền cụ thể của một vai trò từ danh sách cấu hình vai trò dự án.",
+      "tags": [
+        "utility",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/roles/dto/create-role.dto.ts:CreateRoleDto",
+      "type": "class",
+      "name": "CreateRoleDto",
+      "filePath": "backend/src/roles/dto/create-role.dto.ts",
+      "lineRange": [
+        4,
+        16
+      ],
+      "summary": "DTO xác thực tên vai trò và danh sách các quyền đi kèm khi tạo vai trò hệ thống.",
+      "tags": [
+        "dto",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/roles/roles.controller.ts:RolesController",
+      "type": "class",
+      "name": "RolesController",
+      "filePath": "backend/src/roles/roles.controller.ts",
+      "lineRange": [
+        23,
+        64
+      ],
+      "summary": "Class controller quản lý API xem, tạo, sửa, xóa các vai trò hệ thống.",
+      "tags": [
+        "controller",
+        "api-handler",
+        "role-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/roles/roles.module.ts:RolesModule",
+      "type": "class",
+      "name": "RolesModule",
+      "filePath": "backend/src/roles/roles.module.ts",
+      "lineRange": [
+        10,
+        10
+      ],
+      "summary": "NestJS Module liên kết controller và service quản lý vai trò hệ thống.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/roles/roles.service.ts:RolesService",
+      "type": "class",
+      "name": "RolesService",
+      "filePath": "backend/src/roles/roles.service.ts",
+      "lineRange": [
+        11,
+        45
+      ],
+      "summary": "Class service chứa logic nghiệp vụ CRUD vai trò và truy xuất quyền hệ thống.",
+      "tags": [
+        "service",
+        "role-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/tasks/dto/tasks-query.dto.ts:TasksQueryDto",
+      "type": "class",
+      "name": "TasksQueryDto",
+      "filePath": "backend/src/tasks/dto/tasks-query.dto.ts",
+      "lineRange": [
+        7,
+        60
+      ],
+      "summary": "DTO validate các tham số lọc công việc như trạng thái, độ ưu tiên, epic, nhãn, người thực hiện.",
+      "tags": [
+        "dto",
+        "validation",
+        "task-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/tasks/tasks.controller.ts:TasksController",
+      "type": "class",
+      "name": "TasksController",
+      "filePath": "backend/src/tasks/tasks.controller.ts",
+      "lineRange": [
+        32,
+        122
+      ],
+      "summary": "Class controller cung cấp các API để quản lý toàn bộ vòng đời của công việc.",
+      "tags": [
+        "controller",
+        "api-handler",
+        "task-management"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/ai/ai.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/ai/dto/ai.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "file:backend/src/ai/dto/system-config.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "file:backend/src/auth/permissions.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "file:backend/src/projects/project-roles.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/documents/documents.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "file:backend/src/documents/dto/documents-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/documents/dto/documents-query.dto.ts",
+      "target": "file:backend/src/common/dto/paginated-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "file:backend/src/auth/permissions.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "file:backend/src/roles/dto/create-role.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "file:backend/src/roles/roles.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.module.ts",
+      "target": "file:backend/src/roles/roles.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.module.ts",
+      "target": "file:backend/src/roles/roles.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.service.ts",
+      "target": "file:backend/src/auth/permissions.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.service.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/roles/roles.service.ts",
+      "target": "file:backend/src/roles/dto/create-role.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/dto/tasks-query.dto.ts",
+      "target": "file:backend/src/common/dto/paginated-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/tasks/dto/create-task.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/tasks/dto/tasks-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "file:backend/src/tasks/tasks.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "class:backend/src/ai/ai.controller.ts:AiController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/ai.controller.ts",
+      "target": "class:backend/src/ai/ai.controller.ts:AiController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ConfirmTaskDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ConfirmTaskDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ConfirmAiTasksDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ConfirmAiTasksDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:SuggestAssigneeDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:SuggestAssigneeDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ImproveDescriptionDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:ImproveDescriptionDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AssistDescriptionDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AssistDescriptionDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AiChatDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AiChatDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AiSummarizeDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:AiSummarizeDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:CreateSessionDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:CreateSessionDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:UpdateSessionDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/ai.dto.ts",
+      "target": "class:backend/src/ai/dto/ai.dto.ts:UpdateSessionDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/dto/system-config.dto.ts",
+      "target": "class:backend/src/ai/dto/system-config.dto.ts:UpdateSystemConfigsDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/dto/system-config.dto.ts",
+      "target": "class:backend/src/ai/dto/system-config.dto.ts:UpdateSystemConfigsDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "class:backend/src/ai/system-configs.controller.ts:SystemConfigsController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/system-configs.controller.ts",
+      "target": "class:backend/src/ai/system-configs.controller.ts:SystemConfigsController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "class:backend/src/ai/token-stats.controller.ts:TokenStatsController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/ai/token-stats.controller.ts",
+      "target": "class:backend/src/ai/token-stats.controller.ts:TokenStatsController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "target": "function:backend/src/auth/decorators/permissions.decorator.ts:RequirePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "target": "function:backend/src/auth/decorators/permissions.decorator.ts:RequirePermissions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "target": "class:backend/src/auth/guards/jwt-auth.guard.ts:JwtAuthGuard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "target": "class:backend/src/auth/guards/jwt-auth.guard.ts:JwtAuthGuard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "class:backend/src/auth/guards/permissions.guard.ts:PermissionsGuard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/auth/guards/permissions.guard.ts",
+      "target": "class:backend/src/auth/guards/permissions.guard.ts:PermissionsGuard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/common/dto/paginated-query.dto.ts",
+      "target": "class:backend/src/common/dto/paginated-query.dto.ts:PaginatedQueryDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/common/dto/paginated-query.dto.ts",
+      "target": "class:backend/src/common/dto/paginated-query.dto.ts:PaginatedQueryDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "class:backend/src/documents/documents.controller.ts:DocumentsController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/documents/documents.controller.ts",
+      "target": "class:backend/src/documents/documents.controller.ts:DocumentsController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/documents/dto/documents-query.dto.ts",
+      "target": "class:backend/src/documents/dto/documents-query.dto.ts:DocumentsQueryDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/documents/dto/documents-query.dto.ts",
+      "target": "class:backend/src/documents/dto/documents-query.dto.ts:DocumentsQueryDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:uniquePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getDefaultProjectRolePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getDefaultProjectRolePermissions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRoles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRoles",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRoleConfigs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRoleConfigs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getProjectRoleNames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getProjectRoleNames",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRole",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRole",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getProjectRolePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/projects/project-roles.ts",
+      "target": "function:backend/src/projects/project-roles.ts:getProjectRolePermissions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/roles/dto/create-role.dto.ts",
+      "target": "class:backend/src/roles/dto/create-role.dto.ts:CreateRoleDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/roles/dto/create-role.dto.ts",
+      "target": "class:backend/src/roles/dto/create-role.dto.ts:CreateRoleDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "class:backend/src/roles/roles.controller.ts:RolesController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/roles/roles.controller.ts",
+      "target": "class:backend/src/roles/roles.controller.ts:RolesController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/roles/roles.module.ts",
+      "target": "class:backend/src/roles/roles.module.ts:RolesModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/roles/roles.module.ts",
+      "target": "class:backend/src/roles/roles.module.ts:RolesModule",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/roles/roles.service.ts",
+      "target": "class:backend/src/roles/roles.service.ts:RolesService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/roles/roles.service.ts",
+      "target": "class:backend/src/roles/roles.service.ts:RolesService",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/tasks/dto/tasks-query.dto.ts",
+      "target": "class:backend/src/tasks/dto/tasks-query.dto.ts:TasksQueryDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/tasks/dto/tasks-query.dto.ts",
+      "target": "class:backend/src/tasks/dto/tasks-query.dto.ts:TasksQueryDto",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "class:backend/src/tasks/tasks.controller.ts:TasksController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.controller.ts",
+      "target": "class:backend/src/tasks/tasks.controller.ts:TasksController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/ai/ai.controller.ts:AiController",
+      "target": "class:backend/src/ai/ai.service.ts:AiService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/ai/system-configs.controller.ts:SystemConfigsController",
+      "target": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/ai/token-stats.controller.ts:TokenStatsController",
+      "target": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/auth/guards/permissions.guard.ts:PermissionsGuard",
+      "target": "function:backend/src/projects/project-roles.ts:normalizeProjectRoleConfigs",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/auth/guards/permissions.guard.ts:PermissionsGuard",
+      "target": "function:backend/src/projects/project-roles.ts:getProjectRolePermissions",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/documents/documents.controller.ts:DocumentsController",
+      "target": "class:backend/src/documents/documents.service.ts:DocumentsService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/roles/roles.controller.ts:RolesController",
+      "target": "class:backend/src/roles/roles.service.ts:RolesService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/roles/roles.service.ts:RolesService",
+      "target": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:backend/src/tasks/tasks.controller.ts:TasksController",
+      "target": "class:backend/src/tasks/tasks.service.ts:TasksService",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

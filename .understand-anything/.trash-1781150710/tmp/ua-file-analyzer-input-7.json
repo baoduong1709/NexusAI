@@ -1,0 +1,55 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/src/common/storage/hybrid-storage.service.ts",
+      "language": "typescript",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/storage/local-storage.service.ts",
+      "language": "typescript",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/storage/s3-storage.service.ts",
+      "language": "typescript",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/storage/storage.module.ts",
+      "language": "typescript",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/storage/storage.service.ts",
+      "language": "typescript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "backend/src/common/storage/hybrid-storage.service.ts": [
+      "backend/src/common/storage/local-storage.service.ts",
+      "backend/src/common/storage/s3-storage.service.ts",
+      "backend/src/common/storage/storage.service.ts"
+    ],
+    "backend/src/common/storage/local-storage.service.ts": [
+      "backend/src/common/storage/storage.service.ts"
+    ],
+    "backend/src/common/storage/s3-storage.service.ts": [
+      "backend/src/common/storage/storage.service.ts"
+    ],
+    "backend/src/common/storage/storage.module.ts": [
+      "backend/src/common/storage/hybrid-storage.service.ts",
+      "backend/src/common/storage/local-storage.service.ts",
+      "backend/src/common/storage/s3-storage.service.ts",
+      "backend/src/common/storage/storage.service.ts"
+    ],
+    "backend/src/common/storage/storage.service.ts": []
+  }
+}

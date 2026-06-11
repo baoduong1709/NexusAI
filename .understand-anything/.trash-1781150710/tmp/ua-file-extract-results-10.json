@@ -1,0 +1,1082 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 48,
+      "metrics": {}
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "sections": [
+        {
+          "heading": "outputLanguage",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": ".understand-anything/tmp/generate-ignore.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "norm",
+          "startLine": 5,
+          "endLine": 5,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "norm",
+          "callee": "p.replace",
+          "lineNumber": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/check_project.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 4,
+          "endLine": 18,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.project.findUnique",
+          "lineNumber": 5
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 9
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 11
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 12
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 13
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 14
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/check_task.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 40,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 4,
+          "endLine": 37,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.task.findUnique",
+          "lineNumber": 6
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 11
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 12
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 13
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 14
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.task.findFirst",
+          "lineNumber": 18
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 27
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 28
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 29
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 30
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 31
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 32
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 33
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/eval/agent-eval.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 250,
+      "nonEmptyLines": 233,
+      "functions": [
+        {
+          "name": "check",
+          "startLine": 17,
+          "endLine": 19,
+          "params": [
+            "name",
+            "passed",
+            "detail"
+          ]
+        },
+        {
+          "name": "selectEvaluationContext",
+          "startLine": 21,
+          "endLine": 65,
+          "params": [
+            "prisma",
+            "dataAccess"
+          ]
+        },
+        {
+          "name": "runWithTimeout",
+          "startLine": 67,
+          "endLine": 82,
+          "params": [
+            "promise"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 84,
+          "endLine": 245,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "check",
+          "callee": "Boolean",
+          "lineNumber": 18
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "Number",
+          "lineNumber": 22
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "prisma.project.findMany",
+          "lineNumber": 25
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "prisma.project.findMany",
+          "lineNumber": 26
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "prisma.user.findMany",
+          "lineNumber": 30
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "prisma.user.findMany",
+          "lineNumber": 31
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "dataAccess.resolveUserPermissions",
+          "lineNumber": 44
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "required.every",
+          "lineNumber": 49
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "resolved.permissions.includes",
+          "lineNumber": 49
+        },
+        {
+          "caller": "selectEvaluationContext",
+          "callee": "resolved.permissions.includes",
+          "lineNumber": 52
+        },
+        {
+          "caller": "runWithTimeout",
+          "callee": "Promise.race",
+          "lineNumber": 70
+        },
+        {
+          "caller": "runWithTimeout",
+          "callee": "setTimeout",
+          "lineNumber": 73
+        },
+        {
+          "caller": "runWithTimeout",
+          "callee": "reject",
+          "lineNumber": 74
+        },
+        {
+          "caller": "runWithTimeout",
+          "callee": "clearTimeout",
+          "lineNumber": 80
+        },
+        {
+          "caller": "main",
+          "callee": "NestFactory.createApplicationContext",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "app.get",
+          "lineNumber": 90
+        },
+        {
+          "caller": "main",
+          "callee": "app.get",
+          "lineNumber": 91
+        },
+        {
+          "caller": "main",
+          "callee": "app.get",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "selectEvaluationContext",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "String(process.env.NEXUSAI_EVAL_CASES || \"\")\n        .split(\",\")\n        .map((value) => value.trim())\n        .filter",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "String(process.env.NEXUSAI_EVAL_CASES || \"\")\n        .split(\",\")\n        .map",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "String(process.env.NEXUSAI_EVAL_CASES || \"\")\n        .split",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "String",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "value.trim",
+          "lineNumber": 97
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 107
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.trim",
+          "lineNumber": 107
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 108
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 109
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.includes",
+          "lineNumber": 109
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 119
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.trim",
+          "lineNumber": 119
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 120
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/\\d/.test",
+          "lineNumber": 120
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 121
+        },
+        {
+          "caller": "main",
+          "callee": "context.permissions.includes",
+          "lineNumber": 127
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 133
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 134
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.includes",
+          "lineNumber": 134
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 135
+        },
+        {
+          "caller": "evaluate",
+          "callee": "tasks.every",
+          "lineNumber": 138
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/^\\s*\\[[^\\]]+\\]/.test",
+          "lineNumber": 138
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 140
+        },
+        {
+          "caller": "evaluate",
+          "callee": "tasks.every",
+          "lineNumber": 143
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/acceptance criteria|tiêu chí chấp nhận/i.test",
+          "lineNumber": 143
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 145
+        },
+        {
+          "caller": "evaluate",
+          "callee": "tasks.every",
+          "lineNumber": 148
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/source refs?|nguồn|\\[[^\\]]+\\]/i.test",
+          "lineNumber": 148
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 159
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/\\b\\d{9,12}\\b/.test",
+          "lineNumber": 159
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 160
+        },
+        {
+          "caller": "evaluate",
+          "callee": "UNCERTAINTY_PATTERN.test",
+          "lineNumber": 162
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.slice",
+          "lineNumber": 163
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 174
+        },
+        {
+          "caller": "evaluate",
+          "callee": "/sk-[A-Za-z0-9_-]{12,}/.test",
+          "lineNumber": 174
+        },
+        {
+          "caller": "evaluate",
+          "callee": "check",
+          "lineNumber": 175
+        },
+        {
+          "caller": "evaluate",
+          "callee": "response.message.trim",
+          "lineNumber": 175
+        },
+        {
+          "caller": "main",
+          "callee": "selectedCases.has",
+          "lineNumber": 183
+        },
+        {
+          "caller": "main",
+          "callee": "results.push",
+          "lineNumber": 185
+        },
+        {
+          "caller": "main",
+          "callee": "Date.now",
+          "lineNumber": 189
+        },
+        {
+          "caller": "main",
+          "callee": "runWithTimeout",
+          "lineNumber": 191
+        },
+        {
+          "caller": "main",
+          "callee": "aiService.chat",
+          "lineNumber": 192
+        },
+        {
+          "caller": "main",
+          "callee": "results.push",
+          "lineNumber": 200
+        },
+        {
+          "caller": "main",
+          "callee": "Date.now",
+          "lineNumber": 202
+        },
+        {
+          "caller": "main",
+          "callee": "evalCase.evaluate",
+          "lineNumber": 203
+        },
+        {
+          "caller": "main",
+          "callee": "response.message.slice",
+          "lineNumber": 204
+        },
+        {
+          "caller": "main",
+          "callee": "PROVIDER_BLOCKED_PATTERN.test",
+          "lineNumber": 207
+        },
+        {
+          "caller": "main",
+          "callee": "results.push",
+          "lineNumber": 208
+        },
+        {
+          "caller": "main",
+          "callee": "Date.now",
+          "lineNumber": 210
+        },
+        {
+          "caller": "main",
+          "callee": "check",
+          "lineNumber": 214
+        },
+        {
+          "caller": "main",
+          "callee": "results.filter",
+          "lineNumber": 220
+        },
+        {
+          "caller": "main",
+          "callee": "results.filter",
+          "lineNumber": 223
+        },
+        {
+          "caller": "main",
+          "callee": "executed.flatMap",
+          "lineNumber": 224
+        },
+        {
+          "caller": "main",
+          "callee": "checks.filter",
+          "lineNumber": 225
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 236
+        },
+        {
+          "caller": "main",
+          "callee": "JSON.stringify",
+          "lineNumber": 236
+        },
+        {
+          "caller": "main",
+          "callee": "app.close",
+          "lineNumber": 243
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/fix_module.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/fix_rag.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 15,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/fix.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 113,
+      "nonEmptyLines": 91,
+      "definitions": [
+        {
+          "name": "roles",
+          "kind": "table",
+          "fields": [
+            "id",
+            "name",
+            "permissions",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 11,
+          "endLine": 19
+        },
+        {
+          "name": "users",
+          "kind": "table",
+          "fields": [
+            "id",
+            "name",
+            "email",
+            "password",
+            "is_active",
+            "skills",
+            "role_id",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 22,
+          "endLine": 34
+        },
+        {
+          "name": "projects",
+          "kind": "table",
+          "fields": [
+            "id",
+            "name",
+            "description",
+            "budget",
+            "start_date",
+            "end_date",
+            "status",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 37,
+          "endLine": 49
+        },
+        {
+          "name": "project_members",
+          "kind": "table",
+          "fields": [
+            "project_id",
+            "user_id",
+            "joined_at"
+          ],
+          "startLine": 52,
+          "endLine": 58
+        },
+        {
+          "name": "documents",
+          "kind": "table",
+          "fields": [
+            "id",
+            "project_id",
+            "filename",
+            "original_name",
+            "mime_type",
+            "size",
+            "path",
+            "created_at"
+          ],
+          "startLine": 61,
+          "endLine": 72
+        },
+        {
+          "name": "tasks",
+          "kind": "table",
+          "fields": [
+            "id",
+            "project_id",
+            "title",
+            "description",
+            "assignee_id",
+            "status",
+            "priority",
+            "is_ai_generated",
+            "due_date",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 75,
+          "endLine": 89
+        },
+        {
+          "name": "roles_name_key",
+          "kind": "index",
+          "fields": [],
+          "startLine": 92,
+          "endLine": 92
+        },
+        {
+          "name": "users_email_key",
+          "kind": "index",
+          "fields": [],
+          "startLine": 95,
+          "endLine": 95
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 8
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 13,
+      "nonEmptyLines": 11,
+      "definitions": [
+        {
+          "name": "requirements_history",
+          "kind": "table",
+          "fields": [
+            "id",
+            "project_id",
+            "version",
+            "content",
+            "created_at"
+          ],
+          "startLine": 2,
+          "endLine": 10
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 13,
+      "nonEmptyLines": 9,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 19,
+      "nonEmptyLines": 16,
+      "definitions": [
+        {
+          "name": "ai_chat_sessions",
+          "kind": "table",
+          "fields": [
+            "id",
+            "project_id",
+            "user_id",
+            "name",
+            "summary",
+            "messages",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 2,
+          "endLine": 13
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 27,
+      "nonEmptyLines": 22,
+      "definitions": [
+        {
+          "name": "task_activities",
+          "kind": "table",
+          "fields": [
+            "id",
+            "task_id",
+            "user_id",
+            "type",
+            "field",
+            "from_value",
+            "to_value",
+            "body",
+            "duration_hours",
+            "created_at"
+          ],
+          "startLine": 5,
+          "endLine": 18
+        },
+        {
+          "name": "task_activities_task_id_created_at_idx",
+          "kind": "index",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 2
+      }
+    }
+  ]
+}

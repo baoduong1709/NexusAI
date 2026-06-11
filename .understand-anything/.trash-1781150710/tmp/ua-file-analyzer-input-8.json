@@ -1,0 +1,35 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 7,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 123,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docker-compose.yml",
+      "language": "yaml",
+      "sizeLines": 40,
+      "fileCategory": "infra"
+    },
+    {
+      "path": "document.md",
+      "language": "markdown",
+      "sizeLines": 55,
+      "fileCategory": "docs"
+    }
+  ],
+  "batchImportData": {
+    "AGENTS.md": [],
+    "README.md": [],
+    "docker-compose.yml": [],
+    "document.md": []
+  }
+}

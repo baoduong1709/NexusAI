@@ -175,22 +175,11 @@ export class ProjectsService {
   async findOne(id: number) {
     const project = await this.prisma.project.findUnique({
       where: { id },
-      include: {
-        ...PROJECT_INCLUDE,
-        tasks: {
-          include: {
-            assignee: { select: { id: true, name: true, email: true } },
-          },
-          orderBy: { createdAt: "desc" },
-        },
-        documents: { orderBy: { createdAt: "desc" } },
-      },
+      include: PROJECT_INCLUDE,
     });
     if (!project) throw new NotFoundException("Project not found");
 
-    return this.attachProjectMetadata(project, {
-      includeTasks: true,
-    });
+    return this.attachProjectMetadata(project);
   }
 
   async update(id: number, dto: Partial<CreateProjectDto>) {

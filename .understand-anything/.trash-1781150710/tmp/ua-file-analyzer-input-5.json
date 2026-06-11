@@ -1,0 +1,68 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/src/users/dto/create-user.dto.ts",
+      "language": "typescript",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/users/dto/update-chat-settings.dto.ts",
+      "language": "typescript",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/users/dto/update-user.dto.ts",
+      "language": "typescript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/users/users.controller.ts",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/users/users.module.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/users/users.service.ts",
+      "language": "typescript",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "backend/src/users/dto/create-user.dto.ts": [],
+    "backend/src/users/dto/update-chat-settings.dto.ts": [],
+    "backend/src/users/dto/update-user.dto.ts": [
+      "backend/src/users/dto/create-user.dto.ts"
+    ],
+    "backend/src/users/users.controller.ts": [
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/users/dto/create-user.dto.ts",
+      "backend/src/users/dto/update-chat-settings.dto.ts",
+      "backend/src/users/dto/update-user.dto.ts",
+      "backend/src/users/users.service.ts"
+    ],
+    "backend/src/users/users.module.ts": [
+      "backend/src/users/users.controller.ts",
+      "backend/src/users/users.service.ts"
+    ],
+    "backend/src/users/users.service.ts": [
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/users/dto/create-user.dto.ts",
+      "backend/src/users/dto/update-chat-settings.dto.ts",
+      "backend/src/users/dto/update-user.dto.ts"
+    ]
+  }
+}

@@ -1,0 +1,614 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/users/dto/create-user.dto.ts",
+      "type": "file",
+      "name": "create-user.dto.ts",
+      "filePath": "backend/src/users/dto/create-user.dto.ts",
+      "summary": "Định nghĩa CreateUserDto để xác thực và mô tả dữ liệu khi tạo người dùng mới.",
+      "tags": [
+        "dto",
+        "validation",
+        "class-validator",
+        "nestjs-swagger",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/users/dto/create-user.dto.ts:CreateUserDto",
+      "type": "class",
+      "name": "CreateUserDto",
+      "filePath": "backend/src/users/dto/create-user.dto.ts",
+      "summary": "Lớp DTO dùng để xác thực dữ liệu đầu vào khi tạo tài khoản người dùng mới, bao gồm tên, email, mật khẩu, vai trò và kỹ năng.",
+      "tags": [
+        "class-validator",
+        "dto",
+        "nestjs-dto",
+        "swagger-property"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/users/dto/update-chat-settings.dto.ts",
+      "type": "file",
+      "name": "update-chat-settings.dto.ts",
+      "filePath": "backend/src/users/dto/update-chat-settings.dto.ts",
+      "summary": "Định nghĩa DTO để cập nhật cấu hình phòng chat cá nhân của người dùng.",
+      "tags": [
+        "dto",
+        "chat-settings",
+        "class-validator",
+        "nestjs-swagger"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/users/dto/update-chat-settings.dto.ts:UpdateChatSettingsDto",
+      "type": "class",
+      "name": "UpdateChatSettingsDto",
+      "filePath": "backend/src/users/dto/update-chat-settings.dto.ts",
+      "summary": "Lớp DTO chứa cấu hình chat của người dùng như ngôn ngữ hội thoại (vi/en) và mô tả ngữ cảnh chat.",
+      "tags": [
+        "dto",
+        "chat-settings",
+        "nestjs-dto",
+        "swagger-property"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/users/dto/update-user.dto.ts",
+      "type": "file",
+      "name": "update-user.dto.ts",
+      "filePath": "backend/src/users/dto/update-user.dto.ts",
+      "summary": "Định nghĩa DTO dùng để cập nhật thông tin tài khoản người dùng.",
+      "tags": [
+        "dto",
+        "validation",
+        "nestjs-swagger",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/users/dto/update-user.dto.ts:UpdateUserDto",
+      "type": "class",
+      "name": "UpdateUserDto",
+      "filePath": "backend/src/users/dto/update-user.dto.ts",
+      "summary": "Lớp DTO kế thừa từ CreateUserDto (loại trừ trường password dưới dạng bắt buộc) và thêm trường trạng thái kích hoạt tài khoản.",
+      "tags": [
+        "dto",
+        "nestjs-dto",
+        "swagger-partial",
+        "inheritance"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/users/users.controller.ts",
+      "type": "file",
+      "name": "users.controller.ts",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Định nghĩa các API endpoint HTTP để quản lý người dùng và cấu hình chat thông qua UsersService.",
+      "tags": [
+        "controller",
+        "nestjs-controller",
+        "api-routes",
+        "user-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/users/users.controller.ts:UsersController",
+      "type": "class",
+      "name": "UsersController",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Lớp Controller xử lý các yêu cầu HTTP liên quan đến người dùng, sử dụng các Guard bảo mật như JwtAuthGuard và PermissionsGuard.",
+      "tags": [
+        "controller",
+        "nestjs-controller",
+        "http-handler",
+        "security-guards"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:create",
+      "type": "endpoint",
+      "name": "POST /users",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint tạo người dùng mới, yêu cầu quyền 'user:create'.",
+      "tags": [
+        "api-endpoint",
+        "http-post",
+        "nestjs-route",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:getMyChatSettings",
+      "type": "endpoint",
+      "name": "GET /users/me/chat-settings",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint lấy cấu hình chat của tài khoản đang đăng nhập.",
+      "tags": [
+        "api-endpoint",
+        "http-get",
+        "nestjs-route",
+        "chat-settings"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:updateMyChatSettings",
+      "type": "endpoint",
+      "name": "PUT /users/me/chat-settings",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint cập nhật cấu hình chat của tài khoản đang đăng nhập.",
+      "tags": [
+        "api-endpoint",
+        "http-put",
+        "nestjs-route",
+        "chat-settings"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:findAll",
+      "type": "endpoint",
+      "name": "GET /users",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint lấy danh sách tất cả người dùng, yêu cầu quyền 'user:read'.",
+      "tags": [
+        "api-endpoint",
+        "http-get",
+        "nestjs-route",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:findOne",
+      "type": "endpoint",
+      "name": "GET /users/:id",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint lấy thông tin chi tiết của người dùng qua ID, yêu cầu quyền 'user:read'.",
+      "tags": [
+        "api-endpoint",
+        "http-get",
+        "nestjs-route",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:update",
+      "type": "endpoint",
+      "name": "PUT /users/:id",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint cập nhật thông tin người dùng qua ID, yêu cầu quyền 'user:update'.",
+      "tags": [
+        "api-endpoint",
+        "http-put",
+        "nestjs-route",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/users/users.controller.ts:remove",
+      "type": "endpoint",
+      "name": "DELETE /users/:id",
+      "filePath": "backend/src/users/users.controller.ts",
+      "summary": "Endpoint xóa người dùng khỏi hệ thống qua ID, yêu cầu quyền 'user:delete'.",
+      "tags": [
+        "api-endpoint",
+        "http-delete",
+        "nestjs-route",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/users/users.module.ts",
+      "type": "file",
+      "name": "users.module.ts",
+      "filePath": "backend/src/users/users.module.ts",
+      "summary": "File cấu hình module của NestJS kết nối Controller và Service của người dùng.",
+      "tags": [
+        "module",
+        "nestjs-module",
+        "user-management",
+        "dependency-injection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/users/users.module.ts:UsersModule",
+      "type": "class",
+      "name": "UsersModule",
+      "filePath": "backend/src/users/users.module.ts",
+      "summary": "Lớp UsersModule cấu hình các thành phần điều hướng và cung cấp dịch vụ quản lý người dùng.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "dependency-injection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/users/users.service.ts",
+      "type": "file",
+      "name": "users.service.ts",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Định nghĩa dịch vụ xử lý logic nghiệp vụ và tương tác cơ sở dữ liệu đối với tài nguyên người dùng.",
+      "tags": [
+        "service",
+        "nestjs-service",
+        "prisma-orm",
+        "user-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:backend/src/users/users.service.ts",
+      "type": "service",
+      "name": "UsersService",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Dịch vụ NestJS thực hiện các nghiệp vụ CRUD của người dùng và các thao tác cấu hình chat trong cơ sở dữ liệu qua Prisma.",
+      "tags": [
+        "service",
+        "nestjs-service",
+        "business-logic",
+        "database-access"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:create",
+      "type": "function",
+      "name": "create",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Thực hiện kiểm tra tính duy nhất của email, mã hóa mật khẩu bằng bcrypt và tạo mới người dùng.",
+      "tags": [
+        "create",
+        "password-hash",
+        "bcrypt",
+        "prisma-create"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:findAll",
+      "type": "function",
+      "name": "findAll",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Lấy danh sách toàn bộ người dùng cùng các trường thông tin cơ bản được cấu hình sẵn.",
+      "tags": [
+        "read-list",
+        "prisma-findmany",
+        "database-operation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:findOne",
+      "type": "function",
+      "name": "findOne",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Tìm kiếm một người dùng duy nhất bằng ID và ném ngoại lệ NotFoundException nếu không tồn tại.",
+      "tags": [
+        "read-one",
+        "prisma-findunique",
+        "exception-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:update",
+      "type": "function",
+      "name": "update",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Cập nhật thông tin của người dùng hiện có theo ID, xử lý mã hóa lại mật khẩu mới nếu được truyền vào.",
+      "tags": [
+        "update",
+        "password-hash",
+        "prisma-update"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:remove",
+      "type": "function",
+      "name": "remove",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Xóa vĩnh viễn tài khoản người dùng theo ID được chọn.",
+      "tags": [
+        "delete",
+        "prisma-delete",
+        "database-operation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:getChatSettings",
+      "type": "function",
+      "name": "getChatSettings",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Lấy các tùy chọn thiết lập chat cá nhân (ngôn ngữ, mô tả ngữ cảnh) của người dùng.",
+      "tags": [
+        "chat-settings",
+        "prisma-findunique",
+        "user-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:updateChatSettings",
+      "type": "function",
+      "name": "updateChatSettings",
+      "filePath": "backend/src/users/users.service.ts",
+      "summary": "Cập nhật các tùy chọn thiết lập chat cá nhân cho người dùng.",
+      "tags": [
+        "chat-settings",
+        "prisma-update",
+        "user-management"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/users/dto/create-user.dto.ts",
+      "target": "class:backend/src/users/dto/create-user.dto.ts:CreateUserDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/dto/update-chat-settings.dto.ts",
+      "target": "class:backend/src/users/dto/update-chat-settings.dto.ts:UpdateChatSettingsDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/dto/update-user.dto.ts",
+      "target": "class:backend/src/users/dto/update-user.dto.ts:UpdateUserDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "class:backend/src/users/users.controller.ts:UsersController",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:create",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:getMyChatSettings",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:updateMyChatSettings",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:findAll",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:findOne",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:update",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "endpoint:backend/src/users/users.controller.ts:remove",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/users.module.ts",
+      "target": "class:backend/src/users/users.module.ts:UsersModule",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/users.service.ts",
+      "target": "service:backend/src/users/users.service.ts",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:create",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:findAll",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:findOne",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:update",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:remove",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:getChatSettings",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "function:backend/src/users/users.service.ts:updateChatSettings",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/users/dto/update-user.dto.ts",
+      "target": "file:backend/src/users/dto/create-user.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/users/dto/create-user.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/users/dto/update-chat-settings.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/users/dto/update-user.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/users/users.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.module.ts",
+      "target": "file:backend/src/users/users.controller.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.module.ts",
+      "target": "file:backend/src/users/users.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.service.ts",
+      "target": "file:backend/src/users/dto/create-user.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.service.ts",
+      "target": "file:backend/src/users/dto/update-chat-settings.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.service.ts",
+      "target": "file:backend/src/users/dto/update-user.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.controller.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/users/users.service.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/users/users.module.ts",
+      "type": "imports"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:create",
+      "target": "function:backend/src/users/users.service.ts:create",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:getMyChatSettings",
+      "target": "function:backend/src/users/users.service.ts:getChatSettings",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:updateMyChatSettings",
+      "target": "function:backend/src/users/users.service.ts:updateChatSettings",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:findAll",
+      "target": "function:backend/src/users/users.service.ts:findAll",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:findOne",
+      "target": "function:backend/src/users/users.service.ts:findOne",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:update",
+      "target": "function:backend/src/users/users.service.ts:update",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/users/users.controller.ts:remove",
+      "target": "function:backend/src/users/users.service.ts:remove",
+      "type": "calls"
+    },
+    {
+      "source": "function:backend/src/users/users.service.ts:update",
+      "target": "function:backend/src/users/users.service.ts:findOne",
+      "type": "calls"
+    },
+    {
+      "source": "function:backend/src/users/users.service.ts:remove",
+      "target": "function:backend/src/users/users.service.ts:findOne",
+      "type": "calls"
+    },
+    {
+      "source": "class:backend/src/users/dto/update-user.dto.ts:UpdateUserDto",
+      "target": "class:backend/src/users/dto/create-user.dto.ts:CreateUserDto",
+      "type": "inherits"
+    },
+    {
+      "source": "class:backend/src/users/users.module.ts:UsersModule",
+      "target": "class:backend/src/users/users.controller.ts:UsersController",
+      "type": "configures"
+    },
+    {
+      "source": "class:backend/src/users/users.module.ts:UsersModule",
+      "target": "service:backend/src/users/users.service.ts",
+      "type": "configures"
+    },
+    {
+      "source": "class:backend/src/users/users.controller.ts:UsersController",
+      "target": "service:backend/src/users/users.service.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "service:backend/src/users/users.service.ts",
+      "target": "table:backend/prisma/schema.prisma:User",
+      "type": "depends_on"
+    }
+  ]
+}

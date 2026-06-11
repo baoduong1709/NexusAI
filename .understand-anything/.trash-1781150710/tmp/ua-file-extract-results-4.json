@@ -1,0 +1,1462 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "backend/src/projects/dto/create-project.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 60,
+      "classes": [
+        {
+          "name": "CreateProjectDto",
+          "startLine": 12,
+          "endLine": 70,
+          "methods": [],
+          "properties": [
+            "name",
+            "description",
+            "budget",
+            "startDate",
+            "endDate",
+            "memberIds",
+            "projectRoles",
+            "taskStatuses",
+            "epics",
+            "labels",
+            "taskNamingRule"
+          ]
+        },
+        {
+          "name": "UpdateProjectDto",
+          "startLine": 72,
+          "endLine": 72,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateProjectDto",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateProjectDto",
+          "line": 72,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "backend/src/projects/dto/update-project-roles.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 25,
+      "classes": [
+        {
+          "name": "ProjectRoleConfigDto",
+          "startLine": 10,
+          "endLine": 19,
+          "methods": [],
+          "properties": [
+            "name",
+            "permissions"
+          ]
+        },
+        {
+          "name": "UpdateProjectRolesDto",
+          "startLine": 21,
+          "endLine": 28,
+          "methods": [],
+          "properties": [
+            "roles"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProjectRoleConfigDto",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateProjectRolesDto",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 54,
+      "classes": [
+        {
+          "name": "WorkflowNodeDto",
+          "startLine": 13,
+          "endLine": 34,
+          "methods": [],
+          "properties": [
+            "id",
+            "name",
+            "color",
+            "x",
+            "y"
+          ]
+        },
+        {
+          "name": "WorkflowEdgeDto",
+          "startLine": 36,
+          "endLine": 48,
+          "methods": [],
+          "properties": [
+            "id",
+            "source",
+            "target"
+          ]
+        },
+        {
+          "name": "UpdateProjectWorkflowDto",
+          "startLine": 50,
+          "endLine": 64,
+          "methods": [],
+          "properties": [
+            "nodes",
+            "edges"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateProjectWorkflowDto",
+          "line": 50,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 3
+      }
+    },
+    {
+      "path": "backend/src/projects/project-workflow.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 201,
+      "nonEmptyLines": 167,
+      "functions": [
+        {
+          "name": "normalizeColor",
+          "startLine": 26,
+          "endLine": 30,
+          "params": [
+            "color",
+            "index"
+          ]
+        },
+        {
+          "name": "normalizeNumber",
+          "startLine": 32,
+          "endLine": 34,
+          "params": [
+            "value",
+            "fallback"
+          ]
+        },
+        {
+          "name": "createNodeId",
+          "startLine": 36,
+          "endLine": 38,
+          "params": [
+            "index"
+          ]
+        },
+        {
+          "name": "createEdgeId",
+          "startLine": 40,
+          "endLine": 42,
+          "params": [
+            "source",
+            "target",
+            "index"
+          ]
+        },
+        {
+          "name": "normalizeTaskStatuses",
+          "startLine": 44,
+          "endLine": 59,
+          "params": [
+            "statuses"
+          ]
+        },
+        {
+          "name": "createDefaultTaskWorkflow",
+          "startLine": 61,
+          "endLine": 81,
+          "params": [
+            "statuses"
+          ]
+        },
+        {
+          "name": "normalizeTaskWorkflow",
+          "startLine": 83,
+          "endLine": 156,
+          "params": [
+            "workflow",
+            "fallbackStatuses"
+          ]
+        },
+        {
+          "name": "getTaskWorkflowStatusNames",
+          "startLine": 158,
+          "endLine": 160,
+          "params": [
+            "workflow"
+          ]
+        },
+        {
+          "name": "getDefaultTaskStatus",
+          "startLine": 162,
+          "endLine": 164,
+          "params": [
+            "workflow"
+          ]
+        },
+        {
+          "name": "buildWorkflowRenameMap",
+          "startLine": 166,
+          "endLine": 179,
+          "params": [
+            "currentWorkflow",
+            "nextWorkflow"
+          ]
+        },
+        {
+          "name": "isTaskTransitionAllowed",
+          "startLine": 181,
+          "endLine": 197,
+          "params": [
+            "workflow",
+            "fromStatus",
+            "toStatus"
+          ]
+        },
+        {
+          "name": "getWorkflowAsJson",
+          "startLine": 199,
+          "endLine": 201,
+          "params": [
+            "workflow"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DEFAULT_TASK_STATUSES",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "normalizeTaskStatuses",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "createDefaultTaskWorkflow",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "normalizeTaskWorkflow",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "getTaskWorkflowStatusNames",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "getDefaultTaskStatus",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "buildWorkflowRenameMap",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "isTaskTransitionAllowed",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "getWorkflowAsJson",
+          "line": 199,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "normalizeColor",
+          "callee": "color?.trim",
+          "lineNumber": 27
+        },
+        {
+          "caller": "normalizeColor",
+          "callee": "/^#([0-9a-fA-F]{6})$/.test",
+          "lineNumber": 28
+        },
+        {
+          "caller": "normalizeColor",
+          "callee": "trimmed.toUpperCase",
+          "lineNumber": 28
+        },
+        {
+          "caller": "normalizeNumber",
+          "callee": "Number.isFinite",
+          "lineNumber": 33
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "(statuses?.length ? statuses : DEFAULT_TASK_STATUSES)\n    .map((status) => status?.trim())\n    .filter",
+          "lineNumber": 45
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "(statuses?.length ? statuses : DEFAULT_TASK_STATUSES)\n    .map",
+          "lineNumber": 45
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "status?.trim",
+          "lineNumber": 46
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "Boolean",
+          "lineNumber": 47
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "normalized.map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "normalizeTaskStatuses",
+          "callee": "status.toLowerCase",
+          "lineNumber": 53
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "normalizeTaskStatuses",
+          "lineNumber": 64
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "normalizedStatuses.map",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "createNodeId",
+          "lineNumber": 67
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "normalizeColor",
+          "lineNumber": 69
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "nodes.slice(0, -1).map",
+          "lineNumber": 74
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "nodes.slice",
+          "lineNumber": 74
+        },
+        {
+          "caller": "createDefaultTaskWorkflow",
+          "callee": "createEdgeId",
+          "lineNumber": 75
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "createDefaultTaskWorkflow",
+          "lineNumber": 87
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "Array.isArray",
+          "lineNumber": 92
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "rawNodes\n    .map((node, index) => ({\n      id: typeof node?.id === \"string\" && node.id.trim() ? node.id.trim() : createNodeId(index),\n      name: typeof node?.name === \"string\" ? node.name.trim() : \"\",\n      color: normalizeColor(node?.color, index),\n      x: normalizeNumber(node?.x, 80 + index * 220),\n      y: normalizeNumber(node?.y, 180),\n    }))\n    .filter",
+          "lineNumber": 98
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "rawNodes\n    .map",
+          "lineNumber": 98
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "node.id.trim",
+          "lineNumber": 100
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "node.id.trim",
+          "lineNumber": 100
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "createNodeId",
+          "lineNumber": 100
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "node.name.trim",
+          "lineNumber": 101
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "normalizeColor",
+          "lineNumber": 102
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "normalizeNumber",
+          "lineNumber": 103
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "normalizeNumber",
+          "lineNumber": 104
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "node.name.toLowerCase",
+          "lineNumber": 114
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueNames.has",
+          "lineNumber": 115
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueNames.add",
+          "lineNumber": 120
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "normalizedNodes.map",
+          "lineNumber": 124
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueIds.has",
+          "lineNumber": 126
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueIds.add",
+          "lineNumber": 129
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "nodes.map",
+          "lineNumber": 133
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "Array.isArray",
+          "lineNumber": 134
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "rawEdges\n    .map((edge, index) => ({\n      id:\n        typeof edge?.id === \"string\" && edge.id.trim()\n          ? edge.id.trim()\n          : createEdgeId(edge?.source ?? \"source\", edge?.target ?? \"target\", index),\n      source: typeof edge?.source === \"string\" ? edge.source.trim() : \"\",\n      target: typeof edge?.target === \"string\" ? edge.target.trim() : \"\",\n    }))\n    .filter((edge) => edge.source && edge.target && nodeIds.has(edge.source) && nodeIds.has(edge.target))\n    .filter",
+          "lineNumber": 138
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "rawEdges\n    .map((edge, index) => ({\n      id:\n        typeof edge?.id === \"string\" && edge.id.trim()\n          ? edge.id.trim()\n          : createEdgeId(edge?.source ?? \"source\", edge?.target ?? \"target\", index),\n      source: typeof edge?.source === \"string\" ? edge.source.trim() : \"\",\n      target: typeof edge?.target === \"string\" ? edge.target.trim() : \"\",\n    }))\n    .filter",
+          "lineNumber": 138
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "rawEdges\n    .map",
+          "lineNumber": 138
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "edge.id.trim",
+          "lineNumber": 141
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "edge.id.trim",
+          "lineNumber": 142
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "createEdgeId",
+          "lineNumber": 143
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "edge.source.trim",
+          "lineNumber": 144
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "edge.target.trim",
+          "lineNumber": 145
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "nodeIds.has",
+          "lineNumber": 147
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "nodeIds.has",
+          "lineNumber": 147
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueEdges.has",
+          "lineNumber": 150
+        },
+        {
+          "caller": "normalizeTaskWorkflow",
+          "callee": "uniqueEdges.add",
+          "lineNumber": 151
+        },
+        {
+          "caller": "getTaskWorkflowStatusNames",
+          "callee": "workflow.nodes.map",
+          "lineNumber": 159
+        },
+        {
+          "caller": "buildWorkflowRenameMap",
+          "callee": "nextWorkflow.nodes.map",
+          "lineNumber": 170
+        },
+        {
+          "caller": "buildWorkflowRenameMap",
+          "callee": "currentWorkflow.nodes\n    .map((node) => {\n      const nextNode = nextNodesById.get(node.id);\n      if (!nextNode || nextNode.name === node.name) return null;\n      return { from: node.name, to: nextNode.name };\n    })\n    .filter",
+          "lineNumber": 172
+        },
+        {
+          "caller": "buildWorkflowRenameMap",
+          "callee": "currentWorkflow.nodes\n    .map",
+          "lineNumber": 172
+        },
+        {
+          "caller": "buildWorkflowRenameMap",
+          "callee": "nextNodesById.get",
+          "lineNumber": 174
+        },
+        {
+          "caller": "buildWorkflowRenameMap",
+          "callee": "Boolean",
+          "lineNumber": 178
+        },
+        {
+          "caller": "isTaskTransitionAllowed",
+          "callee": "workflow.nodes.find",
+          "lineNumber": 189
+        },
+        {
+          "caller": "isTaskTransitionAllowed",
+          "callee": "workflow.nodes.find",
+          "lineNumber": 190
+        },
+        {
+          "caller": "isTaskTransitionAllowed",
+          "callee": "workflow.edges.some",
+          "lineNumber": 194
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 12,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/src/projects/projects.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 102,
+      "classes": [
+        {
+          "name": "ProjectsController",
+          "startLine": 27,
+          "endLine": 113,
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateWorkflow",
+            "updateRoles",
+            "remove",
+            "addMember",
+            "updateMemberRole",
+            "removeMember"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProjectsController",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "create",
+          "callee": "Body",
+          "lineNumber": 33
+        },
+        {
+          "caller": "create",
+          "callee": "this.projectsService.create",
+          "lineNumber": 34
+        },
+        {
+          "caller": "findAll",
+          "callee": "CurrentUser",
+          "lineNumber": 39
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.projectsService.findAll",
+          "lineNumber": 40
+        },
+        {
+          "caller": "findOne",
+          "callee": "Param",
+          "lineNumber": 46
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.projectsService.findOne",
+          "lineNumber": 47
+        },
+        {
+          "caller": "update",
+          "callee": "Param",
+          "lineNumber": 52
+        },
+        {
+          "caller": "update",
+          "callee": "Body",
+          "lineNumber": 52
+        },
+        {
+          "caller": "update",
+          "callee": "this.projectsService.update",
+          "lineNumber": 53
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "Param",
+          "lineNumber": 60
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "Body",
+          "lineNumber": 61
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "this.projectsService.updateWorkflow",
+          "lineNumber": 63
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "Param",
+          "lineNumber": 70
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "Body",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "this.projectsService.updateRoles",
+          "lineNumber": 73
+        },
+        {
+          "caller": "remove",
+          "callee": "Param",
+          "lineNumber": 78
+        },
+        {
+          "caller": "remove",
+          "callee": "this.projectsService.remove",
+          "lineNumber": 79
+        },
+        {
+          "caller": "addMember",
+          "callee": "Param",
+          "lineNumber": 86
+        },
+        {
+          "caller": "addMember",
+          "callee": "Param",
+          "lineNumber": 87
+        },
+        {
+          "caller": "addMember",
+          "callee": "Body",
+          "lineNumber": 88
+        },
+        {
+          "caller": "addMember",
+          "callee": "this.projectsService.addMember",
+          "lineNumber": 90
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "Param",
+          "lineNumber": 97
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "Param",
+          "lineNumber": 98
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "Body",
+          "lineNumber": 99
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "this.projectsService.updateMemberRole",
+          "lineNumber": 101
+        },
+        {
+          "caller": "removeMember",
+          "callee": "Param",
+          "lineNumber": 108
+        },
+        {
+          "caller": "removeMember",
+          "callee": "Param",
+          "lineNumber": 109
+        },
+        {
+          "caller": "removeMember",
+          "callee": "this.projectsService.removeMember",
+          "lineNumber": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/projects/projects.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 510,
+      "nonEmptyLines": 460,
+      "functions": [
+        {
+          "name": "getStatusOrder",
+          "startLine": 46,
+          "endLine": 49,
+          "params": [
+            "status",
+            "taskStatuses"
+          ]
+        },
+        {
+          "name": "sortTasksByWorkflow",
+          "startLine": 51,
+          "endLine": 63,
+          "params": [
+            "tasks",
+            "taskStatuses"
+          ]
+        },
+        {
+          "name": "sortProjectRoleConfigs",
+          "startLine": 65,
+          "endLine": 67,
+          "params": [
+            "roleConfigs"
+          ]
+        },
+        {
+          "name": "normalizeProjectList",
+          "startLine": 69,
+          "endLine": 74,
+          "params": [
+            "values"
+          ]
+        },
+        {
+          "name": "normalizeTaskNamingRule",
+          "startLine": 76,
+          "endLine": 80,
+          "params": [
+            "value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProjectsService",
+          "startLine": 83,
+          "endLine": 510,
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateWorkflow",
+            "updateRoles",
+            "remove",
+            "addMember",
+            "updateMemberRole",
+            "removeMember",
+            "ensureProjectRoleExists",
+            "attachProjectMetadata"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ProjectsService",
+          "line": 82,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getStatusOrder",
+          "callee": "taskStatuses.indexOf",
+          "lineNumber": 47
+        },
+        {
+          "caller": "sortTasksByWorkflow",
+          "callee": "[...tasks].sort",
+          "lineNumber": 55
+        },
+        {
+          "caller": "sortTasksByWorkflow",
+          "callee": "getStatusOrder",
+          "lineNumber": 57
+        },
+        {
+          "caller": "sortTasksByWorkflow",
+          "callee": "getStatusOrder",
+          "lineNumber": 58
+        },
+        {
+          "caller": "sortTasksByWorkflow",
+          "callee": "right.createdAt.getTime",
+          "lineNumber": 61
+        },
+        {
+          "caller": "sortTasksByWorkflow",
+          "callee": "left.createdAt.getTime",
+          "lineNumber": 61
+        },
+        {
+          "caller": "normalizeProjectList",
+          "callee": "Array.isArray",
+          "lineNumber": 70
+        },
+        {
+          "caller": "normalizeProjectList",
+          "callee": "Array.from",
+          "lineNumber": 71
+        },
+        {
+          "caller": "normalizeProjectList",
+          "callee": "values.map((value) => value.trim()).filter",
+          "lineNumber": 72
+        },
+        {
+          "caller": "normalizeProjectList",
+          "callee": "values.map",
+          "lineNumber": 72
+        },
+        {
+          "caller": "normalizeProjectList",
+          "callee": "value.trim",
+          "lineNumber": 72
+        },
+        {
+          "caller": "normalizeTaskNamingRule",
+          "callee": "value.trim",
+          "lineNumber": 78
+        },
+        {
+          "caller": "create",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 92
+        },
+        {
+          "caller": "create",
+          "callee": "getProjectRoleNames",
+          "lineNumber": 95
+        },
+        {
+          "caller": "create",
+          "callee": "normalizeTaskStatuses",
+          "lineNumber": 96
+        },
+        {
+          "caller": "create",
+          "callee": "createDefaultTaskWorkflow",
+          "lineNumber": 97
+        },
+        {
+          "caller": "create",
+          "callee": "normalizeProjectList",
+          "lineNumber": 98
+        },
+        {
+          "caller": "create",
+          "callee": "normalizeProjectList",
+          "lineNumber": 99
+        },
+        {
+          "caller": "create",
+          "callee": "normalizeTaskNamingRule",
+          "lineNumber": 100
+        },
+        {
+          "caller": "create",
+          "callee": "this.prisma.project.create",
+          "lineNumber": 101
+        },
+        {
+          "caller": "create",
+          "callee": "getWorkflowAsJson",
+          "lineNumber": 111
+        },
+        {
+          "caller": "create",
+          "callee": "memberIds.map",
+          "lineNumber": 115
+        },
+        {
+          "caller": "create",
+          "callee": "this.aiService\n      .initRequirements(\n        project.id,\n        project.name,\n        project.description ?? undefined,\n      )\n      .catch",
+          "lineNumber": 122
+        },
+        {
+          "caller": "create",
+          "callee": "this.aiService\n      .initRequirements",
+          "lineNumber": 122
+        },
+        {
+          "caller": "create",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 132
+        },
+        {
+          "caller": "create",
+          "callee": "this.attachProjectMetadata",
+          "lineNumber": 133
+        },
+        {
+          "caller": "findAll",
+          "callee": "user.permissions?.includes",
+          "lineNumber": 137
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.prisma.project.findMany",
+          "lineNumber": 139
+        },
+        {
+          "caller": "findAll",
+          "callee": "(\n          await this.prisma.projectMember.findMany({\n            where: { userId: user.id },\n            include: {\n              project: {\n                include: PROJECT_INCLUDE,\n              },\n            },\n            orderBy: { joinedAt: \"desc\" },\n          })\n        )\n          .filter((membership) => {\n            const roleConfigs = normalizeProjectRoleConfigs(\n              membership.project.projectRoleConfigs,\n              membership.project.projectRoles,\n            );\n\n            return getProjectRolePermissions(\n              roleConfigs,\n              membership.projectRole,\n            ).includes(\"project:read\");\n          })\n          .map((membership) => membership.project)\n          .filter",
+          "lineNumber": 143
+        },
+        {
+          "caller": "findAll",
+          "callee": "(\n          await this.prisma.projectMember.findMany({\n            where: { userId: user.id },\n            include: {\n              project: {\n                include: PROJECT_INCLUDE,\n              },\n            },\n            orderBy: { joinedAt: \"desc\" },\n          })\n        )\n          .filter((membership) => {\n            const roleConfigs = normalizeProjectRoleConfigs(\n              membership.project.projectRoleConfigs,\n              membership.project.projectRoles,\n            );\n\n            return getProjectRolePermissions(\n              roleConfigs,\n              membership.projectRole,\n            ).includes(\"project:read\");\n          })\n          .map",
+          "lineNumber": 143
+        },
+        {
+          "caller": "findAll",
+          "callee": "(\n          await this.prisma.projectMember.findMany({\n            where: { userId: user.id },\n            include: {\n              project: {\n                include: PROJECT_INCLUDE,\n              },\n            },\n            orderBy: { joinedAt: \"desc\" },\n          })\n        )\n          .filter",
+          "lineNumber": 143
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.prisma.projectMember.findMany",
+          "lineNumber": 144
+        },
+        {
+          "caller": "findAll",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 155
+        },
+        {
+          "caller": "findAll",
+          "callee": "getProjectRolePermissions(\n              roleConfigs,\n              membership.projectRole,\n            ).includes",
+          "lineNumber": 160
+        },
+        {
+          "caller": "findAll",
+          "callee": "getProjectRolePermissions",
+          "lineNumber": 160
+        },
+        {
+          "caller": "findAll",
+          "callee": "items.findIndex",
+          "lineNumber": 168
+        },
+        {
+          "caller": "findAll",
+          "callee": "projects.map",
+          "lineNumber": 172
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.attachProjectMetadata",
+          "lineNumber": 172
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.prisma.project.findUnique",
+          "lineNumber": 176
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.attachProjectMetadata",
+          "lineNumber": 182
+        },
+        {
+          "caller": "update",
+          "callee": "this.prisma.project.findUnique",
+          "lineNumber": 186
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 200
+        },
+        {
+          "caller": "update",
+          "callee": "getProjectRoleNames",
+          "lineNumber": 203
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeTaskStatuses",
+          "lineNumber": 206
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeProjectList",
+          "lineNumber": 208
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeProjectList",
+          "lineNumber": 209
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeTaskNamingRule",
+          "lineNumber": 212
+        },
+        {
+          "caller": "update",
+          "callee": "createDefaultTaskWorkflow",
+          "lineNumber": 215
+        },
+        {
+          "caller": "update",
+          "callee": "normalizeTaskWorkflow",
+          "lineNumber": 216
+        },
+        {
+          "caller": "update",
+          "callee": "this.prisma.project.update",
+          "lineNumber": 221
+        },
+        {
+          "caller": "update",
+          "callee": "getWorkflowAsJson",
+          "lineNumber": 234
+        },
+        {
+          "caller": "update",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 242
+        },
+        {
+          "caller": "update",
+          "callee": "this.attachProjectMetadata",
+          "lineNumber": 243
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "this.prisma.project.findUnique",
+          "lineNumber": 247
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "normalizeTaskWorkflow",
+          "lineNumber": 254
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "normalizeTaskWorkflow",
+          "lineNumber": 258
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "getTaskWorkflowStatusNames",
+          "lineNumber": 262
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "buildWorkflowRenameMap",
+          "lineNumber": 263
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "this.prisma.$transaction",
+          "lineNumber": 268
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "renamedStatuses.map",
+          "lineNumber": 269
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "tx.task.updateMany",
+          "lineNumber": 275
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "tx.task.findMany",
+          "lineNumber": 281
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "tempMappings.map",
+          "lineNumber": 287
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "invalidStatuses\n            .map((status) => status.status)\n            .join",
+          "lineNumber": 297
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "invalidStatuses\n            .map",
+          "lineNumber": 297
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "tx.project.update",
+          "lineNumber": 303
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "getWorkflowAsJson",
+          "lineNumber": 307
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "tx.task.updateMany",
+          "lineNumber": 314
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 321
+        },
+        {
+          "caller": "updateWorkflow",
+          "callee": "this.findOne",
+          "lineNumber": 322
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "this.prisma.project.findUnique",
+          "lineNumber": 326
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 333
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "getProjectRoleNames",
+          "lineNumber": 337
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 338
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "currentRoleConfigs.map",
+          "lineNumber": 342
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "projectRoles.map",
+          "lineNumber": 344
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "role.toLowerCase",
+          "lineNumber": 344
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "currentRoles\n      .map((role, index) => ({\n        from: role,\n        to: projectRoles[index],\n      }))\n      .filter",
+          "lineNumber": 346
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "currentRoles\n      .map",
+          "lineNumber": 346
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "this.prisma.$transaction",
+          "lineNumber": 356
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "renamedRoles.map",
+          "lineNumber": 357
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "tx.projectMember.updateMany",
+          "lineNumber": 363
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "tx.projectMember.findMany",
+          "lineNumber": 369
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "tempMappings.map",
+          "lineNumber": 374
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "invalidRoles\n            .map((role) => role.projectRole)\n            .filter(Boolean)\n            .join",
+          "lineNumber": 383
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "invalidRoles\n            .map((role) => role.projectRole)\n            .filter",
+          "lineNumber": 383
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "invalidRoles\n            .map",
+          "lineNumber": 383
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "tx.project.update",
+          "lineNumber": 390
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "nextRoleKeys.has",
+          "lineNumber": 400
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "role.to.toLowerCase",
+          "lineNumber": 400
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "tx.projectMember.updateMany",
+          "lineNumber": 401
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 408
+        },
+        {
+          "caller": "updateRoles",
+          "callee": "this.findOne",
+          "lineNumber": 409
+        },
+        {
+          "caller": "remove",
+          "callee": "this.findOne",
+          "lineNumber": 413
+        },
+        {
+          "caller": "remove",
+          "callee": "this.prisma.project.delete",
+          "lineNumber": 414
+        },
+        {
+          "caller": "addMember",
+          "callee": "this.ensureProjectRoleExists",
+          "lineNumber": 418
+        },
+        {
+          "caller": "addMember",
+          "callee": "this.prisma.projectMember.create",
+          "lineNumber": 419
+        },
+        {
+          "caller": "addMember",
+          "callee": "normalizeProjectRole",
+          "lineNumber": 423
+        },
+        {
+          "caller": "addMember",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 426
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "this.ensureProjectRoleExists",
+          "lineNumber": 435
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "this.prisma.projectMember.update",
+          "lineNumber": 436
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "normalizeProjectRole",
+          "lineNumber": 438
+        },
+        {
+          "caller": "updateMemberRole",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 440
+        },
+        {
+          "caller": "removeMember",
+          "callee": "this.prisma.projectMember.delete",
+          "lineNumber": 445
+        },
+        {
+          "caller": "removeMember",
+          "callee": "this.projectAiIndex.rebuildSoon",
+          "lineNumber": 448
+        },
+        {
+          "caller": "ensureProjectRoleExists",
+          "callee": "normalizeProjectRole",
+          "lineNumber": 456
+        },
+        {
+          "caller": "ensureProjectRoleExists",
+          "callee": "this.prisma.project.findUnique",
+          "lineNumber": 459
+        },
+        {
+          "caller": "ensureProjectRoleExists",
+          "callee": "getProjectRoleNames",
+          "lineNumber": 465
+        },
+        {
+          "caller": "ensureProjectRoleExists",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 466
+        },
+        {
+          "caller": "ensureProjectRoleExists",
+          "callee": "projectRoles.includes",
+          "lineNumber": 472
+        },
+        {
+          "caller": "attachProjectMetadata",
+          "callee": "sortProjectRoleConfigs",
+          "lineNumber": 488
+        },
+        {
+          "caller": "attachProjectMetadata",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 489
+        },
+        {
+          "caller": "attachProjectMetadata",
+          "callee": "normalizeTaskWorkflow",
+          "lineNumber": 494
+        },
+        {
+          "caller": "attachProjectMetadata",
+          "callee": "getProjectRoleNames",
+          "lineNumber": 501
+        },
+        {
+          "caller": "attachProjectMetadata",
+          "callee": "sortTasksByWorkflow",
+          "lineNumber": 506
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 1,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    }
+  ]
+}

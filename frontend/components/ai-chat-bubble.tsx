@@ -368,7 +368,7 @@ export default function AiChatBubble() {
     mutationFn: (tasks: SuggestedTask[]) =>
       aiApi.confirmTasks(selectedProjectId!, tasks).then((r) => r.data),
     onSuccess: (created) => {
-      qc.invalidateQueries({ queryKey: ["project", selectedProjectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", selectedProjectId] });
       const createdList = created.map((t: any) => ({
         id: t.id,
         title: t.title,

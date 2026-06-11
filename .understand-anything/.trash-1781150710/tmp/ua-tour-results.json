@@ -1,0 +1,990 @@
+{
+  "entryPointCandidates": [
+    {
+      "id": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "name": "projects/[id]/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "inDegree": 0,
+      "outDegree": 9
+    },
+    {
+      "id": "document:document.md",
+      "name": "document.md",
+      "type": "document",
+      "filePath": "document.md",
+      "inDegree": 0,
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "name": "20260417044832_init/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "inDegree": 0,
+      "outDegree": 7
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/layout.tsx",
+      "name": "layout.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/layout.tsx",
+      "inDegree": 0,
+      "outDegree": 5
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "name": "projects/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/projects/page.tsx",
+      "inDegree": 0,
+      "outDegree": 5
+    },
+    {
+      "id": "file:frontend/app/(auth)/login/page.tsx",
+      "name": "login/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(auth)/login/page.tsx",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "name": "dashboard/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/dashboard/page.tsx",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "name": "projects/[id]/ai-analysis/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "name": "roles/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/roles/page.tsx",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/users/page.tsx",
+      "name": "users/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/users/page.tsx",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+      "name": "ai-settings/page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(dashboard)/ai-settings/page.tsx",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "config:docker-compose.yml",
+      "name": "docker-compose.yml",
+      "type": "config",
+      "filePath": "docker-compose.yml",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "name": "20260418093000_project_task_workflow/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+      "name": "20260508000000_use_string_task_ids/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "config:backend/.env.example",
+      "name": ".env.example",
+      "type": "config",
+      "filePath": "backend/.env.example",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "config:backend/tsconfig.json",
+      "name": "tsconfig.json",
+      "type": "config",
+      "filePath": "backend/tsconfig.json",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:.understand-anything/tmp/generate-ignore.js",
+      "name": "generate-ignore.js",
+      "type": "file",
+      "filePath": ".understand-anything/tmp/generate-ignore.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/check_project.js",
+      "name": "check_project.js",
+      "type": "file",
+      "filePath": "backend/check_project.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/check_task.js",
+      "name": "check_task.js",
+      "type": "file",
+      "filePath": "backend/check_task.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "name": "20260417092540_add_requirements_history/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "name": "20260417100831_add_changes_summary/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "name": "20260417112359_add_sprint_to_task/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "name": "20260417121651_add_project_role_to_member/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "name": "20260418095500_add_task_workflow_graph/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "name": "20260418102000_add_project_roles/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "name": "20260418110000_add_project_role_configs/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "name": "20260420095408_add_ai_chat_sessions/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "name": "20260423090000_add_task_hours/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "name": "20260504090000_add_task_epic/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "name": "20260504091000_add_task_labels/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "name": "20260504092000_add_project_epics_labels/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "name": "20260504093000_add_task_naming_rule/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "name": "20260504163000_add_task_activity/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+      "name": "20260508001000_add_project_ai_index/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+      "name": "20260610000000_add_document_folder_and_uploader/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+      "name": "20260610000001_add_document_storage_provider/migration.sql",
+      "type": "file",
+      "filePath": "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/prisma/seed-employees.ts",
+      "name": "seed-employees.ts",
+      "type": "file",
+      "filePath": "backend/prisma/seed-employees.ts",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/test-local.js",
+      "name": "test-local.js",
+      "type": "file",
+      "filePath": "backend/test-local.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:backend/update_ai_service_rag.js",
+      "name": "update_ai_service_rag.js",
+      "type": "file",
+      "filePath": "backend/update_ai_service_rag.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:frontend/app/(auth)/layout.tsx",
+      "name": "layout.tsx",
+      "type": "file",
+      "filePath": "frontend/app/(auth)/layout.tsx",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:frontend/app/page.tsx",
+      "name": "page.tsx",
+      "type": "file",
+      "filePath": "frontend/app/page.tsx",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "file:scratch/check_task.js",
+      "name": "check_task.js",
+      "type": "file",
+      "filePath": "scratch/check_task.js",
+      "inDegree": 0,
+      "outDegree": 2
+    },
+    {
+      "id": "document:AGENTS.md",
+      "name": "AGENTS.md",
+      "type": "document",
+      "filePath": "AGENTS.md",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "config:backend/prisma/migrations/migration_lock.toml",
+      "name": "migration_lock.toml",
+      "type": "config",
+      "filePath": "backend/prisma/migrations/migration_lock.toml",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:backend/test-chat.js",
+      "name": "test-chat.js",
+      "type": "file",
+      "filePath": "backend/test-chat.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:backend/update_agent.js",
+      "name": "update_agent.js",
+      "type": "file",
+      "filePath": "backend/update_agent.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:backend/update_controller.js",
+      "name": "update_controller.js",
+      "type": "file",
+      "filePath": "backend/update_controller.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:backend/update_docs_service.js",
+      "name": "update_docs_service.js",
+      "type": "file",
+      "filePath": "backend/update_docs_service.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:backend/update_service.js",
+      "name": "update_service.js",
+      "type": "file",
+      "filePath": "backend/update_service.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "config:frontend/package.json",
+      "name": "package.json",
+      "type": "config",
+      "filePath": "frontend/package.json",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:frontend/postcss.config.js",
+      "name": "postcss.config.js",
+      "type": "file",
+      "filePath": "frontend/postcss.config.js",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "file:frontend/tailwind.config.ts",
+      "name": "tailwind.config.ts",
+      "type": "file",
+      "filePath": "frontend/tailwind.config.ts",
+      "inDegree": 0,
+      "outDegree": 1
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "name": "config.json",
+      "type": "config",
+      "filePath": ".understand-anything/config.json",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "file:backend/fix_module.js",
+      "name": "fix_module.js",
+      "type": "file",
+      "filePath": "backend/fix_module.js",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "file:backend/fix_rag.js",
+      "name": "fix_rag.js",
+      "type": "file",
+      "filePath": "backend/fix_rag.js",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "file:backend/fix.js",
+      "name": "fix.js",
+      "type": "file",
+      "filePath": "backend/fix.js",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "file:backend/search-glapp-2.js",
+      "name": "search-glapp-2.js",
+      "type": "file",
+      "filePath": "backend/search-glapp-2.js",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "file:frontend/next-env.d.ts",
+      "name": "next-env.d.ts",
+      "type": "file",
+      "filePath": "frontend/next-env.d.ts",
+      "inDegree": 0,
+      "outDegree": 0
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "name": "tsconfig.json",
+      "type": "config",
+      "filePath": "frontend/tsconfig.json",
+      "inDegree": 0,
+      "outDegree": 0
+    }
+  ],
+  "fanInRanking": [
+    {
+      "id": "schema:backend/prisma/schema.prisma",
+      "name": "schema.prisma",
+      "inDegree": 32
+    },
+    {
+      "id": "service:backend/src/prisma/prisma.service.ts",
+      "name": "PrismaService",
+      "inDegree": 16
+    },
+    {
+      "id": "service:backend/src/projects/projects.service.ts",
+      "name": "ProjectsService",
+      "inDegree": 15
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "name": "projects",
+      "inDegree": 13
+    },
+    {
+      "id": "file:frontend/lib/auth.tsx",
+      "name": "lib/auth.tsx",
+      "inDegree": 12
+    },
+    {
+      "id": "function:frontend/lib/auth.tsx:useAuth",
+      "name": "useAuth",
+      "inDegree": 12
+    },
+    {
+      "id": "file:frontend/lib/utils.ts",
+      "name": "lib/utils.ts",
+      "inDegree": 11
+    },
+    {
+      "id": "service:frontend/lib/api.ts",
+      "name": "apiService",
+      "inDegree": 10
+    },
+    {
+      "id": "service:backend/src/ai/ai.service.ts",
+      "name": "AiService",
+      "inDegree": 9
+    },
+    {
+      "id": "file:frontend/lib/api.ts",
+      "name": "lib/api.ts",
+      "inDegree": 9
+    },
+    {
+      "id": "file:backend/src/auth/decorators/permissions.decorator.ts",
+      "name": "permissions.decorator.ts",
+      "inDegree": 9
+    },
+    {
+      "id": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "name": "jwt-auth.guard.ts",
+      "inDegree": 9
+    },
+    {
+      "id": "file:backend/src/auth/guards/permissions.guard.ts",
+      "name": "permissions.guard.ts",
+      "inDegree": 9
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "name": "tasks",
+      "inDegree": 8
+    },
+    {
+      "id": "class:backend/src/common/storage/storage.service.ts:StorageService",
+      "name": "StorageService",
+      "inDegree": 7
+    },
+    {
+      "id": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "name": "ProjectAiIndexService",
+      "inDegree": 6
+    },
+    {
+      "id": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "name": "current-user.decorator.ts",
+      "inDegree": 6
+    },
+    {
+      "id": "file:frontend/components/brand-logo.tsx",
+      "name": "brand-logo.tsx",
+      "inDegree": 5
+    },
+    {
+      "id": "file:backend/src/common/storage/storage.service.ts",
+      "name": "storage.service.ts",
+      "inDegree": 5
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "name": "users",
+      "inDegree": 5
+    },
+    {
+      "id": "file:backend/src/ai/ai.module.ts",
+      "name": "AiModule",
+      "inDegree": 4
+    },
+    {
+      "id": "service:backend/src/ai/rag.service.ts",
+      "name": "RagService",
+      "inDegree": 4
+    },
+    {
+      "id": "file:backend/src/main.ts",
+      "name": "main.ts",
+      "inDegree": 4
+    },
+    {
+      "id": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "name": "PrismaService",
+      "inDegree": 4
+    },
+    {
+      "id": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "name": "ProjectAiIndexModule",
+      "inDegree": 4
+    },
+    {
+      "id": "service:backend/src/tasks/tasks.service.ts",
+      "name": "TasksService",
+      "inDegree": 4
+    },
+    {
+      "id": "file:backend/src/roles/roles.service.ts",
+      "name": "roles.service.ts",
+      "inDegree": 4
+    },
+    {
+      "id": "service:backend/src/users/users.service.ts",
+      "name": "UsersService",
+      "inDegree": 4
+    },
+    {
+      "id": "function:backend/src/users/users.service.ts:findOne",
+      "name": "findOne",
+      "inDegree": 4
+    },
+    {
+      "id": "service:backend/src/auth/auth.service.ts",
+      "name": "AuthService",
+      "inDegree": 4
+    }
+  ],
+  "fanOutRanking": [
+    {
+      "id": "file:backend/src/projects/projects.controller.ts",
+      "name": "projects.controller.ts",
+      "outDegree": 19
+    },
+    {
+      "id": "file:backend/src/ai/dto/ai.dto.ts",
+      "name": "ai.dto.ts",
+      "outDegree": 18
+    },
+    {
+      "id": "service:backend/src/tasks/tasks.service.ts",
+      "name": "TasksService",
+      "outDegree": 16
+    },
+    {
+      "id": "service:backend/src/ai/ai.service.ts",
+      "name": "AiService",
+      "outDegree": 15
+    },
+    {
+      "id": "file:backend/src/projects/project-roles.ts",
+      "name": "project-roles.ts",
+      "outDegree": 14
+    },
+    {
+      "id": "file:backend/src/projects/projects.service.ts",
+      "name": "projects.service.ts",
+      "outDegree": 12
+    },
+    {
+      "id": "service:backend/src/projects/projects.service.ts",
+      "name": "ProjectsService",
+      "outDegree": 12
+    },
+    {
+      "id": "file:backend/src/app.module.ts",
+      "name": "AppModule",
+      "outDegree": 11
+    },
+    {
+      "id": "class:backend/src/projects/projects.controller.ts:ProjectsController",
+      "name": "ProjectsController",
+      "outDegree": 10
+    },
+    {
+      "id": "document:README.md",
+      "name": "README.md",
+      "outDegree": 10
+    },
+    {
+      "id": "file:backend/src/ai/ai.module.ts",
+      "name": "AiModule",
+      "outDegree": 9
+    },
+    {
+      "id": "service:backend/src/documents/documents.service.ts",
+      "name": "DocumentsService",
+      "outDegree": 9
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "name": "projects/[id]/page.tsx",
+      "outDegree": 9
+    },
+    {
+      "id": "file:backend/src/tasks/tasks.controller.ts",
+      "name": "tasks.controller.ts",
+      "outDegree": 9
+    },
+    {
+      "id": "file:backend/src/users/users.controller.ts",
+      "name": "users.controller.ts",
+      "outDegree": 9
+    },
+    {
+      "id": "service:backend/src/prisma/prisma.service.ts",
+      "name": "PrismaService",
+      "outDegree": 8
+    },
+    {
+      "id": "file:backend/src/ai/ai.controller.ts",
+      "name": "ai.controller.ts",
+      "outDegree": 8
+    },
+    {
+      "id": "file:backend/src/documents/documents.controller.ts",
+      "name": "documents.controller.ts",
+      "outDegree": 8
+    },
+    {
+      "id": "file:backend/src/projects/project-workflow.ts",
+      "name": "project-workflow.ts",
+      "outDegree": 8
+    },
+    {
+      "id": "class:backend/src/users/users.controller.ts:UsersController",
+      "name": "UsersController",
+      "outDegree": 8
+    },
+    {
+      "id": "service:backend/src/users/users.service.ts",
+      "name": "UsersService",
+      "outDegree": 8
+    },
+    {
+      "id": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "name": "ProjectAiIndexService",
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/src/ai/system-configs.controller.ts",
+      "name": "system-configs.controller.ts",
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/src/roles/roles.controller.ts",
+      "name": "roles.controller.ts",
+      "outDegree": 7
+    },
+    {
+      "id": "document:document.md",
+      "name": "document.md",
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/eval/agent-eval.js",
+      "name": "agent-eval.js",
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "name": "20260417044832_init/migration.sql",
+      "outDegree": 7
+    },
+    {
+      "id": "file:backend/src/ai/agent-runtime.util.ts",
+      "name": "agent-runtime.util.ts",
+      "outDegree": 6
+    },
+    {
+      "id": "file:backend/src/documents/documents.module.ts",
+      "name": "DocumentsModule",
+      "outDegree": 6
+    },
+    {
+      "id": "file:backend/src/projects/projects.module.ts",
+      "name": "ProjectsModule",
+      "outDegree": 6
+    }
+  ],
+  "bfsTraversal": [
+    "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+    "document:document.md",
+    "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+    "file:frontend/app/(dashboard)/layout.tsx",
+    "file:frontend/app/(dashboard)/projects/page.tsx",
+    "file:frontend/app/(auth)/login/page.tsx",
+    "file:frontend/app/(dashboard)/dashboard/page.tsx",
+    "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+    "file:frontend/app/(dashboard)/roles/page.tsx",
+    "file:frontend/app/(dashboard)/users/page.tsx",
+    "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+    "config:docker-compose.yml",
+    "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+    "file:backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+    "config:backend/.env.example",
+    "config:backend/tsconfig.json",
+    "file:.understand-anything/tmp/generate-ignore.js",
+    "file:backend/check_project.js",
+    "file:backend/check_task.js",
+    "file:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+    "file:backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+    "file:backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+    "file:backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+    "file:backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+    "file:backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+    "file:backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+    "file:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+    "file:backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+    "file:backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+    "file:backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+    "file:backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+    "file:backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+    "file:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+    "file:backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+    "file:backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+    "file:backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+    "file:backend/prisma/seed-employees.ts",
+    "file:backend/test-local.js",
+    "file:backend/update_ai_service_rag.js",
+    "file:frontend/app/(auth)/layout.tsx",
+    "file:frontend/app/page.tsx",
+    "file:scratch/check_task.js",
+    "document:AGENTS.md",
+    "config:backend/prisma/migrations/migration_lock.toml",
+    "file:backend/test-chat.js",
+    "file:backend/update_agent.js",
+    "file:backend/update_controller.js",
+    "file:backend/update_docs_service.js",
+    "file:backend/update_service.js",
+    "config:frontend/package.json",
+    "file:frontend/postcss.config.js",
+    "file:frontend/tailwind.config.ts",
+    "config:.understand-anything/config.json",
+    "file:backend/fix_module.js",
+    "file:backend/fix_rag.js",
+    "file:backend/fix.js",
+    "file:backend/search-glapp-2.js",
+    "file:frontend/next-env.d.ts",
+    "config:frontend/tsconfig.json",
+    "file:frontend/components/project-workflow-editor.tsx",
+    "file:frontend/lib/auth.tsx",
+    "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+    "file:frontend/components/brand-logo.tsx",
+    "file:frontend/lib/api.ts",
+    "file:frontend/lib/project-roles.ts",
+    "file:frontend/lib/utils.ts",
+    "function:frontend/app/(dashboard)/projects/[id]/page.tsx:DescriptionEditor",
+    "function:frontend/app/(dashboard)/projects/[id]/page.tsx:CommentEditor",
+    "service:backend/src/tasks/tasks.service.ts",
+    "service:backend/src/ai/ai.service.ts",
+    "file:backend/src/projects/projects.service.ts",
+    "document:README.md",
+    "file:backend/src/roles/roles.service.ts",
+    "file:backend/src/users/users.service.ts",
+    "schema:backend/prisma/schema.prisma",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:documents",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:roles",
+    "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+    "file:frontend/components/ai-chat-bubble.tsx",
+    "file:frontend/components/layout/header.tsx",
+    "file:frontend/components/layout/sidebar.tsx",
+    "function:frontend/app/(dashboard)/layout.tsx:DashboardLayout",
+    "function:frontend/app/(dashboard)/projects/page.tsx:ProjectsPage",
+    "file:frontend/components/providers/theme-provider.tsx",
+    "function:frontend/app/(auth)/login/page.tsx:LoginPage",
+    "function:frontend/app/(dashboard)/dashboard/page.tsx:DashboardPage",
+    "function:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx:AiAnalysisPage",
+    "function:frontend/app/(dashboard)/roles/page.tsx:RolesPage",
+    "function:frontend/app/(dashboard)/users/page.tsx:UsersPage",
+    "function:frontend/app/(dashboard)/ai-settings/page.tsx:AiSettingsPage",
+    "file:frontend/app/layout.tsx",
+    "file:backend/src/main.ts",
+    "table:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql:task_activities",
+    "file:backend/src/app.module.ts",
+    "config:backend/package.json",
+    "function:.understand-anything/tmp/generate-ignore.js:norm",
+    "config:.understand-anything/.understandignore"
+  ],
+  "clusters": [
+    {
+      "id": "cluster-1",
+      "size": 324,
+      "sampleNodes": [
+        "file:backend/src/ai/agent-runtime.util.test.ts",
+        "file:backend/src/ai/agent-runtime.util.ts",
+        "function:backend/src/ai/agent-runtime.util.ts:estimateMessageTokens",
+        "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+        "function:backend/src/ai/agent-runtime.util.ts:groupConversationTurns",
+        "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+        "function:backend/src/ai/agent-runtime.util.ts:shouldReportToolRoundLimit",
+        "service:backend/src/ai/ai.service.ts",
+        "class:backend/src/ai/ai.service.ts:BufferedChatStreamResponse",
+        "class:backend/src/ai/ai.service.ts:AiService"
+      ]
+    },
+    {
+      "id": "cluster-2",
+      "size": 3,
+      "sampleNodes": [
+        "config:.understand-anything/.understandignore",
+        "file:.understand-anything/tmp/generate-ignore.js",
+        "function:.understand-anything/tmp/generate-ignore.js:norm"
+      ]
+    },
+    {
+      "id": "cluster-8",
+      "size": 2,
+      "sampleNodes": [
+        "file:backend/test-chat.js",
+        "function:backend/test-chat.js:main"
+      ]
+    },
+    {
+      "id": "cluster-9",
+      "size": 2,
+      "sampleNodes": [
+        "file:frontend/app/(auth)/layout.tsx",
+        "function:frontend/app/(auth)/layout.tsx:AuthLayout"
+      ]
+    },
+    {
+      "id": "cluster-10",
+      "size": 2,
+      "sampleNodes": [
+        "file:frontend/app/page.tsx",
+        "function:frontend/app/page.tsx:Home"
+      ]
+    },
+    {
+      "id": "cluster-12",
+      "size": 2,
+      "sampleNodes": [
+        "file:frontend/next.config.mjs",
+        "config:frontend/package.json"
+      ]
+    },
+    {
+      "id": "cluster-3",
+      "size": 1,
+      "sampleNodes": [
+        "config:.understand-anything/config.json"
+      ]
+    },
+    {
+      "id": "cluster-4",
+      "size": 1,
+      "sampleNodes": [
+        "file:backend/fix_module.js"
+      ]
+    },
+    {
+      "id": "cluster-5",
+      "size": 1,
+      "sampleNodes": [
+        "file:backend/fix_rag.js"
+      ]
+    },
+    {
+      "id": "cluster-6",
+      "size": 1,
+      "sampleNodes": [
+        "file:backend/fix.js"
+      ]
+    },
+    {
+      "id": "cluster-7",
+      "size": 1,
+      "sampleNodes": [
+        "file:backend/search-glapp-2.js"
+      ]
+    },
+    {
+      "id": "cluster-11",
+      "size": 1,
+      "sampleNodes": [
+        "file:frontend/next-env.d.ts"
+      ]
+    },
+    {
+      "id": "cluster-13",
+      "size": 1,
+      "sampleNodes": [
+        "config:frontend/tsconfig.json"
+      ]
+    }
+  ]
+}

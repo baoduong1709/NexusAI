@@ -1,0 +1,1182 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/ai/agent-runtime.util.test.ts",
+      "type": "file",
+      "name": "agent-runtime.util.test.ts",
+      "filePath": "backend/src/ai/agent-runtime.util.test.ts",
+      "summary": "Các ca kiểm thử đơn vị cho các hàm tiện ích runtime của AI agent, bao gồm ước lượng token và cắt giảm lịch sử tin nhắn.",
+      "tags": [
+        "unit-test",
+        "ai-agent",
+        "token-estimation",
+        "jest",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/ai/agent-runtime.util.ts",
+      "type": "file",
+      "name": "agent-runtime.util.ts",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Các hàm tiện ích hỗ trợ tính toán và quản lý dung lượng token trong hội thoại của AI agent.",
+      "tags": [
+        "token-estimation",
+        "utility",
+        "ai-agent",
+        "context-window",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/ai/agent-runtime.util.ts:estimateMessageTokens",
+      "type": "function",
+      "name": "estimateMessageTokens",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Ước lượng số lượng token cho một tin nhắn đơn lẻ dựa trên độ dài ký tự.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "type": "function",
+      "name": "estimateAgentMessageTokens",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Tính toán tổng số token ước lượng của danh sách các tin nhắn.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/agent-runtime.util.ts:groupConversationTurns",
+      "type": "function",
+      "name": "groupConversationTurns",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Gộp các tin nhắn liên tiếp của cùng một vai trò thành các lượt hội thoại.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "type": "function",
+      "name": "truncateAgentMessages",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Cắt giảm danh sách tin nhắn để phù hợp với giới hạn token tối đa của ngữ cảnh.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/ai/agent-runtime.util.ts:shouldReportToolRoundLimit",
+      "type": "function",
+      "name": "shouldReportToolRoundLimit",
+      "filePath": "backend/src/ai/agent-runtime.util.ts",
+      "summary": "Kiểm tra xem agent có vượt quá số lượt gọi tool tối đa cho phép hay không.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/ai/agent-security.util.test.ts",
+      "type": "file",
+      "name": "agent-security.util.test.ts",
+      "filePath": "backend/src/ai/agent-security.util.test.ts",
+      "summary": "Các ca kiểm thử bảo mật cho AI agent, đảm bảo dữ liệu đầu ra từ các công cụ không tin cậy được bọc an toàn.",
+      "tags": [
+        "unit-test",
+        "security",
+        "tool-safety",
+        "jest",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/ai/agent-security.util.ts",
+      "type": "file",
+      "name": "agent-security.util.ts",
+      "filePath": "backend/src/ai/agent-security.util.ts",
+      "summary": "Tiện ích bảo mật cho AI agent, giúp chuẩn hóa và làm sạch kết quả trả về từ các công cụ không tin cậy.",
+      "tags": [
+        "security",
+        "tool-safety",
+        "sandbox",
+        "utility",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/agent-security.util.ts:wrapUntrustedToolResult",
+      "type": "function",
+      "name": "wrapUntrustedToolResult",
+      "filePath": "backend/src/ai/agent-security.util.ts",
+      "summary": "Bọc và làm sạch kết quả từ một tool không đáng tin cậy để tránh lỗi phân tách dữ liệu.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/ai/ai-data-access.service.ts",
+      "type": "service",
+      "name": "AiDataAccessService",
+      "filePath": "backend/src/ai/ai-data-access.service.ts",
+      "summary": "Dịch vụ quản lý quyền truy cập dữ liệu của AI, lọc thông tin dự án và tài liệu theo vai trò và quyền của người dùng.",
+      "tags": [
+        "nestjs-service",
+        "data-access",
+        "permission-filtering",
+        "database",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/ai/ai-data-access.service.ts:AiDataAccessService",
+      "type": "class",
+      "name": "AiDataAccessService",
+      "filePath": "backend/src/ai/ai-data-access.service.ts",
+      "summary": "Lớp dịch vụ trung gian chịu trách nhiệm kiểm tra quyền và cung cấp ngữ cảnh dự án an toàn cho AI.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "data-access",
+        "permission-filtering",
+        "database",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/src/ai/ai-logger.util.ts",
+      "type": "file",
+      "name": "AiLogger",
+      "filePath": "backend/src/ai/ai-logger.util.ts",
+      "summary": "Hệ thống ghi log chuyên biệt cho các hoạt động AI, hỗ trợ đệm dữ liệu (buffering) và tự động ghi file định kỳ.",
+      "tags": [
+        "logging",
+        "utility",
+        "buffering",
+        "file-system",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/ai/ai-logger.util.ts:AiLogger",
+      "type": "class",
+      "name": "AiLogger",
+      "filePath": "backend/src/ai/ai-logger.util.ts",
+      "summary": "Lớp tiện ích ghi log không đồng bộ, sử dụng bộ đệm để tối ưu hóa hiệu năng I/O khi ghi nhật ký hoạt động của AI.",
+      "tags": [
+        "class",
+        "logging",
+        "utility",
+        "buffering",
+        "file-system",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/ai/ai.module.ts",
+      "type": "file",
+      "name": "AiModule",
+      "filePath": "backend/src/ai/ai.module.ts",
+      "summary": "Module NestJS cấu hình và tích hợp các dịch vụ AI, RAG và phân tích tác vụ trong hệ thống.",
+      "tags": [
+        "nestjs-module",
+        "dependency-injection",
+        "ai",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/ai/ai.module.ts:AiModule",
+      "type": "class",
+      "name": "AiModule",
+      "filePath": "backend/src/ai/ai.module.ts",
+      "summary": "Lớp module đăng ký các controller và service liên quan đến AI để NestJS quản lý phụ thuộc.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "dependency-injection",
+        "ai",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/ai/ai.service.ts",
+      "type": "service",
+      "name": "AiService",
+      "filePath": "backend/src/ai/ai.service.ts",
+      "summary": "Dịch vụ AI lõi của hệ thống, điều phối việc gọi LLM, xử lý luồng chat, tạo task tự động và quản lý requirements.",
+      "tags": [
+        "nestjs-service",
+        "ai-engine",
+        "openai-client",
+        "business-logic",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/ai/ai.service.ts:BufferedChatStreamResponse",
+      "type": "class",
+      "name": "BufferedChatStreamResponse",
+      "filePath": "backend/src/ai/ai.service.ts",
+      "summary": "Lớp hỗ trợ đệm và xử lý luồng stream trả về từ API Chat của OpenAI.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "ai-engine",
+        "openai-client",
+        "business-logic",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/ai/ai.service.ts:AiService",
+      "type": "class",
+      "name": "AiService",
+      "filePath": "backend/src/ai/ai.service.ts",
+      "summary": "Dịch vụ chính xử lý toàn bộ logic tương tác với LLM, quản lý session chat, phân tích tài liệu và đề xuất task.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "ai-engine",
+        "openai-client",
+        "business-logic",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/src/ai/ai.service.ts:formatRequirementTimestamp",
+      "type": "function",
+      "name": "formatRequirementTimestamp",
+      "filePath": "backend/src/ai/ai.service.ts",
+      "summary": "Định dạng mốc thời gian của tài liệu yêu cầu (requirements).",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/ai.service.ts:sleep",
+      "type": "function",
+      "name": "sleep",
+      "filePath": "backend/src/ai/ai.service.ts",
+      "summary": "Hàm tạm dừng luồng thực thi trong khoảng thời gian mili giây chỉ định.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/ai/rag.service.ts",
+      "type": "service",
+      "name": "RagService",
+      "filePath": "backend/src/ai/rag.service.ts",
+      "summary": "Dịch vụ RAG (Retrieval-Augmented Generation), xử lý embedding, tính tương đồng cosine và tìm kiếm tài liệu dự án.",
+      "tags": [
+        "nestjs-service",
+        "rag",
+        "vector-search",
+        "embeddings",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/ai/rag.service.ts:RagService",
+      "type": "class",
+      "name": "RagService",
+      "filePath": "backend/src/ai/rag.service.ts",
+      "summary": "Dịch vụ thực hiện tính toán vector embedding, lập chỉ mục tài liệu và tìm kiếm ngữ cảnh phù hợp cho AI.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "rag",
+        "vector-search",
+        "embeddings",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/src/ai/task-suggestion.util.test.ts",
+      "type": "file",
+      "name": "task-suggestion.util.test.ts",
+      "filePath": "backend/src/ai/task-suggestion.util.test.ts",
+      "summary": "Kiểm thử kiểm tra tính đúng đắn của hàm kiểm định payload đề xuất tác vụ từ AI.",
+      "tags": [
+        "unit-test",
+        "validation",
+        "task-suggestion",
+        "jest",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/ai/task-suggestion.util.ts",
+      "type": "file",
+      "name": "task-suggestion.util.ts",
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "summary": "Các hàm tiện ích dùng để kiểm định và làm sạch dữ liệu đề xuất tác vụ được sinh ra bởi AI.",
+      "tags": [
+        "validation",
+        "utility",
+        "task-suggestion",
+        "data-sanitization",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "function",
+      "name": "optionalString",
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "summary": "Tiện ích kiểm tra giá trị chuỗi tùy chọn.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/task-suggestion.util.ts:nonNegativeNumber",
+      "type": "function",
+      "name": "nonNegativeNumber",
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "summary": "Tiện ích kiểm tra số không âm.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/task-suggestion.util.ts:sanitizeUserFacingMessage",
+      "type": "function",
+      "name": "sanitizeUserFacingMessage",
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "summary": "Tiện ích làm sạch thông điệp hiển thị cho người dùng.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "type": "function",
+      "name": "validateTaskSuggestionPayload",
+      "filePath": "backend/src/ai/task-suggestion.util.ts",
+      "summary": "Kiểm tra cấu trúc và tính hợp lệ của dữ liệu đề xuất task từ AI trước khi lưu.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/app.module.ts",
+      "type": "file",
+      "name": "AppModule",
+      "filePath": "backend/src/app.module.ts",
+      "summary": "Module gốc của ứng dụng NestJS, cấu hình các module con và middleware ghi log cho toàn bộ hệ thống.",
+      "tags": [
+        "nestjs-module",
+        "app-module",
+        "configuration",
+        "entry-point",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/app.module.ts:AppModule",
+      "type": "class",
+      "name": "AppModule",
+      "filePath": "backend/src/app.module.ts",
+      "summary": "Lớp module chính cấu hình kết nối database, các module chức năng và middleware ghi nhận yêu cầu.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "app-module",
+        "configuration",
+        "entry-point",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "schema:backend/src/common/dto/paginated-response.ts",
+      "type": "schema",
+      "name": "PaginatedResponse",
+      "filePath": "backend/src/common/dto/paginated-response.ts",
+      "summary": "Cấu trúc dữ liệu chuẩn cho phản hồi phân trang trong hệ thống.",
+      "tags": [
+        "data-transfer-object",
+        "dto",
+        "pagination",
+        "schema",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/common/middleware/logging.middleware.ts",
+      "type": "file",
+      "name": "LoggingMiddleware",
+      "filePath": "backend/src/common/middleware/logging.middleware.ts",
+      "summary": "Middleware ghi log HTTP request, ghi lại thông tin method, URL, status code và thời gian phản hồi.",
+      "tags": [
+        "middleware",
+        "nestjs-middleware",
+        "http-logging",
+        "monitoring",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/common/middleware/logging.middleware.ts:LoggingMiddleware",
+      "type": "class",
+      "name": "LoggingMiddleware",
+      "filePath": "backend/src/common/middleware/logging.middleware.ts",
+      "summary": "Lớp middleware của NestJS thực hiện ghi nhật ký chi tiết các yêu cầu HTTP đi vào hệ thống.",
+      "tags": [
+        "class",
+        "middleware",
+        "nestjs-middleware",
+        "http-logging",
+        "monitoring",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/documents/documents.module.ts",
+      "type": "file",
+      "name": "DocumentsModule",
+      "filePath": "backend/src/documents/documents.module.ts",
+      "summary": "Module NestJS quản lý và đăng ký các dịch vụ liên quan đến tài liệu dự án.",
+      "tags": [
+        "nestjs-module",
+        "documents",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/documents/documents.module.ts:DocumentsModule",
+      "type": "class",
+      "name": "DocumentsModule",
+      "filePath": "backend/src/documents/documents.module.ts",
+      "summary": "Lớp module đăng ký controller và service xử lý tài liệu.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "documents",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/documents/documents.service.ts",
+      "type": "service",
+      "name": "DocumentsService",
+      "filePath": "backend/src/documents/documents.service.ts",
+      "summary": "Dịch vụ xử lý tải lên tài liệu, tìm kiếm tài liệu theo dự án, phân mục thư mục và trích xuất nội dung.",
+      "tags": [
+        "nestjs-service",
+        "documents",
+        "file-upload",
+        "storage",
+        "backend"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateMessageTokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:groupConversationTurns",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:shouldReportToolRoundLimit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateMessageTokens",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm estimateAgentMessageTokens gọi hàm estimateMessageTokens"
+    },
+    {
+      "source": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm truncateAgentMessages gọi hàm estimateAgentMessageTokens"
+    },
+    {
+      "source": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm truncateAgentMessages gọi hàm estimateAgentMessageTokens"
+    },
+    {
+      "source": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:groupConversationTurns",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm truncateAgentMessages gọi hàm groupConversationTurns"
+    },
+    {
+      "source": "function:backend/src/ai/agent-runtime.util.ts:truncateAgentMessages",
+      "target": "function:backend/src/ai/agent-runtime.util.ts:estimateAgentMessageTokens",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm truncateAgentMessages gọi hàm estimateAgentMessageTokens"
+    },
+    {
+      "source": "file:backend/src/ai/agent-security.util.ts",
+      "target": "function:backend/src/ai/agent-security.util.ts:wrapUntrustedToolResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/ai/ai-data-access.service.ts",
+      "target": "class:backend/src/ai/ai-data-access.service.ts:AiDataAccessService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/ai/ai-logger.util.ts",
+      "target": "class:backend/src/ai/ai-logger.util.ts:AiLogger",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "class:backend/src/ai/ai.module.ts:AiModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "class:backend/src/ai/ai.service.ts:BufferedChatStreamResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "class:backend/src/ai/ai.service.ts:AiService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "function:backend/src/ai/ai.service.ts:formatRequirementTimestamp",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "function:backend/src/ai/ai.service.ts:sleep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/ai/rag.service.ts",
+      "target": "class:backend/src/ai/rag.service.ts:RagService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.ts",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.ts",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:nonNegativeNumber",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.ts",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:sanitizeUserFacingMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.ts",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:sanitizeUserFacingMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm sanitizeUserFacingMessage"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:optionalString",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm optionalString"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:nonNegativeNumber",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm nonNegativeNumber"
+    },
+    {
+      "source": "function:backend/src/ai/task-suggestion.util.ts:validateTaskSuggestionPayload",
+      "target": "function:backend/src/ai/task-suggestion.util.ts:nonNegativeNumber",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm validateTaskSuggestionPayload gọi hàm nonNegativeNumber"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "class:backend/src/app.module.ts:AppModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/common/middleware/logging.middleware.ts",
+      "target": "class:backend/src/common/middleware/logging.middleware.ts:LoggingMiddleware",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "class:backend/src/documents/documents.module.ts:DocumentsModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "class:backend/src/documents/documents.service.ts:DocumentsService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/documents/markitdown.service.ts",
+      "target": "class:backend/src/documents/markitdown.service.ts:MarkitdownService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/main.ts",
+      "target": "function:backend/src/main.ts:bootstrap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/prisma/prisma.module.ts",
+      "target": "class:backend/src/prisma/prisma.module.ts:PrismaModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "target": "class:backend/src/project-ai-index/project-ai-index.module.ts:ProjectAiIndexModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "class:backend/src/project-ai-index/project-ai-index.service.ts:ProjectAiIndexService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "function:backend/src/project-ai-index/project-ai-index.service.ts:isDoneStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "function:backend/src/project-ai-index/project-ai-index.service.ts:isInProgressStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "function:backend/src/project-ai-index/project-ai-index.service.ts:isBlockedStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "function:backend/src/project-ai-index/project-ai-index.service.ts:compactKeyword",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "class:backend/src/projects/projects.module.ts:ProjectsModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "target": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "target": "class:backend/src/tasks/dto/create-task.dto.ts:UpdateTaskStatusDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "target": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskCommentDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "target": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskWorkLogDto",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.module.ts",
+      "target": "class:backend/src/tasks/tasks.module.ts:TasksModule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "class:backend/src/tasks/tasks.service.ts:TasksService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa lớp"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:getStatusOrder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:stripGeneratedTaskPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:renderToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:buildProjectTaskPrefix",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:serializeActivityValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:valuesEqual",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "function:backend/src/tasks/tasks.service.ts:toNumber",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Chứa hàm"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "target": "function:backend/src/tasks/tasks.service.ts:stripGeneratedTaskPrefix",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm buildTaskTitle gọi hàm stripGeneratedTaskPrefix"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "target": "function:backend/src/tasks/tasks.service.ts:renderToken",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm buildTaskTitle gọi hàm renderToken"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "target": "function:backend/src/tasks/tasks.service.ts:renderToken",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm buildTaskTitle gọi hàm renderToken"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "target": "function:backend/src/tasks/tasks.service.ts:renderToken",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm buildTaskTitle gọi hàm renderToken"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:valuesEqual",
+      "target": "function:backend/src/tasks/tasks.service.ts:serializeActivityValue",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm valuesEqual gọi hàm serializeActivityValue"
+    },
+    {
+      "source": "function:backend/src/tasks/tasks.service.ts:valuesEqual",
+      "target": "function:backend/src/tasks/tasks.service.ts:serializeActivityValue",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Hàm valuesEqual gọi hàm serializeActivityValue"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.test.ts",
+      "target": "file:backend/src/ai/agent-runtime.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/agent-security.util.test.ts",
+      "target": "file:backend/src/ai/agent-security.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai-data-access.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai-data-access.service.ts",
+      "target": "file:backend/src/projects/project-roles.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "service:backend/src/ai/ai-data-access.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/ai.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "service:backend/src/ai/ai.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "service:backend/src/ai/rag.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/system-configs.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/token-stats.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/tasks/tasks.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "file:backend/src/ai/agent-runtime.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "file:backend/src/ai/agent-security.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    }
+  ]
+}

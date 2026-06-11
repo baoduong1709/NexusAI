@@ -1,0 +1,13 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 1,
+  "edgesRestored": 24,
+  "crossBatchEdgesAdded": 16,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "Đã khôi phục node thiếu table:backend/prisma/schema.prisma:User định nghĩa trong Prisma schema.",
+    "Khôi phục 25 cạnh bị mất độc nhất từ danh sách Could not fix do sai lệch tiền tố ID node nguồn/đích.",
+    "Đã xác minh và thêm 16 cạnh imports chéo batch (cross-batch imports) từ importMap."
+  ]
+}

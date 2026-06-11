@@ -36,8 +36,15 @@ export class S3StorageService extends StorageService {
   async uploadFile(
     projectId: number,
     file: Express.Multer.File,
-  ): Promise<{ path: string; filename: string; url: string }> {
-    const fileKey = `uploads/project-${projectId}/${file.filename}`;
+    folder?: string,
+  ): Promise<{
+    path: string;
+    filename: string;
+    url: string;
+    storageProvider: 'local' | 's3';
+  }> {
+    const folderPrefix = folder ? `${folder}/` : '';
+    const fileKey = `uploads/project-${projectId}/${folderPrefix}${file.filename}`;
     const fileStream = fs.createReadStream(file.path);
 
     this.logger.log(`Uploading file to S3: ${fileKey}`);
@@ -65,6 +72,7 @@ export class S3StorageService extends StorageService {
       path: fileKey,
       filename: file.filename,
       url,
+      storageProvider: 's3',
     };
   }
 

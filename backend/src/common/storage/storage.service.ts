@@ -5,7 +5,13 @@ export abstract class StorageService {
   abstract uploadFile(
     projectId: number,
     file: Express.Multer.File,
-  ): Promise<{ path: string; filename: string; url: string }>;
+    folder?: string,
+  ): Promise<{
+    path: string;
+    filename: string;
+    url: string;
+    storageProvider: 'local' | 's3';
+  }>;
 
   abstract deleteFile(projectId: number, path: string): Promise<void>;
 }

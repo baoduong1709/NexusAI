@@ -33,6 +33,7 @@ export const authApi = {
   login: (email: string, password: string) =>
     api.post("/auth/login", { email, password }),
   getProfile: () => api.get("/auth/profile"),
+  generatePersonalToken: (expiresIn: string) => api.post("/auth/personal-token", { expiresIn }),
 };
 
 // ---- Users ----
@@ -74,7 +75,20 @@ export const projectsApi = {
 
 // ---- Tasks ----
 export const tasksApi = {
-  getAll: (projectId: number) => api.get(`/projects/${projectId}/tasks`),
+  getAll: (projectId: number, params?: {
+    skip?: number;
+    take?: number;
+    status?: string;
+    search?: string;
+    priority?: string;
+    epic?: string;
+    sprint?: string;
+    assigneeId?: number;
+    labels?: string[];
+    dueFrom?: string;
+    dueTo?: string;
+    ai?: string;
+  }) => api.get(`/projects/${projectId}/tasks`, { params }),
   create: (projectId: number, data: any) =>
     api.post(`/projects/${projectId}/tasks`, data),
   update: (projectId: number, taskId: string, data: any) =>
@@ -96,7 +110,11 @@ export const tasksApi = {
 
 // ---- Documents ----
 export const documentsApi = {
-  getAll: (projectId: number) => api.get(`/projects/${projectId}/documents`),
+  getAll: (projectId: number, params?: {
+    skip?: number;
+    take?: number;
+    folder?: string;
+  }) => api.get(`/projects/${projectId}/documents`, { params }),
   upload: (projectId: number, file: File) => {
     const formData = new FormData();
     formData.append("file", file);

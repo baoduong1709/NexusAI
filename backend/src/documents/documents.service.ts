@@ -7,6 +7,8 @@ import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.serv
 import { MarkitdownService } from "./markitdown.service";
 import { RagService } from "../ai/rag.service";
 import { StorageService } from "../common/storage/storage.service";
+import { DocumentsQueryDto } from "./dto/documents-query.dto";
+import { PaginatedResponse } from "../common/dto/paginated-response";
 import * as fs from "fs";
 
 const CONVERTIBLE_EXTS = new Set([
@@ -44,8 +46,17 @@ export class DocumentsService {
     private storageService: StorageService,
   ) {}
 
-  async uploadFile(projectId: number, file: Express.Multer.File) {
-    const uploadResult = await this.storageService.uploadFile(projectId, file);
+  async uploadFile(
+    projectId: number,
+    file: Express.Multer.File,
+    folder?: string,
+    uploadedById?: number,
+  ) {
+    const uploadResult = await this.storageService.uploadFile(
+      projectId,
+      file,
+      folder,
+    );
 
     const document = await this.prisma.document.create({
       data: {
@@ -55,14 +66,17 @@ export class DocumentsService {
         mimeType: file.mimetype,
         size: file.size,
         path: uploadResult.path,
+        folder: folder ?? null,
+        uploadedById: uploadedById ?? null,
+        storageProvider: uploadResult.storageProvider ?? null,
       },
     });
 
     const ext = extname(file.originalname).toLowerCase();
 
     const cleanLocalTempFile = () => {
-      const provider = this.config.get<string>("STORAGE_PROVIDER") || "local";
-      if (provider.toLowerCase() === "s3" && fs.existsSync(file.path)) {
+      const isCloud = uploadResult.storageProvider === 's3';
+      if (isCloud && fs.existsSync(file.path)) {
         try {
           fs.unlinkSync(file.path);
           this.logger.log(`Cleaned up temp local file: ${file.path}`);
@@ -120,33 +134,111 @@ export class DocumentsService {
 
     return {
       ...document,
-      url: this.getFileUrl(projectId, document.path, document.filename),
+      url: this.getFileUrl(
+        projectId,
+        document.path,
+        document.filename,
+        document.folder,
+        document.storageProvider,
+      ),
     };
   }
 
-  private getFileUrl(projectId: number, path: string, filename: string): string {
-    const provider = this.config.get<string>("STORAGE_PROVIDER") || "local";
-    if (provider.toLowerCase() === "s3") {
+  private getFileUrl(
+    projectId: number,
+    path: string,
+    filename: string,
+    folder?: string | null,
+    storageProvider?: string | null,
+  ): string {
+    // If stored on S3, construct S3 URL
+    if (storageProvider === 's3') {
       const publicUrl = this.config.get<string>("S3_PUBLIC_URL") || "";
       if (publicUrl) {
         return `${publicUrl}/${path}`;
       }
       const bucketName = this.config.get<string>("S3_BUCKET_NAME") || "";
       return `https://${bucketName}.s3.amazonaws.com/${path}`;
-    } else {
-      const backendUrl = this.config.get<string>("BACKEND_URL") || "http://localhost:4000";
-      return `${backendUrl}/uploads/project-${projectId}/${filename}`;
     }
+    // Default: local storage
+    const backendUrl =
+      this.config.get<string>("BACKEND_URL") || "http://localhost:4000";
+    const folderPrefix = folder ? `${folder}/` : "";
+    return `${backendUrl}/uploads/project-${projectId}/${folderPrefix}${filename}`;
   }
 
-  async findByProject(projectId: number) {
-    const docs = await this.prisma.document.findMany({
-      where: { projectId },
-      orderBy: { createdAt: "desc" },
-    });
-    return docs.map((doc) => ({
+  async findByProject(
+    projectId: number,
+    query: DocumentsQueryDto = {},
+  ): Promise<PaginatedResponse<any>> {
+    const { skip = 0, take = 50, folder } = query;
+    const where: any = { projectId };
+    if (folder) where.folder = folder;
+
+    const [docs, total] = await Promise.all([
+      this.prisma.document.findMany({
+        where,
+        skip,
+        take,
+        orderBy: { createdAt: "desc" },
+        include: {
+          uploadedBy: {
+            select: { id: true, name: true, email: true },
+          },
+        },
+      }),
+      this.prisma.document.count({ where }),
+    ]);
+
+    const data = docs.map((doc) => ({
       ...doc,
-      url: this.getFileUrl(projectId, doc.path, doc.filename),
+      url: this.getFileUrl(
+        projectId,
+        doc.path,
+        doc.filename,
+        doc.folder,
+        doc.storageProvider,
+      ),
+    }));
+
+    return { data, total, skip, take };
+  }
+
+  /** List all employee folders in a project with user info */
+  async getFolders(projectId: number) {
+    const folders = await this.prisma.document.groupBy({
+      by: ["folder", "uploadedById"],
+      where: {
+        projectId,
+        folder: { not: null },
+      },
+      _count: { id: true },
+      orderBy: { folder: "asc" },
+    });
+
+    // Enrich with uploader user info
+    const userIds = [
+      ...new Set(
+        folders
+          .map((f) => f.uploadedById)
+          .filter((id): id is number => id !== null),
+      ),
+    ];
+
+    const users =
+      userIds.length > 0
+        ? await this.prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, name: true, email: true },
+          })
+        : [];
+
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    return folders.map((f) => ({
+      folder: f.folder!,
+      documentCount: f._count.id,
+      uploadedBy: f.uploadedById ? userMap.get(f.uploadedById) ?? null : null,
     }));
   }
 
@@ -168,7 +260,7 @@ export class DocumentsService {
     this.projectAiIndex.rebuildSoon(doc.projectId);
     return {
       ...removed,
-      url: this.getFileUrl(doc.projectId, doc.path, doc.filename),
+      url: this.getFileUrl(doc.projectId, doc.path, doc.filename, doc.folder, doc.storageProvider),
     };
   }
 

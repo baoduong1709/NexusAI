@@ -113,7 +113,7 @@ export default function AiAnalysisPage() {
             try {
               const responseData = await aiApi.confirmTasks(projectId, suggestedTasksLocal).then((r) => r.data);
               createdTasks = responseData || [];
-              qc.invalidateQueries({ queryKey: ["project", projectId] });
+              qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
               toast.success(`Created ${createdTasks.length} tasks`);
             } catch (e: any) {
               console.error("Failed to auto-create tasks", e);

@@ -1,0 +1,182 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/tmp/generate-ignore.js",
+      "language": "javascript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/check_project.js",
+      "language": "javascript",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/check_task.js",
+      "language": "javascript",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/eval/agent-eval.js",
+      "language": "javascript",
+      "sizeLines": 250,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/fix_module.js",
+      "language": "javascript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/fix_rag.js",
+      "language": "javascript",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/fix.js",
+      "language": "javascript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "language": "sql",
+      "sizeLines": 113,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "language": "sql",
+      "sizeLines": 13,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "language": "sql",
+      "sizeLines": 13,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "language": "sql",
+      "sizeLines": 19,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "language": "sql",
+      "sizeLines": 4,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "language": "sql",
+      "sizeLines": 1,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "language": "sql",
+      "sizeLines": 1,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "language": "sql",
+      "sizeLines": 2,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "language": "sql",
+      "sizeLines": 1,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "language": "sql",
+      "sizeLines": 27,
+      "fileCategory": "data"
+    }
+  ],
+  "batchImportData": {
+    ".understand-anything/.understandignore": [],
+    ".understand-anything/config.json": [],
+    ".understand-anything/tmp/generate-ignore.js": [],
+    "backend/check_project.js": [],
+    "backend/check_task.js": [],
+    "backend/eval/agent-eval.js": [],
+    "backend/fix_module.js": [],
+    "backend/fix_rag.js": [],
+    "backend/fix.js": [],
+    "backend/prisma/migrations/20260417044832_init/migration.sql": [],
+    "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql": [],
+    "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql": [],
+    "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql": [],
+    "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql": [],
+    "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql": [],
+    "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql": [],
+    "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql": [],
+    "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql": [],
+    "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql": [],
+    "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql": [],
+    "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql": [],
+    "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql": [],
+    "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql": [],
+    "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql": [],
+    "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql": []
+  }
+}

@@ -33,6 +33,8 @@ const PERMISSION_ICONS: Record<string, any> = {
   "ai:": Bot,
 };
 
+import AccessDenied from "@/components/layout/access-denied";
+
 export default function RolesPage() {
   const { hasPermission } = useAuth();
   const qc = useQueryClient();
@@ -42,11 +44,13 @@ export default function RolesPage() {
   const { data: roles = [], isLoading } = useQuery({
     queryKey: ["roles"],
     queryFn: () => rolesApi.getAll().then((r) => r.data),
+    enabled: hasPermission("role:read"), // Only fetch roles if user has permission
   });
 
   const { data: allPermissions = [] } = useQuery({
     queryKey: ["permissions"],
     queryFn: () => rolesApi.getPermissions().then((r) => r.data),
+    enabled: hasPermission("role:read"), // Only fetch permissions if user has permission
   });
 
   const createMutation = useMutation({
@@ -80,6 +84,12 @@ export default function RolesPage() {
   });
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<any>();
+
+  // Check role:read permission
+  if (!hasPermission("role:read")) {
+    return <AccessDenied />;
+  }
+
   const selectedPermissions: string[] = watch("permissions") || [];
 
   const openCreate = () => {

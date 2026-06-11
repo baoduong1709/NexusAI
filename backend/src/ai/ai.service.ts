@@ -807,7 +807,7 @@ Return a JSON array of up to 3 best-suited member IDs in order of suitability:
       userId,
     );
 
-    const prompt = `You are an assistant that improves task descriptions for software projects.
+    const prompt = `You are an assistant that formats and structures task descriptions for software projects to make them visually appealing and well-structured, without changing, adding, or removing any of the original content or facts.
 Return only HTML (no markdown, no code fences).
 
 Project: ${ctx.project.name}
@@ -817,15 +817,13 @@ Current description:
 ${description}
 
 Rules:
-- Keep the same intent and scope from current description.
-- Make it clearer and actionable for engineers and QA.
-- Structure the output using short sections in this order when possible:
-  1) Objective
-  2) Scope
-  3) Acceptance Criteria (as <ul><li>)
-  4) Notes / Risks
-- Keep it concise.
-- Do not invent product facts not present in the description.
+- Absolutely DO NOT change, add, or remove any core meaning, facts, or technical details from the current description.
+- Your ONLY goal is to make the existing description more structured, readable, and beautifully formatted.
+- Organize the existing content into clean, logical sections using HTML tags (e.g. paragraphs, bold text for key terms, and bullet/numbered lists using HTML tags).
+- If the original description contains lists or steps, make sure they are formatted using proper HTML list tags.
+- Fix any formatting issues, inconsistent spacing, or lack of structure.
+- Do not invent or add any new features, requirements, acceptance criteria, or product facts that are not explicitly present in the original description.
+- Maintain the language of the original description.
 - Output valid HTML snippet using only tags: p, strong, em, ul, ol, li, br, code.`;
 
     const improved = await this.generateAiText(
@@ -938,6 +936,34 @@ Rules:
     this.projectAiIndex.rebuildSoon(projectId);
   }
 
+  // ─── Extract key requirements from a document that is too long ─────────────
+  private async extractKeyRequirementsFromDoc(
+    projectId: number,
+    userId: number,
+    docName: string,
+    docContent: string,
+  ): Promise<string> {
+    const prompt = `You are a professional Business Analyst.
+Analyze the following source document titled "${docName}" and extract all key software requirements, business rules, functional requirements, and non-functional requirements in detail.
+Focus only on concrete requirements and specifications. Avoid general introductory text.
+Return the requirements as a detailed, structured list of bullet points in Vietnamese.
+
+Document Content:
+${docContent}
+
+Extracted Requirements:`;
+
+    const response = await this.generateAiText(
+      [{ role: "user", content: prompt }],
+      "document requirements extraction",
+      0.2,
+      projectId,
+      userId,
+    );
+
+    return response.trim();
+  }
+
   // ─── Update requirements from documents + AI ───────────────────────────────
 
   async updateRequirements(
@@ -974,6 +1000,61 @@ Rules:
       ctx.requirementsContent ||
       "No previous consolidated requirements.";
 
+    // Optimize source documents if they are too long to prevent context overflow and timeout
+    const optimizedTextDocs: string[] = [];
+    if (docContents.textDocs.length > 0) {
+      const promises = docContents.textDocs.map(async (docText, i) => {
+        const sourceInfo = docContents.sources[i];
+        // Threshold: 12000 characters (approx. 3000-4000 words)
+        if (docText.length > 12000) {
+          this.logger.log(
+            `Document ${sourceInfo?.originalName || i} is too long (${docText.length} chars). Extracting key requirements to optimize context.`,
+          );
+          try {
+            const extractedReqs = await this.extractKeyRequirementsFromDoc(
+              projectId,
+              userId,
+              sourceInfo?.originalName || "Document",
+              docText,
+            );
+
+            // Fetch summary from ProjectAiIndex if available
+            let summaryInfo = "";
+            if (sourceInfo?.id) {
+              const index = await this.prisma.projectAiIndex.findUnique({
+                where: { projectId },
+              });
+              const summary = (index?.data as any)?.documentSummaries?.[
+                sourceInfo.id
+              ];
+              if (summary) {
+                summaryInfo = `Summary of document: ${summary}\n\n`;
+              }
+            }
+
+            return (
+              `--- [Optimized - Key Requirements Extracted] ${sourceInfo?.originalName || "Document"} ---\n` +
+              `${summaryInfo}` +
+              `Core requirements extracted from this document:\n${extractedReqs}`
+            );
+          } catch (err) {
+            this.logger.warn(
+              `Failed to extract key requirements for ${sourceInfo?.originalName || i}, falling back to truncated content`,
+              err,
+            );
+            return (
+              `--- [Truncated] ${sourceInfo?.originalName || "Document"} ---\n` +
+              docText.slice(0, 12000) +
+              "\n... [Remaining content truncated because it is too long] ..."
+            );
+          }
+        } else {
+          return docText;
+        }
+      });
+      optimizedTextDocs.push(...(await Promise.all(promises)));
+    }
+
     const prompt = `You are NexusAI's requirements curator.
 Your job is to update the consolidated requirements.md for a complex software project.
 
@@ -992,7 +1073,7 @@ ${previousRequirements}
 Uploaded source files for this update:
 ${sourceManifest || "No uploaded source files."}
 
-${docContents.textDocs.length > 0 ? `Text source documents:\n${docContents.textDocs.join("\n\n")}\n` : ""}
+${optimizedTextDocs.length > 0 ? `Text source documents:\n${optimizedTextDocs.join("\n\n")}\n` : ""}
 
 Update rules:
 - Return the FULL updated requirements.md content, not a diff.

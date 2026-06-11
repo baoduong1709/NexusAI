@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import {
   CreateTaskCommentDto,
@@ -10,12 +12,16 @@ import {
   CreateTaskWorkLogDto,
   UpdateTaskStatusDto,
 } from "./dto/create-task.dto";
+import { TasksQueryDto } from "./dto/tasks-query.dto";
+import { PaginatedResponse } from "../common/dto/paginated-response";
 import {
   getDefaultTaskStatus,
   isTaskTransitionAllowed,
   normalizeTaskWorkflow,
 } from "../projects/project-workflow";
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
+import { StorageService } from "../common/storage/storage.service";
+import * as fs from "fs";
 
 const TASK_INCLUDE = {
   assignee: { select: { id: true, name: true, email: true } },
@@ -45,11 +51,79 @@ function renderToken(value: string | null | undefined) {
   return value?.trim() || "";
 }
 
+function extractRawTitle(
+  rule: string | null | undefined,
+  formattedTitle: string,
+  oldTask: {
+    epic: string | null;
+    labels: string[];
+    sprint: string | null;
+    priority: string | null;
+  },
+) {
+  if (!rule?.trim()) return stripGeneratedTaskPrefix(formattedTitle);
+
+  const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const epicToken = renderToken(oldTask.epic);
+  const labelsToken = oldTask.labels.join("][");
+  const firstLabelToken = oldTask.labels[0] || "";
+  const remainingLabelsToken = oldTask.labels.slice(1).join("][");
+  const sprintToken = renderToken(oldTask.sprint);
+  const priorityToken = renderToken(oldTask.priority);
+
+  let pattern = rule
+    .replaceAll("{epic}", epicToken)
+    .replaceAll("{labels}", labelsToken)
+    .replaceAll("{firstLabel}", firstLabelToken)
+    .replaceAll("{remainingLabels}", remainingLabelsToken)
+    .replaceAll("{sprint}", sprintToken)
+    .replaceAll("{priority}", priorityToken);
+
+  pattern = pattern
+    .replace(/\[\]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,\]])/g, "$1")
+    .trim();
+
+  const parts = pattern.split("{title}");
+  if (parts.length !== 2) {
+    return stripGeneratedTaskPrefix(formattedTitle);
+  }
+
+  const escapedParts = parts.map((part) => {
+    let escaped = escapeRegExp(part);
+    escaped = escaped.replace(/\s+/g, "\\s*");
+    return escaped;
+  });
+
+  const regexStr = `^${escapedParts[0]}(.+?)${escapedParts[1]}$`;
+  try {
+    const regex = new RegExp(regexStr, "i");
+    const match = formattedTitle.match(regex);
+    if (match) {
+      return match[1].trim();
+    }
+  } catch (e) {
+    // ignore regex errors
+  }
+
+  return stripGeneratedTaskPrefix(formattedTitle);
+}
+
 function buildTaskTitle(
   rule: string | null | undefined,
   task: Pick<CreateTaskDto, "title" | "epic" | "labels" | "sprint" | "priority">,
+  oldTask?: {
+    epic: string | null;
+    labels: string[];
+    sprint: string | null;
+    priority: string | null;
+  },
 ) {
-  const rawTitle = stripGeneratedTaskPrefix(task.title || "");
+  const rawTitle = oldTask
+    ? extractRawTitle(rule, task.title || "", oldTask)
+    : stripGeneratedTaskPrefix(task.title || "");
   if (!rule?.trim()) return rawTitle;
 
   const labels = task.labels || [];
@@ -109,10 +183,42 @@ function valuesEqual(left: unknown, right: unknown) {
 
 @Injectable()
 export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
   constructor(
     private prisma: PrismaService,
     private projectAiIndex: ProjectAiIndexService,
+    private storageService: StorageService,
   ) {}
+
+  private async cleanUpImageDocuments(projectId: number, docIds: number[]) {
+    if (!docIds || docIds.length === 0) return;
+    
+    for (const docId of docIds) {
+      try {
+        const doc = await this.prisma.document.findUnique({ where: { id: docId } });
+        if (!doc) continue;
+
+        this.logger.log(`Cleaning up image document ${docId} from storage: ${doc.path}`);
+        await this.storageService.deleteFile(projectId, doc.path);
+
+        const mdPath = `${doc.path}.md`;
+        if (fs.existsSync(mdPath)) {
+          try {
+            fs.unlinkSync(mdPath);
+            this.logger.log(`Deleted temp markdown file for doc ${docId}: ${mdPath}`);
+          } catch (e: any) {
+            this.logger.error(`Failed to delete temp markdown file ${mdPath}: ${e.message}`);
+          }
+        }
+
+        await this.prisma.document.delete({ where: { id: docId } });
+        this.logger.log(`Deleted document record ${docId} from database`);
+      } catch (e: any) {
+        this.logger.error(`Failed to clean up image document ${docId}: ${e.message}`);
+      }
+    }
+  }
 
   async create(projectId: number, dto: CreateTaskDto, userId?: number) {
     const workflowStatus = await this.resolveWorkflowStatus(projectId, dto.status);
@@ -161,15 +267,63 @@ export class TasksService {
     return task;
   }
 
-  async findByProject(projectId: number) {
-    const project = await this.getProjectWorkflow(projectId);
-    const tasks = await this.prisma.task.findMany({
-      where: { projectId },
-      include: TASK_INCLUDE,
-      orderBy: [{ createdAt: "desc" }],
-    });
+  async findByProject(
+    projectId: number,
+    query: TasksQueryDto = {},
+  ): Promise<PaginatedResponse<any>> {
+    const {
+      skip = 0,
+      take = 50,
+      status,
+      search,
+      priority,
+      epic,
+      sprint,
+      assigneeId,
+      labels,
+      dueFrom,
+      dueTo,
+      ai,
+    } = query;
 
-    return tasks.sort((left, right) => {
+    const project = await this.getProjectWorkflow(projectId);
+
+    const where: Prisma.TaskWhereInput = { projectId };
+
+    if (status) where.status = status;
+    if (priority) where.priority = priority;
+    if (epic) where.epic = epic;
+    if (sprint) where.sprint = sprint;
+    if (assigneeId) where.assigneeId = assigneeId;
+    if (labels?.length) where.labels = { hasEvery: labels };
+    if (dueFrom || dueTo) {
+      where.dueDate = {
+        ...(dueFrom ? { gte: new Date(dueFrom) } : {}),
+        ...(dueTo ? { lte: new Date(dueTo) } : {}),
+      };
+    }
+    if (ai === "ai") where.isAiGenerated = true;
+    if (ai === "manual") where.isAiGenerated = false;
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { id: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    const [tasks, total] = await Promise.all([
+      this.prisma.task.findMany({
+        where,
+        include: TASK_INCLUDE,
+        skip,
+        take,
+        orderBy: [{ createdAt: "desc" }],
+      }),
+      this.prisma.task.count({ where }),
+    ]);
+
+    const sortedTasks = tasks.sort((left, right) => {
       const statusDiff =
         getStatusOrder(left.status, project.taskStatuses) -
         getStatusOrder(right.status, project.taskStatuses);
@@ -177,6 +331,8 @@ export class TasksService {
       if (statusDiff !== 0) return statusDiff;
       return right.createdAt.getTime() - left.createdAt.getTime();
     });
+
+    return { data: sortedTasks, total, skip, take };
   }
 
   async findOne(id: string) {
@@ -190,6 +346,17 @@ export class TasksService {
 
   async update(id: string, dto: Partial<CreateTaskDto>, userId?: number) {
     const task = await this.findOne(id);
+
+    // Clean up images removed from the task description
+    if (dto.description !== undefined && dto.description !== task.description) {
+      const oldImageIds = extractDocIds(task.description);
+      const newImageIds = extractDocIds(dto.description);
+      const removedImageIds = oldImageIds.filter((id) => !newImageIds.includes(id));
+      if (removedImageIds.length > 0) {
+        await this.cleanUpImageDocuments(task.projectId, removedImageIds);
+      }
+    }
+
     const workflowStatus =
       dto.status !== undefined
         ? await this.resolveWorkflowStatus(task.projectId, dto.status)
@@ -213,7 +380,7 @@ export class TasksService {
           dto.labels !== undefined ||
           dto.sprint !== undefined ||
           dto.priority !== undefined
-            ? buildTaskTitle(projectMetadata.taskNamingRule, mergedForTitle)
+            ? buildTaskTitle(projectMetadata.taskNamingRule, mergedForTitle, task)
             : undefined,
         status: workflowStatus,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
@@ -284,6 +451,22 @@ export class TasksService {
 
   async remove(id: string) {
     const task = await this.findOne(id);
+
+    // Clean up images in description
+    const descImageIds = extractDocIds(task.description);
+
+    // Clean up images in comments (taskActivities of type COMMENT)
+    const comments = await (this.prisma as any).taskActivity.findMany({
+      where: { taskId: id, type: "COMMENT" },
+      select: { body: true },
+    });
+    const commentImageIds = comments.flatMap((c: { body: string | null }) => extractDocIds(c.body));
+
+    const allImageIds = Array.from(new Set([...descImageIds, ...commentImageIds]));
+    if (allImageIds.length > 0) {
+      await this.cleanUpImageDocuments(task.projectId, allImageIds);
+    }
+
     const removed = await this.prisma.task.delete({ where: { id } });
     this.projectAiIndex.rebuildSoon(task.projectId);
     return removed;
@@ -462,4 +645,15 @@ export class TasksService {
 function toNumber(value: unknown) {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
+}
+
+function extractDocIds(content: string | null | undefined): number[] {
+  if (!content) return [];
+  const ids = new Set<number>();
+  const regex = /doc:(\d+)/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    ids.add(parseInt(match[1], 10));
+  }
+  return Array.from(ids);
 }

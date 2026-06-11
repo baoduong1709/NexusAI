@@ -23,4 +23,16 @@ export class AuthController {
   getProfile(@CurrentUser() user: any) {
     return this.authService.getProfile(user.id);
   }
+
+  @Post("personal-token")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Generate a personal access token for MCP / external tools with custom expiration" })
+  generatePersonalToken(
+    @CurrentUser() user: any,
+    @Body() body: { expiresIn?: string },
+  ) {
+    const expiresIn = body.expiresIn || "365d";
+    return this.authService.generatePersonalToken(user.id, expiresIn);
+  }
 }

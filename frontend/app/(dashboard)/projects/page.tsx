@@ -25,6 +25,7 @@ import {
   normalizeProjectRoles,
 } from "@/lib/project-roles";
 import { motion, AnimatePresence } from "framer-motion";
+import AccessDenied from "@/components/layout/access-denied";
 
 export default function ProjectsPage() {
   const { hasPermission } = useAuth();

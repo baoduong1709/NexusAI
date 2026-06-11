@@ -1,0 +1,14 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "scratch/check_task.js",
+      "language": "javascript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "scratch/check_task.js": []
+  }
+}

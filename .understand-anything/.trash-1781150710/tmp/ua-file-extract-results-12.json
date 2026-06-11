@@ -1,0 +1,85 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "scratch/check_task.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 26,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 4,
+          "endLine": 22,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.task.findUnique",
+          "lineNumber": 5
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 13
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 14
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 15
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 16
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 17
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 18
+        },
+        {
+          "caller": "main",
+          "callee": "task.activities.slice(0, 10).forEach",
+          "lineNumber": 19
+        },
+        {
+          "caller": "main",
+          "callee": "task.activities.slice",
+          "lineNumber": 19
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 20
+        },
+        {
+          "caller": "main",
+          "callee": "act.createdAt.toISOString",
+          "lineNumber": 20
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

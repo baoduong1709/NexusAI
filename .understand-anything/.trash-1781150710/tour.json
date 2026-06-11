@@ -1,0 +1,120 @@
+[
+  {
+    "order": 1,
+    "title": "Tổng quan dự án NexusAI",
+    "description": "Tìm hiểu cấu trúc thư mục tổng thể, Tech Stack của dự án (Next.js, NestJS, Prisma, Gemma) và cách cài đặt chạy thử ứng dụng NexusAI từ tài liệu hướng dẫn dự án.",
+    "nodeIds": [
+      "document:README.md"
+    ],
+    "languageLesson": "Tài liệu `README.md` cung cấp cái nhìn toàn cảnh về kiến trúc hệ thống và cách thức hoạt động chung của ứng dụng."
+  },
+  {
+    "order": 2,
+    "title": "Điểm khởi chạy ứng dụng Frontend",
+    "description": "Khám phá trang chủ mặc định ở cấp cao nhất của Next.js (App Router). Node này chịu trách nhiệm kiểm tra trạng thái xác thực và điều hướng người dùng tương ứng.",
+    "nodeIds": [
+      "file:frontend/app/page.tsx"
+    ],
+    "languageLesson": "Tập tin `frontend/app/page.tsx` là điểm khởi đầu cho luồng client-side của Next.js."
+  },
+  {
+    "order": 3,
+    "title": "Điểm khởi chạy ứng dụng Backend",
+    "description": "Tìm hiểu điểm bắt đầu của ứng dụng NestJS phía Backend. Tại đây, NestJS khởi tạo instance của ứng dụng, cấu hình global pipes, CORS và lắng nghe cổng chỉ định.",
+    "nodeIds": [
+      "file:backend/src/main.ts"
+    ],
+    "languageLesson": "Tập tin `backend/src/main.ts` khởi tạo NestJS runtime và nạp module cấu hình gốc."
+  },
+  {
+    "order": 4,
+    "title": "Lược đồ Cơ sở Dữ liệu (Prisma Schema)",
+    "description": "Mọi nghiệp vụ quản lý dự án, người dùng, nhiệm vụ và tài liệu đều được định nghĩa thông qua các Prisma models trong file schema này. Đây là xương sống dữ liệu của toàn bộ hệ thống.",
+    "nodeIds": [
+      "schema:backend/prisma/schema.prisma"
+    ],
+    "languageLesson": "Lược đồ cơ sở dữ liệu `schema.prisma` định nghĩa cấu trúc bảng và mối quan hệ thực thể thông qua Prisma ORM."
+  },
+  {
+    "order": 5,
+    "title": "Module cấu hình gốc Backend (AppModule)",
+    "description": "AppModule là module trung tâm của NestJS backend, chịu trách nhiệm import tất cả các module nghiệp vụ con như Users, Projects, Tasks, Documents và AI, đồng thời cấu hình logger middleware.",
+    "nodeIds": [
+      "file:backend/src/app.module.ts"
+    ],
+    "languageLesson": "`AppModule` là nơi kết nối và quản lý vòng đời của tất cả các module nghiệp vụ trong NestJS."
+  },
+  {
+    "order": 6,
+    "title": "Quản lý Dự án & Quy trình làm việc (Projects Service)",
+    "description": "Dịch vụ chịu trách nhiệm thực thi các quy trình nghiệp vụ liên quan đến dự án, vai trò thành viên (roles) và luồng workflow cập nhật trạng thái trực quan.",
+    "nodeIds": [
+      "service:backend/src/projects/projects.service.ts"
+    ],
+    "languageLesson": "`ProjectsService` thực thi logic nghiệp vụ cho thực thể dự án và tương tác trực tiếp với cơ sở dữ liệu qua Prisma."
+  },
+  {
+    "order": 7,
+    "title": "Quản lý Nhiệm vụ & Trạng thái công việc (Tasks Service)",
+    "description": "TasksService quản lý toàn bộ vòng đời của các công việc (tasks), ghi nhận hoạt động (activity logs), cập nhật trạng thái nhiệm vụ và xử lý các bình luận (comments).",
+    "nodeIds": [
+      "service:backend/src/tasks/tasks.service.ts"
+    ],
+    "languageLesson": "`TasksService` xử lý các luồng trạng thái của công việc trong một dự án."
+  },
+  {
+    "order": 8,
+    "title": "Tìm kiếm ngữ nghĩa với dịch vụ RAG (Rag Service)",
+    "description": "Hệ thống sử dụng RAG để nâng cao khả năng phân tích của AI. RagService đảm nhiệm việc tạo vector embeddings cho tài liệu dự án, tính tương đồng cosine phục vụ tìm kiếm ngữ nghĩa chính xác.",
+    "nodeIds": [
+      "service:backend/src/ai/rag.service.ts"
+    ],
+    "languageLesson": "`RagService` là cầu nối kỹ thuật giúp mô hình ngôn ngữ lớn (LLM) truy vấn thông tin ngữ cảnh chính xác từ tài liệu dự án."
+  },
+  {
+    "order": 9,
+    "title": "Dịch vụ AI lõi & Tự động hóa (Ai Service)",
+    "description": "AiService điều phối việc gọi LLM, quản lý luồng hội thoại chat với AI, tự động phân tích đề xuất tạo task và theo dõi các yêu cầu (requirements) của dự án.",
+    "nodeIds": [
+      "service:backend/src/ai/ai.service.ts"
+    ],
+    "languageLesson": "`AiService` kết hợp với RagService để mang lại trải nghiệm trợ lý AI thông minh."
+  },
+  {
+    "order": 10,
+    "title": "Tối ưu hóa token cho AI Agent",
+    "description": "Các hàm tiện ích hỗ trợ tính toán và tối ưu hóa số lượng token, gộp các lượt hội thoại và cắt ngắn tin nhắn để đảm bảo AI agent hoạt động ổn định trong giới hạn ngữ cảnh.",
+    "nodeIds": [
+      "file:backend/src/ai/agent-runtime.util.ts"
+    ],
+    "languageLesson": "Các tiện ích trong `agent-runtime.util.ts` quản lý bộ nhớ đệm hội thoại và tính toán lượng token tiêu thụ."
+  },
+  {
+    "order": 11,
+    "title": "Xác thực & Gọi API tập trung (Frontend)",
+    "description": "Tìm hiểu cách frontend quản lý trạng thái đăng nhập của người dùng qua Auth Context, và cách apiService được cấu hình tập trung để gọi tất cả các endpoints từ backend.",
+    "nodeIds": [
+      "file:frontend/lib/auth.tsx",
+      "service:frontend/lib/api.ts"
+    ],
+    "languageLesson": "Sự kết hợp giữa `auth.tsx` và `api.ts` giúp bảo mật và đồng bộ hóa dữ liệu giữa giao diện người dùng và máy chủ."
+  },
+  {
+    "order": 12,
+    "title": "Trang chi tiết Dự án & Trình soạn thảo quy trình (Frontend)",
+    "description": "Khám phá giao diện chi tiết của một dự án trên frontend, tích hợp trình soạn thảo mô tả phong phú, quản lý tài liệu đi kèm, thảo luận nhóm và trình quản lý workflow trực quan.",
+    "nodeIds": [
+      "file:frontend/app/(dashboard)/projects/[id]/page.tsx"
+    ],
+    "languageLesson": "Trang `projects/[id]/page.tsx` liên kết các mảnh chức năng trên giao diện để mang lại trải nghiệm quản trị dự án hoàn chỉnh."
+  },
+  {
+    "order": 13,
+    "title": "Bong bóng Chat trợ lý AI toàn ứng dụng (Frontend)",
+    "description": "Thành phần UI độc đáo cho phép người dùng trò chuyện trực tiếp với trợ lý AI ở bất kỳ màn hình nào. Người dùng có thể duyệt tạo nhiệm vụ (task) trực tiếp từ các gợi ý trong đoạn hội thoại.",
+    "nodeIds": [
+      "file:frontend/components/ai-chat-bubble.tsx"
+    ],
+    "languageLesson": "`ai-chat-bubble.tsx` tích hợp sâu trợ lý AI vào luồng tương tác hàng ngày của người dùng."
+  }
+]

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
 import { getInitials, cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import AccessDenied from "@/components/layout/access-denied";
 
 export default function UsersPage() {
   const { hasPermission } = useAuth();
@@ -20,11 +21,13 @@ export default function UsersPage() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => usersApi.getAll().then((r) => r.data),
+    enabled: hasPermission("user:read"), // Only fetch users if user has read permission
   });
 
   const { data: roles = [] } = useQuery({
     queryKey: ["roles"],
     queryFn: () => rolesApi.getAll().then((r) => r.data),
+    enabled: hasPermission("user:read"), // Only fetch roles if user has read permission
   });
 
   const createMutation = useMutation({
@@ -58,6 +61,11 @@ export default function UsersPage() {
   });
 
   const { register, handleSubmit, reset } = useForm<any>();
+
+  // Check user:read permission
+  if (!hasPermission("user:read")) {
+    return <AccessDenied />;
+  }
 
   const openCreate = () => {
     reset({ name: "", email: "", password: "", roleId: "", skills: "" });

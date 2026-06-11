@@ -7,6 +7,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseIntPipe,
   UseGuards,
 } from "@nestjs/common";
@@ -18,6 +19,7 @@ import {
   CreateTaskWorkLogDto,
   UpdateTaskStatusDto,
 } from "./dto/create-task.dto";
+import { TasksQueryDto } from "./dto/tasks-query.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { RequirePermissions } from "../auth/decorators/permissions.decorator";
@@ -43,9 +45,12 @@ export class TasksController {
 
   @Get()
   @RequirePermissions("task:read")
-  @ApiOperation({ summary: "Get all tasks in project" })
-  findAll(@Param("projectId", ParseIntPipe) projectId: number) {
-    return this.tasksService.findByProject(projectId);
+  @ApiOperation({ summary: "Get paginated tasks in project with optional filters" })
+  findAll(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @Query() query: TasksQueryDto,
+  ) {
+    return this.tasksService.findByProject(projectId, query);
   }
 
   @Get(":id")

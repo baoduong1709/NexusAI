@@ -1,0 +1,44 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'config:.understand-anything/config.json' has no edges (orphan)",
+    "Node 'file:backend/fix_module.js' has no edges (orphan)",
+    "Node 'file:backend/fix_rag.js' has no edges (orphan)",
+    "Node 'file:backend/fix.js' has no edges (orphan)",
+    "Node 'file:backend/search-glapp-2.js' has no edges (orphan)",
+    "Node 'file:frontend/next-env.d.ts' has no edges (orphan)",
+    "Node 'config:frontend/tsconfig.json' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 342,
+    "totalEdges": 661,
+    "totalLayers": 7,
+    "tourSteps": 13,
+    "nodeTypes": {
+      "file": 124,
+      "function": 93,
+      "service": 12,
+      "class": 68,
+      "schema": 3,
+      "endpoint": 19,
+      "document": 3,
+      "config": 9,
+      "table": 11
+    },
+    "edgeTypes": {
+      "contains": 194,
+      "calls": 81,
+      "imports": 219,
+      "tested_by": 3,
+      "exports": 34,
+      "routes": 10,
+      "inherits": 5,
+      "depends_on": 32,
+      "configures": 25,
+      "deploys": 2,
+      "documents": 16,
+      "related": 3,
+      "migrates": 37
+    }
+  }
+}

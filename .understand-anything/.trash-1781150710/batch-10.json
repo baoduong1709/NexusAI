@@ -1,0 +1,695 @@
+{
+  "nodes": [
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Tệp cấu hình xác định các mẫu đường dẫn và tệp cần bỏ qua trong quá trình phân tích dự án.",
+      "tags": ["config", "ignore-patterns", "setup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "Tệp cấu hình lưu trữ các tùy chọn phân tích dự án, ví dụ như ngôn ngữ đầu ra.",
+      "tags": ["config", "json", "settings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/tmp/generate-ignore.js",
+      "type": "file",
+      "name": "generate-ignore.js",
+      "filePath": ".understand-anything/tmp/generate-ignore.js",
+      "summary": "Script JavaScript tạm thời được sử dụng để tự động tạo tệp cấu hình .understandignore từ .gitignore và các thư mục mặc định.",
+      "tags": ["script", "utility", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:.understand-anything/tmp/generate-ignore.js:norm",
+      "type": "function",
+      "name": "norm",
+      "filePath": ".understand-anything/tmp/generate-ignore.js",
+      "summary": "Hàm chuẩn hóa đường dẫn bằng cách loại bỏ các ký tự gạch chéo cuối cùng.",
+      "tags": ["helper", "string-manipulation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/check_project.js",
+      "type": "file",
+      "name": "check_project.js",
+      "filePath": "backend/check_project.js",
+      "summary": "Script JavaScript dùng để kiểm tra và in thông tin chi tiết của một dự án cụ thể từ cơ sở dữ liệu sử dụng Prisma ORM.",
+      "tags": ["script", "database", "debugging", "prisma"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/check_project.js:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/check_project.js",
+      "summary": "Hàm thực thi chính để truy vấn và hiển thị thông tin dự án từ Prisma.",
+      "tags": ["entry-point", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/check_task.js",
+      "type": "file",
+      "name": "check_task.js",
+      "filePath": "backend/check_task.js",
+      "summary": "Script kiểm tra thông tin của một task (công việc) và các task liên quan trong cơ sở dữ liệu thông qua Prisma ORM.",
+      "tags": ["script", "database", "debugging", "prisma"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/check_task.js:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/check_task.js",
+      "summary": "Hàm chính thực hiện truy vấn task theo ID hoặc tìm task đầu tiên thỏa mãn điều kiện và hiển thị kết quả.",
+      "tags": ["entry-point", "query"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/eval/agent-eval.js",
+      "type": "file",
+      "name": "agent-eval.js",
+      "filePath": "backend/eval/agent-eval.js",
+      "summary": "Script đánh giá chất lượng và kiểm thử tự động các trường hợp hoạt động của AI Agent trong hệ thống NexusAI.",
+      "tags": ["testing", "evaluation", "ai-agent", "script"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/eval/agent-eval.js:check",
+      "type": "function",
+      "name": "check",
+      "filePath": "backend/eval/agent-eval.js",
+      "summary": "Hàm ghi nhận và kiểm tra kết quả đánh giá cho một tiêu chí cụ thể.",
+      "tags": ["helper", "assertion"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/eval/agent-eval.js:selectEvaluationContext",
+      "type": "function",
+      "name": "selectEvaluationContext",
+      "filePath": "backend/eval/agent-eval.js",
+      "summary": "Lựa chọn và thiết lập ngữ cảnh dữ liệu phù hợp (Project, User, Permissions) để phục vụ cho việc đánh giá AI Agent.",
+      "tags": ["setup", "context-resolver"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/eval/agent-eval.js:runWithTimeout",
+      "type": "function",
+      "name": "runWithTimeout",
+      "filePath": "backend/eval/agent-eval.js",
+      "summary": "Bọc một Promise để thực thi với thời gian chờ giới hạn (timeout), tránh việc kiểm thử bị treo.",
+      "tags": ["utility", "timeout"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/eval/agent-eval.js:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/eval/agent-eval.js",
+      "summary": "Hàm khởi chạy chính thiết lập context ứng dụng NestJS, chạy các kịch bản đánh giá AI Agent và xuất báo cáo kết quả.",
+      "tags": ["entry-point", "runner"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/fix_module.js",
+      "type": "file",
+      "name": "fix_module.js",
+      "filePath": "backend/fix_module.js",
+      "summary": "Script JavaScript tiện ích dùng để sửa lỗi liên quan đến các module hoặc cấu hình import trong dự án.",
+      "tags": ["script", "utility", "fix-tool", "maintenance"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/fix_rag.js",
+      "type": "file",
+      "name": "fix_rag.js",
+      "filePath": "backend/fix_rag.js",
+      "summary": "Script JavaScript tiện ích được thiết kế để sửa chữa hoặc kiểm tra hoạt động của module RAG (Retrieval-Augmented Generation).",
+      "tags": ["script", "utility", "rag", "maintenance"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/fix.js",
+      "type": "file",
+      "name": "fix.js",
+      "filePath": "backend/fix.js",
+      "summary": "Script JavaScript nhỏ gọn dùng để thực hiện sửa đổi nhanh chóng các lỗi cấu hình trong thư mục backend.",
+      "tags": ["script", "utility", "hotfix"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "type": "file",
+      "name": "20260417044832_init/migration.sql",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bản dịch chuyển SQL khởi tạo cấu trúc cơ sở dữ liệu ban đầu cho dự án, định nghĩa các bảng cốt lõi bao gồm roles, users, projects, project_members, documents và tasks.",
+      "tags": ["database-migration", "sql", "init", "schema"],
+      "complexity": "complex"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:roles",
+      "type": "table",
+      "name": "roles",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng cơ sở dữ liệu lưu trữ thông tin về các vai trò người dùng hệ thống và quyền hạn (permissions) tương ứng.",
+      "tags": ["database-table", "rbac", "roles"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "table",
+      "name": "users",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng cơ sở dữ liệu lưu trữ thông tin tài khoản người dùng, bao gồm email, mật khẩu băm, trạng thái hoạt động và liên kết vai trò.",
+      "tags": ["database-table", "users", "authentication"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "table",
+      "name": "projects",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng cơ sở dữ liệu chứa thông tin các dự án, bao gồm tên, mô tả, ngân sách, ngày bắt đầu/kết thúc và trạng thái.",
+      "tags": ["database-table", "projects", "management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+      "type": "table",
+      "name": "project_members",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng liên kết quan hệ nhiều-nhiều giữa dự án (projects) và người dùng (users) để xác định thành viên tham gia.",
+      "tags": ["database-table", "membership", "association"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:documents",
+      "type": "table",
+      "name": "documents",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng lưu trữ thông tin về các tài liệu và tệp đính kèm được tải lên trong từng dự án.",
+      "tags": ["database-table", "documents", "file-storage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "table",
+      "name": "tasks",
+      "filePath": "backend/prisma/migrations/20260417044832_init/migration.sql",
+      "summary": "Bảng lưu trữ thông tin các công việc trong dự án, bao gồm tiêu đề, mô tả, trạng thái, mức độ ưu tiên và người thực hiện.",
+      "tags": ["database-table", "tasks", "work-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "type": "file",
+      "name": "20260417092540_add_requirements_history/migration.sql",
+      "filePath": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "summary": "Bản dịch chuyển SQL tạo bảng requirements_history phục vụ việc lưu trữ lịch sử thay đổi của các yêu cầu dự án.",
+      "tags": ["database-migration", "sql", "requirements", "history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql:requirements_history",
+      "type": "table",
+      "name": "requirements_history",
+      "filePath": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "summary": "Bảng lưu trữ lịch sử các phiên bản của tài liệu yêu cầu dự án.",
+      "tags": ["database-table", "history", "version-control"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "type": "file",
+      "name": "20260417100831_add_changes_summary/migration.sql",
+      "filePath": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "summary": "Bản dịch chuyển SQL bổ sung cột changes_summary vào bảng requirements_history để lưu trữ tóm tắt các thay đổi.",
+      "tags": ["database-migration", "sql", "schema-update"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "type": "file",
+      "name": "20260417112359_add_sprint_to_task/migration.sql",
+      "filePath": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "summary": "Bản dịch chuyển SQL bổ sung thuộc tính sprint vào bảng tasks để quản lý công việc theo các chu kỳ sprint.",
+      "tags": ["database-migration", "sql", "tasks-update", "sprint"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "type": "file",
+      "name": "20260417121651_add_project_role_to_member/migration.sql",
+      "filePath": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "summary": "Bản dịch chuyển SQL thêm thuộc tính project_role vào bảng project_members để định nghĩa vai trò của thành viên trong từng dự án cụ thể.",
+      "tags": ["database-migration", "sql", "rbac", "project-role"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "type": "file",
+      "name": "20260418093000_project_task_workflow/migration.sql",
+      "filePath": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "summary": "Bản dịch chuyển SQL nâng cấp cấu trúc bảng projects và tasks nhằm hỗ trợ định cấu hình trạng thái luồng công việc (workflow).",
+      "tags": ["database-migration", "sql", "workflow-setup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "type": "file",
+      "name": "20260418095500_add_task_workflow_graph/migration.sql",
+      "filePath": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "summary": "Bản dịch chuyển SQL bổ sung hỗ trợ cấu hình đồ thị luồng công việc cho dự án.",
+      "tags": ["database-migration", "sql", "workflow-graph"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "type": "file",
+      "name": "20260418102000_add_project_roles/migration.sql",
+      "filePath": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "summary": "Bản dịch chuyển SQL thêm các cấu hình vai trò tùy chỉnh ở cấp độ dự án trong bảng projects.",
+      "tags": ["database-migration", "sql", "rbac", "project-settings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "type": "file",
+      "name": "20260418110000_add_project_role_configs/migration.sql",
+      "filePath": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "summary": "Bản dịch chuyển SQL mở rộng cấu hình chi tiết phân quyền của các vai trò thành viên trong bảng dự án.",
+      "tags": ["database-migration", "sql", "rbac", "configs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "type": "file",
+      "name": "20260420095408_add_ai_chat_sessions/migration.sql",
+      "filePath": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "summary": "Bản dịch chuyển SQL tạo bảng ai_chat_sessions phục vụ việc lưu trữ lịch sử trò chuyện với AI của từng thành viên trong dự án.",
+      "tags": ["database-migration", "sql", "ai-chat", "sessions"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql:ai_chat_sessions",
+      "type": "table",
+      "name": "ai_chat_sessions",
+      "filePath": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "summary": "Bảng lưu trữ các phiên hội thoại của trợ lý AI với người dùng theo từng dự án.",
+      "tags": ["database-table", "ai-chat", "session-history"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "type": "file",
+      "name": "20260423090000_add_task_hours/migration.sql",
+      "filePath": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "summary": "Bản dịch chuyển SQL cập nhật bảng tasks để theo dõi và tính toán số giờ làm việc thực tế.",
+      "tags": ["database-migration", "sql", "tasks-update", "timesheet"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "type": "file",
+      "name": "20260504090000_add_task_epic/migration.sql",
+      "filePath": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "summary": "Bản dịch chuyển SQL bổ sung cột epic vào bảng tasks để liên kết và phân nhóm công việc theo Epic.",
+      "tags": ["database-migration", "sql", "tasks-update", "epic"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "type": "file",
+      "name": "20260504091000_add_task_labels/migration.sql",
+      "filePath": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "summary": "Bản dịch chuyển SQL thêm thuộc tính mảng nhãn dán (labels) vào bảng tasks phục vụ việc phân loại công việc.",
+      "tags": ["database-migration", "sql", "tasks-update", "labels"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "type": "file",
+      "name": "20260504092000_add_project_epics_labels/migration.sql",
+      "filePath": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "summary": "Bản dịch chuyển SQL cập nhật bảng projects để lưu trữ danh sách các Epic và các nhãn dán chung của toàn dự án.",
+      "tags": ["database-migration", "sql", "project-settings", "epics-labels"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "type": "file",
+      "name": "20260504093000_add_task_naming_rule/migration.sql",
+      "filePath": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "summary": "Bản dịch chuyển SQL bổ sung quy tắc đặt tên công việc (task naming rule) tùy biến cho từng dự án.",
+      "tags": ["database-migration", "sql", "project-settings", "naming-rule"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "type": "file",
+      "name": "20260504163000_add_task_activity/migration.sql",
+      "filePath": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "summary": "Bản dịch chuyển SQL tạo bảng task_activities để lưu lại nhật ký hoạt động (audit logs) chi tiết cho các công việc.",
+      "tags": ["database-migration", "sql", "task-activity", "audit-logs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql:task_activities",
+      "type": "table",
+      "name": "task_activities",
+      "filePath": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "summary": "Bảng lưu trữ nhật ký hoạt động chi tiết của từng công việc (tasks), bao gồm thay đổi trạng thái, giá trị và thời gian thực hiện.",
+      "tags": ["database-table", "audit-log", "task-activity"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:.understand-anything/tmp/generate-ignore.js",
+      "target": "function:.understand-anything/tmp/generate-ignore.js:norm",
+      "type": "contains"
+    },
+    {
+      "source": "file:.understand-anything/tmp/generate-ignore.js",
+      "target": "config:.understand-anything/.understandignore",
+      "type": "configures"
+    },
+    {
+      "source": "file:backend/check_project.js",
+      "target": "function:backend/check_project.js:main",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/check_project.js",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/check_task.js",
+      "target": "function:backend/check_task.js:main",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/check_task.js",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "function:backend/eval/agent-eval.js:check",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "function:backend/eval/agent-eval.js:selectEvaluationContext",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "function:backend/eval/agent-eval.js:runWithTimeout",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "function:backend/eval/agent-eval.js:main",
+      "type": "contains"
+    },
+    {
+      "source": "function:backend/eval/agent-eval.js:main",
+      "target": "function:backend/eval/agent-eval.js:selectEvaluationContext",
+      "type": "calls"
+    },
+    {
+      "source": "function:backend/eval/agent-eval.js:main",
+      "target": "function:backend/eval/agent-eval.js:runWithTimeout",
+      "type": "calls"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "service:backend/src/ai/ai.service.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/eval/agent-eval.js",
+      "target": "service:backend/src/ai/ai-data-access.service.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:roles",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:documents",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417044832_init/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "contains"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:roles",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:documents",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql:requirements_history",
+      "type": "contains"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql:requirements_history",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql:requirements_history",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:project_members",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+      "target": "table:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql:ai_chat_sessions",
+      "type": "contains"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql:ai_chat_sessions",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql:ai_chat_sessions",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:projects",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "migrates"
+    },
+    {
+      "source": "file:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+      "target": "table:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql:task_activities",
+      "type": "contains"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql:task_activities",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:tasks",
+      "type": "depends_on"
+    },
+    {
+      "source": "table:backend/prisma/migrations/20260504163000_add_task_activity/migration.sql:task_activities",
+      "target": "table:backend/prisma/migrations/20260417044832_init/migration.sql:users",
+      "type": "depends_on"
+    }
+  ]
+}

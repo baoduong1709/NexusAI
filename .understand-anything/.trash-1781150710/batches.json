@@ -1,0 +1,2425 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 147,
+  "totalBatches": 12,
+  "exportsByPath": {
+    ".understand-anything/.understandignore": [],
+    ".understand-anything/tmp/generate-ignore.js": [],
+    "backend/check_project.js": [],
+    "backend/check_task.js": [],
+    "backend/eval/agent-eval.js": [],
+    "backend/fix_module.js": [],
+    "backend/fix_rag.js": [],
+    "backend/fix.js": [],
+    "backend/prisma/seed-employees.ts": [],
+    "backend/prisma/seed.ts": [],
+    "backend/search-glapp-2.js": [],
+    "backend/src/ai/agent-runtime.util.test.ts": [],
+    "backend/src/ai/agent-runtime.util.ts": [
+      "estimateAgentMessageTokens",
+      "truncateAgentMessages",
+      "shouldReportToolRoundLimit"
+    ],
+    "backend/src/ai/agent-security.util.test.ts": [],
+    "backend/src/ai/agent-security.util.ts": [
+      "wrapUntrustedToolResult"
+    ],
+    "backend/src/ai/ai-data-access.service.ts": [
+      "AiDataAccessService"
+    ],
+    "backend/src/ai/ai-logger.util.ts": [
+      "AiLogger"
+    ],
+    "backend/src/ai/ai.controller.ts": [
+      "AiController"
+    ],
+    "backend/src/ai/ai.module.ts": [
+      "AiModule"
+    ],
+    "backend/src/ai/ai.service.ts": [
+      "AiService"
+    ],
+    "backend/src/ai/dto/ai.dto.ts": [
+      "ConfirmAiTasksDto",
+      "SuggestAssigneeDto",
+      "ImproveDescriptionDto",
+      "AssistDescriptionDto",
+      "AiChatDto",
+      "AiSummarizeDto",
+      "CreateSessionDto",
+      "UpdateSessionDto"
+    ],
+    "backend/src/ai/dto/system-config.dto.ts": [
+      "UpdateSystemConfigsDto"
+    ],
+    "backend/src/ai/rag.service.ts": [
+      "RagService"
+    ],
+    "backend/src/ai/system-configs.controller.ts": [
+      "SystemConfigsController"
+    ],
+    "backend/src/ai/task-suggestion.util.test.ts": [],
+    "backend/src/ai/task-suggestion.util.ts": [
+      "validateTaskSuggestionPayload"
+    ],
+    "backend/src/ai/token-stats.controller.ts": [
+      "TokenStatsController"
+    ],
+    "backend/src/app.module.ts": [
+      "AppModule"
+    ],
+    "backend/src/auth/auth.controller.ts": [
+      "AuthController"
+    ],
+    "backend/src/auth/auth.module.ts": [
+      "AuthModule"
+    ],
+    "backend/src/auth/auth.service.ts": [
+      "AuthService"
+    ],
+    "backend/src/auth/decorators/current-user.decorator.ts": [
+      "CurrentUser"
+    ],
+    "backend/src/auth/decorators/permissions.decorator.ts": [
+      "PERMISSIONS_KEY",
+      "RequirePermissions"
+    ],
+    "backend/src/auth/dto/login.dto.ts": [
+      "LoginDto"
+    ],
+    "backend/src/auth/guards/jwt-auth.guard.ts": [
+      "JwtAuthGuard"
+    ],
+    "backend/src/auth/guards/permissions.guard.ts": [
+      "PermissionsGuard"
+    ],
+    "backend/src/auth/permissions.ts": [
+      "AVAILABLE_PERMISSIONS",
+      "PROJECT_SCOPED_PERMISSIONS"
+    ],
+    "backend/src/auth/strategies/jwt.strategy.ts": [
+      "JwtStrategy"
+    ],
+    "backend/src/common/dto/paginated-query.dto.ts": [
+      "PaginatedQueryDto"
+    ],
+    "backend/src/common/dto/paginated-response.ts": [],
+    "backend/src/common/middleware/logging.middleware.ts": [
+      "LoggingMiddleware"
+    ],
+    "backend/src/common/storage/hybrid-storage.service.ts": [
+      "HybridStorageService"
+    ],
+    "backend/src/common/storage/local-storage.service.ts": [
+      "LocalStorageService"
+    ],
+    "backend/src/common/storage/s3-storage.service.ts": [
+      "S3StorageService"
+    ],
+    "backend/src/common/storage/storage.module.ts": [
+      "StorageModule"
+    ],
+    "backend/src/common/storage/storage.service.ts": [],
+    "backend/src/documents/documents.controller.ts": [
+      "DocumentsController"
+    ],
+    "backend/src/documents/documents.module.ts": [
+      "DocumentsModule"
+    ],
+    "backend/src/documents/documents.service.ts": [
+      "DocumentsService"
+    ],
+    "backend/src/documents/dto/documents-query.dto.ts": [
+      "DocumentsQueryDto"
+    ],
+    "backend/src/documents/markitdown.service.ts": [
+      "MarkitdownService"
+    ],
+    "backend/src/main.ts": [],
+    "backend/src/prisma/prisma.module.ts": [
+      "PrismaModule"
+    ],
+    "backend/src/prisma/prisma.service.ts": [
+      "PrismaService"
+    ],
+    "backend/src/project-ai-index/project-ai-index.module.ts": [
+      "ProjectAiIndexModule"
+    ],
+    "backend/src/project-ai-index/project-ai-index.service.ts": [
+      "ProjectAiIndexService"
+    ],
+    "backend/src/projects/dto/create-project.dto.ts": [
+      "CreateProjectDto",
+      "UpdateProjectDto"
+    ],
+    "backend/src/projects/dto/update-project-roles.dto.ts": [
+      "ProjectRoleConfigDto",
+      "UpdateProjectRolesDto"
+    ],
+    "backend/src/projects/dto/update-project-workflow.dto.ts": [
+      "UpdateProjectWorkflowDto"
+    ],
+    "backend/src/projects/project-roles.ts": [
+      "DEFAULT_PROJECT_ROLES",
+      "DEFAULT_PROJECT_ROLE_CONFIGS",
+      "getDefaultProjectRolePermissions",
+      "normalizeProjectRoles",
+      "normalizeProjectRoleConfigs",
+      "getProjectRoleNames",
+      "normalizeProjectRole",
+      "getProjectRolePermissions"
+    ],
+    "backend/src/projects/project-workflow.ts": [
+      "DEFAULT_TASK_STATUSES",
+      "normalizeTaskStatuses",
+      "createDefaultTaskWorkflow",
+      "normalizeTaskWorkflow",
+      "getTaskWorkflowStatusNames",
+      "getDefaultTaskStatus",
+      "buildWorkflowRenameMap",
+      "isTaskTransitionAllowed",
+      "getWorkflowAsJson"
+    ],
+    "backend/src/projects/projects.controller.ts": [
+      "ProjectsController"
+    ],
+    "backend/src/projects/projects.module.ts": [
+      "ProjectsModule"
+    ],
+    "backend/src/projects/projects.service.ts": [
+      "ProjectsService"
+    ],
+    "backend/src/roles/dto/create-role.dto.ts": [
+      "CreateRoleDto"
+    ],
+    "backend/src/roles/roles.controller.ts": [
+      "RolesController"
+    ],
+    "backend/src/roles/roles.module.ts": [
+      "RolesModule"
+    ],
+    "backend/src/roles/roles.service.ts": [
+      "RolesService"
+    ],
+    "backend/src/tasks/dto/create-task.dto.ts": [
+      "CreateTaskDto",
+      "UpdateTaskStatusDto",
+      "CreateTaskCommentDto",
+      "CreateTaskWorkLogDto"
+    ],
+    "backend/src/tasks/dto/tasks-query.dto.ts": [
+      "TasksQueryDto"
+    ],
+    "backend/src/tasks/tasks.controller.ts": [
+      "TasksController"
+    ],
+    "backend/src/tasks/tasks.module.ts": [
+      "TasksModule"
+    ],
+    "backend/src/tasks/tasks.service.ts": [
+      "TasksService"
+    ],
+    "backend/src/users/dto/create-user.dto.ts": [
+      "CreateUserDto"
+    ],
+    "backend/src/users/dto/update-chat-settings.dto.ts": [
+      "UpdateChatSettingsDto"
+    ],
+    "backend/src/users/dto/update-user.dto.ts": [
+      "UpdateUserDto"
+    ],
+    "backend/src/users/users.controller.ts": [
+      "UsersController"
+    ],
+    "backend/src/users/users.module.ts": [
+      "UsersModule"
+    ],
+    "backend/src/users/users.service.ts": [
+      "UsersService"
+    ],
+    "backend/test-chat.js": [],
+    "backend/test-local.js": [],
+    "backend/update_agent.js": [],
+    "backend/update_ai_service_rag.js": [],
+    "backend/update_controller.js": [],
+    "backend/update_docs_service.js": [],
+    "backend/update_service.js": [],
+    "frontend/app/(auth)/layout.tsx": [
+      "AuthLayout"
+    ],
+    "frontend/app/(auth)/login/page.tsx": [
+      "LoginPage"
+    ],
+    "frontend/app/(dashboard)/ai-settings/page.tsx": [
+      "AiSettingsPage"
+    ],
+    "frontend/app/(dashboard)/dashboard/page.tsx": [
+      "DashboardPage"
+    ],
+    "frontend/app/(dashboard)/layout.tsx": [
+      "DashboardLayout"
+    ],
+    "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx": [
+      "AiAnalysisPage"
+    ],
+    "frontend/app/(dashboard)/projects/[id]/page.tsx": [
+      "ProjectDetailPage"
+    ],
+    "frontend/app/(dashboard)/projects/page.tsx": [
+      "ProjectsPage"
+    ],
+    "frontend/app/(dashboard)/roles/page.tsx": [
+      "RolesPage"
+    ],
+    "frontend/app/(dashboard)/users/page.tsx": [
+      "UsersPage"
+    ],
+    "frontend/app/layout.tsx": [
+      "metadata",
+      "RootLayout"
+    ],
+    "frontend/app/page.tsx": [
+      "Home"
+    ],
+    "frontend/components/ai-chat-bubble.tsx": [
+      "AiChatBubble"
+    ],
+    "frontend/components/brand-logo.tsx": [
+      "BrandLogo"
+    ],
+    "frontend/components/layout/header.tsx": [
+      "Header"
+    ],
+    "frontend/components/layout/sidebar.tsx": [
+      "Sidebar"
+    ],
+    "frontend/components/project-workflow-editor.tsx": [
+      "WorkflowPreview",
+      "ProjectWorkflowEditor"
+    ],
+    "frontend/components/providers/query-provider.tsx": [
+      "QueryProvider"
+    ],
+    "frontend/components/providers/theme-provider.tsx": [
+      "ThemeProvider",
+      "useTheme"
+    ],
+    "frontend/lib/api.ts": [
+      "authApi",
+      "usersApi",
+      "rolesApi",
+      "projectsApi",
+      "tasksApi",
+      "documentsApi",
+      "aiApi"
+    ],
+    "frontend/lib/auth.tsx": [
+      "AuthProvider",
+      "useAuth"
+    ],
+    "frontend/lib/project-roles.ts": [
+      "PROJECT_ROLE_PERMISSION_GROUPS",
+      "DEFAULT_PROJECT_ROLES",
+      "DEFAULT_PROJECT_ROLE_CONFIGS",
+      "getDefaultProjectRolePermissions",
+      "normalizeProjectRoleConfigs",
+      "normalizeProjectRoles",
+      "getProjectRolePermissions"
+    ],
+    "frontend/lib/utils.ts": [
+      "cn",
+      "formatDate",
+      "formatDateTime",
+      "formatCurrency",
+      "getInitials",
+      "PRIORITY_COLORS",
+      "createDefaultTaskWorkflow",
+      "normalizeTaskWorkflow",
+      "getTaskWorkflowNode",
+      "getTaskStatusInlineStyle",
+      "getTaskStatusColorClass",
+      "getAllowedTransitionStatuses",
+      "PROJECT_STATUS_COLORS"
+    ],
+    "frontend/next-env.d.ts": [],
+    "frontend/next.config.mjs": [],
+    "frontend/postcss.config.js": [],
+    "frontend/tailwind.config.ts": [],
+    "scratch/check_task.js": []
+  },
+  "batches": [
+    {
+      "batchIndex": 1,
+      "files": [
+        {
+          "path": "backend/src/ai/agent-runtime.util.test.ts",
+          "language": "typescript",
+          "sizeLines": 95,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/agent-runtime.util.ts",
+          "language": "typescript",
+          "sizeLines": 117,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/agent-security.util.test.ts",
+          "language": "typescript",
+          "sizeLines": 33,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/agent-security.util.ts",
+          "language": "typescript",
+          "sizeLines": 22,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/ai-data-access.service.ts",
+          "language": "typescript",
+          "sizeLines": 388,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/ai-logger.util.ts",
+          "language": "typescript",
+          "sizeLines": 105,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/ai.module.ts",
+          "language": "typescript",
+          "sizeLines": 16,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/ai.service.ts",
+          "language": "typescript",
+          "sizeLines": 2370,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/rag.service.ts",
+          "language": "typescript",
+          "sizeLines": 367,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/task-suggestion.util.test.ts",
+          "language": "typescript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/task-suggestion.util.ts",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/app.module.ts",
+          "language": "typescript",
+          "sizeLines": 32,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/dto/paginated-response.ts",
+          "language": "typescript",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/middleware/logging.middleware.ts",
+          "language": "typescript",
+          "sizeLines": 23,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/documents/documents.module.ts",
+          "language": "typescript",
+          "sizeLines": 19,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/documents/documents.service.ts",
+          "language": "typescript",
+          "sizeLines": 274,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/documents/markitdown.service.ts",
+          "language": "typescript",
+          "sizeLines": 131,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/main.ts",
+          "language": "typescript",
+          "sizeLines": 43,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/prisma/prisma.module.ts",
+          "language": "typescript",
+          "sizeLines": 9,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/prisma/prisma.service.ts",
+          "language": "typescript",
+          "sizeLines": 44,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/project-ai-index/project-ai-index.module.ts",
+          "language": "typescript",
+          "sizeLines": 8,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/project-ai-index/project-ai-index.service.ts",
+          "language": "typescript",
+          "sizeLines": 269,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/projects.module.ts",
+          "language": "typescript",
+          "sizeLines": 13,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/tasks/dto/create-task.dto.ts",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/tasks/tasks.module.ts",
+          "language": "typescript",
+          "sizeLines": 12,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/tasks/tasks.service.ts",
+          "language": "typescript",
+          "sizeLines": 518,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/ai/agent-runtime.util.test.ts": [
+          "backend/src/ai/agent-runtime.util.ts"
+        ],
+        "backend/src/ai/agent-runtime.util.ts": [],
+        "backend/src/ai/agent-security.util.test.ts": [
+          "backend/src/ai/agent-security.util.ts"
+        ],
+        "backend/src/ai/agent-security.util.ts": [],
+        "backend/src/ai/ai-data-access.service.ts": [
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/projects/project-roles.ts"
+        ],
+        "backend/src/ai/ai-logger.util.ts": [],
+        "backend/src/ai/ai.module.ts": [
+          "backend/src/ai/ai-data-access.service.ts",
+          "backend/src/ai/ai.controller.ts",
+          "backend/src/ai/ai.service.ts",
+          "backend/src/ai/rag.service.ts",
+          "backend/src/ai/system-configs.controller.ts",
+          "backend/src/ai/token-stats.controller.ts",
+          "backend/src/project-ai-index/project-ai-index.module.ts",
+          "backend/src/tasks/tasks.module.ts"
+        ],
+        "backend/src/ai/ai.service.ts": [
+          "backend/src/ai/agent-runtime.util.ts",
+          "backend/src/ai/agent-security.util.ts",
+          "backend/src/ai/ai-data-access.service.ts",
+          "backend/src/ai/ai-logger.util.ts",
+          "backend/src/ai/rag.service.ts",
+          "backend/src/ai/task-suggestion.util.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/project-ai-index/project-ai-index.service.ts",
+          "backend/src/tasks/tasks.service.ts"
+        ],
+        "backend/src/ai/rag.service.ts": [
+          "backend/src/ai/ai-logger.util.ts",
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/ai/task-suggestion.util.test.ts": [
+          "backend/src/ai/task-suggestion.util.ts"
+        ],
+        "backend/src/ai/task-suggestion.util.ts": [],
+        "backend/src/app.module.ts": [
+          "backend/src/ai/ai.module.ts",
+          "backend/src/auth/auth.module.ts",
+          "backend/src/common/middleware/logging.middleware.ts",
+          "backend/src/common/storage/storage.module.ts",
+          "backend/src/documents/documents.module.ts",
+          "backend/src/prisma/prisma.module.ts",
+          "backend/src/projects/projects.module.ts",
+          "backend/src/roles/roles.module.ts",
+          "backend/src/tasks/tasks.module.ts",
+          "backend/src/users/users.module.ts"
+        ],
+        "backend/src/common/dto/paginated-response.ts": [],
+        "backend/src/common/middleware/logging.middleware.ts": [],
+        "backend/src/documents/documents.module.ts": [
+          "backend/src/ai/ai.module.ts",
+          "backend/src/documents/documents.controller.ts",
+          "backend/src/documents/documents.service.ts",
+          "backend/src/documents/markitdown.service.ts",
+          "backend/src/project-ai-index/project-ai-index.module.ts"
+        ],
+        "backend/src/documents/documents.service.ts": [
+          "backend/src/ai/rag.service.ts",
+          "backend/src/common/dto/paginated-response.ts",
+          "backend/src/common/storage/storage.service.ts",
+          "backend/src/documents/dto/documents-query.dto.ts",
+          "backend/src/documents/markitdown.service.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/project-ai-index/project-ai-index.service.ts"
+        ],
+        "backend/src/documents/markitdown.service.ts": [],
+        "backend/src/main.ts": [
+          "backend/src/app.module.ts"
+        ],
+        "backend/src/prisma/prisma.module.ts": [
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/prisma/prisma.service.ts": [],
+        "backend/src/project-ai-index/project-ai-index.module.ts": [
+          "backend/src/project-ai-index/project-ai-index.service.ts"
+        ],
+        "backend/src/project-ai-index/project-ai-index.service.ts": [
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/projects/projects.module.ts": [
+          "backend/src/ai/ai.module.ts",
+          "backend/src/project-ai-index/project-ai-index.module.ts",
+          "backend/src/projects/projects.controller.ts",
+          "backend/src/projects/projects.service.ts"
+        ],
+        "backend/src/tasks/dto/create-task.dto.ts": [],
+        "backend/src/tasks/tasks.module.ts": [
+          "backend/src/project-ai-index/project-ai-index.module.ts",
+          "backend/src/tasks/tasks.controller.ts",
+          "backend/src/tasks/tasks.service.ts"
+        ],
+        "backend/src/tasks/tasks.service.ts": [
+          "backend/src/common/dto/paginated-response.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/project-ai-index/project-ai-index.service.ts",
+          "backend/src/projects/project-workflow.ts",
+          "backend/src/tasks/dto/create-task.dto.ts",
+          "backend/src/tasks/dto/tasks-query.dto.ts"
+        ]
+      },
+      "neighborMap": {
+        "backend/src/ai/ai-data-access.service.ts": [
+          {
+            "path": "backend/src/projects/project-roles.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DEFAULT_PROJECT_ROLES",
+              "DEFAULT_PROJECT_ROLE_CONFIGS",
+              "getDefaultProjectRolePermissions",
+              "normalizeProjectRoles",
+              "normalizeProjectRoleConfigs",
+              "getProjectRoleNames",
+              "normalizeProjectRole",
+              "getProjectRolePermissions"
+            ]
+          }
+        ],
+        "backend/src/ai/ai.module.ts": [
+          {
+            "path": "backend/src/ai/ai.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "AiController"
+            ]
+          },
+          {
+            "path": "backend/src/ai/system-configs.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "SystemConfigsController"
+            ]
+          },
+          {
+            "path": "backend/src/ai/token-stats.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TokenStatsController"
+            ]
+          }
+        ],
+        "backend/src/ai/ai.service.ts": [
+          {
+            "path": "backend/src/ai/ai.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "AiController"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.service.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsService"
+            ]
+          }
+        ],
+        "backend/src/app.module.ts": [
+          {
+            "path": "backend/src/auth/auth.module.ts",
+            "batchIndex": 6,
+            "symbols": [
+              "AuthModule"
+            ]
+          },
+          {
+            "path": "backend/src/common/storage/storage.module.ts",
+            "batchIndex": 7,
+            "symbols": [
+              "StorageModule"
+            ]
+          },
+          {
+            "path": "backend/src/roles/roles.module.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "RolesModule"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.module.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersModule"
+            ]
+          }
+        ],
+        "backend/src/documents/documents.module.ts": [
+          {
+            "path": "backend/src/documents/documents.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocumentsController"
+            ]
+          }
+        ],
+        "backend/src/documents/documents.service.ts": [
+          {
+            "path": "backend/src/common/storage/storage.service.ts",
+            "batchIndex": 7,
+            "symbols": []
+          },
+          {
+            "path": "backend/src/documents/dto/documents-query.dto.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocumentsQueryDto"
+            ]
+          },
+          {
+            "path": "backend/src/documents/documents.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocumentsController"
+            ]
+          }
+        ],
+        "backend/src/prisma/prisma.service.ts": [
+          {
+            "path": "backend/src/ai/system-configs.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "SystemConfigsController"
+            ]
+          },
+          {
+            "path": "backend/src/ai/token-stats.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TokenStatsController"
+            ]
+          },
+          {
+            "path": "backend/src/auth/auth.service.ts",
+            "batchIndex": 6,
+            "symbols": [
+              "AuthService"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/permissions.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "PermissionsGuard"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.service.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsService"
+            ]
+          },
+          {
+            "path": "backend/src/roles/roles.service.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "RolesService"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.service.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersService"
+            ]
+          }
+        ],
+        "backend/src/project-ai-index/project-ai-index.service.ts": [
+          {
+            "path": "backend/src/projects/projects.service.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsService"
+            ]
+          }
+        ],
+        "backend/src/projects/projects.module.ts": [
+          {
+            "path": "backend/src/projects/projects.controller.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsController"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.service.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsService"
+            ]
+          }
+        ],
+        "backend/src/tasks/dto/create-task.dto.ts": [
+          {
+            "path": "backend/src/tasks/tasks.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TasksController"
+            ]
+          }
+        ],
+        "backend/src/tasks/tasks.module.ts": [
+          {
+            "path": "backend/src/tasks/tasks.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TasksController"
+            ]
+          }
+        ],
+        "backend/src/tasks/tasks.service.ts": [
+          {
+            "path": "backend/src/projects/project-workflow.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "DEFAULT_TASK_STATUSES",
+              "normalizeTaskStatuses",
+              "createDefaultTaskWorkflow",
+              "normalizeTaskWorkflow",
+              "getTaskWorkflowStatusNames",
+              "getDefaultTaskStatus",
+              "buildWorkflowRenameMap",
+              "isTaskTransitionAllowed",
+              "getWorkflowAsJson"
+            ]
+          },
+          {
+            "path": "backend/src/tasks/dto/tasks-query.dto.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TasksQueryDto"
+            ]
+          },
+          {
+            "path": "backend/src/tasks/tasks.controller.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "TasksController"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "frontend/app/(auth)/login/page.tsx",
+          "language": "typescript",
+          "sizeLines": 144,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/ai-settings/page.tsx",
+          "language": "typescript",
+          "sizeLines": 555,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/dashboard/page.tsx",
+          "language": "typescript",
+          "sizeLines": 201,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/layout.tsx",
+          "language": "typescript",
+          "sizeLines": 58,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+          "language": "typescript",
+          "sizeLines": 393,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+          "language": "typescript",
+          "sizeLines": 5474,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/projects/page.tsx",
+          "language": "typescript",
+          "sizeLines": 381,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/roles/page.tsx",
+          "language": "typescript",
+          "sizeLines": 383,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(dashboard)/users/page.tsx",
+          "language": "typescript",
+          "sizeLines": 447,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/layout.tsx",
+          "language": "typescript",
+          "sizeLines": 35,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/ai-chat-bubble.tsx",
+          "language": "typescript",
+          "sizeLines": 1287,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/brand-logo.tsx",
+          "language": "typescript",
+          "sizeLines": 76,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/layout/header.tsx",
+          "language": "typescript",
+          "sizeLines": 115,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/layout/sidebar.tsx",
+          "language": "typescript",
+          "sizeLines": 108,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/project-workflow-editor.tsx",
+          "language": "typescript",
+          "sizeLines": 875,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/providers/query-provider.tsx",
+          "language": "typescript",
+          "sizeLines": 20,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/components/providers/theme-provider.tsx",
+          "language": "typescript",
+          "sizeLines": 80,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/lib/api.ts",
+          "language": "typescript",
+          "sizeLines": 347,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/lib/auth.tsx",
+          "language": "typescript",
+          "sizeLines": 80,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/lib/project-roles.ts",
+          "language": "typescript",
+          "sizeLines": 152,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/lib/utils.ts",
+          "language": "typescript",
+          "sizeLines": 219,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "frontend/app/(auth)/login/page.tsx": [
+          "frontend/components/brand-logo.tsx",
+          "frontend/components/providers/theme-provider.tsx",
+          "frontend/lib/auth.tsx"
+        ],
+        "frontend/app/(dashboard)/ai-settings/page.tsx": [
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx"
+        ],
+        "frontend/app/(dashboard)/dashboard/page.tsx": [
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/(dashboard)/layout.tsx": [
+          "frontend/components/ai-chat-bubble.tsx",
+          "frontend/components/layout/header.tsx",
+          "frontend/components/layout/sidebar.tsx",
+          "frontend/lib/auth.tsx"
+        ],
+        "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx": [
+          "frontend/components/brand-logo.tsx",
+          "frontend/lib/api.ts",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/(dashboard)/projects/[id]/page.tsx": [
+          "frontend/components/brand-logo.tsx",
+          "frontend/components/project-workflow-editor.tsx",
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/project-roles.ts",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/(dashboard)/projects/page.tsx": [
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/project-roles.ts",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/(dashboard)/roles/page.tsx": [
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/(dashboard)/users/page.tsx": [
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/app/layout.tsx": [
+          "frontend/app/globals.css",
+          "frontend/components/providers/query-provider.tsx",
+          "frontend/components/providers/theme-provider.tsx",
+          "frontend/lib/auth.tsx"
+        ],
+        "frontend/components/ai-chat-bubble.tsx": [
+          "frontend/components/brand-logo.tsx",
+          "frontend/lib/api.ts",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/components/brand-logo.tsx": [
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/components/layout/header.tsx": [
+          "frontend/components/providers/theme-provider.tsx",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/components/layout/sidebar.tsx": [
+          "frontend/components/brand-logo.tsx",
+          "frontend/lib/auth.tsx",
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/components/project-workflow-editor.tsx": [
+          "frontend/lib/utils.ts"
+        ],
+        "frontend/components/providers/query-provider.tsx": [],
+        "frontend/components/providers/theme-provider.tsx": [],
+        "frontend/lib/api.ts": [],
+        "frontend/lib/auth.tsx": [
+          "frontend/lib/api.ts"
+        ],
+        "frontend/lib/project-roles.ts": [],
+        "frontend/lib/utils.ts": []
+      },
+      "neighborMap": {
+        "frontend/app/layout.tsx": [
+          {
+            "path": "frontend/app/globals.css",
+            "batchIndex": 11,
+            "symbols": []
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 3,
+      "files": [
+        {
+          "path": "backend/src/ai/ai.controller.ts",
+          "language": "typescript",
+          "sizeLines": 229,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/dto/ai.dto.ts",
+          "language": "typescript",
+          "sizeLines": 180,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/dto/system-config.dto.ts",
+          "language": "typescript",
+          "sizeLines": 34,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/system-configs.controller.ts",
+          "language": "typescript",
+          "sizeLines": 83,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/ai/token-stats.controller.ts",
+          "language": "typescript",
+          "sizeLines": 197,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/decorators/current-user.decorator.ts",
+          "language": "typescript",
+          "sizeLines": 8,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/decorators/permissions.decorator.ts",
+          "language": "typescript",
+          "sizeLines": 5,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+          "language": "typescript",
+          "sizeLines": 3,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/guards/permissions.guard.ts",
+          "language": "typescript",
+          "sizeLines": 118,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/permissions.ts",
+          "language": "typescript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/dto/paginated-query.dto.ts",
+          "language": "typescript",
+          "sizeLines": 19,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/documents/documents.controller.ts",
+          "language": "typescript",
+          "sizeLines": 118,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/documents/dto/documents-query.dto.ts",
+          "language": "typescript",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/project-roles.ts",
+          "language": "typescript",
+          "sizeLines": 182,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/roles/dto/create-role.dto.ts",
+          "language": "typescript",
+          "sizeLines": 16,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/roles/roles.controller.ts",
+          "language": "typescript",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/roles/roles.module.ts",
+          "language": "typescript",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/roles/roles.service.ts",
+          "language": "typescript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/tasks/dto/tasks-query.dto.ts",
+          "language": "typescript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/tasks/tasks.controller.ts",
+          "language": "typescript",
+          "sizeLines": 122,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/ai/ai.controller.ts": [
+          "backend/src/ai/ai.service.ts",
+          "backend/src/ai/dto/ai.dto.ts",
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts"
+        ],
+        "backend/src/ai/dto/ai.dto.ts": [],
+        "backend/src/ai/dto/system-config.dto.ts": [],
+        "backend/src/ai/system-configs.controller.ts": [
+          "backend/src/ai/dto/system-config.dto.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/ai/token-stats.controller.ts": [
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/auth/decorators/current-user.decorator.ts": [],
+        "backend/src/auth/decorators/permissions.decorator.ts": [],
+        "backend/src/auth/guards/jwt-auth.guard.ts": [],
+        "backend/src/auth/guards/permissions.guard.ts": [
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/permissions.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/projects/project-roles.ts"
+        ],
+        "backend/src/auth/permissions.ts": [],
+        "backend/src/common/dto/paginated-query.dto.ts": [],
+        "backend/src/documents/documents.controller.ts": [
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/documents/documents.service.ts",
+          "backend/src/documents/dto/documents-query.dto.ts"
+        ],
+        "backend/src/documents/dto/documents-query.dto.ts": [
+          "backend/src/common/dto/paginated-query.dto.ts"
+        ],
+        "backend/src/projects/project-roles.ts": [
+          "backend/src/auth/permissions.ts"
+        ],
+        "backend/src/roles/dto/create-role.dto.ts": [],
+        "backend/src/roles/roles.controller.ts": [
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/roles/dto/create-role.dto.ts",
+          "backend/src/roles/roles.service.ts"
+        ],
+        "backend/src/roles/roles.module.ts": [
+          "backend/src/roles/roles.controller.ts",
+          "backend/src/roles/roles.service.ts"
+        ],
+        "backend/src/roles/roles.service.ts": [
+          "backend/src/auth/permissions.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/roles/dto/create-role.dto.ts"
+        ],
+        "backend/src/tasks/dto/tasks-query.dto.ts": [
+          "backend/src/common/dto/paginated-query.dto.ts"
+        ],
+        "backend/src/tasks/tasks.controller.ts": [
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/tasks/dto/create-task.dto.ts",
+          "backend/src/tasks/dto/tasks-query.dto.ts",
+          "backend/src/tasks/tasks.service.ts"
+        ]
+      },
+      "neighborMap": {
+        "backend/src/ai/ai.controller.ts": [
+          {
+            "path": "backend/src/ai/ai.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiService"
+            ]
+          },
+          {
+            "path": "backend/src/ai/ai.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiModule"
+            ]
+          }
+        ],
+        "backend/src/ai/system-configs.controller.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          },
+          {
+            "path": "backend/src/ai/ai.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiModule"
+            ]
+          }
+        ],
+        "backend/src/ai/token-stats.controller.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          },
+          {
+            "path": "backend/src/ai/ai.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiModule"
+            ]
+          }
+        ],
+        "backend/src/auth/decorators/current-user.decorator.ts": [
+          {
+            "path": "backend/src/auth/auth.controller.ts",
+            "batchIndex": 6,
+            "symbols": [
+              "AuthController"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.controller.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsController"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.controller.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersController"
+            ]
+          }
+        ],
+        "backend/src/auth/decorators/permissions.decorator.ts": [
+          {
+            "path": "backend/src/projects/projects.controller.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsController"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.controller.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersController"
+            ]
+          }
+        ],
+        "backend/src/auth/guards/jwt-auth.guard.ts": [
+          {
+            "path": "backend/src/auth/auth.controller.ts",
+            "batchIndex": 6,
+            "symbols": [
+              "AuthController"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.controller.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsController"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.controller.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersController"
+            ]
+          }
+        ],
+        "backend/src/auth/guards/permissions.guard.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.controller.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsController"
+            ]
+          },
+          {
+            "path": "backend/src/users/users.controller.ts",
+            "batchIndex": 5,
+            "symbols": [
+              "UsersController"
+            ]
+          }
+        ],
+        "backend/src/documents/documents.controller.ts": [
+          {
+            "path": "backend/src/documents/documents.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "DocumentsService"
+            ]
+          },
+          {
+            "path": "backend/src/documents/documents.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "DocumentsModule"
+            ]
+          }
+        ],
+        "backend/src/documents/dto/documents-query.dto.ts": [
+          {
+            "path": "backend/src/documents/documents.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "DocumentsService"
+            ]
+          }
+        ],
+        "backend/src/projects/project-roles.ts": [
+          {
+            "path": "backend/src/ai/ai-data-access.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiDataAccessService"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.service.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "ProjectsService"
+            ]
+          }
+        ],
+        "backend/src/roles/roles.module.ts": [
+          {
+            "path": "backend/src/app.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AppModule"
+            ]
+          }
+        ],
+        "backend/src/roles/roles.service.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          }
+        ],
+        "backend/src/tasks/dto/tasks-query.dto.ts": [
+          {
+            "path": "backend/src/tasks/tasks.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "TasksService"
+            ]
+          }
+        ],
+        "backend/src/tasks/tasks.controller.ts": [
+          {
+            "path": "backend/src/tasks/dto/create-task.dto.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "CreateTaskDto",
+              "UpdateTaskStatusDto",
+              "CreateTaskCommentDto",
+              "CreateTaskWorkLogDto"
+            ]
+          },
+          {
+            "path": "backend/src/tasks/tasks.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "TasksService"
+            ]
+          },
+          {
+            "path": "backend/src/tasks/tasks.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "TasksModule"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 4,
+      "files": [
+        {
+          "path": "backend/src/projects/dto/create-project.dto.ts",
+          "language": "typescript",
+          "sizeLines": 72,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/dto/update-project-roles.dto.ts",
+          "language": "typescript",
+          "sizeLines": 28,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/dto/update-project-workflow.dto.ts",
+          "language": "typescript",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/project-workflow.ts",
+          "language": "typescript",
+          "sizeLines": 201,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/projects.controller.ts",
+          "language": "typescript",
+          "sizeLines": 113,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/projects/projects.service.ts",
+          "language": "typescript",
+          "sizeLines": 510,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/projects/dto/create-project.dto.ts": [],
+        "backend/src/projects/dto/update-project-roles.dto.ts": [],
+        "backend/src/projects/dto/update-project-workflow.dto.ts": [],
+        "backend/src/projects/project-workflow.ts": [],
+        "backend/src/projects/projects.controller.ts": [
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/projects/dto/create-project.dto.ts",
+          "backend/src/projects/dto/update-project-roles.dto.ts",
+          "backend/src/projects/dto/update-project-workflow.dto.ts",
+          "backend/src/projects/projects.service.ts"
+        ],
+        "backend/src/projects/projects.service.ts": [
+          "backend/src/ai/ai.service.ts",
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/project-ai-index/project-ai-index.service.ts",
+          "backend/src/projects/dto/create-project.dto.ts",
+          "backend/src/projects/dto/update-project-roles.dto.ts",
+          "backend/src/projects/dto/update-project-workflow.dto.ts",
+          "backend/src/projects/project-roles.ts",
+          "backend/src/projects/project-workflow.ts"
+        ]
+      },
+      "neighborMap": {
+        "backend/src/projects/project-workflow.ts": [
+          {
+            "path": "backend/src/tasks/tasks.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "TasksService"
+            ]
+          }
+        ],
+        "backend/src/projects/projects.controller.ts": [
+          {
+            "path": "backend/src/auth/decorators/current-user.decorator.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "CurrentUser"
+            ]
+          },
+          {
+            "path": "backend/src/auth/decorators/permissions.decorator.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "PERMISSIONS_KEY",
+              "RequirePermissions"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "JwtAuthGuard"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/permissions.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "PermissionsGuard"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "ProjectsModule"
+            ]
+          }
+        ],
+        "backend/src/projects/projects.service.ts": [
+          {
+            "path": "backend/src/ai/ai.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AiService"
+            ]
+          },
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          },
+          {
+            "path": "backend/src/project-ai-index/project-ai-index.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "ProjectAiIndexService"
+            ]
+          },
+          {
+            "path": "backend/src/projects/project-roles.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DEFAULT_PROJECT_ROLES",
+              "DEFAULT_PROJECT_ROLE_CONFIGS",
+              "getDefaultProjectRolePermissions",
+              "normalizeProjectRoles",
+              "normalizeProjectRoleConfigs",
+              "getProjectRoleNames",
+              "normalizeProjectRole",
+              "getProjectRolePermissions"
+            ]
+          },
+          {
+            "path": "backend/src/projects/projects.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "ProjectsModule"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 5,
+      "files": [
+        {
+          "path": "backend/src/users/dto/create-user.dto.ts",
+          "language": "typescript",
+          "sizeLines": 37,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/users/dto/update-chat-settings.dto.ts",
+          "language": "typescript",
+          "sizeLines": 15,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/users/dto/update-user.dto.ts",
+          "language": "typescript",
+          "sizeLines": 17,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/users/users.controller.ts",
+          "language": "typescript",
+          "sizeLines": 78,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/users/users.module.ts",
+          "language": "typescript",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/users/users.service.ts",
+          "language": "typescript",
+          "sizeLines": 100,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/users/dto/create-user.dto.ts": [],
+        "backend/src/users/dto/update-chat-settings.dto.ts": [],
+        "backend/src/users/dto/update-user.dto.ts": [
+          "backend/src/users/dto/create-user.dto.ts"
+        ],
+        "backend/src/users/users.controller.ts": [
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/decorators/permissions.decorator.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts",
+          "backend/src/auth/guards/permissions.guard.ts",
+          "backend/src/users/dto/create-user.dto.ts",
+          "backend/src/users/dto/update-chat-settings.dto.ts",
+          "backend/src/users/dto/update-user.dto.ts",
+          "backend/src/users/users.service.ts"
+        ],
+        "backend/src/users/users.module.ts": [
+          "backend/src/users/users.controller.ts",
+          "backend/src/users/users.service.ts"
+        ],
+        "backend/src/users/users.service.ts": [
+          "backend/src/prisma/prisma.service.ts",
+          "backend/src/users/dto/create-user.dto.ts",
+          "backend/src/users/dto/update-chat-settings.dto.ts",
+          "backend/src/users/dto/update-user.dto.ts"
+        ]
+      },
+      "neighborMap": {
+        "backend/src/users/users.controller.ts": [
+          {
+            "path": "backend/src/auth/decorators/current-user.decorator.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "CurrentUser"
+            ]
+          },
+          {
+            "path": "backend/src/auth/decorators/permissions.decorator.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "PERMISSIONS_KEY",
+              "RequirePermissions"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "JwtAuthGuard"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/permissions.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "PermissionsGuard"
+            ]
+          }
+        ],
+        "backend/src/users/users.module.ts": [
+          {
+            "path": "backend/src/app.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AppModule"
+            ]
+          }
+        ],
+        "backend/src/users/users.service.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 6,
+      "files": [
+        {
+          "path": "backend/src/auth/auth.controller.ts",
+          "language": "typescript",
+          "sizeLines": 26,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/auth.module.ts",
+          "language": "typescript",
+          "sizeLines": 25,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/auth.service.ts",
+          "language": "typescript",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/dto/login.dto.ts",
+          "language": "typescript",
+          "sizeLines": 13,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/auth/strategies/jwt.strategy.ts",
+          "language": "typescript",
+          "sizeLines": 24,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/auth/auth.controller.ts": [
+          "backend/src/auth/auth.service.ts",
+          "backend/src/auth/decorators/current-user.decorator.ts",
+          "backend/src/auth/dto/login.dto.ts",
+          "backend/src/auth/guards/jwt-auth.guard.ts"
+        ],
+        "backend/src/auth/auth.module.ts": [
+          "backend/src/auth/auth.controller.ts",
+          "backend/src/auth/auth.service.ts",
+          "backend/src/auth/strategies/jwt.strategy.ts"
+        ],
+        "backend/src/auth/auth.service.ts": [
+          "backend/src/auth/dto/login.dto.ts",
+          "backend/src/prisma/prisma.service.ts"
+        ],
+        "backend/src/auth/dto/login.dto.ts": [],
+        "backend/src/auth/strategies/jwt.strategy.ts": []
+      },
+      "neighborMap": {
+        "backend/src/auth/auth.controller.ts": [
+          {
+            "path": "backend/src/auth/decorators/current-user.decorator.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "CurrentUser"
+            ]
+          },
+          {
+            "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "JwtAuthGuard"
+            ]
+          }
+        ],
+        "backend/src/auth/auth.module.ts": [
+          {
+            "path": "backend/src/app.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AppModule"
+            ]
+          }
+        ],
+        "backend/src/auth/auth.service.ts": [
+          {
+            "path": "backend/src/prisma/prisma.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "PrismaService"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 7,
+      "files": [
+        {
+          "path": "backend/src/common/storage/hybrid-storage.service.ts",
+          "language": "typescript",
+          "sizeLines": 59,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/storage/local-storage.service.ts",
+          "language": "typescript",
+          "sizeLines": 38,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/storage/s3-storage.service.ts",
+          "language": "typescript",
+          "sizeLines": 92,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/storage/storage.module.ts",
+          "language": "typescript",
+          "sizeLines": 27,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/src/common/storage/storage.service.ts",
+          "language": "typescript",
+          "sizeLines": 17,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/src/common/storage/hybrid-storage.service.ts": [
+          "backend/src/common/storage/local-storage.service.ts",
+          "backend/src/common/storage/s3-storage.service.ts",
+          "backend/src/common/storage/storage.service.ts"
+        ],
+        "backend/src/common/storage/local-storage.service.ts": [
+          "backend/src/common/storage/storage.service.ts"
+        ],
+        "backend/src/common/storage/s3-storage.service.ts": [
+          "backend/src/common/storage/storage.service.ts"
+        ],
+        "backend/src/common/storage/storage.module.ts": [
+          "backend/src/common/storage/hybrid-storage.service.ts",
+          "backend/src/common/storage/local-storage.service.ts",
+          "backend/src/common/storage/s3-storage.service.ts",
+          "backend/src/common/storage/storage.service.ts"
+        ],
+        "backend/src/common/storage/storage.service.ts": []
+      },
+      "neighborMap": {
+        "backend/src/common/storage/storage.module.ts": [
+          {
+            "path": "backend/src/app.module.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "AppModule"
+            ]
+          }
+        ],
+        "backend/src/common/storage/storage.service.ts": [
+          {
+            "path": "backend/src/documents/documents.service.ts",
+            "batchIndex": 1,
+            "symbols": [
+              "DocumentsService"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 8,
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "language": "markdown",
+          "sizeLines": 7,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 123,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docker-compose.yml",
+          "language": "yaml",
+          "sizeLines": 40,
+          "fileCategory": "infra"
+        },
+        {
+          "path": "document.md",
+          "language": "markdown",
+          "sizeLines": 55,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "AGENTS.md": [],
+        "README.md": [],
+        "docker-compose.yml": [],
+        "document.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 9,
+      "files": [
+        {
+          "path": "backend/.env.example",
+          "language": "config",
+          "sizeLines": 30,
+          "fileCategory": "config"
+        },
+        {
+          "path": "backend/package.json",
+          "language": "json",
+          "sizeLines": 60,
+          "fileCategory": "config"
+        },
+        {
+          "path": "backend/tsconfig.json",
+          "language": "json",
+          "sizeLines": 21,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "backend/.env.example": [],
+        "backend/package.json": [],
+        "backend/tsconfig.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 10,
+      "files": [
+        {
+          "path": ".understand-anything/.understandignore",
+          "language": "unknown",
+          "sizeLines": 51,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".understand-anything/config.json",
+          "language": "json",
+          "sizeLines": 3,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".understand-anything/tmp/generate-ignore.js",
+          "language": "javascript",
+          "sizeLines": 21,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/check_project.js",
+          "language": "javascript",
+          "sizeLines": 24,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/check_task.js",
+          "language": "javascript",
+          "sizeLines": 43,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/eval/agent-eval.js",
+          "language": "javascript",
+          "sizeLines": 250,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/fix_module.js",
+          "language": "javascript",
+          "sizeLines": 17,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/fix_rag.js",
+          "language": "javascript",
+          "sizeLines": 18,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/fix.js",
+          "language": "javascript",
+          "sizeLines": 4,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/prisma/migrations/20260417044832_init/migration.sql",
+          "language": "sql",
+          "sizeLines": 113,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql",
+          "language": "sql",
+          "sizeLines": 13,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql",
+          "language": "sql",
+          "sizeLines": 13,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql",
+          "language": "sql",
+          "sizeLines": 19,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql",
+          "language": "sql",
+          "sizeLines": 4,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql",
+          "language": "sql",
+          "sizeLines": 1,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql",
+          "language": "sql",
+          "sizeLines": 1,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql",
+          "language": "sql",
+          "sizeLines": 2,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql",
+          "language": "sql",
+          "sizeLines": 1,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql",
+          "language": "sql",
+          "sizeLines": 27,
+          "fileCategory": "data"
+        }
+      ],
+      "batchImportData": {
+        ".understand-anything/.understandignore": [],
+        ".understand-anything/config.json": [],
+        ".understand-anything/tmp/generate-ignore.js": [],
+        "backend/check_project.js": [],
+        "backend/check_task.js": [],
+        "backend/eval/agent-eval.js": [],
+        "backend/fix_module.js": [],
+        "backend/fix_rag.js": [],
+        "backend/fix.js": [],
+        "backend/prisma/migrations/20260417044832_init/migration.sql": [],
+        "backend/prisma/migrations/20260417092540_add_requirements_history/migration.sql": [],
+        "backend/prisma/migrations/20260417100831_add_changes_summary/migration.sql": [],
+        "backend/prisma/migrations/20260417112359_add_sprint_to_task/migration.sql": [],
+        "backend/prisma/migrations/20260417121651_add_project_role_to_member/migration.sql": [],
+        "backend/prisma/migrations/20260418093000_project_task_workflow/migration.sql": [],
+        "backend/prisma/migrations/20260418095500_add_task_workflow_graph/migration.sql": [],
+        "backend/prisma/migrations/20260418102000_add_project_roles/migration.sql": [],
+        "backend/prisma/migrations/20260418110000_add_project_role_configs/migration.sql": [],
+        "backend/prisma/migrations/20260420095408_add_ai_chat_sessions/migration.sql": [],
+        "backend/prisma/migrations/20260423090000_add_task_hours/migration.sql": [],
+        "backend/prisma/migrations/20260504090000_add_task_epic/migration.sql": [],
+        "backend/prisma/migrations/20260504091000_add_task_labels/migration.sql": [],
+        "backend/prisma/migrations/20260504092000_add_project_epics_labels/migration.sql": [],
+        "backend/prisma/migrations/20260504093000_add_task_naming_rule/migration.sql": [],
+        "backend/prisma/migrations/20260504163000_add_task_activity/migration.sql": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 11,
+      "files": [
+        {
+          "path": "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+          "language": "sql",
+          "sizeLines": 67,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+          "language": "sql",
+          "sizeLines": 11,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+          "language": "sql",
+          "sizeLines": 10,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+          "language": "sql",
+          "sizeLines": 3,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/migrations/migration_lock.toml",
+          "language": "toml",
+          "sizeLines": 2,
+          "fileCategory": "config"
+        },
+        {
+          "path": "backend/prisma/schema.prisma",
+          "language": "prisma",
+          "sizeLines": 235,
+          "fileCategory": "data"
+        },
+        {
+          "path": "backend/prisma/seed-employees.ts",
+          "language": "typescript",
+          "sizeLines": 191,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/prisma/seed.ts",
+          "language": "typescript",
+          "sizeLines": 135,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/search-glapp-2.js",
+          "language": "javascript",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/test-chat.js",
+          "language": "javascript",
+          "sizeLines": 30,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/test-local.js",
+          "language": "javascript",
+          "sizeLines": 105,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/update_agent.js",
+          "language": "javascript",
+          "sizeLines": 217,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/update_ai_service_rag.js",
+          "language": "javascript",
+          "sizeLines": 70,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/update_controller.js",
+          "language": "javascript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/update_docs_service.js",
+          "language": "javascript",
+          "sizeLines": 41,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/update_service.js",
+          "language": "javascript",
+          "sizeLines": 160,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/(auth)/layout.tsx",
+          "language": "typescript",
+          "sizeLines": 20,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/app/globals.css",
+          "language": "css",
+          "sizeLines": 321,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "frontend/app/page.tsx",
+          "language": "typescript",
+          "sizeLines": 5,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/next-env.d.ts",
+          "language": "typescript",
+          "sizeLines": 5,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/next.config.mjs",
+          "language": "javascript",
+          "sizeLines": 15,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/package.json",
+          "language": "json",
+          "sizeLines": 64,
+          "fileCategory": "config"
+        },
+        {
+          "path": "frontend/postcss.config.js",
+          "language": "javascript",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tailwind.config.ts",
+          "language": "typescript",
+          "sizeLines": 70,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tsconfig.json",
+          "language": "json",
+          "sizeLines": 22,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql": [],
+        "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql": [],
+        "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql": [],
+        "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql": [],
+        "backend/prisma/migrations/migration_lock.toml": [],
+        "backend/prisma/schema.prisma": [],
+        "backend/prisma/seed-employees.ts": [],
+        "backend/prisma/seed.ts": [],
+        "backend/search-glapp-2.js": [],
+        "backend/test-chat.js": [],
+        "backend/test-local.js": [],
+        "backend/update_agent.js": [],
+        "backend/update_ai_service_rag.js": [],
+        "backend/update_controller.js": [],
+        "backend/update_docs_service.js": [],
+        "backend/update_service.js": [],
+        "frontend/app/(auth)/layout.tsx": [],
+        "frontend/app/globals.css": [],
+        "frontend/app/page.tsx": [],
+        "frontend/next-env.d.ts": [],
+        "frontend/next.config.mjs": [],
+        "frontend/package.json": [],
+        "frontend/postcss.config.js": [],
+        "frontend/tailwind.config.ts": [],
+        "frontend/tsconfig.json": []
+      },
+      "neighborMap": {
+        "frontend/app/globals.css": [
+          {
+            "path": "frontend/app/layout.tsx",
+            "batchIndex": 2,
+            "symbols": [
+              "metadata",
+              "RootLayout"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 12,
+      "files": [
+        {
+          "path": "scratch/check_task.js",
+          "language": "javascript",
+          "sizeLines": 28,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "scratch/check_task.js": []
+      },
+      "neighborMap": {}
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/src/projects/dto/create-project.dto.ts",
+      "language": "typescript",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/dto/update-project-roles.dto.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "language": "typescript",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/project-workflow.ts",
+      "language": "typescript",
+      "sizeLines": 201,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/projects.controller.ts",
+      "language": "typescript",
+      "sizeLines": 113,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/projects.service.ts",
+      "language": "typescript",
+      "sizeLines": 510,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "backend/src/projects/dto/create-project.dto.ts": [],
+    "backend/src/projects/dto/update-project-roles.dto.ts": [],
+    "backend/src/projects/dto/update-project-workflow.dto.ts": [],
+    "backend/src/projects/project-workflow.ts": [],
+    "backend/src/projects/projects.controller.ts": [
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/projects/dto/create-project.dto.ts",
+      "backend/src/projects/dto/update-project-roles.dto.ts",
+      "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "backend/src/projects/projects.service.ts"
+    ],
+    "backend/src/projects/projects.service.ts": [
+      "backend/src/ai/ai.service.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/project-ai-index/project-ai-index.service.ts",
+      "backend/src/projects/dto/create-project.dto.ts",
+      "backend/src/projects/dto/update-project-roles.dto.ts",
+      "backend/src/projects/dto/update-project-workflow.dto.ts",
+      "backend/src/projects/project-roles.ts",
+      "backend/src/projects/project-workflow.ts"
+    ]
+  }
+}

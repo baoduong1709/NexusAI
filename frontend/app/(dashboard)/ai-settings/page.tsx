@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { aiApi, usersApi } from "@/lib/api";
+import AccessDenied from "@/components/layout/access-denied";
 import { toast } from "sonner";
 import {
   Cpu,
@@ -59,6 +60,8 @@ export default function AiSettingsPage() {
   const { hasPermission } = useAuth();
   const isAdmin = hasPermission("token:read");
   const canWriteConfig = hasPermission("system:config:write");
+  const canReadConfig = hasPermission("system:config:read");
+  const hasAccess = isAdmin || canWriteConfig || canReadConfig;
 
   const [activeTab, setActiveTab] = useState<"stats" | "configs">("stats");
 
@@ -138,10 +141,10 @@ export default function AiSettingsPage() {
   };
 
   useEffect(() => {
-    if (activeTab === "stats") {
+    if (activeTab === "stats" && hasAccess) {
       fetchStats(1, selectedUser);
     }
-  }, [activeTab, selectedUser]);
+  }, [activeTab, selectedUser, hasAccess]);
 
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +166,11 @@ export default function AiSettingsPage() {
       setIsSavingConfig(false);
     }
   };
+
+  // Check access permission
+  if (!hasAccess) {
+    return <AccessDenied />;
+  }
 
   return (
     <div className="space-y-6">

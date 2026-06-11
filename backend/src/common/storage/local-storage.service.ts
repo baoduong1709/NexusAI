@@ -12,13 +12,21 @@ export class LocalStorageService extends StorageService {
   async uploadFile(
     projectId: number,
     file: Express.Multer.File,
-  ): Promise<{ path: string; filename: string; url: string }> {
+    folder?: string,
+  ): Promise<{
+    path: string;
+    filename: string;
+    url: string;
+    storageProvider: 'local' | 's3';
+  }> {
     const backendUrl = this.configService.get<string>('BACKEND_URL') || 'http://localhost:4000';
-    const url = `${backendUrl}/uploads/project-${projectId}/${file.filename}`;
+    const folderPrefix = folder ? `${folder}/` : '';
+    const url = `${backendUrl}/uploads/project-${projectId}/${folderPrefix}${file.filename}`;
     return {
       path: file.path,
       filename: file.filename,
       url,
+      storageProvider: 'local',
     };
   }
 

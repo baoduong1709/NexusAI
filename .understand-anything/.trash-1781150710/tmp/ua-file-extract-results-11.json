@@ -1,0 +1,782 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 67,
+      "nonEmptyLines": 57,
+      "definitions": [
+        {
+          "name": "tasks_project_id_sequence_key",
+          "kind": "index",
+          "fields": [],
+          "startLine": 63,
+          "endLine": 63
+        },
+        {
+          "name": "task_activities_task_id_created_at_idx",
+          "kind": "index",
+          "fields": [],
+          "startLine": 64,
+          "endLine": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 2
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 11,
+      "nonEmptyLines": 9,
+      "definitions": [
+        {
+          "name": "project_ai_indexes",
+          "kind": "table",
+          "fields": [
+            "project_id",
+            "data",
+            "created_at",
+            "updated_at"
+          ],
+          "startLine": 1,
+          "endLine": 8
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 10,
+      "nonEmptyLines": 9,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/migrations/migration_lock.toml",
+      "language": "toml",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/schema.prisma",
+      "language": "prisma",
+      "fileCategory": "data",
+      "totalLines": 235,
+      "nonEmptyLines": 196,
+      "metrics": {}
+    },
+    {
+      "path": "backend/prisma/seed-employees.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 191,
+      "nonEmptyLines": 174,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 6,
+          "endLine": 182,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.role.findMany",
+          "lineNumber": 8
+        },
+        {
+          "caller": "main",
+          "callee": "roles.forEach",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "bcrypt.hash",
+          "lineNumber": 12
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.user.findUnique",
+          "lineNumber": 143
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 145
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.user.create",
+          "lineNumber": 149
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 161
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 164
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 165
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.user.count",
+          "lineNumber": 168
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 169
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.user.groupBy",
+          "lineNumber": 172
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 177
+        },
+        {
+          "caller": "main",
+          "callee": "roles.find",
+          "lineNumber": 179
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 180
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/prisma/seed.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 135,
+      "nonEmptyLines": 124,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 6,
+          "endLine": 126,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 34
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 65
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.role.upsert",
+          "lineNumber": 101
+        },
+        {
+          "caller": "main",
+          "callee": "bcrypt.hash",
+          "lineNumber": 111
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.user.upsert",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 124
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 125
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/search-glapp-2.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 10,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/test-chat.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 26,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 10,
+          "endLine": 28,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 12
+        },
+        {
+          "caller": "main",
+          "callee": "openai.chat.completions.create",
+          "lineNumber": 13
+        },
+        {
+          "caller": "main",
+          "callee": "process.stdout.write",
+          "lineNumber": 22
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 24
+        },
+        {
+          "caller": "main",
+          "callee": "console.error",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/test-local.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "nonEmptyLines": 92,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 7,
+          "endLine": 103,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "prisma.user.findUnique",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 15
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.$disconnect",
+          "lineNumber": 16
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 19
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.project.findFirst",
+          "lineNumber": 22
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 24
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.$disconnect",
+          "lineNumber": 25
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 28
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.projectMember.findUnique",
+          "lineNumber": 31
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 41
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.projectMember.create",
+          "lineNumber": 42
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 50
+        },
+        {
+          "caller": "main",
+          "callee": "jwt.sign",
+          "lineNumber": 60
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 64
+        },
+        {
+          "caller": "main",
+          "callee": "fetch",
+          "lineNumber": 66
+        },
+        {
+          "caller": "main",
+          "callee": "JSON.stringify",
+          "lineNumber": 72
+        },
+        {
+          "caller": "main",
+          "callee": "response.text",
+          "lineNumber": 80
+        },
+        {
+          "caller": "main",
+          "callee": "console.error",
+          "lineNumber": 81
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.$disconnect",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 86
+        },
+        {
+          "caller": "main",
+          "callee": "response.body.getReader",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "reader.read",
+          "lineNumber": 91
+        },
+        {
+          "caller": "main",
+          "callee": "process.stdout.write",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "decoder.decode",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 96
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.$disconnect",
+          "lineNumber": 97
+        },
+        {
+          "caller": "main",
+          "callee": "console.error",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "prisma.$disconnect",
+          "lineNumber": 101
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/update_agent.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 217,
+      "nonEmptyLines": 192,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/update_ai_service_rag.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 70,
+      "nonEmptyLines": 61,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/update_controller.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 35,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/update_docs_service.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 36,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/update_service.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 160,
+      "nonEmptyLines": 139,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/app/(auth)/layout.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "AuthLayout",
+          "startLine": 3,
+          "endLine": 20,
+          "params": [
+            "{ children }"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "AuthLayout",
+          "line": 3,
+          "isDefault": true
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/app/globals.css",
+      "language": "css",
+      "fileCategory": "markup",
+      "totalLines": 321,
+      "nonEmptyLines": 285,
+      "metrics": {}
+    },
+    {
+      "path": "frontend/app/page.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 5,
+      "nonEmptyLines": 4,
+      "functions": [
+        {
+          "name": "Home",
+          "startLine": 3,
+          "endLine": 5,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Home",
+          "line": 3,
+          "isDefault": true
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "Home",
+          "callee": "redirect",
+          "lineNumber": 4
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/next-env.d.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 5,
+      "nonEmptyLines": 4,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/next.config.mjs",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/package.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 64,
+      "nonEmptyLines": 64,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "private",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "scripts",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "dependencies",
+          "level": 1,
+          "line": 11
+        },
+        {
+          "heading": "devDependencies",
+          "level": 1,
+          "line": 53
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "frontend/postcss.config.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/tailwind.config.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 70,
+      "nonEmptyLines": 70,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 22,
+      "nonEmptyLines": 22,
+      "sections": [
+        {
+          "heading": "compilerOptions",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "include",
+          "level": 1,
+          "line": 20
+        },
+        {
+          "heading": "exclude",
+          "level": 1,
+          "line": 21
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/.env.example",
+      "language": "config",
+      "sizeLines": 30,
+      "fileCategory": "config"
+    },
+    {
+      "path": "backend/package.json",
+      "language": "json",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "backend/tsconfig.json",
+      "language": "json",
+      "sizeLines": 21,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    "backend/.env.example": [],
+    "backend/package.json": [],
+    "backend/tsconfig.json": []
+  }
+}

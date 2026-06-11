@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "id": "config:backend/.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": "backend/.env.example",
+      "summary": "File cấu hình mẫu các biến môi trường cho phần backend của NexusAI, bao gồm cấu hình kết nối PostgreSQL, JWT secret, các API Key và model của AI Engine, cùng với các cài đặt lưu trữ S3 và CORS.",
+      "tags": [
+        "configuration",
+        "environment-variables",
+        "backend",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "languageNotes": "File mẫu định nghĩa các biến môi trường cần thiết. Dự án sử dụng NestJS ConfigService để tải các biến này tại thời điểm khởi chạy ứng dụng."
+    },
+    {
+      "id": "config:backend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "backend/package.json",
+      "summary": "Tệp quản lý dự án Node.js cho backend của NexusAI, định nghĩa các thư viện phụ thuộc (dependencies) như NestJS, Prisma, AWS SDK, Google GenAI, OpenAI, cũng như cấu hình các lệnh script để build, start và chạy các tác vụ liên quan đến Prisma.",
+      "tags": [
+        "package-manager",
+        "dependency",
+        "build-script",
+        "nestjs",
+        "prisma"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Quản lý các kịch bản lệnh (scripts) của NestJS và Prisma để biên dịch, khởi chạy và di cư (migrate) cơ sở dữ liệu."
+    },
+    {
+      "id": "config:backend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "backend/tsconfig.json",
+      "summary": "Tệp cấu hình trình biên dịch TypeScript (tsc) cho phần backend, thiết lập các tùy chọn biên dịch như module (commonjs), target (ES2021), thư mục đầu ra (dist) và kích hoạt các decorators để hỗ trợ cho NestJS.",
+      "tags": [
+        "typescript",
+        "compiler-options",
+        "build-config",
+        "nestjs"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Cấu hình TypeScript cho NestJS, bao gồm kích hoạt decorator và định dạng module đầu ra dưới dạng CommonJS."
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:backend/.env.example",
+      "target": "file:backend/src/app.module.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/.env.example",
+      "target": "schema:backend/prisma/schema.prisma",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/src/main.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/prisma/seed.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/eval/agent-eval.js",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/src/ai/agent-runtime.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/src/ai/task-suggestion.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/package.json",
+      "target": "file:backend/src/ai/agent-security.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/tsconfig.json",
+      "target": "file:backend/src/main.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:backend/tsconfig.json",
+      "target": "config:backend/package.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

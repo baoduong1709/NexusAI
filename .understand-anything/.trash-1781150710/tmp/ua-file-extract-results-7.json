@@ -1,0 +1,296 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "backend/src/common/storage/hybrid-storage.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 52,
+      "classes": [
+        {
+          "name": "HybridStorageService",
+          "startLine": 9,
+          "endLine": 59,
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "HybridStorageService",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "constructor",
+          "callee": "super",
+          "lineNumber": 16
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "file.mimetype.startsWith",
+          "lineNumber": 29
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.logger.log",
+          "lineNumber": 32
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.s3.uploadFile",
+          "lineNumber": 35
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.logger.log",
+          "lineNumber": 39
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.local.uploadFile",
+          "lineNumber": 42
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.local.deleteFile",
+          "lineNumber": 49
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.logger.debug",
+          "lineNumber": 51
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.s3.deleteFile",
+          "lineNumber": 54
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.logger.debug",
+          "lineNumber": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/common/storage/local-storage.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 35,
+      "classes": [
+        {
+          "name": "LocalStorageService",
+          "startLine": 7,
+          "endLine": 38,
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "LocalStorageService",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "constructor",
+          "callee": "super",
+          "lineNumber": 9
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.configService.get",
+          "lineNumber": 22
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "fs.existsSync",
+          "lineNumber": 34
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "fs.unlinkSync",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/common/storage/s3-storage.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 92,
+      "nonEmptyLines": 79,
+      "classes": [
+        {
+          "name": "S3StorageService",
+          "startLine": 8,
+          "endLine": 92,
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "deleteFile"
+          ],
+          "properties": [
+            "logger",
+            "s3Client",
+            "bucketName",
+            "publicUrl"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "S3StorageService",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "constructor",
+          "callee": "super",
+          "lineNumber": 15
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 17
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 18
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 19
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 20
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 22
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.configService.get",
+          "lineNumber": 23
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "fs.createReadStream",
+          "lineNumber": 48
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.logger.log",
+          "lineNumber": 50
+        },
+        {
+          "caller": "uploadFile",
+          "callee": "this.s3Client.send",
+          "lineNumber": 52
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.logger.log",
+          "lineNumber": 80
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.s3Client.send",
+          "lineNumber": 82
+        },
+        {
+          "caller": "deleteFile",
+          "callee": "this.logger.error",
+          "lineNumber": 89
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/common/storage/storage.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 26,
+      "classes": [
+        {
+          "name": "StorageModule",
+          "startLine": 27,
+          "endLine": 27,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "StorageModule",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/common/storage/storage.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "nonEmptyLines": 15,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

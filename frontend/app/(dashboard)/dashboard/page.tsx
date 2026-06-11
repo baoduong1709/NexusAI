@@ -21,11 +21,13 @@ export default function DashboardPage() {
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: () => projectsApi.getAll().then((r) => r.data),
+    enabled: hasPermission("user:read"), // Only fetch projects if user has user:read
   });
   
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => usersApi.getAll().then((r) => r.data),
+    enabled: hasPermission("user:read"), // Only fetch users if user has user:read
   });
 
   const stats = [

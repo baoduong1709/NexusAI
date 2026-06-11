@@ -1,0 +1,349 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/src/auth/auth.controller.ts",
+      "type": "file",
+      "name": "auth.controller.ts",
+      "filePath": "backend/src/auth/auth.controller.ts",
+      "summary": "Bộ điều phối (controller) xử lý các HTTP request liên quan đến xác thực và thông tin người dùng trong hệ thống.",
+      "tags": [
+        "controller",
+        "nestjs-controller",
+        "authentication",
+        "api-router"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "type": "class",
+      "name": "AuthController",
+      "filePath": "backend/src/auth/auth.controller.ts",
+      "summary": "Lớp xử lý API cho phân hệ xác thực, cung cấp các endpoint đăng nhập và truy xuất thông tin người dùng hiện tại.",
+      "tags": [
+        "controller",
+        "nestjs-controller",
+        "http-handler",
+        "security-guards"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/auth/auth.controller.ts:login",
+      "type": "endpoint",
+      "name": "POST /auth/login",
+      "filePath": "backend/src/auth/auth.controller.ts",
+      "summary": "API endpoint dùng để đăng nhập hệ thống bằng email và mật khẩu, trả về access token.",
+      "tags": [
+        "api-endpoint",
+        "http-post",
+        "nestjs-route",
+        "login-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:backend/src/auth/auth.controller.ts:getProfile",
+      "type": "endpoint",
+      "name": "GET /auth/profile",
+      "filePath": "backend/src/auth/auth.controller.ts",
+      "summary": "API endpoint lấy thông tin hồ sơ của người dùng đang đăng nhập, yêu cầu Bearer Token.",
+      "tags": [
+        "api-endpoint",
+        "http-get",
+        "nestjs-route",
+        "jwt-auth"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/auth.module.ts",
+      "type": "file",
+      "name": "auth.module.ts",
+      "filePath": "backend/src/auth/auth.module.ts",
+      "summary": "Module NestJS đóng gói và thiết lập các thành phần xác thực (Passport, JWT, Controllers, Services).",
+      "tags": [
+        "module",
+        "nestjs-module",
+        "authentication",
+        "dependency-injection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/auth.module.ts:AuthModule",
+      "type": "class",
+      "name": "AuthModule",
+      "filePath": "backend/src/auth/auth.module.ts",
+      "summary": "Lớp AuthModule cấu hình đăng ký Controller, Service, JwtStrategy, Passport và thiết lập JwtModule bất đồng bộ dựa trên ConfigService.",
+      "tags": [
+        "module",
+        "nestjs-module",
+        "jwt-config",
+        "dependency-injection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/auth.service.ts",
+      "type": "file",
+      "name": "auth.service.ts",
+      "filePath": "backend/src/auth/auth.service.ts",
+      "summary": "Tệp định nghĩa AuthService xử lý logic nghiệp vụ cho quy trình đăng nhập, mã hóa và xác thực chữ ký token.",
+      "tags": [
+        "service",
+        "nestjs-service",
+        "business-logic",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:backend/src/auth/auth.service.ts",
+      "type": "service",
+      "name": "AuthService",
+      "filePath": "backend/src/auth/auth.service.ts",
+      "summary": "Dịch vụ xử lý nghiệp vụ xác thực chính, thực hiện kiểm tra mật khẩu bằng bcrypt, ký token JWT và lấy thông tin người dùng từ database qua Prisma.",
+      "tags": [
+        "service",
+        "nestjs-service",
+        "jwt-token",
+        "password-hash"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/auth/auth.service.ts:login",
+      "type": "function",
+      "name": "login",
+      "filePath": "backend/src/auth/auth.service.ts",
+      "summary": "Xác thực email và mật khẩu của người dùng, nếu thành công sẽ sinh và trả về access token.",
+      "tags": [
+        "login-logic",
+        "bcrypt-compare",
+        "jwt-sign",
+        "database-query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/src/auth/auth.service.ts:getProfile",
+      "type": "function",
+      "name": "getProfile",
+      "filePath": "backend/src/auth/auth.service.ts",
+      "summary": "Lấy thông tin cá nhân của người dùng dựa vào ID bao gồm cả thông tin vai trò (role) và quyền (permissions).",
+      "tags": [
+        "profile-retrieval",
+        "prisma-findunique",
+        "user-details"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/dto/login.dto.ts",
+      "type": "file",
+      "name": "login.dto.ts",
+      "filePath": "backend/src/auth/dto/login.dto.ts",
+      "summary": "Lớp định nghĩa cấu trúc dữ liệu gửi lên khi người dùng yêu cầu đăng nhập.",
+      "tags": [
+        "dto",
+        "validation",
+        "nestjs-swagger",
+        "class-validator"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/dto/login.dto.ts:LoginDto",
+      "type": "class",
+      "name": "LoginDto",
+      "filePath": "backend/src/auth/dto/login.dto.ts",
+      "summary": "DTO đại diện dữ liệu đầu vào chứa email và password hợp lệ dùng cho API đăng nhập.",
+      "tags": [
+        "dto",
+        "class-validator",
+        "validation-schema",
+        "swagger-docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/auth/strategies/jwt.strategy.ts",
+      "type": "file",
+      "name": "jwt.strategy.ts",
+      "filePath": "backend/src/auth/strategies/jwt.strategy.ts",
+      "summary": "Định nghĩa Passport Strategy để cấu hình cách thức trích xuất và xác thực token JWT.",
+      "tags": [
+        "strategy",
+        "passport-jwt",
+        "security",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/auth/strategies/jwt.strategy.ts:JwtStrategy",
+      "type": "class",
+      "name": "JwtStrategy",
+      "filePath": "backend/src/auth/strategies/jwt.strategy.ts",
+      "summary": "Chiến lược xác thực JWT Bearer token được cấu hình bằng secret key lấy từ ConfigService.",
+      "tags": [
+        "strategy",
+        "nestjs-strategy",
+        "passport-jwt",
+        "jwt-validator"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/auth/strategies/jwt.strategy.ts:validate",
+      "type": "function",
+      "name": "validate",
+      "filePath": "backend/src/auth/strategies/jwt.strategy.ts",
+      "summary": "Kiểm tra và trích xuất thông tin người dùng từ payload JWT sau khi chữ ký đã được xác thực.",
+      "tags": [
+        "payload-validation",
+        "user-context",
+        "passport-hooks"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/src/auth/auth.controller.ts",
+      "target": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "target": "endpoint:backend/src/auth/auth.controller.ts:login",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "target": "endpoint:backend/src/auth/auth.controller.ts:getProfile",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/auth/auth.module.ts",
+      "target": "class:backend/src/auth/auth.module.ts:AuthModule",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/auth/auth.service.ts",
+      "target": "service:backend/src/auth/auth.service.ts",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/auth/auth.service.ts",
+      "target": "function:backend/src/auth/auth.service.ts:login",
+      "type": "contains"
+    },
+    {
+      "source": "service:backend/src/auth/auth.service.ts",
+      "target": "function:backend/src/auth/auth.service.ts:getProfile",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/auth/dto/login.dto.ts",
+      "target": "class:backend/src/auth/dto/login.dto.ts:LoginDto",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/auth/strategies/jwt.strategy.ts",
+      "target": "class:backend/src/auth/strategies/jwt.strategy.ts:JwtStrategy",
+      "type": "contains"
+    },
+    {
+      "source": "class:backend/src/auth/strategies/jwt.strategy.ts:JwtStrategy",
+      "target": "function:backend/src/auth/strategies/jwt.strategy.ts:validate",
+      "type": "contains"
+    },
+    {
+      "source": "file:backend/src/auth/auth.controller.ts",
+      "target": "file:backend/src/auth/auth.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.controller.ts",
+      "target": "file:backend/src/auth/decorators/current-user.decorator.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.controller.ts",
+      "target": "file:backend/src/auth/dto/login.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.controller.ts",
+      "target": "file:backend/src/auth/guards/jwt-auth.guard.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.module.ts",
+      "target": "file:backend/src/auth/auth.controller.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.module.ts",
+      "target": "file:backend/src/auth/auth.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.module.ts",
+      "target": "file:backend/src/auth/strategies/jwt.strategy.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.service.ts",
+      "target": "file:backend/src/auth/dto/login.dto.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/auth/auth.service.ts",
+      "target": "file:backend/src/prisma/prisma.service.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/auth/auth.module.ts",
+      "type": "imports"
+    },
+    {
+      "source": "endpoint:backend/src/auth/auth.controller.ts:login",
+      "target": "function:backend/src/auth/auth.service.ts:login",
+      "type": "calls"
+    },
+    {
+      "source": "endpoint:backend/src/auth/auth.controller.ts:getProfile",
+      "target": "function:backend/src/auth/auth.service.ts:getProfile",
+      "type": "calls"
+    },
+    {
+      "source": "class:backend/src/auth/auth.module.ts:AuthModule",
+      "target": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "type": "configures"
+    },
+    {
+      "source": "class:backend/src/auth/auth.module.ts:AuthModule",
+      "target": "service:backend/src/auth/auth.service.ts",
+      "type": "configures"
+    },
+    {
+      "source": "class:backend/src/auth/auth.module.ts:AuthModule",
+      "target": "class:backend/src/auth/strategies/jwt.strategy.ts:JwtStrategy",
+      "type": "configures"
+    },
+    {
+      "source": "class:backend/src/auth/auth.controller.ts:AuthController",
+      "target": "service:backend/src/auth/auth.service.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "service:backend/src/auth/auth.service.ts",
+      "target": "table:backend/prisma/schema.prisma:User",
+      "type": "depends_on"
+    }
+  ]
+}

@@ -1,0 +1,1167 @@
+{
+  "nodes": [
+    {
+      "id": "class:backend/src/documents/documents.service.ts:DocumentsService",
+      "type": "class",
+      "name": "DocumentsService",
+      "filePath": "backend/src/documents/documents.service.ts",
+      "summary": "Dịch vụ quản lý vòng đời tài liệu, tích hợp với dịch vụ lưu trữ và dịch vụ RAG để phân tích.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "documents",
+        "file-upload",
+        "storage",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "service:backend/src/documents/markitdown.service.ts",
+      "type": "service",
+      "name": "MarkitdownService",
+      "filePath": "backend/src/documents/markitdown.service.ts",
+      "summary": "Dịch vụ chuyển đổi các định dạng tài liệu khác nhau (PDF, Office, HTML) sang định dạng Markdown sử dụng công cụ MarkItDown.",
+      "tags": [
+        "nestjs-service",
+        "document-converter",
+        "markdown",
+        "python-cli",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/documents/markitdown.service.ts:MarkitdownService",
+      "type": "class",
+      "name": "MarkitdownService",
+      "filePath": "backend/src/documents/markitdown.service.ts",
+      "summary": "Dịch vụ chạy công cụ dòng lệnh python markitdown để trích xuất nội dung văn bản từ các tệp tin phức tạp.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "document-converter",
+        "markdown",
+        "python-cli",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/main.ts",
+      "type": "file",
+      "name": "main.ts",
+      "filePath": "backend/src/main.ts",
+      "summary": "Điểm khởi chạy của ứng dụng NestJS, cấu hình global pipes, CORS và lắng nghe trên cổng chỉ định.",
+      "tags": [
+        "bootstrap",
+        "entry-point",
+        "nestjs-app",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/main.ts:bootstrap",
+      "type": "function",
+      "name": "bootstrap",
+      "filePath": "backend/src/main.ts",
+      "summary": "Hàm khởi tạo ứng dụng NestJS, thiết lập cấu hình CORS, validation pipe và khởi chạy HTTP server.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/prisma/prisma.module.ts",
+      "type": "file",
+      "name": "PrismaModule",
+      "filePath": "backend/src/prisma/prisma.module.ts",
+      "summary": "Module NestJS cấu hình và xuất PrismaService ra toàn bộ ứng dụng.",
+      "tags": [
+        "nestjs-module",
+        "prisma",
+        "database-module",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/prisma/prisma.module.ts:PrismaModule",
+      "type": "class",
+      "name": "PrismaModule",
+      "filePath": "backend/src/prisma/prisma.module.ts",
+      "summary": "Lớp module quản lý kết nối database thông qua Prisma.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "prisma",
+        "database-module",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/prisma/prisma.service.ts",
+      "type": "service",
+      "name": "PrismaService",
+      "filePath": "backend/src/prisma/prisma.service.ts",
+      "summary": "Dịch vụ kết nối database thông qua Prisma ORM, quản lý vòng đời kết nối với PostgreSQL.",
+      "tags": [
+        "nestjs-service",
+        "prisma",
+        "database-connection",
+        "orm",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/prisma/prisma.service.ts:PrismaService",
+      "type": "class",
+      "name": "PrismaService",
+      "filePath": "backend/src/prisma/prisma.service.ts",
+      "summary": "Lớp kế thừa PrismaClient chịu trách nhiệm kết nối và ngắt kết nối database khi ứng dụng chạy/tắt.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "prisma",
+        "database-connection",
+        "orm",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "type": "file",
+      "name": "ProjectAiIndexModule",
+      "filePath": "backend/src/project-ai-index/project-ai-index.module.ts",
+      "summary": "Module NestJS đăng ký các dịch vụ liên quan đến việc lập chỉ mục AI cho dự án.",
+      "tags": [
+        "nestjs-module",
+        "project-ai-index",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/project-ai-index/project-ai-index.module.ts:ProjectAiIndexModule",
+      "type": "class",
+      "name": "ProjectAiIndexModule",
+      "filePath": "backend/src/project-ai-index/project-ai-index.module.ts",
+      "summary": "Lớp module đăng ký dịch vụ lập chỉ mục ngữ cảnh dự án.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "project-ai-index",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "service",
+      "name": "ProjectAiIndexService",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Dịch vụ chịu trách nhiệm tạo và cập nhật chỉ mục tóm tắt dự án để làm ngữ cảnh tối ưu cho AI.",
+      "tags": [
+        "nestjs-service",
+        "indexing",
+        "context-optimization",
+        "project-summary",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/project-ai-index/project-ai-index.service.ts:ProjectAiIndexService",
+      "type": "class",
+      "name": "ProjectAiIndexService",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Dịch vụ phân tích trạng thái dự án (tasks, members, workflow) để tạo ra bản tóm tắt nén làm đầu vào cho LLM.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "indexing",
+        "context-optimization",
+        "project-summary",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/src/project-ai-index/project-ai-index.service.ts:isDoneStatus",
+      "type": "function",
+      "name": "isDoneStatus",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Kiểm tra trạng thái task có phải là đã hoàn thành hay không.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/project-ai-index/project-ai-index.service.ts:isInProgressStatus",
+      "type": "function",
+      "name": "isInProgressStatus",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Kiểm tra trạng thái task có phải là đang thực hiện hay không.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/project-ai-index/project-ai-index.service.ts:isBlockedStatus",
+      "type": "function",
+      "name": "isBlockedStatus",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Kiểm tra trạng thái task có phải là bị chặn hay không.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/project-ai-index/project-ai-index.service.ts:compactKeyword",
+      "type": "function",
+      "name": "compactKeyword",
+      "filePath": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "summary": "Rút gọn từ khóa để tối ưu hóa bộ nhớ chỉ mục.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/src/projects/projects.module.ts",
+      "type": "file",
+      "name": "ProjectsModule",
+      "filePath": "backend/src/projects/projects.module.ts",
+      "summary": "Module NestJS quản lý tài nguyên dự án, cấu hình controller và service xử lý dự án.",
+      "tags": [
+        "nestjs-module",
+        "projects",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/projects/projects.module.ts:ProjectsModule",
+      "type": "class",
+      "name": "ProjectsModule",
+      "filePath": "backend/src/projects/projects.module.ts",
+      "summary": "Lớp module quản lý các cấu phần dự án và tích hợp với AI module.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "projects",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "type": "schema",
+      "name": "CreateTaskDto",
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "summary": "Định nghĩa các DTO và quy tắc validation cho các hành động tạo, cập nhật trạng thái, bình luận và ghi nhận giờ làm của task.",
+      "tags": [
+        "data-transfer-object",
+        "dto",
+        "validation",
+        "class-validator",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskDto",
+      "type": "class",
+      "name": "CreateTaskDto",
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "summary": "DTO định nghĩa cấu trúc dữ liệu khi tạo một task mới với validation chặt chẽ.",
+      "tags": [
+        "class",
+        "data-transfer-object",
+        "dto",
+        "validation",
+        "class-validator",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/tasks/dto/create-task.dto.ts:UpdateTaskStatusDto",
+      "type": "class",
+      "name": "UpdateTaskStatusDto",
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "summary": "DTO dùng cho việc cập nhật trạng thái của task.",
+      "tags": [
+        "class",
+        "data-transfer-object",
+        "dto",
+        "validation",
+        "class-validator",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskCommentDto",
+      "type": "class",
+      "name": "CreateTaskCommentDto",
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "summary": "DTO dùng để thêm bình luận mới vào task.",
+      "tags": [
+        "class",
+        "data-transfer-object",
+        "dto",
+        "validation",
+        "class-validator",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/src/tasks/dto/create-task.dto.ts:CreateTaskWorkLogDto",
+      "type": "class",
+      "name": "CreateTaskWorkLogDto",
+      "filePath": "backend/src/tasks/dto/create-task.dto.ts",
+      "summary": "DTO ghi nhận nhật ký làm việc (work log) cho task.",
+      "tags": [
+        "class",
+        "data-transfer-object",
+        "dto",
+        "validation",
+        "class-validator",
+        "backend"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/src/tasks/tasks.module.ts",
+      "type": "file",
+      "name": "TasksModule",
+      "filePath": "backend/src/tasks/tasks.module.ts",
+      "summary": "Module NestJS quản lý tài nguyên công việc (tasks), tích hợp với AI index module để đồng bộ ngữ cảnh.",
+      "tags": [
+        "nestjs-module",
+        "tasks",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/src/tasks/tasks.module.ts:TasksModule",
+      "type": "class",
+      "name": "TasksModule",
+      "filePath": "backend/src/tasks/tasks.module.ts",
+      "summary": "Lớp module quản lý các controller và service liên quan đến task.",
+      "tags": [
+        "class",
+        "nestjs-module",
+        "tasks",
+        "dependency-injection",
+        "module",
+        "backend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/src/tasks/tasks.service.ts",
+      "type": "service",
+      "name": "TasksService",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Dịch vụ quản lý toàn bộ vòng đời của task, ghi nhận hoạt động (activity logs), xử lý workflow trạng thái và bình luận.",
+      "tags": [
+        "nestjs-service",
+        "tasks",
+        "business-logic",
+        "workflow-management",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:backend/src/tasks/tasks.service.ts:TasksService",
+      "type": "class",
+      "name": "TasksService",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Dịch vụ cốt lõi thực hiện các thao tác CRUD trên task, ghi log hoạt động và quản lý chuyển đổi trạng thái.",
+      "tags": [
+        "class",
+        "nestjs-service",
+        "tasks",
+        "business-logic",
+        "workflow-management",
+        "backend"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:getStatusOrder",
+      "type": "function",
+      "name": "getStatusOrder",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Lấy thứ tự sắp xếp của trạng thái công việc.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:stripGeneratedTaskPrefix",
+      "type": "function",
+      "name": "stripGeneratedTaskPrefix",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Xóa tiền tố tự động sinh ra trong tiêu đề task.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:renderToken",
+      "type": "function",
+      "name": "renderToken",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Tiện ích render token định dạng chuỗi.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:buildTaskTitle",
+      "type": "function",
+      "name": "buildTaskTitle",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Xây dựng tiêu đề task hoàn chỉnh dựa trên cấu hình dự án.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:buildProjectTaskPrefix",
+      "type": "function",
+      "name": "buildProjectTaskPrefix",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Xây dựng mã tiền tố cho các task thuộc dự án.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:serializeActivityValue",
+      "type": "function",
+      "name": "serializeActivityValue",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Chuẩn hóa giá trị ghi nhật ký hoạt động.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:valuesEqual",
+      "type": "function",
+      "name": "valuesEqual",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "So sánh hai giá trị hoạt động xem có bằng nhau hay không.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/src/tasks/tasks.service.ts:toNumber",
+      "type": "function",
+      "name": "toNumber",
+      "filePath": "backend/src/tasks/tasks.service.ts",
+      "summary": "Chuyển đổi giá trị sang dạng số một cách an toàn.",
+      "tags": [
+        "function",
+        "utility-helper"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/ai/ai-data-access.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "file:backend/src/ai/ai-logger.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/ai/rag.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "file:backend/src/ai/task-suggestion.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/tasks/tasks.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/rag.service.ts",
+      "target": "file:backend/src/ai/ai-logger.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/rag.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.test.ts",
+      "target": "file:backend/src/ai/task-suggestion.util.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/ai/ai.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/auth/auth.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/common/middleware/logging.middleware.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/common/storage/storage.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/documents/documents.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/prisma/prisma.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/projects/projects.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/roles/roles.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/tasks/tasks.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/users/users.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "file:backend/src/ai/ai.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "file:backend/src/documents/documents.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "service:backend/src/documents/documents.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "service:backend/src/documents/markitdown.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/ai/rag.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "schema:backend/src/common/dto/paginated-response.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "schema:backend/src/documents/dto/documents-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/documents/markitdown.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/main.ts",
+      "target": "file:backend/src/app.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/prisma/prisma.module.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "target": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "file:backend/src/ai/ai.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "file:backend/src/projects/projects.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.module.ts",
+      "target": "file:backend/src/project-ai-index/project-ai-index.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.module.ts",
+      "target": "file:backend/src/tasks/tasks.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.module.ts",
+      "target": "service:backend/src/tasks/tasks.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "schema:backend/src/common/dto/paginated-response.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "service:backend/src/prisma/prisma.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "file:backend/src/projects/project-workflow.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "schema:backend/src/tasks/dto/tasks-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module"
+    },
+    {
+      "source": "service:backend/src/ai/ai-data-access.service.ts",
+      "target": "file:backend/src/projects/project-roles.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/ai.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/system-configs.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/ai/ai.module.ts",
+      "target": "file:backend/src/ai/token-stats.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "file:backend/src/ai/ai.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/ai/ai.service.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/auth/auth.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/common/storage/storage.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/roles/roles.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/app.module.ts",
+      "target": "file:backend/src/users/users.module.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/documents/documents.module.ts",
+      "target": "file:backend/src/documents/documents.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "service:backend/src/common/storage/storage.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "schema:backend/src/documents/dto/documents-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/documents/documents.service.ts",
+      "target": "file:backend/src/documents/documents.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "file:backend/src/ai/system-configs.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "file:backend/src/ai/token-stats.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "service:backend/src/auth/auth.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "file:backend/src/auth/guards/permissions.guard.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "service:backend/src/roles/roles.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/prisma/prisma.service.ts",
+      "target": "service:backend/src/users/users.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/project-ai-index/project-ai-index.service.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "file:backend/src/projects/projects.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/projects/projects.module.ts",
+      "target": "service:backend/src/projects/projects.service.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "schema:backend/src/tasks/dto/create-task.dto.ts",
+      "target": "file:backend/src/tasks/tasks.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/tasks/tasks.module.ts",
+      "target": "file:backend/src/tasks/tasks.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "file:backend/src/projects/project-workflow.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "schema:backend/src/tasks/dto/tasks-query.dto.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "service:backend/src/tasks/tasks.service.ts",
+      "target": "file:backend/src/tasks/tasks.controller.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Nhập khẩu module liên batch"
+    },
+    {
+      "source": "file:backend/src/ai/agent-runtime.util.ts",
+      "target": "file:backend/src/ai/agent-runtime.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Được kiểm thử bởi"
+    },
+    {
+      "source": "file:backend/src/ai/agent-security.util.ts",
+      "target": "file:backend/src/ai/agent-security.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Được kiểm thử bởi"
+    },
+    {
+      "source": "file:backend/src/ai/task-suggestion.util.ts",
+      "target": "file:backend/src/ai/task-suggestion.util.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1,
+      "description": "Được kiểm thử bởi"
+    }
+  ]
+}

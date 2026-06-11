@@ -1,0 +1,1039 @@
+{
+  "files": [
+    {
+      "path": "backend/src/ai/agent-runtime.util.test.ts",
+      "language": "typescript",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/agent-runtime.util.ts",
+      "language": "typescript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/agent-security.util.test.ts",
+      "language": "typescript",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/agent-security.util.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/ai-data-access.service.ts",
+      "language": "typescript",
+      "sizeLines": 388,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/ai-logger.util.ts",
+      "language": "typescript",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/ai.module.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/ai.service.ts",
+      "language": "typescript",
+      "sizeLines": 2370,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/rag.service.ts",
+      "language": "typescript",
+      "sizeLines": 367,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/task-suggestion.util.test.ts",
+      "language": "typescript",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/task-suggestion.util.ts",
+      "language": "typescript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/app.module.ts",
+      "language": "typescript",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/dto/paginated-response.ts",
+      "language": "typescript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/middleware/logging.middleware.ts",
+      "language": "typescript",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/documents/documents.module.ts",
+      "language": "typescript",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/documents/documents.service.ts",
+      "language": "typescript",
+      "sizeLines": 274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/documents/markitdown.service.ts",
+      "language": "typescript",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/main.ts",
+      "language": "typescript",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/prisma/prisma.module.ts",
+      "language": "typescript",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/prisma/prisma.service.ts",
+      "language": "typescript",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/project-ai-index/project-ai-index.module.ts",
+      "language": "typescript",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "language": "typescript",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/projects.module.ts",
+      "language": "typescript",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/tasks/dto/create-task.dto.ts",
+      "language": "typescript",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/tasks/tasks.module.ts",
+      "language": "typescript",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/tasks/tasks.service.ts",
+      "language": "typescript",
+      "sizeLines": 518,
+      "fileCategory": "code"
+    }
+  ],
+  "results": [
+    {
+      "path": "backend/src/ai/agent-runtime.util.test.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 95,
+      "functions": [],
+      "classes": [],
+      "exports": []
+    },
+    {
+      "path": "backend/src/ai/agent-runtime.util.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 117,
+      "functions": [
+        "estimateMessageTokens",
+        "estimateAgentMessageTokens",
+        "groupConversationTurns",
+        "truncateAgentMessages",
+        "shouldReportToolRoundLimit"
+      ],
+      "classes": [],
+      "exports": [
+        "estimateAgentMessageTokens",
+        "truncateAgentMessages",
+        "shouldReportToolRoundLimit"
+      ]
+    },
+    {
+      "path": "backend/src/ai/agent-security.util.test.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "functions": [],
+      "classes": [],
+      "exports": []
+    },
+    {
+      "path": "backend/src/ai/agent-security.util.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "functions": [
+        "wrapUntrustedToolResult"
+      ],
+      "classes": [],
+      "exports": [
+        "wrapUntrustedToolResult"
+      ]
+    },
+    {
+      "path": "backend/src/ai/ai-data-access.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 388,
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiDataAccessService",
+          "methods": [
+            "constructor",
+            "resolveUserPermissions",
+            "getFilteredProjectContext",
+            "getFilteredDocumentContents"
+          ]
+        }
+      ],
+      "exports": [
+        "AiDataAccessService"
+      ]
+    },
+    {
+      "path": "backend/src/ai/ai-logger.util.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiLogger",
+          "methods": [
+            "log",
+            "scheduleFlush",
+            "flush"
+          ]
+        }
+      ],
+      "exports": [
+        "AiLogger"
+      ]
+    },
+    {
+      "path": "backend/src/ai/ai.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "functions": [],
+      "classes": [
+        {
+          "name": "AiModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "AiModule"
+      ]
+    },
+    {
+      "path": "backend/src/ai/ai.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 2370,
+      "functions": [
+        "formatRequirementTimestamp",
+        "sleep"
+      ],
+      "classes": [
+        {
+          "name": "BufferedChatStreamResponse",
+          "methods": [
+            "on",
+            "write",
+            "end",
+            "toChatResponse"
+          ]
+        },
+        {
+          "name": "AiService",
+          "methods": [
+            "constructor",
+            "getSystemConfig",
+            "getOpenAIClient",
+            "logTokenUsage",
+            "determineModel",
+            "getAiErrorStatus",
+            "isRetryableAiError",
+            "getAiErrorMessage",
+            "generateAiText",
+            "parseJsonObject",
+            "finalizeTaskSuggestionWithFlash",
+            "fallbackChatPlan",
+            "normalizeChatPlan",
+            "classifyChatRequest",
+            "analyzeProject",
+            "confirmAndCreateTasks",
+            "suggestAssignees",
+            "improveTaskDescription",
+            "assistTaskDescription",
+            "initRequirements",
+            "updateRequirements",
+            "getRequirementsContent",
+            "getRequirementsHistory",
+            "getRequirementsVersion",
+            "saveRequirementsFile",
+            "chat",
+            "summarize",
+            "buildSourceManifest",
+            "buildPermissionHints",
+            "estimateMessageTokens",
+            "truncateMessages",
+            "buildRequirementsMarkdown",
+            "listSessions",
+            "createSession",
+            "updateSession",
+            "deleteSession",
+            "chatStream"
+          ]
+        }
+      ],
+      "exports": [
+        "AiService"
+      ]
+    },
+    {
+      "path": "backend/src/ai/rag.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 367,
+      "functions": [],
+      "classes": [
+        {
+          "name": "RagService",
+          "methods": [
+            "constructor",
+            "getSystemConfig",
+            "getOpenAIClient",
+            "generateEmbedding",
+            "chunkText",
+            "cosineSimilarity",
+            "normalizeText",
+            "getKeywordSimilarity",
+            "generateDocumentSummary",
+            "indexDocument",
+            "searchDocuments"
+          ]
+        }
+      ],
+      "exports": [
+        "RagService"
+      ]
+    },
+    {
+      "path": "backend/src/ai/task-suggestion.util.test.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 45,
+      "functions": [],
+      "classes": [],
+      "exports": []
+    },
+    {
+      "path": "backend/src/ai/task-suggestion.util.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 104,
+      "functions": [
+        "optionalString",
+        "nonNegativeNumber",
+        "sanitizeUserFacingMessage",
+        "validateTaskSuggestionPayload"
+      ],
+      "classes": [],
+      "exports": [
+        "validateTaskSuggestionPayload"
+      ]
+    },
+    {
+      "path": "backend/src/app.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "functions": [],
+      "classes": [
+        {
+          "name": "AppModule",
+          "methods": [
+            "configure"
+          ]
+        }
+      ],
+      "exports": [
+        "AppModule"
+      ]
+    },
+    {
+      "path": "backend/src/common/dto/paginated-response.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "functions": [],
+      "classes": [],
+      "exports": []
+    },
+    {
+      "path": "backend/src/common/middleware/logging.middleware.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 23,
+      "functions": [],
+      "classes": [
+        {
+          "name": "LoggingMiddleware",
+          "methods": [
+            "use"
+          ]
+        }
+      ],
+      "exports": [
+        "LoggingMiddleware"
+      ]
+    },
+    {
+      "path": "backend/src/documents/documents.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "DocumentsModule"
+      ]
+    },
+    {
+      "path": "backend/src/documents/documents.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 274,
+      "functions": [],
+      "classes": [
+        {
+          "name": "DocumentsService",
+          "methods": [
+            "constructor",
+            "uploadFile",
+            "getFileUrl",
+            "findByProject",
+            "getFolders",
+            "remove",
+            "getDocumentContent"
+          ]
+        }
+      ],
+      "exports": [
+        "DocumentsService"
+      ]
+    },
+    {
+      "path": "backend/src/documents/markitdown.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 131,
+      "functions": [],
+      "classes": [
+        {
+          "name": "MarkitdownService",
+          "methods": [
+            "constructor",
+            "onModuleInit",
+            "checkAndInstallMarkitdown",
+            "isMarkitdownAvailable",
+            "convertToMarkdown"
+          ]
+        }
+      ],
+      "exports": [
+        "MarkitdownService"
+      ]
+    },
+    {
+      "path": "backend/src/main.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "functions": [
+        "bootstrap"
+      ],
+      "classes": [],
+      "exports": []
+    },
+    {
+      "path": "backend/src/prisma/prisma.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 9,
+      "functions": [],
+      "classes": [
+        {
+          "name": "PrismaModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "PrismaModule"
+      ]
+    },
+    {
+      "path": "backend/src/prisma/prisma.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "functions": [],
+      "classes": [
+        {
+          "name": "PrismaService",
+          "methods": [
+            "constructor",
+            "onModuleInit",
+            "onModuleDestroy"
+          ]
+        }
+      ],
+      "exports": [
+        "PrismaService"
+      ]
+    },
+    {
+      "path": "backend/src/project-ai-index/project-ai-index.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectAiIndexModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "ProjectAiIndexModule"
+      ]
+    },
+    {
+      "path": "backend/src/project-ai-index/project-ai-index.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 269,
+      "functions": [
+        "isDoneStatus",
+        "isInProgressStatus",
+        "isBlockedStatus",
+        "compactKeyword"
+      ],
+      "classes": [
+        {
+          "name": "ProjectAiIndexService",
+          "methods": [
+            "constructor",
+            "get",
+            "rebuild",
+            "rebuildSoon"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectAiIndexService"
+      ]
+    },
+    {
+      "path": "backend/src/projects/projects.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "functions": [],
+      "classes": [
+        {
+          "name": "ProjectsModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "ProjectsModule"
+      ]
+    },
+    {
+      "path": "backend/src/tasks/dto/create-task.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 110,
+      "functions": [],
+      "classes": [
+        {
+          "name": "CreateTaskDto",
+          "methods": []
+        },
+        {
+          "name": "UpdateTaskStatusDto",
+          "methods": []
+        },
+        {
+          "name": "CreateTaskCommentDto",
+          "methods": []
+        },
+        {
+          "name": "CreateTaskWorkLogDto",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "CreateTaskDto",
+        "UpdateTaskStatusDto",
+        "CreateTaskCommentDto",
+        "CreateTaskWorkLogDto"
+      ]
+    },
+    {
+      "path": "backend/src/tasks/tasks.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 12,
+      "functions": [],
+      "classes": [
+        {
+          "name": "TasksModule",
+          "methods": []
+        }
+      ],
+      "exports": [
+        "TasksModule"
+      ]
+    },
+    {
+      "path": "backend/src/tasks/tasks.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 518,
+      "functions": [
+        "getStatusOrder",
+        "stripGeneratedTaskPrefix",
+        "renderToken",
+        "buildTaskTitle",
+        "buildProjectTaskPrefix",
+        "serializeActivityValue",
+        "valuesEqual",
+        "toNumber"
+      ],
+      "classes": [
+        {
+          "name": "TasksService",
+          "methods": [
+            "constructor",
+            "create",
+            "findByProject",
+            "findOne",
+            "update",
+            "updateStatus",
+            "remove",
+            "bulkCreate",
+            "getActivities",
+            "addComment",
+            "addWorkLog",
+            "getProjectWorkflow",
+            "validateTaskMetadata",
+            "resolveWorkflowStatus",
+            "ensureTaskInProject",
+            "createActivity"
+          ]
+        }
+      ],
+      "exports": [
+        "TasksService"
+      ]
+    }
+  ],
+  "importData": {
+    "backend/src/ai/agent-runtime.util.test.ts": [
+      "backend/src/ai/agent-runtime.util.ts"
+    ],
+    "backend/src/ai/agent-runtime.util.ts": [],
+    "backend/src/ai/agent-security.util.test.ts": [
+      "backend/src/ai/agent-security.util.ts"
+    ],
+    "backend/src/ai/agent-security.util.ts": [],
+    "backend/src/ai/ai-data-access.service.ts": [
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/projects/project-roles.ts"
+    ],
+    "backend/src/ai/ai-logger.util.ts": [],
+    "backend/src/ai/ai.module.ts": [
+      "backend/src/ai/ai-data-access.service.ts",
+      "backend/src/ai/ai.controller.ts",
+      "backend/src/ai/ai.service.ts",
+      "backend/src/ai/rag.service.ts",
+      "backend/src/ai/system-configs.controller.ts",
+      "backend/src/ai/token-stats.controller.ts",
+      "backend/src/project-ai-index/project-ai-index.module.ts",
+      "backend/src/tasks/tasks.module.ts"
+    ],
+    "backend/src/ai/ai.service.ts": [
+      "backend/src/ai/agent-runtime.util.ts",
+      "backend/src/ai/agent-security.util.ts",
+      "backend/src/ai/ai-data-access.service.ts",
+      "backend/src/ai/ai-logger.util.ts",
+      "backend/src/ai/rag.service.ts",
+      "backend/src/ai/task-suggestion.util.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/project-ai-index/project-ai-index.service.ts",
+      "backend/src/tasks/tasks.service.ts"
+    ],
+    "backend/src/ai/rag.service.ts": [
+      "backend/src/ai/ai-logger.util.ts",
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/ai/task-suggestion.util.test.ts": [
+      "backend/src/ai/task-suggestion.util.ts"
+    ],
+    "backend/src/ai/task-suggestion.util.ts": [],
+    "backend/src/app.module.ts": [
+      "backend/src/ai/ai.module.ts",
+      "backend/src/auth/auth.module.ts",
+      "backend/src/common/middleware/logging.middleware.ts",
+      "backend/src/common/storage/storage.module.ts",
+      "backend/src/documents/documents.module.ts",
+      "backend/src/prisma/prisma.module.ts",
+      "backend/src/projects/projects.module.ts",
+      "backend/src/roles/roles.module.ts",
+      "backend/src/tasks/tasks.module.ts",
+      "backend/src/users/users.module.ts"
+    ],
+    "backend/src/common/dto/paginated-response.ts": [],
+    "backend/src/common/middleware/logging.middleware.ts": [],
+    "backend/src/documents/documents.module.ts": [
+      "backend/src/ai/ai.module.ts",
+      "backend/src/documents/documents.controller.ts",
+      "backend/src/documents/documents.service.ts",
+      "backend/src/documents/markitdown.service.ts",
+      "backend/src/project-ai-index/project-ai-index.module.ts"
+    ],
+    "backend/src/documents/documents.service.ts": [
+      "backend/src/ai/rag.service.ts",
+      "backend/src/common/dto/paginated-response.ts",
+      "backend/src/common/storage/storage.service.ts",
+      "backend/src/documents/dto/documents-query.dto.ts",
+      "backend/src/documents/markitdown.service.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/project-ai-index/project-ai-index.service.ts"
+    ],
+    "backend/src/documents/markitdown.service.ts": [],
+    "backend/src/main.ts": [
+      "backend/src/app.module.ts"
+    ],
+    "backend/src/prisma/prisma.module.ts": [
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/prisma/prisma.service.ts": [],
+    "backend/src/project-ai-index/project-ai-index.module.ts": [
+      "backend/src/project-ai-index/project-ai-index.service.ts"
+    ],
+    "backend/src/project-ai-index/project-ai-index.service.ts": [
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/projects/projects.module.ts": [
+      "backend/src/ai/ai.module.ts",
+      "backend/src/project-ai-index/project-ai-index.module.ts",
+      "backend/src/projects/projects.controller.ts",
+      "backend/src/projects/projects.service.ts"
+    ],
+    "backend/src/tasks/dto/create-task.dto.ts": [],
+    "backend/src/tasks/tasks.module.ts": [
+      "backend/src/project-ai-index/project-ai-index.module.ts",
+      "backend/src/tasks/tasks.controller.ts",
+      "backend/src/tasks/tasks.service.ts"
+    ],
+    "backend/src/tasks/tasks.service.ts": [
+      "backend/src/common/dto/paginated-response.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/project-ai-index/project-ai-index.service.ts",
+      "backend/src/projects/project-workflow.ts",
+      "backend/src/tasks/dto/create-task.dto.ts",
+      "backend/src/tasks/dto/tasks-query.dto.ts"
+    ]
+  },
+  "neighborMap": {
+    "backend/src/ai/ai-data-access.service.ts": [
+      {
+        "path": "backend/src/projects/project-roles.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "DEFAULT_PROJECT_ROLES",
+          "DEFAULT_PROJECT_ROLE_CONFIGS",
+          "getDefaultProjectRolePermissions",
+          "normalizeProjectRoles",
+          "normalizeProjectRoleConfigs",
+          "getProjectRoleNames",
+          "normalizeProjectRole",
+          "getProjectRolePermissions"
+        ]
+      }
+    ],
+    "backend/src/ai/ai.module.ts": [
+      {
+        "path": "backend/src/ai/ai.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "AiController"
+        ]
+      },
+      {
+        "path": "backend/src/ai/system-configs.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "SystemConfigsController"
+        ]
+      },
+      {
+        "path": "backend/src/ai/token-stats.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TokenStatsController"
+        ]
+      }
+    ],
+    "backend/src/ai/ai.service.ts": [
+      {
+        "path": "backend/src/ai/ai.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "AiController"
+        ]
+      },
+      {
+        "path": "backend/src/projects/projects.service.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "ProjectsService"
+        ]
+      }
+    ],
+    "backend/src/app.module.ts": [
+      {
+        "path": "backend/src/auth/auth.module.ts",
+        "batchIndex": 6,
+        "symbols": [
+          "AuthModule"
+        ]
+      },
+      {
+        "path": "backend/src/common/storage/storage.module.ts",
+        "batchIndex": 7,
+        "symbols": [
+          "StorageModule"
+        ]
+      },
+      {
+        "path": "backend/src/roles/roles.module.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "RolesModule"
+        ]
+      },
+      {
+        "path": "backend/src/users/users.module.ts",
+        "batchIndex": 5,
+        "symbols": [
+          "UsersModule"
+        ]
+      }
+    ],
+    "backend/src/documents/documents.module.ts": [
+      {
+        "path": "backend/src/documents/documents.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "DocumentsController"
+        ]
+      }
+    ],
+    "backend/src/documents/documents.service.ts": [
+      {
+        "path": "backend/src/common/storage/storage.service.ts",
+        "batchIndex": 7,
+        "symbols": []
+      },
+      {
+        "path": "backend/src/documents/dto/documents-query.dto.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "DocumentsQueryDto"
+        ]
+      },
+      {
+        "path": "backend/src/documents/documents.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "DocumentsController"
+        ]
+      }
+    ],
+    "backend/src/prisma/prisma.service.ts": [
+      {
+        "path": "backend/src/ai/system-configs.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "SystemConfigsController"
+        ]
+      },
+      {
+        "path": "backend/src/ai/token-stats.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TokenStatsController"
+        ]
+      },
+      {
+        "path": "backend/src/auth/auth.service.ts",
+        "batchIndex": 6,
+        "symbols": [
+          "AuthService"
+        ]
+      },
+      {
+        "path": "backend/src/auth/guards/permissions.guard.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "PermissionsGuard"
+        ]
+      },
+      {
+        "path": "backend/src/projects/projects.service.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "ProjectsService"
+        ]
+      },
+      {
+        "path": "backend/src/roles/roles.service.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "RolesService"
+        ]
+      },
+      {
+        "path": "backend/src/users/users.service.ts",
+        "batchIndex": 5,
+        "symbols": [
+          "UsersService"
+        ]
+      }
+    ],
+    "backend/src/project-ai-index/project-ai-index.service.ts": [
+      {
+        "path": "backend/src/projects/projects.service.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "ProjectsService"
+        ]
+      }
+    ],
+    "backend/src/projects/projects.module.ts": [
+      {
+        "path": "backend/src/projects/projects.controller.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "ProjectsController"
+        ]
+      },
+      {
+        "path": "backend/src/projects/projects.service.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "ProjectsService"
+        ]
+      }
+    ],
+    "backend/src/tasks/dto/create-task.dto.ts": [
+      {
+        "path": "backend/src/tasks/tasks.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TasksController"
+        ]
+      }
+    ],
+    "backend/src/tasks/tasks.module.ts": [
+      {
+        "path": "backend/src/tasks/tasks.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TasksController"
+        ]
+      }
+    ],
+    "backend/src/tasks/tasks.service.ts": [
+      {
+        "path": "backend/src/projects/project-workflow.ts",
+        "batchIndex": 4,
+        "symbols": [
+          "DEFAULT_TASK_STATUSES",
+          "normalizeTaskStatuses",
+          "createDefaultTaskWorkflow",
+          "normalizeTaskWorkflow",
+          "getTaskWorkflowStatusNames",
+          "getDefaultTaskStatus",
+          "buildWorkflowRenameMap",
+          "isTaskTransitionAllowed",
+          "getWorkflowAsJson"
+        ]
+      },
+      {
+        "path": "backend/src/tasks/dto/tasks-query.dto.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TasksQueryDto"
+        ]
+      },
+      {
+        "path": "backend/src/tasks/tasks.controller.ts",
+        "batchIndex": 3,
+        "symbols": [
+          "TasksController"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql",
+      "language": "sql",
+      "sizeLines": 67,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql",
+      "language": "sql",
+      "sizeLines": 11,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql",
+      "language": "sql",
+      "sizeLines": 10,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql",
+      "language": "sql",
+      "sizeLines": 3,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/migrations/migration_lock.toml",
+      "language": "toml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "backend/prisma/schema.prisma",
+      "language": "prisma",
+      "sizeLines": 235,
+      "fileCategory": "data"
+    },
+    {
+      "path": "backend/prisma/seed-employees.ts",
+      "language": "typescript",
+      "sizeLines": 191,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/prisma/seed.ts",
+      "language": "typescript",
+      "sizeLines": 135,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/search-glapp-2.js",
+      "language": "javascript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/test-chat.js",
+      "language": "javascript",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/test-local.js",
+      "language": "javascript",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/update_agent.js",
+      "language": "javascript",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/update_ai_service_rag.js",
+      "language": "javascript",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/update_controller.js",
+      "language": "javascript",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/update_docs_service.js",
+      "language": "javascript",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/update_service.js",
+      "language": "javascript",
+      "sizeLines": 160,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/app/(auth)/layout.tsx",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/app/globals.css",
+      "language": "css",
+      "sizeLines": 321,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/app/page.tsx",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/next-env.d.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/next.config.mjs",
+      "language": "javascript",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/package.json",
+      "language": "json",
+      "sizeLines": 64,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/postcss.config.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/tailwind.config.ts",
+      "language": "typescript",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "language": "json",
+      "sizeLines": 22,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    "backend/prisma/migrations/20260508000000_use_string_task_ids/migration.sql": [],
+    "backend/prisma/migrations/20260508001000_add_project_ai_index/migration.sql": [],
+    "backend/prisma/migrations/20260610000000_add_document_folder_and_uploader/migration.sql": [],
+    "backend/prisma/migrations/20260610000001_add_document_storage_provider/migration.sql": [],
+    "backend/prisma/migrations/migration_lock.toml": [],
+    "backend/prisma/schema.prisma": [],
+    "backend/prisma/seed-employees.ts": [],
+    "backend/prisma/seed.ts": [],
+    "backend/search-glapp-2.js": [],
+    "backend/test-chat.js": [],
+    "backend/test-local.js": [],
+    "backend/update_agent.js": [],
+    "backend/update_ai_service_rag.js": [],
+    "backend/update_controller.js": [],
+    "backend/update_docs_service.js": [],
+    "backend/update_service.js": [],
+    "frontend/app/(auth)/layout.tsx": [],
+    "frontend/app/globals.css": [],
+    "frontend/app/page.tsx": [],
+    "frontend/next-env.d.ts": [],
+    "frontend/next.config.mjs": [],
+    "frontend/package.json": [],
+    "frontend/postcss.config.js": [],
+    "frontend/tailwind.config.ts": [],
+    "frontend/tsconfig.json": []
+  }
+}

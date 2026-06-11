@@ -1,0 +1,2110 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 20,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "backend/src/ai/ai.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 229,
+      "nonEmptyLines": 210,
+      "classes": [
+        {
+          "name": "AiController",
+          "startLine": 35,
+          "endLine": 229,
+          "methods": [
+            "constructor",
+            "analyze",
+            "getRequirements",
+            "getHistory",
+            "getVersion",
+            "updateRequirements",
+            "confirmTasks",
+            "suggestAssignee",
+            "improveDescription",
+            "assistDescription",
+            "chat",
+            "chatStream",
+            "summarize",
+            "listSessions",
+            "createSession",
+            "updateSession",
+            "deleteSession"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "AiController",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "analyze",
+          "callee": "Param",
+          "lineNumber": 42
+        },
+        {
+          "caller": "analyze",
+          "callee": "CurrentUser",
+          "lineNumber": 43
+        },
+        {
+          "caller": "analyze",
+          "callee": "this.aiService.analyzeProject",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getRequirements",
+          "callee": "Param",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getRequirements",
+          "callee": "this.aiService.getRequirementsContent",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Param",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getHistory",
+          "callee": "this.aiService.getRequirementsHistory",
+          "lineNumber": 59
+        },
+        {
+          "caller": "getVersion",
+          "callee": "Param",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getVersion",
+          "callee": "this.aiService.getRequirementsVersion",
+          "lineNumber": 66
+        },
+        {
+          "caller": "updateRequirements",
+          "callee": "Param",
+          "lineNumber": 73
+        },
+        {
+          "caller": "updateRequirements",
+          "callee": "CurrentUser",
+          "lineNumber": 74
+        },
+        {
+          "caller": "updateRequirements",
+          "callee": "this.aiService.updateRequirements",
+          "lineNumber": 76
+        },
+        {
+          "caller": "confirmTasks",
+          "callee": "Param",
+          "lineNumber": 83
+        },
+        {
+          "caller": "confirmTasks",
+          "callee": "Body",
+          "lineNumber": 84
+        },
+        {
+          "caller": "confirmTasks",
+          "callee": "this.aiService.confirmAndCreateTasks",
+          "lineNumber": 86
+        },
+        {
+          "caller": "suggestAssignee",
+          "callee": "Param",
+          "lineNumber": 93
+        },
+        {
+          "caller": "suggestAssignee",
+          "callee": "CurrentUser",
+          "lineNumber": 94
+        },
+        {
+          "caller": "suggestAssignee",
+          "callee": "Body",
+          "lineNumber": 95
+        },
+        {
+          "caller": "suggestAssignee",
+          "callee": "this.aiService.suggestAssignees",
+          "lineNumber": 97
+        },
+        {
+          "caller": "improveDescription",
+          "callee": "Param",
+          "lineNumber": 108
+        },
+        {
+          "caller": "improveDescription",
+          "callee": "CurrentUser",
+          "lineNumber": 109
+        },
+        {
+          "caller": "improveDescription",
+          "callee": "Body",
+          "lineNumber": 110
+        },
+        {
+          "caller": "improveDescription",
+          "callee": "this.aiService.improveTaskDescription",
+          "lineNumber": 112
+        },
+        {
+          "caller": "assistDescription",
+          "callee": "Param",
+          "lineNumber": 124
+        },
+        {
+          "caller": "assistDescription",
+          "callee": "CurrentUser",
+          "lineNumber": 125
+        },
+        {
+          "caller": "assistDescription",
+          "callee": "Body",
+          "lineNumber": 126
+        },
+        {
+          "caller": "assistDescription",
+          "callee": "this.aiService.assistTaskDescription",
+          "lineNumber": 128
+        },
+        {
+          "caller": "chat",
+          "callee": "Param",
+          "lineNumber": 141
+        },
+        {
+          "caller": "chat",
+          "callee": "CurrentUser",
+          "lineNumber": 142
+        },
+        {
+          "caller": "chat",
+          "callee": "Body",
+          "lineNumber": 143
+        },
+        {
+          "caller": "chat",
+          "callee": "this.aiService.chat",
+          "lineNumber": 145
+        },
+        {
+          "caller": "chatStream",
+          "callee": "Param",
+          "lineNumber": 152
+        },
+        {
+          "caller": "chatStream",
+          "callee": "CurrentUser",
+          "lineNumber": 153
+        },
+        {
+          "caller": "chatStream",
+          "callee": "Body",
+          "lineNumber": 154
+        },
+        {
+          "caller": "chatStream",
+          "callee": "Res",
+          "lineNumber": 155
+        },
+        {
+          "caller": "chatStream",
+          "callee": "res.setHeader",
+          "lineNumber": 157
+        },
+        {
+          "caller": "chatStream",
+          "callee": "res.setHeader",
+          "lineNumber": 158
+        },
+        {
+          "caller": "chatStream",
+          "callee": "res.setHeader",
+          "lineNumber": 159
+        },
+        {
+          "caller": "chatStream",
+          "callee": "res.setHeader",
+          "lineNumber": 160
+        },
+        {
+          "caller": "chatStream",
+          "callee": "this.aiService.chatStream",
+          "lineNumber": 162
+        },
+        {
+          "caller": "summarize",
+          "callee": "Param",
+          "lineNumber": 176
+        },
+        {
+          "caller": "summarize",
+          "callee": "Body",
+          "lineNumber": 177
+        },
+        {
+          "caller": "summarize",
+          "callee": "this.aiService.summarize",
+          "lineNumber": 179
+        },
+        {
+          "caller": "listSessions",
+          "callee": "Param",
+          "lineNumber": 192
+        },
+        {
+          "caller": "listSessions",
+          "callee": "CurrentUser",
+          "lineNumber": 193
+        },
+        {
+          "caller": "listSessions",
+          "callee": "this.aiService.listSessions",
+          "lineNumber": 195
+        },
+        {
+          "caller": "createSession",
+          "callee": "Param",
+          "lineNumber": 202
+        },
+        {
+          "caller": "createSession",
+          "callee": "CurrentUser",
+          "lineNumber": 203
+        },
+        {
+          "caller": "createSession",
+          "callee": "Body",
+          "lineNumber": 204
+        },
+        {
+          "caller": "createSession",
+          "callee": "this.aiService.createSession",
+          "lineNumber": 206
+        },
+        {
+          "caller": "updateSession",
+          "callee": "Param",
+          "lineNumber": 213
+        },
+        {
+          "caller": "updateSession",
+          "callee": "CurrentUser",
+          "lineNumber": 214
+        },
+        {
+          "caller": "updateSession",
+          "callee": "Body",
+          "lineNumber": 215
+        },
+        {
+          "caller": "updateSession",
+          "callee": "this.aiService.updateSession",
+          "lineNumber": 217
+        },
+        {
+          "caller": "deleteSession",
+          "callee": "Param",
+          "lineNumber": 224
+        },
+        {
+          "caller": "deleteSession",
+          "callee": "CurrentUser",
+          "lineNumber": 225
+        },
+        {
+          "caller": "deleteSession",
+          "callee": "this.aiService.deleteSession",
+          "lineNumber": 227
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/ai/dto/ai.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 180,
+      "nonEmptyLines": 150,
+      "classes": [
+        {
+          "name": "ConfirmTaskDto",
+          "startLine": 14,
+          "endLine": 67,
+          "methods": [],
+          "properties": [
+            "title",
+            "description",
+            "priority",
+            "assigneeId",
+            "dueDate",
+            "sprint",
+            "epic",
+            "labels",
+            "estimateHours",
+            "loggedHours"
+          ]
+        },
+        {
+          "name": "ConfirmAiTasksDto",
+          "startLine": 69,
+          "endLine": 75,
+          "methods": [],
+          "properties": [
+            "tasks"
+          ]
+        },
+        {
+          "name": "SuggestAssigneeDto",
+          "startLine": 77,
+          "endLine": 82,
+          "methods": [],
+          "properties": [
+            "taskDescription"
+          ]
+        },
+        {
+          "name": "ImproveDescriptionDto",
+          "startLine": 84,
+          "endLine": 94,
+          "methods": [],
+          "properties": [
+            "title",
+            "description"
+          ]
+        },
+        {
+          "name": "AssistDescriptionDto",
+          "startLine": 96,
+          "endLine": 111,
+          "methods": [],
+          "properties": [
+            "title",
+            "description",
+            "instruction"
+          ]
+        },
+        {
+          "name": "ChatMessageDto",
+          "startLine": 113,
+          "endLine": 123,
+          "methods": [],
+          "properties": [
+            "role",
+            "content"
+          ]
+        },
+        {
+          "name": "AiChatDto",
+          "startLine": 125,
+          "endLine": 141,
+          "methods": [],
+          "properties": [
+            "messages",
+            "summary",
+            "language"
+          ]
+        },
+        {
+          "name": "AiSummarizeDto",
+          "startLine": 143,
+          "endLine": 154,
+          "methods": [],
+          "properties": [
+            "currentSummary",
+            "messages"
+          ]
+        },
+        {
+          "name": "CreateSessionDto",
+          "startLine": 156,
+          "endLine": 161,
+          "methods": [],
+          "properties": [
+            "name"
+          ]
+        },
+        {
+          "name": "UpdateSessionDto",
+          "startLine": 163,
+          "endLine": 178,
+          "methods": [],
+          "properties": [
+            "name",
+            "summary",
+            "messages"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ConfirmAiTasksDto",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "SuggestAssigneeDto",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "ImproveDescriptionDto",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "AssistDescriptionDto",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "AiChatDto",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "AiSummarizeDto",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "CreateSessionDto",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateSessionDto",
+          "line": 163,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 0,
+        "classCount": 10
+      }
+    },
+    {
+      "path": "backend/src/ai/dto/system-config.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 28,
+      "classes": [
+        {
+          "name": "UpdateSystemConfigsDto",
+          "startLine": 4,
+          "endLine": 34,
+          "methods": [],
+          "properties": [
+            "AI_API_KEY",
+            "AI_API_BASE",
+            "AI_PRO_MODEL",
+            "AI_FLASH_MODEL",
+            "AI_SUMMARY_MODEL",
+            "AI_EMBEDDING_MODEL"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UpdateSystemConfigsDto",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/ai/system-configs.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 83,
+      "nonEmptyLines": 73,
+      "classes": [
+        {
+          "name": "SystemConfigsController",
+          "startLine": 13,
+          "endLine": 83,
+          "methods": [
+            "constructor",
+            "getConfigs",
+            "updateConfigs"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SystemConfigsController",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getConfigs",
+          "callee": "this.prisma.systemConfig.findMany",
+          "lineNumber": 20
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "configs.forEach",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "c.value.slice",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "c.value.slice",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "Object.entries(defaults).forEach",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "Object.entries",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "envKey.slice",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getConfigs",
+          "callee": "envKey.slice",
+          "lineNumber": 55
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "Body",
+          "lineNumber": 64
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "Object.entries(dto).filter",
+          "lineNumber": 65
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "Object.entries",
+          "lineNumber": 65
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "this.prisma.$transaction",
+          "lineNumber": 67
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "updates.map",
+          "lineNumber": 68
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "val.includes",
+          "lineNumber": 70
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "this.prisma.systemConfig.findFirst",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateConfigs",
+          "callee": "this.prisma.systemConfig.upsert",
+          "lineNumber": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/ai/token-stats.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 197,
+      "nonEmptyLines": 174,
+      "classes": [
+        {
+          "name": "TokenStatsController",
+          "startLine": 12,
+          "endLine": 197,
+          "methods": [
+            "constructor",
+            "hasAdminPermission",
+            "getSummary",
+            "getCharts",
+            "getHistory"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "TokenStatsController",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "hasAdminPermission",
+          "callee": "userPermissions.includes",
+          "lineNumber": 18
+        },
+        {
+          "caller": "getSummary",
+          "callee": "Request",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getSummary",
+          "callee": "Query",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getSummary",
+          "callee": "this.hasAdminPermission",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getSummary",
+          "callee": "parseInt",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getSummary",
+          "callee": "this.prisma.aiTokenLog.aggregate",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getSummary",
+          "callee": "this.prisma.aiTokenLog.groupBy",
+          "lineNumber": 49
+        },
+        {
+          "caller": "getSummary",
+          "callee": "modelBreakdown.map",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getCharts",
+          "callee": "Request",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getCharts",
+          "callee": "Query",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getCharts",
+          "callee": "this.hasAdminPermission",
+          "lineNumber": 73
+        },
+        {
+          "caller": "getCharts",
+          "callee": "parseInt",
+          "lineNumber": 77
+        },
+        {
+          "caller": "getCharts",
+          "callee": "sevenDaysAgo.setDate",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getCharts",
+          "callee": "sevenDaysAgo.getDate",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getCharts",
+          "callee": "this.prisma.aiTokenLog.findMany",
+          "lineNumber": 92
+        },
+        {
+          "caller": "getCharts",
+          "callee": "d.setDate",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getCharts",
+          "callee": "d.getDate",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getCharts",
+          "callee": "d.toLocaleDateString",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getCharts",
+          "callee": "d.toISOString().split",
+          "lineNumber": 112
+        },
+        {
+          "caller": "getCharts",
+          "callee": "d.toISOString",
+          "lineNumber": 112
+        },
+        {
+          "caller": "getCharts",
+          "callee": "logs.forEach",
+          "lineNumber": 120
+        },
+        {
+          "caller": "getCharts",
+          "callee": "log.createdAt.toISOString().split",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getCharts",
+          "callee": "log.createdAt.toISOString",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getCharts",
+          "callee": "Object.values",
+          "lineNumber": 129
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Request",
+          "lineNumber": 138
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Query",
+          "lineNumber": 139
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Query",
+          "lineNumber": 140
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Query",
+          "lineNumber": 141
+        },
+        {
+          "caller": "getHistory",
+          "callee": "this.hasAdminPermission",
+          "lineNumber": 143
+        },
+        {
+          "caller": "getHistory",
+          "callee": "parseInt",
+          "lineNumber": 147
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Math.max",
+          "lineNumber": 155
+        },
+        {
+          "caller": "getHistory",
+          "callee": "parseInt",
+          "lineNumber": 155
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Math.max",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Math.min",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getHistory",
+          "callee": "parseInt",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Promise.all",
+          "lineNumber": 159
+        },
+        {
+          "caller": "getHistory",
+          "callee": "this.prisma.aiTokenLog.findMany",
+          "lineNumber": 160
+        },
+        {
+          "caller": "getHistory",
+          "callee": "this.prisma.aiTokenLog.count",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getHistory",
+          "callee": "logs.map",
+          "lineNumber": 178
+        },
+        {
+          "caller": "getHistory",
+          "callee": "Math.ceil",
+          "lineNumber": 193
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/decorators/current-user.decorator.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 7,
+      "exports": [
+        {
+          "name": "CurrentUser",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/src/auth/decorators/permissions.decorator.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 5,
+      "nonEmptyLines": 4,
+      "functions": [
+        {
+          "name": "RequirePermissions",
+          "startLine": 4,
+          "endLine": 5,
+          "params": [
+            "...permissions"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PERMISSIONS_KEY",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "RequirePermissions",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "RequirePermissions",
+          "callee": "SetMetadata",
+          "lineNumber": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "classes": [
+        {
+          "name": "JwtAuthGuard",
+          "startLine": 3,
+          "endLine": 3,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "JwtAuthGuard",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/guards/permissions.guard.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 118,
+      "nonEmptyLines": 101,
+      "classes": [
+        {
+          "name": "PermissionsGuard",
+          "startLine": 17,
+          "endLine": 118,
+          "methods": [
+            "constructor",
+            "canActivate",
+            "getProjectPermissions",
+            "resolveProjectId"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "PermissionsGuard",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "canActivate",
+          "callee": "this.reflector.getAllAndOverride",
+          "lineNumber": 24
+        },
+        {
+          "caller": "canActivate",
+          "callee": "context.getHandler",
+          "lineNumber": 26
+        },
+        {
+          "caller": "canActivate",
+          "callee": "context.getClass",
+          "lineNumber": 26
+        },
+        {
+          "caller": "canActivate",
+          "callee": "context.switchToHttp().getRequest",
+          "lineNumber": 33
+        },
+        {
+          "caller": "canActivate",
+          "callee": "context.switchToHttp",
+          "lineNumber": 33
+        },
+        {
+          "caller": "canActivate",
+          "callee": "this.getProjectPermissions",
+          "lineNumber": 36
+        },
+        {
+          "caller": "canActivate",
+          "callee": "requiredPermissions.every",
+          "lineNumber": 41
+        },
+        {
+          "caller": "canActivate",
+          "callee": "mergedPermissions.has",
+          "lineNumber": 42
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "context.switchToHttp().getRequest",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "context.switchToHttp",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "this.reflector.getAllAndOverride",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "context.getHandler",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "context.getClass",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "requiredPermissions?.some",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "PROJECT_SCOPED_PERMISSIONS.includes",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "this.resolveProjectId",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "this.prisma.projectMember.findUnique",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 92
+        },
+        {
+          "caller": "getProjectPermissions",
+          "callee": "getProjectRolePermissions",
+          "lineNumber": 97
+        },
+        {
+          "caller": "resolveProjectId",
+          "callee": "Number",
+          "lineNumber": 105
+        },
+        {
+          "caller": "resolveProjectId",
+          "callee": "request.originalUrl?.includes",
+          "lineNumber": 110
+        },
+        {
+          "caller": "resolveProjectId",
+          "callee": "request.originalUrl.includes",
+          "lineNumber": 111
+        },
+        {
+          "caller": "resolveProjectId",
+          "callee": "Number",
+          "lineNumber": 113
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/permissions.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 40,
+      "exports": [
+        {
+          "name": "AVAILABLE_PERMISSIONS",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "PROJECT_SCOPED_PERMISSIONS",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/src/common/dto/paginated-query.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 17,
+      "classes": [
+        {
+          "name": "PaginatedQueryDto",
+          "startLine": 5,
+          "endLine": 19,
+          "methods": [],
+          "properties": [
+            "skip",
+            "take"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PaginatedQueryDto",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/documents/documents.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 118,
+      "nonEmptyLines": 111,
+      "classes": [
+        {
+          "name": "DocumentsController",
+          "startLine": 53,
+          "endLine": 118,
+          "methods": [
+            "constructor",
+            "upload",
+            "getFolders",
+            "findByFolder",
+            "findAll",
+            "remove"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DocumentsController",
+          "line": 49,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "upload",
+          "callee": "Param",
+          "lineNumber": 71
+        },
+        {
+          "caller": "upload",
+          "callee": "UploadedFile",
+          "lineNumber": 72
+        },
+        {
+          "caller": "upload",
+          "callee": "Body",
+          "lineNumber": 73
+        },
+        {
+          "caller": "upload",
+          "callee": "CurrentUser",
+          "lineNumber": 74
+        },
+        {
+          "caller": "upload",
+          "callee": "this.documentsService.uploadFile",
+          "lineNumber": 77
+        },
+        {
+          "caller": "getFolders",
+          "callee": "Param",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getFolders",
+          "callee": "this.documentsService.getFolders",
+          "lineNumber": 85
+        },
+        {
+          "caller": "findByFolder",
+          "callee": "Param",
+          "lineNumber": 93
+        },
+        {
+          "caller": "findByFolder",
+          "callee": "Param",
+          "lineNumber": 94
+        },
+        {
+          "caller": "findByFolder",
+          "callee": "Query",
+          "lineNumber": 95
+        },
+        {
+          "caller": "findByFolder",
+          "callee": "this.documentsService.findByProject",
+          "lineNumber": 97
+        },
+        {
+          "caller": "findAll",
+          "callee": "Param",
+          "lineNumber": 107
+        },
+        {
+          "caller": "findAll",
+          "callee": "Query",
+          "lineNumber": 108
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.documentsService.findByProject",
+          "lineNumber": 110
+        },
+        {
+          "caller": "remove",
+          "callee": "Param",
+          "lineNumber": 115
+        },
+        {
+          "caller": "remove",
+          "callee": "this.documentsService.remove",
+          "lineNumber": 116
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/documents/dto/documents-query.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "DocumentsQueryDto",
+          "startLine": 5,
+          "endLine": 10,
+          "methods": [],
+          "properties": [
+            "folder"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DocumentsQueryDto",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/projects/project-roles.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 182,
+      "nonEmptyLines": 161,
+      "functions": [
+        {
+          "name": "uniquePermissions",
+          "startLine": 64,
+          "endLine": 82,
+          "params": [
+            "permissions"
+          ]
+        },
+        {
+          "name": "getDefaultProjectRolePermissions",
+          "startLine": 84,
+          "endLine": 92,
+          "params": [
+            "roleName"
+          ]
+        },
+        {
+          "name": "normalizeProjectRoles",
+          "startLine": 94,
+          "endLine": 101,
+          "params": [
+            "roles"
+          ]
+        },
+        {
+          "name": "normalizeProjectRoleConfigs",
+          "startLine": 103,
+          "endLine": 159,
+          "params": [
+            "roles",
+            "fallbackRoles"
+          ]
+        },
+        {
+          "name": "getProjectRoleNames",
+          "startLine": 161,
+          "endLine": 163,
+          "params": [
+            "roleConfigs"
+          ]
+        },
+        {
+          "name": "normalizeProjectRole",
+          "startLine": 165,
+          "endLine": 168,
+          "params": [
+            "role"
+          ]
+        },
+        {
+          "name": "getProjectRolePermissions",
+          "startLine": 170,
+          "endLine": 182,
+          "params": [
+            "roleConfigs",
+            "roleName"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DEFAULT_PROJECT_ROLES",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "DEFAULT_PROJECT_ROLE_CONFIGS",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "getDefaultProjectRolePermissions",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "normalizeProjectRoles",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "normalizeProjectRoleConfigs",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "getProjectRoleNames",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "normalizeProjectRole",
+          "line": 165,
+          "isDefault": false
+        },
+        {
+          "name": "getProjectRolePermissions",
+          "line": 170,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "uniquePermissions",
+          "callee": "(permissions ?? [])\n    .map((permission) => permission?.trim())\n    .filter",
+          "lineNumber": 65
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "(permissions ?? [])\n    .map",
+          "lineNumber": 65
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "permission?.trim",
+          "lineNumber": 66
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "Boolean",
+          "lineNumber": 67
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "normalized.filter",
+          "lineNumber": 70
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "allowed.has",
+          "lineNumber": 72
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "invalidPermissions.join",
+          "lineNumber": 77
+        },
+        {
+          "caller": "uniquePermissions",
+          "callee": "Array.from",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getDefaultProjectRolePermissions",
+          "callee": "roleName.trim().toLowerCase",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getDefaultProjectRolePermissions",
+          "callee": "roleName.trim",
+          "lineNumber": 86
+        },
+        {
+          "caller": "normalizeProjectRoles",
+          "callee": "normalizeProjectRoleConfigs(\n    (roles?.length ? roles : DEFAULT_PROJECT_ROLES).map((name) => ({\n      name,\n      permissions: getDefaultProjectRolePermissions(name),\n    })),\n  ).map",
+          "lineNumber": 95
+        },
+        {
+          "caller": "normalizeProjectRoles",
+          "callee": "normalizeProjectRoleConfigs",
+          "lineNumber": 95
+        },
+        {
+          "caller": "normalizeProjectRoles",
+          "callee": "(roles?.length ? roles : DEFAULT_PROJECT_ROLES).map",
+          "lineNumber": 96
+        },
+        {
+          "caller": "normalizeProjectRoles",
+          "callee": "getDefaultProjectRolePermissions",
+          "lineNumber": 98
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "Array.isArray",
+          "lineNumber": 108
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "fallbackRoles.map",
+          "lineNumber": 111
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "getDefaultProjectRolePermissions",
+          "lineNumber": 113
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "source\n    .map((role) => {\n      if (typeof role === \"string\") {\n        const name = role.trim();\n        return name\n          ? {\n              name,\n              permissions: getDefaultProjectRolePermissions(name),\n            }\n          : null;\n      }\n\n      if (!role || typeof role !== \"object\") return null;\n      const entry = role as { name?: unknown; permissions?: unknown };\n      const name = typeof entry.name === \"string\" ? entry.name.trim() : \"\";\n\n      return name\n        ? {\n            name,\n            permissions: uniquePermissions(\n              Array.isArray(entry.permissions)\n                ? entry.permissions.filter(\n                    (permission): permission is string =>\n                      typeof permission === \"string\",\n                  )\n                : getDefaultProjectRolePermissions(name),\n            ),\n          }\n        : null;\n    })\n    .filter",
+          "lineNumber": 117
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "source\n    .map",
+          "lineNumber": 117
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "role.trim",
+          "lineNumber": 120
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "getDefaultProjectRolePermissions",
+          "lineNumber": 124
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "entry.name.trim",
+          "lineNumber": 131
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "uniquePermissions",
+          "lineNumber": 136
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "Array.isArray",
+          "lineNumber": 137
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "entry.permissions.filter",
+          "lineNumber": 138
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "getDefaultProjectRolePermissions",
+          "lineNumber": 142
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "Boolean",
+          "lineNumber": 147
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "normalized.map",
+          "lineNumber": 153
+        },
+        {
+          "caller": "normalizeProjectRoleConfigs",
+          "callee": "role.name.toLowerCase",
+          "lineNumber": 153
+        },
+        {
+          "caller": "getProjectRoleNames",
+          "callee": "roleConfigs.map",
+          "lineNumber": 162
+        },
+        {
+          "caller": "normalizeProjectRole",
+          "callee": "role?.trim",
+          "lineNumber": 166
+        },
+        {
+          "caller": "getProjectRolePermissions",
+          "callee": "normalizeProjectRole",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getProjectRolePermissions",
+          "callee": "roleConfigs.find",
+          "lineNumber": 178
+        },
+        {
+          "caller": "getProjectRolePermissions",
+          "callee": "role.name.toLowerCase",
+          "lineNumber": 179
+        },
+        {
+          "caller": "getProjectRolePermissions",
+          "callee": "normalizedRole.toLowerCase",
+          "lineNumber": 179
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 8,
+        "functionCount": 7,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/src/roles/dto/create-role.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "classes": [
+        {
+          "name": "CreateRoleDto",
+          "startLine": 4,
+          "endLine": 16,
+          "methods": [],
+          "properties": [
+            "name",
+            "permissions"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateRoleDto",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/roles/roles.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 57,
+      "classes": [
+        {
+          "name": "RolesController",
+          "startLine": 23,
+          "endLine": 64,
+          "methods": [
+            "constructor",
+            "getPermissions",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "remove"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RolesController",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getPermissions",
+          "callee": "this.rolesService.getAvailablePermissions",
+          "lineNumber": 30
+        },
+        {
+          "caller": "create",
+          "callee": "Body",
+          "lineNumber": 36
+        },
+        {
+          "caller": "create",
+          "callee": "this.rolesService.create",
+          "lineNumber": 37
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.rolesService.findAll",
+          "lineNumber": 44
+        },
+        {
+          "caller": "findOne",
+          "callee": "Param",
+          "lineNumber": 49
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.rolesService.findOne",
+          "lineNumber": 50
+        },
+        {
+          "caller": "update",
+          "callee": "Param",
+          "lineNumber": 55
+        },
+        {
+          "caller": "update",
+          "callee": "Body",
+          "lineNumber": 55
+        },
+        {
+          "caller": "update",
+          "callee": "this.rolesService.update",
+          "lineNumber": 56
+        },
+        {
+          "caller": "remove",
+          "callee": "Param",
+          "lineNumber": 61
+        },
+        {
+          "caller": "remove",
+          "callee": "this.rolesService.remove",
+          "lineNumber": 62
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/roles/roles.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "RolesModule",
+          "startLine": 10,
+          "endLine": 10,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RolesModule",
+          "line": 5,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/roles/roles.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 45,
+      "nonEmptyLines": 38,
+      "classes": [
+        {
+          "name": "RolesService",
+          "startLine": 11,
+          "endLine": 45,
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "remove",
+            "getAvailablePermissions"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RolesService",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "create",
+          "callee": "this.prisma.role.findUnique",
+          "lineNumber": 15
+        },
+        {
+          "caller": "create",
+          "callee": "this.prisma.role.create",
+          "lineNumber": 19
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.prisma.role.findMany",
+          "lineNumber": 23
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.prisma.role.findUnique",
+          "lineNumber": 27
+        },
+        {
+          "caller": "update",
+          "callee": "this.findOne",
+          "lineNumber": 33
+        },
+        {
+          "caller": "update",
+          "callee": "this.prisma.role.update",
+          "lineNumber": 34
+        },
+        {
+          "caller": "remove",
+          "callee": "this.findOne",
+          "lineNumber": 38
+        },
+        {
+          "caller": "remove",
+          "callee": "this.prisma.role.delete",
+          "lineNumber": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/tasks/dto/tasks-query.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 60,
+      "nonEmptyLines": 50,
+      "classes": [
+        {
+          "name": "TasksQueryDto",
+          "startLine": 7,
+          "endLine": 60,
+          "methods": [],
+          "properties": [
+            "status",
+            "search",
+            "priority",
+            "epic",
+            "sprint",
+            "assigneeId",
+            "labels",
+            "dueFrom",
+            "dueTo",
+            "ai"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TasksQueryDto",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/tasks/tasks.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 122,
+      "nonEmptyLines": 112,
+      "classes": [
+        {
+          "name": "TasksController",
+          "startLine": 32,
+          "endLine": 122,
+          "methods": [
+            "constructor",
+            "create",
+            "findAll",
+            "findOne",
+            "update",
+            "updateStatus",
+            "getActivities",
+            "addComment",
+            "addWorkLog",
+            "remove"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "TasksController",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "create",
+          "callee": "Param",
+          "lineNumber": 39
+        },
+        {
+          "caller": "create",
+          "callee": "Body",
+          "lineNumber": 40
+        },
+        {
+          "caller": "create",
+          "callee": "CurrentUser",
+          "lineNumber": 41
+        },
+        {
+          "caller": "create",
+          "callee": "this.tasksService.create",
+          "lineNumber": 43
+        },
+        {
+          "caller": "findAll",
+          "callee": "Param",
+          "lineNumber": 50
+        },
+        {
+          "caller": "findAll",
+          "callee": "Query",
+          "lineNumber": 51
+        },
+        {
+          "caller": "findAll",
+          "callee": "this.tasksService.findByProject",
+          "lineNumber": 53
+        },
+        {
+          "caller": "findOne",
+          "callee": "Param",
+          "lineNumber": 58
+        },
+        {
+          "caller": "findOne",
+          "callee": "this.tasksService.findOne",
+          "lineNumber": 59
+        },
+        {
+          "caller": "update",
+          "callee": "Param",
+          "lineNumber": 65
+        },
+        {
+          "caller": "update",
+          "callee": "Body",
+          "lineNumber": 66
+        },
+        {
+          "caller": "update",
+          "callee": "CurrentUser",
+          "lineNumber": 67
+        },
+        {
+          "caller": "update",
+          "callee": "this.tasksService.update",
+          "lineNumber": 69
+        },
+        {
+          "caller": "updateStatus",
+          "callee": "Param",
+          "lineNumber": 76
+        },
+        {
+          "caller": "updateStatus",
+          "callee": "Body",
+          "lineNumber": 77
+        },
+        {
+          "caller": "updateStatus",
+          "callee": "CurrentUser",
+          "lineNumber": 78
+        },
+        {
+          "caller": "updateStatus",
+          "callee": "this.tasksService.updateStatus",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getActivities",
+          "callee": "Param",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getActivities",
+          "callee": "Param",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getActivities",
+          "callee": "this.tasksService.getActivities",
+          "lineNumber": 90
+        },
+        {
+          "caller": "addComment",
+          "callee": "Param",
+          "lineNumber": 97
+        },
+        {
+          "caller": "addComment",
+          "callee": "Param",
+          "lineNumber": 98
+        },
+        {
+          "caller": "addComment",
+          "callee": "Body",
+          "lineNumber": 99
+        },
+        {
+          "caller": "addComment",
+          "callee": "CurrentUser",
+          "lineNumber": 100
+        },
+        {
+          "caller": "addComment",
+          "callee": "this.tasksService.addComment",
+          "lineNumber": 102
+        },
+        {
+          "caller": "addWorkLog",
+          "callee": "Param",
+          "lineNumber": 109
+        },
+        {
+          "caller": "addWorkLog",
+          "callee": "Param",
+          "lineNumber": 110
+        },
+        {
+          "caller": "addWorkLog",
+          "callee": "Body",
+          "lineNumber": 111
+        },
+        {
+          "caller": "addWorkLog",
+          "callee": "CurrentUser",
+          "lineNumber": 112
+        },
+        {
+          "caller": "addWorkLog",
+          "callee": "this.tasksService.addWorkLog",
+          "lineNumber": 114
+        },
+        {
+          "caller": "remove",
+          "callee": "Param",
+          "lineNumber": 119
+        },
+        {
+          "caller": "remove",
+          "callee": "this.tasksService.remove",
+          "lineNumber": 120
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    }
+  ]
+}

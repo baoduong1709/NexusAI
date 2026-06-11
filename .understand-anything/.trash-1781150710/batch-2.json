@@ -1,0 +1,914 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/app/(auth)/login/page.tsx",
+      "type": "file",
+      "name": "login/page.tsx",
+      "filePath": "frontend/app/(auth)/login/page.tsx",
+      "summary": "Trang đăng nhập dành cho người dùng hệ thống NexusAI, sử dụng useAuth để thực hiện xác thực và zodResolver để kiểm tra dữ liệu đầu vào.",
+      "tags": ["react-page", "auth-page", "login-handler"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/(auth)/login/page.tsx:LoginPage",
+      "type": "function",
+      "name": "LoginPage",
+      "filePath": "frontend/app/(auth)/login/page.tsx",
+      "summary": "Component giao diện xử lý việc đăng nhập, bao gồm việc hiển thị form nhập thông tin, xử lý sự kiện submit và chuyển hướng người dùng.",
+      "tags": ["react-component", "auth-handler", "ui-form"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+      "type": "file",
+      "name": "ai-settings/page.tsx",
+      "filePath": "frontend/app/(dashboard)/ai-settings/page.tsx",
+      "summary": "Trang cấu hình hệ thống AI, cho phép quản trị viên thiết lập API key, các mô hình ngôn ngữ (Pro, Flash, Summary, Embedding) và theo dõi số lượng token đã sử dụng.",
+      "tags": ["react-page", "ai-settings", "dashboard-tab"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/ai-settings/page.tsx:AiSettingsPage",
+      "type": "function",
+      "name": "AiSettingsPage",
+      "filePath": "frontend/app/(dashboard)/ai-settings/page.tsx",
+      "summary": "Component hiển thị giao diện cấu hình AI và thống kê sử dụng token của người dùng, tích hợp biểu đồ và phân tích dữ liệu lịch sử gọi API.",
+      "tags": ["react-component", "ai-integration", "settings-form"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "type": "file",
+      "name": "dashboard/page.tsx",
+      "filePath": "frontend/app/(dashboard)/dashboard/page.tsx",
+      "summary": "Trang tổng quan dashboard chính của NexusAI, hiển thị thông tin thống kê chung về các dự án và danh sách các dự án đang hoạt động.",
+      "tags": ["react-page", "dashboard-main", "overview"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/dashboard/page.tsx:DashboardPage",
+      "type": "function",
+      "name": "DashboardPage",
+      "filePath": "frontend/app/(dashboard)/dashboard/page.tsx",
+      "summary": "Component chính hiển thị giao diện bảng điều khiển trung tâm, tải dữ liệu thống kê từ các API của project và user để dựng màn hình tổng quan.",
+      "tags": ["react-component", "dashboard-view", "data-fetching"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "filePath": "frontend/app/(dashboard)/layout.tsx",
+      "summary": "Layout chung cho khu vực dashboard, tích hợp thanh điều hướng bên (Sidebar), thanh đầu trang (Header) và hộp thoại chat AI toàn hệ thống.",
+      "tags": ["react-layout", "dashboard-frame", "ui-shell"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/layout.tsx:DashboardLayout",
+      "type": "function",
+      "name": "DashboardLayout",
+      "filePath": "frontend/app/(dashboard)/layout.tsx",
+      "summary": "Component layout bọc các trang dashboard, thực hiện kiểm tra quyền truy cập và hiển thị sidebar, header cùng với bong bóng chat AI.",
+      "tags": ["react-component", "layout-wrapper", "auth-guard"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "type": "file",
+      "name": "projects/[id]/ai-analysis/page.tsx",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "summary": "Trang phân tích AI cho từng dự án, hỗ trợ chat stream với AI để đề xuất và tạo các task công việc trực tiếp vào dự án.",
+      "tags": ["react-page", "ai-assistant", "project-analysis"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx:AiAnalysisPage",
+      "type": "function",
+      "name": "AiAnalysisPage",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "summary": "Component giao diện phân tích dự án bằng AI, hiển thị luồng trò chuyện và nhật ký hoạt động của agent trong quá trình đề xuất công việc.",
+      "tags": ["react-component", "ai-chat", "task-generator"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "type": "file",
+      "name": "projects/[id]/page.tsx",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "summary": "Trang chi tiết của một dự án, chứa trình soạn thảo mô tả phong phú (rich text), quản lý tài liệu, thảo luận (comment) và chỉnh sửa workflow của dự án.",
+      "tags": ["react-page", "project-details", "tiptap-editor"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+      "type": "function",
+      "name": "ProjectDetailPage",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "summary": "Component chính quản lý chi tiết dự án, bao gồm quản lý task, tài liệu đính kèm, phân quyền thành viên và thiết lập luồng công việc (workflow).",
+      "tags": ["react-component", "project-view", "tabs-container"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:DescriptionEditor",
+      "type": "function",
+      "name": "DescriptionEditor",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "summary": "Component trình soạn thảo văn bản mô tả dự án dựa trên Tiptap, hỗ trợ tag tên thành viên và tích hợp các tính năng hỗ trợ viết bằng AI.",
+      "tags": ["react-component", "rich-text-editor", "ai-helper"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:CommentEditor",
+      "type": "function",
+      "name": "CommentEditor",
+      "filePath": "frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "summary": "Component soạn thảo phản hồi/bình luận trong dự án, hỗ trợ giao diện phong phú và tag các thành viên khác.",
+      "tags": ["react-component", "comments-section", "editor"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "type": "file",
+      "name": "projects/page.tsx",
+      "filePath": "frontend/app/(dashboard)/projects/page.tsx",
+      "summary": "Trang danh sách dự án trong hệ thống, cung cấp tính năng tìm kiếm, lọc và thêm dự án mới kèm theo cấu hình vai trò thành viên.",
+      "tags": ["react-page", "projects-list", "project-creation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/projects/page.tsx:ProjectsPage",
+      "type": "function",
+      "name": "ProjectsPage",
+      "filePath": "frontend/app/(dashboard)/projects/page.tsx",
+      "summary": "Component giao diện hiển thị danh sách các dự án và chứa form tạo dự án mới (bao gồm cả việc cấu hình vai trò dự án mặc định).",
+      "tags": ["react-component", "projects-grid", "form-modal"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "type": "file",
+      "name": "roles/page.tsx",
+      "filePath": "frontend/app/(dashboard)/roles/page.tsx",
+      "summary": "Trang quản lý vai trò (roles) hệ thống, cho phép xem danh sách vai trò, tạo mới, chỉnh sửa quyền (permissions) hệ thống và xóa vai trò.",
+      "tags": ["react-page", "roles-management", "rbac"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/roles/page.tsx:RolesPage",
+      "type": "function",
+      "name": "RolesPage",
+      "filePath": "frontend/app/(dashboard)/roles/page.tsx",
+      "summary": "Component giao diện quản lý phân quyền và vai trò người dùng trong hệ thống với các lựa chọn phân quyền chi tiết dạng checkbox.",
+      "tags": ["react-component", "rbac-ui", "permission-matrix"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/(dashboard)/users/page.tsx",
+      "type": "file",
+      "name": "users/page.tsx",
+      "filePath": "frontend/app/(dashboard)/users/page.tsx",
+      "summary": "Trang quản lý người dùng của hệ thống NexusAI, cho phép admin quản lý tài khoản thành viên, cập nhật thông tin và gán vai trò hệ thống.",
+      "tags": ["react-page", "users-management", "admin-panel"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/app/(dashboard)/users/page.tsx:UsersPage",
+      "type": "function",
+      "name": "UsersPage",
+      "filePath": "frontend/app/(dashboard)/users/page.tsx",
+      "summary": "Component giao diện quản trị thành viên, hiển thị bảng danh sách người dùng và chứa các form thêm/sửa thông tin tài khoản.",
+      "tags": ["react-component", "admin-table", "modal-forms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/app/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "filePath": "frontend/app/layout.tsx",
+      "summary": "Tệp layout gốc của ứng dụng, chịu trách nhiệm thiết lập các provider toàn cục như QueryProvider, ThemeProvider, AuthProvider và nạp CSS cơ bản.",
+      "tags": ["react-layout", "root-layout", "providers"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/app/layout.tsx:RootLayout",
+      "type": "function",
+      "name": "RootLayout",
+      "filePath": "frontend/app/layout.tsx",
+      "summary": "Component root layout bọc toàn bộ ứng dụng Next.js, định nghĩa cấu trúc HTML cơ bản và cấu hình font chữ Inter.",
+      "tags": ["react-component", "html-wrapper", "font-setup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/ai-chat-bubble.tsx",
+      "type": "file",
+      "name": "ai-chat-bubble.tsx",
+      "filePath": "frontend/components/ai-chat-bubble.tsx",
+      "summary": "Bong bóng chat trợ lý AI toàn ứng dụng, hỗ trợ hội thoại theo dự án hoặc độc lập, hiển thị các bước phân tích công việc và cho phép duyệt tạo task trực tiếp từ chat.",
+      "tags": ["react-component", "ai-widget", "chat-bubble"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/components/ai-chat-bubble.tsx:AiChatBubble",
+      "type": "function",
+      "name": "AiChatBubble",
+      "filePath": "frontend/components/ai-chat-bubble.tsx",
+      "summary": "Component chính quản lý giao diện bong bóng chat AI ở góc màn hình, điều phối trạng thái phiên trò chuyện và tích hợp trình xem thử các task đề xuất.",
+      "tags": ["react-component", "floating-widget", "ai-stream"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/components/brand-logo.tsx",
+      "type": "file",
+      "name": "brand-logo.tsx",
+      "filePath": "frontend/components/brand-logo.tsx",
+      "summary": "Component hiển thị logo của thương hiệu NexusAI, hỗ trợ tùy biến kích thước và lớp CSS.",
+      "tags": ["react-component", "ui-branding", "logo"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/brand-logo.tsx:BrandLogo",
+      "type": "function",
+      "name": "BrandLogo",
+      "filePath": "frontend/components/brand-logo.tsx",
+      "summary": "Component vẽ logo thương hiệu dạng vector SVG phối hợp với chữ NexusAI.",
+      "tags": ["react-component", "svg-logo", "branding"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/layout/header.tsx",
+      "type": "file",
+      "name": "layout/header.tsx",
+      "filePath": "frontend/components/layout/header.tsx",
+      "summary": "Thành phần đầu trang (Header) của bảng điều khiển, hiển thị nút chuyển đổi theme sáng/tối, thông tin người dùng đăng nhập và menu đăng xuất.",
+      "tags": ["react-component", "dashboard-header", "navigation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/layout/header.tsx:Header",
+      "type": "function",
+      "name": "Header",
+      "filePath": "frontend/components/layout/header.tsx",
+      "summary": "Component Header chính, xử lý trạng thái bật tắt menu cá nhân và chuyển đổi giao diện light/dark mode.",
+      "tags": ["react-component", "navbar", "user-profile"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/layout/sidebar.tsx",
+      "type": "file",
+      "name": "layout/sidebar.tsx",
+      "filePath": "frontend/components/layout/sidebar.tsx",
+      "summary": "Thanh điều hướng bên (Sidebar) của bảng điều khiển, hiển thị liên kết truy cập các trang chức năng dựa trên phân quyền người dùng.",
+      "tags": ["react-component", "dashboard-sidebar", "navigation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/layout/sidebar.tsx:Sidebar",
+      "type": "function",
+      "name": "Sidebar",
+      "filePath": "frontend/components/layout/sidebar.tsx",
+      "summary": "Component Sidebar chính, thực hiện kiểm tra quyền của người dùng để lọc các đường dẫn điều hướng phù hợp.",
+      "tags": ["react-component", "navigation-menu", "auth-check"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/project-workflow-editor.tsx",
+      "type": "file",
+      "name": "project-workflow-editor.tsx",
+      "filePath": "frontend/components/project-workflow-editor.tsx",
+      "summary": "Bộ soạn thảo luồng công việc (workflow editor) của dự án, hỗ trợ hiển thị mô hình đồ thị SVG gồm các node trạng thái và đường nối chuyển đổi giữa các trạng thái.",
+      "tags": ["react-component", "workflow-editor", "svg-graph"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/components/project-workflow-editor.tsx:ProjectWorkflowEditor",
+      "type": "function",
+      "name": "ProjectWorkflowEditor",
+      "filePath": "frontend/components/project-workflow-editor.tsx",
+      "summary": "Component giao diện chỉnh sửa workflow dự án, cho phép kéo thả, đổi màu node, thêm/xóa các trạng thái và thiết lập điều kiện chuyển đổi trạng thái.",
+      "tags": ["react-component", "interactive-canvas", "state-machine"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/components/project-workflow-editor.tsx:WorkflowPreview",
+      "type": "function",
+      "name": "WorkflowPreview",
+      "filePath": "frontend/components/project-workflow-editor.tsx",
+      "summary": "Component gọn hiển thị trước luồng công việc dưới dạng ảnh thu nhỏ đồ thị.",
+      "tags": ["react-component", "preview-widget", "ui-element"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/providers/query-provider.tsx",
+      "type": "file",
+      "name": "providers/query-provider.tsx",
+      "filePath": "frontend/components/providers/query-provider.tsx",
+      "summary": "Provider cung cấp QueryClient của React Query cho toàn bộ ứng dụng nhằm quản lý và cache trạng thái dữ liệu từ API.",
+      "tags": ["react-provider", "react-query", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/providers/query-provider.tsx:QueryProvider",
+      "type": "function",
+      "name": "QueryProvider",
+      "filePath": "frontend/components/providers/query-provider.tsx",
+      "summary": "Component cung cấp context React Query cho các component con.",
+      "tags": ["react-component", "context-provider", "boilerplate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/components/providers/theme-provider.tsx",
+      "type": "file",
+      "name": "providers/theme-provider.tsx",
+      "filePath": "frontend/components/providers/theme-provider.tsx",
+      "summary": "Provider quản lý giao diện sáng/tối (Theme) cho ứng dụng, đồng bộ trạng thái lưu trong localStorage.",
+      "tags": ["react-provider", "theme-manager", "dark-mode"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/providers/theme-provider.tsx:ThemeProvider",
+      "type": "function",
+      "name": "ThemeProvider",
+      "filePath": "frontend/components/providers/theme-provider.tsx",
+      "summary": "Component wrapper cung cấp trạng thái Theme hiện tại và hàm thay đổi Theme cho ứng dụng.",
+      "tags": ["react-component", "context-provider", "theme-engine"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/components/providers/theme-provider.tsx:useTheme",
+      "type": "function",
+      "name": "useTheme",
+      "filePath": "frontend/components/providers/theme-provider.tsx",
+      "summary": "Custom Hook giúp các component dễ dàng truy xuất và điều chỉnh chủ đề giao diện (light/dark mode).",
+      "tags": ["react-hook", "theme-helper", "ui-helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/lib/api.ts",
+      "type": "file",
+      "name": "lib/api.ts",
+      "filePath": "frontend/lib/api.ts",
+      "summary": "Bộ máy API client của NexusAI xây dựng trên Axios, cung cấp các service gọi API có cấu hình token xác thực.",
+      "tags": ["api-client", "axios", "http-services"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:frontend/lib/api.ts",
+      "type": "service",
+      "name": "apiService",
+      "filePath": "frontend/lib/api.ts",
+      "summary": "Các dịch vụ gọi API tập trung để tương tác với backend, hỗ trợ các API về auth, users, roles, projects, tasks, documents và AI.",
+      "tags": ["axios-client", "api-gateway", "http-client"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/lib/auth.tsx",
+      "type": "file",
+      "name": "lib/auth.tsx",
+      "filePath": "frontend/lib/auth.tsx",
+      "summary": "Context quản lý trạng thái đăng nhập, lưu trữ token, thông tin người dùng và xử lý kiểm tra quyền hạn (permissions) trên frontend.",
+      "tags": ["auth-context", "react-context", "token-auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/lib/auth.tsx:AuthProvider",
+      "type": "function",
+      "name": "AuthProvider",
+      "filePath": "frontend/lib/auth.tsx",
+      "summary": "Component provider cung cấp thông tin phiên làm việc, trạng thái xác thực và các hàm login/logout cho toàn bộ ứng dụng.",
+      "tags": ["react-component", "context-provider", "session-manager"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "function",
+      "name": "useAuth",
+      "filePath": "frontend/lib/auth.tsx",
+      "summary": "Custom Hook giúp các component truy cập nhanh chóng vào thông tin người dùng hiện tại và các hành động xác thực.",
+      "tags": ["react-hook", "auth-helper", "session-helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/lib/project-roles.ts",
+      "type": "file",
+      "name": "lib/project-roles.ts",
+      "filePath": "frontend/lib/project-roles.ts",
+      "summary": "Định nghĩa các nhóm quyền và vai trò mặc định của thành viên trong dự án (Project Manager, Developer, Reporter, v.v.), hỗ trợ chuẩn hóa cấu hình phân quyền.",
+      "tags": ["project-rbac", "role-definition", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/lib/project-roles.ts:getProjectRolePermissions",
+      "type": "function",
+      "name": "getProjectRolePermissions",
+      "filePath": "frontend/lib/project-roles.ts",
+      "summary": "Hàm trả về danh sách các quyền hạn cụ thể của một vai trò dựa trên cấu hình vai trò của dự án.",
+      "tags": ["rbac-helper", "permissions-resolver", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/lib/utils.ts",
+      "type": "file",
+      "name": "lib/utils.ts",
+      "filePath": "frontend/lib/utils.ts",
+      "summary": "Thư viện chứa các hàm tiện ích dùng chung cho frontend, bao gồm định dạng tiền tệ, ngày tháng, nội suy màu sắc và các hàm chuẩn hóa workflow.",
+      "tags": ["utilities", "helper-functions", "formatting"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/lib/utils.ts:normalizeTaskWorkflow",
+      "type": "function",
+      "name": "normalizeTaskWorkflow",
+      "filePath": "frontend/lib/utils.ts",
+      "summary": "Chuẩn hóa cấu trúc đồ thị workflow từ backend (nodes/edges) để chuẩn bị render trên canvas frontend.",
+      "tags": ["workflow-helper", "data-normalization", "utility"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/app/(auth)/login/page.tsx",
+      "target": "file:frontend/components/brand-logo.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(auth)/login/page.tsx",
+      "target": "file:frontend/components/providers/theme-provider.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(auth)/login/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/layout.tsx",
+      "target": "file:frontend/components/ai-chat-bubble.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/layout.tsx",
+      "target": "file:frontend/components/layout/header.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/layout.tsx",
+      "target": "file:frontend/components/layout/sidebar.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/layout.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "target": "file:frontend/components/brand-logo.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/components/brand-logo.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/components/project-workflow-editor.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/lib/project-roles.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "target": "file:frontend/lib/project-roles.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/users/page.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/users/page.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/users/page.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/components/providers/query-provider.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/components/providers/theme-provider.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "file:frontend/app/globals.css",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/ai-chat-bubble.tsx",
+      "target": "file:frontend/components/brand-logo.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/ai-chat-bubble.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/ai-chat-bubble.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/ai-chat-bubble.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/brand-logo.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/header.tsx",
+      "target": "file:frontend/components/providers/theme-provider.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/header.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/header.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/sidebar.tsx",
+      "target": "file:frontend/components/brand-logo.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/sidebar.tsx",
+      "target": "file:frontend/lib/auth.tsx",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/layout/sidebar.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/components/project-workflow-editor.tsx",
+      "target": "file:frontend/lib/utils.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/lib/auth.tsx",
+      "target": "file:frontend/lib/api.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:frontend/app/(auth)/login/page.tsx",
+      "target": "function:frontend/app/(auth)/login/page.tsx:LoginPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/ai-settings/page.tsx",
+      "target": "function:frontend/app/(dashboard)/ai-settings/page.tsx:AiSettingsPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/dashboard/page.tsx",
+      "target": "function:frontend/app/(dashboard)/dashboard/page.tsx:DashboardPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/layout.tsx",
+      "target": "function:frontend/app/(dashboard)/layout.tsx:DashboardLayout",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx",
+      "target": "function:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx:AiAnalysisPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:DescriptionEditor",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/[id]/page.tsx",
+      "target": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:CommentEditor",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/projects/page.tsx",
+      "target": "function:frontend/app/(dashboard)/projects/page.tsx:ProjectsPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/roles/page.tsx",
+      "target": "function:frontend/app/(dashboard)/roles/page.tsx:RolesPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/(dashboard)/users/page.tsx",
+      "target": "function:frontend/app/(dashboard)/users/page.tsx:UsersPage",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/app/layout.tsx",
+      "target": "function:frontend/app/layout.tsx:RootLayout",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/ai-chat-bubble.tsx",
+      "target": "function:frontend/components/ai-chat-bubble.tsx:AiChatBubble",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/brand-logo.tsx",
+      "target": "function:frontend/components/brand-logo.tsx:BrandLogo",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/layout/header.tsx",
+      "target": "function:frontend/components/layout/header.tsx:Header",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/layout/sidebar.tsx",
+      "target": "function:frontend/components/layout/sidebar.tsx:Sidebar",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/project-workflow-editor.tsx",
+      "target": "function:frontend/components/project-workflow-editor.tsx:ProjectWorkflowEditor",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/project-workflow-editor.tsx",
+      "target": "function:frontend/components/project-workflow-editor.tsx:WorkflowPreview",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/providers/query-provider.tsx",
+      "target": "function:frontend/components/providers/query-provider.tsx:QueryProvider",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/providers/theme-provider.tsx",
+      "target": "function:frontend/components/providers/theme-provider.tsx:ThemeProvider",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/components/providers/theme-provider.tsx",
+      "target": "function:frontend/components/providers/theme-provider.tsx:useTheme",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/lib/api.ts",
+      "target": "service:frontend/lib/api.ts",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/lib/auth.tsx",
+      "target": "function:frontend/lib/auth.tsx:AuthProvider",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/lib/auth.tsx",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/lib/project-roles.ts",
+      "target": "function:frontend/lib/project-roles.ts:getProjectRolePermissions",
+      "type": "contains"
+    },
+    {
+      "source": "file:frontend/lib/utils.ts",
+      "target": "function:frontend/lib/utils.ts:normalizeTaskWorkflow",
+      "type": "contains"
+    },
+    {
+      "source": "function:frontend/app/(auth)/login/page.tsx:LoginPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/ai-settings/page.tsx:AiSettingsPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/ai-settings/page.tsx:AiSettingsPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/dashboard/page.tsx:DashboardPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/dashboard/page.tsx:DashboardPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/layout.tsx:DashboardLayout",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/[id]/ai-analysis/page.tsx:AiAnalysisPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/[id]/page.tsx:ProjectDetailPage",
+      "target": "function:frontend/components/project-workflow-editor.tsx:ProjectWorkflowEditor",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/page.tsx:ProjectsPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/projects/page.tsx:ProjectsPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/roles/page.tsx:RolesPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/roles/page.tsx:RolesPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/users/page.tsx:UsersPage",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/app/(dashboard)/users/page.tsx:UsersPage",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/ai-chat-bubble.tsx:AiChatBubble",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/ai-chat-bubble.tsx:AiChatBubble",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/layout/header.tsx:Header",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/layout/header.tsx:Header",
+      "target": "function:frontend/components/providers/theme-provider.tsx:useTheme",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/layout/sidebar.tsx:Sidebar",
+      "target": "function:frontend/lib/auth.tsx:useAuth",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/components/project-workflow-editor.tsx:ProjectWorkflowEditor",
+      "target": "function:frontend/lib/utils.ts:normalizeTaskWorkflow",
+      "type": "calls"
+    },
+    {
+      "source": "function:frontend/lib/auth.tsx:AuthProvider",
+      "target": "service:frontend/lib/api.ts",
+      "type": "calls"
+    }
+  ]
+}

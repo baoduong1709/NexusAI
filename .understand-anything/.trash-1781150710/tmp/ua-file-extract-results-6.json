@@ -1,0 +1,227 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "backend/src/auth/auth.controller.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 23,
+      "classes": [
+        {
+          "name": "AuthController",
+          "startLine": 10,
+          "endLine": 26,
+          "methods": [
+            "constructor",
+            "login",
+            "getProfile"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "AuthController",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "login",
+          "callee": "Body",
+          "lineNumber": 15
+        },
+        {
+          "caller": "login",
+          "callee": "this.authService.login",
+          "lineNumber": 16
+        },
+        {
+          "caller": "getProfile",
+          "callee": "CurrentUser",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getProfile",
+          "callee": "this.authService.getProfile",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/auth.module.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 24,
+      "classes": [
+        {
+          "name": "AuthModule",
+          "startLine": 25,
+          "endLine": 25,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "AuthModule",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/auth.service.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 57,
+      "classes": [
+        {
+          "name": "AuthService",
+          "startLine": 8,
+          "endLine": 64,
+          "methods": [
+            "constructor",
+            "login",
+            "getProfile"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "AuthService",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "login",
+          "callee": "this.prisma.user.findUnique",
+          "lineNumber": 15
+        },
+        {
+          "caller": "login",
+          "callee": "bcrypt.compare",
+          "lineNumber": 24
+        },
+        {
+          "caller": "login",
+          "callee": "this.jwtService.sign",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getProfile",
+          "callee": "this.prisma.user.findUnique",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/dto/login.dto.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 11,
+      "classes": [
+        {
+          "name": "LoginDto",
+          "startLine": 4,
+          "endLine": 13,
+          "methods": [],
+          "properties": [
+            "email",
+            "password"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoginDto",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/src/auth/strategies/jwt.strategy.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 22,
+      "classes": [
+        {
+          "name": "JwtStrategy",
+          "startLine": 7,
+          "endLine": 24,
+          "methods": [
+            "constructor",
+            "validate"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "JwtStrategy",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "constructor",
+          "callee": "super",
+          "lineNumber": 9
+        },
+        {
+          "caller": "constructor",
+          "callee": "ExtractJwt.fromAuthHeaderAsBearerToken",
+          "lineNumber": 10
+        },
+        {
+          "caller": "constructor",
+          "callee": "configService.get",
+          "lineNumber": 12
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    }
+  ]
+}

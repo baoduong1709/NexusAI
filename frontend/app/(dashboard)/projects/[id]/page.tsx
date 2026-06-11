@@ -8,6 +8,7 @@ import {
   usersApi,
   aiApi,
 } from "@/lib/api";
+import AccessDenied from "@/components/layout/access-denied";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -418,6 +419,9 @@ function DescriptionEditor({
   const [isTableActive, setIsTableActive] = useState(false);
   const [showTableMenu, setShowTableMenu] = useState(false);
 
+  // Track document IDs of images uploaded in this editor session
+  const uploadedDocIds = useRef<Set<number>>(new Set());
+
 
   const editor = useEditor({
     extensions: [
@@ -467,7 +471,17 @@ function DescriptionEditor({
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       if (editor.isFocused) {
-        onChange(sanitizeRichTextHtml(editor.getHTML()));
+        const html = sanitizeRichTextHtml(editor.getHTML());
+        onChange(html);
+
+        // Clean up images that were removed from the editor
+        const currentIds = new Set(collectImageDocIds(html));
+        uploadedDocIds.current.forEach((docId) => {
+          if (!currentIds.has(docId)) {
+            uploadedDocIds.current.delete(docId);
+            deleteDocument(projectId, docId);
+          }
+        });
       }
       setIsTableActive(editor.isActive("table"));
     },
@@ -504,7 +518,9 @@ function DescriptionEditor({
           if (imageFiles.length === 0) return false;
           event.preventDefault();
           for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file);
+            uploadAndInsertImage(view, projectId, file, (docId) => {
+              uploadedDocIds.current.add(docId);
+            });
           }
           return true;
         },
@@ -514,7 +530,9 @@ function DescriptionEditor({
           if (imageFiles.length === 0) return false;
           event.preventDefault();
           for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file);
+            uploadAndInsertImage(view, projectId, file, (docId) => {
+              uploadedDocIds.current.add(docId);
+            });
           }
           return true;
         },
@@ -527,11 +545,27 @@ function DescriptionEditor({
     editor.setEditable(!disabled);
   }, [editor, disabled]);
 
+  // Clean up orphan images when editor unmounts (e.g. modal closed without saving)
+  useEffect(() => {
+    return () => {
+      if (!editor) return;
+      const html = editor.getHTML();
+      const currentIds = new Set(collectImageDocIds(html));
+      uploadedDocIds.current.forEach((docId) => {
+        if (!currentIds.has(docId)) {
+          deleteDocument(projectId, docId);
+        }
+      });
+    };
+  }, [projectId]);
+
   useEffect(() => {
     if (!editor) return;
     const current = sanitizeRichTextHtml(editor.getHTML());
     const next = sanitizeRichTextHtml(value || "");
     if (current !== next) {
+      // External value change — reset tracked doc IDs to match the new content
+      uploadedDocIds.current = new Set(collectImageDocIds(next));
       editor.commands.setContent(next || "<p></p>", false);
     }
   }, [editor, value]);
@@ -660,7 +694,9 @@ function DescriptionEditor({
             input.onchange = async () => {
               const file = input.files?.[0];
               if (file && editor) {
-                uploadAndInsertImage(editor.view, projectId, file);
+                uploadAndInsertImage(editor.view, projectId, file, (docId) => {
+                  uploadedDocIds.current.add(docId);
+                });
               }
             };
             input.click();
@@ -1040,7 +1076,36 @@ function isHtmlEmpty(html: string) {
   return stripped === "" && !html.includes("<img");
 }
 
-async function uploadAndInsertImage(view: any, projectId: number, file: File) {
+/** Extract document IDs from <img title="doc:{id}"> tags in HTML content */
+function collectImageDocIds(html: string): number[] {
+  if (!html) return [];
+  const ids: number[] = [];
+  const regex = /<img[^>]+title="doc:(\d+)"[^>]*>/g;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    ids.push(parseInt(match[1], 10));
+  }
+  return ids;
+}
+
+/** Fire-and-forget delete of an uploaded document. Swallows errors (404 = already deleted). */
+async function deleteDocument(projectId: number, docId: number) {
+  try {
+    await documentsApi.delete(projectId, docId);
+    console.log(`Cleaned up orphan image document ${docId}`);
+  } catch (e: any) {
+    if (e?.response?.status !== 404) {
+      console.error(`Failed to clean up image document ${docId}:`, e);
+    }
+  }
+}
+
+async function uploadAndInsertImage(
+  view: any,
+  projectId: number,
+  file: File,
+  onDocId?: (docId: number) => void,
+) {
   try {
     let processedFile = file;
     // Check if filename has extension, otherwise determine from mime type
@@ -1054,15 +1119,21 @@ async function uploadAndInsertImage(view: any, projectId: number, file: File) {
 
     console.log("Uploading rich text image:", processedFile.name, processedFile.type);
     const res = await documentsApi.upload(projectId, processedFile);
+    const docId = res.data.id as number;
     const filename = res.data.filename;
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace(/\/api$/, "");
-    const imageUrl = `${baseUrl}/uploads/project-${projectId}/${filename}`;
+    // Use the URL returned by the backend (respects S3 vs local storage)
+    const imageUrl = res.data.url || `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace(/\/api$/, "")}/uploads/project-${projectId}/${filename}`;
 
-    console.log("Uploaded rich text image URL:", imageUrl);
+    console.log("Uploaded rich text image URL:", imageUrl, "docId:", docId);
     const { schema } = view.state;
-    const node = schema.nodes.image.create({ src: imageUrl, alt: processedFile.name });
+    const node = schema.nodes.image.create({
+      src: imageUrl,
+      alt: processedFile.name,
+      title: `doc:${docId}`,
+    });
     const transaction = view.state.tr.replaceSelectionWith(node);
     view.dispatch(transaction);
+    onDocId?.(docId);
   } catch (error: any) {
     console.error("Failed to upload/insert image:", error);
     toast.error("Failed to upload image: " + (error?.response?.data?.message || error.message || "Unknown error"));
@@ -1084,6 +1155,9 @@ function CommentEditor({
   projectId,
   disabled,
 }: CommentEditorProps) {
+  // Track document IDs of images uploaded in this editor session
+  const uploadedDocIds = useRef<Set<number>>(new Set());
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -1104,7 +1178,17 @@ function CommentEditor({
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       if (editor.isFocused) {
-        onChange(sanitizeRichTextHtml(editor.getHTML()));
+        const html = sanitizeRichTextHtml(editor.getHTML());
+        onChange(html);
+
+        // Clean up images that were removed from the editor
+        const currentIds = new Set(collectImageDocIds(html));
+        uploadedDocIds.current.forEach((docId) => {
+          if (!currentIds.has(docId)) {
+            uploadedDocIds.current.delete(docId);
+            deleteDocument(projectId, docId);
+          }
+        });
       }
     },
     editorProps: {
@@ -1136,7 +1220,9 @@ function CommentEditor({
           if (imageFiles.length === 0) return false;
           event.preventDefault();
           for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file);
+            uploadAndInsertImage(view, projectId, file, (docId) => {
+              uploadedDocIds.current.add(docId);
+            });
           }
           return true;
         },
@@ -1146,7 +1232,9 @@ function CommentEditor({
           if (imageFiles.length === 0) return false;
           event.preventDefault();
           for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file);
+            uploadAndInsertImage(view, projectId, file, (docId) => {
+              uploadedDocIds.current.add(docId);
+            });
           }
           return true;
         },
@@ -1159,11 +1247,27 @@ function CommentEditor({
     editor.setEditable(!disabled);
   }, [editor, disabled]);
 
+  // Clean up orphan images when editor unmounts (e.g. switching tabs without submitting)
+  useEffect(() => {
+    return () => {
+      if (!editor) return;
+      const html = editor.getHTML();
+      const currentIds = new Set(collectImageDocIds(html));
+      uploadedDocIds.current.forEach((docId) => {
+        if (!currentIds.has(docId)) {
+          deleteDocument(projectId, docId);
+        }
+      });
+    };
+  }, [projectId]);
+
   useEffect(() => {
     if (!editor) return;
     const current = sanitizeRichTextHtml(editor.getHTML());
     const next = sanitizeRichTextHtml(value || "");
     if (current !== next) {
+      // External value change — reset tracked doc IDs to match the new content
+      uploadedDocIds.current = new Set(collectImageDocIds(next));
       editor.commands.setContent(next || "<p></p>", false);
     }
   }, [editor, value]);
@@ -1175,7 +1279,9 @@ function CommentEditor({
     input.onchange = async () => {
       const file = input.files?.[0];
       if (file && editor) {
-        uploadAndInsertImage(editor.view, projectId, file);
+        uploadAndInsertImage(editor.view, projectId, file, (docId) => {
+          uploadedDocIds.current.add(docId);
+        });
       }
     };
     input.click();
@@ -1262,6 +1368,7 @@ export default function ProjectDetailPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("summary");
+  const [docSubTab, setDocSubTab] = useState<"requirements" | "files">("requirements");
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
@@ -1363,19 +1470,37 @@ export default function ProjectDetailPage() {
     queryKey: ["project", projectId],
     queryFn: () => projectsApi.getOne(projectId).then((r) => r.data),
   });
+
+  // Separate paginated tasks query — decoupled from project metadata
+  const [taskParams, setTaskParams] = useState({ skip: 0, take: 100 });
+  const { data: tasksPage, isLoading: tasksLoading } = useQuery({
+    queryKey: ["project-tasks", projectId, taskParams],
+    queryFn: () => tasksApi.getAll(projectId, taskParams).then((r) => r.data),
+  });
+  const tasks = tasksPage?.data ?? [];
+
+  // Separate paginated documents query
+  const [docParams, setDocParams] = useState({ skip: 0, take: 50 });
+  const { data: docsPage, isLoading: docsLoading } = useQuery({
+    queryKey: ["project-documents", projectId, docParams],
+    queryFn: () => documentsApi.getAll(projectId, docParams).then((r) => r.data),
+  });
+  const documents = docsPage?.data ?? [];
+
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: () => usersApi.getAll().then((r) => r.data),
+    enabled: hasPermission("user:read"), // Only fetch system users if user has permission
   });
   const { data: requirements, refetch: refetchReq } = useQuery({
     queryKey: ["requirements", projectId],
     queryFn: () => aiApi.getRequirements(projectId).then((r) => r.data),
-    enabled: tab === "documents",
+    enabled: tab === "documents" && docSubTab === "requirements",
   });
   const { data: reqHistory = [] } = useQuery({
     queryKey: ["req-history", projectId],
     queryFn: () => aiApi.getHistory(projectId).then((r) => r.data),
-    enabled: tab === "documents" && showHistory,
+    enabled: tab === "documents" && docSubTab === "requirements" && showHistory,
   });
   const { data: taskActivities = [], isLoading: loadingTaskActivities } =
     useQuery<TaskActivity[]>({
@@ -1405,7 +1530,7 @@ export default function ProjectDetailPage() {
   const createTaskMutation = useMutation({
     mutationFn: (data: any) => tasksApi.create(projectId, data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
       toast.success("Task created");
       setShowTaskModal(false);
     },
@@ -1416,7 +1541,7 @@ export default function ProjectDetailPage() {
     mutationFn: ({ taskId, data }: any) =>
       tasksApi.update(projectId, taskId, data),
     onSuccess: (response) => {
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
       qc.invalidateQueries({
         queryKey: ["task-activities", projectId, response?.data?.id],
       });
@@ -1448,7 +1573,7 @@ export default function ProjectDetailPage() {
   const updateStatusMutation = useMutation({
     mutationFn: ({ taskId, status }: any) =>
       tasksApi.updateStatus(projectId, taskId, status),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["project", projectId] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["project-tasks", projectId] }),
     onError: (e: any) => toast.error(e.response?.data?.message || "Error"),
   });
 
@@ -1488,7 +1613,7 @@ export default function ProjectDetailPage() {
   const deleteTaskMutation = useMutation({
     mutationFn: (taskId: string) => tasksApi.delete(projectId, taskId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
       toast.success("Task deleted");
     },
   });
@@ -1496,7 +1621,7 @@ export default function ProjectDetailPage() {
   const deleteDocMutation = useMutation({
     mutationFn: (docId: number) => documentsApi.delete(projectId, docId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-documents", projectId] });
       toast.success("Document deleted");
     },
   });
@@ -1559,7 +1684,7 @@ export default function ProjectDetailPage() {
       qc.invalidateQueries({
         queryKey: ["task-activities", projectId, editTask?.id],
       });
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
       setWorkLogDraft("");
       setWorkLogNote("");
     },
@@ -1574,7 +1699,7 @@ export default function ProjectDetailPage() {
     mutationFn: (tasks: SuggestedTask[]) =>
       aiApi.confirmTasks(projectId, tasks).then((r) => r.data),
     onSuccess: (created) => {
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-tasks", projectId] });
       setReviewTasks(null);
       setChatMessagesAndSave((prev) =>
         prev.map((m, i) =>
@@ -1778,7 +1903,7 @@ export default function ProjectDetailPage() {
     ]),
   ).sort();
 
-  const filteredTasks = (project?.tasks || []).filter((task: any) => {
+  const filteredTasks = (tasks || []).filter((task: any) => {
     const search = taskFilters.search.trim().toLowerCase();
     if (
       search &&
@@ -2212,7 +2337,7 @@ export default function ProjectDetailPage() {
     try {
       setUploading(true);
       await documentsApi.upload(projectId, file);
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
+      qc.invalidateQueries({ queryKey: ["project-documents", projectId] });
       toast.success("Upload successful");
     } catch {
       toast.error("Upload failed");
@@ -2246,6 +2371,9 @@ export default function ProjectDetailPage() {
     return (
       <div className='text-center py-12 text-zinc-500 dark:text-zinc-400'>Project not found</div>
     );
+  if (!canProject("project:read")) {
+    return <AccessDenied />;
+  }
 
   const headerVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -2285,10 +2413,10 @@ export default function ProjectDetailPage() {
                 <Users size={14} className="text-emerald-500" /> {project.members?.length} members
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                <FileText size={14} className="text-indigo-500" /> {project.tasks?.length} tasks
+                <FileText size={14} className="text-indigo-500" /> {tasksPage?.total ?? tasks.length} tasks
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                <LayoutGrid size={14} className="text-amber-500" /> {project.documents?.length} documents
+                <LayoutGrid size={14} className="text-amber-500" /> {docsPage?.total ?? documents.length} documents
               </span>
               {project.startDate && (
                 <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
@@ -2506,7 +2634,7 @@ export default function ProjectDetailPage() {
             </select>
             <div className='ml-auto flex h-9 items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400'>
               <span className='whitespace-nowrap'>
-                {filteredTasks.length}/{project.tasks?.length || 0}
+                {filteredTasks.length}/{(tasksPage?.total ?? tasks.length) || 0}
               </span>
               {hasTaskFilters && (
                 <button
@@ -2753,8 +2881,10 @@ export default function ProjectDetailPage() {
               {
                 label: "Tài liệu",
                 value:
-                  project.documents?.filter(
-                    (d: any) => d.originalName !== "requirements.md",
+                  documents?.filter(
+                    (d: any) =>
+                      d.originalName !== "requirements.md" &&
+                      !d.mimeType?.startsWith("image/"),
                   ).length || 0,
               },
               {
@@ -2900,7 +3030,7 @@ export default function ProjectDetailPage() {
                   e.preventDefault();
                   setDragOverStatus(null);
                   if (dragTaskId == null) return;
-                  const task = project.tasks?.find(
+                  const task = tasks?.find(
                     (t: any) => t.id === dragTaskId,
                   );
                   if (
@@ -3243,193 +3373,224 @@ export default function ProjectDetailPage() {
 
       {/* Documents Tab */}
       {tab === "documents" && (
-        <div className='flex gap-4 h-[calc(100vh-18rem)]'>
-          {/* Left: Requirements + File list */}
-          <div className='flex-1 flex flex-col gap-3 overflow-hidden'>
-            {/* Requirements header */}
-            <div className='flex items-center gap-2'>
-              <div className='flex items-center gap-2 flex-1'>
-                <BrandLogo size={24} />
-                <span className='font-semibold text-gray-800 text-sm dark:text-zinc-200'>
-                  Requirements
-                </span>
-                {requirements?.version && (
-                  <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
-                    v{requirements.version}
-                  </span>
+        <div className='flex flex-col gap-3 h-[calc(100vh-18rem)] overflow-hidden'>
+          {/* Sub-tabs Switcher */}
+          <div className='flex items-center border-b border-zinc-200 dark:border-white/10 pb-2 mb-1'>
+            <div className='flex space-x-1 bg-zinc-100 dark:bg-white/5 p-1 rounded-xl'>
+              <button
+                onClick={() => setDocSubTab("requirements")}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                  docSubTab === "requirements"
+                    ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                 )}
-                {requirements?.createdAt && (
-                  <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                    Updated {formatDateTime(requirements.createdAt)}
+              >
+                <Bot size={13} />
+                Requirements
+              </button>
+              <button
+                onClick={() => setDocSubTab("files")}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                  docSubTab === "files"
+                    ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                )}
+              >
+                <FileText size={13} />
+                Uploaded Documents
+              </button>
+            </div>
+          </div>
+
+          {/* Conditional Sub-tab rendering */}
+          {docSubTab === "requirements" ? (
+            <div className='flex flex-col gap-3 flex-1 overflow-hidden'>
+              {/* Requirements header */}
+              <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 flex-1'>
+                  <BrandLogo size={24} />
+                  <span className='font-semibold text-gray-800 text-sm dark:text-zinc-200'>
+                    Requirements
                   </span>
+                  {requirements?.version && (
+                    <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
+                      v{requirements.version}
+                    </span>
+                  )}
+                  {requirements?.createdAt && (
+                    <span className='text-xs text-zinc-400 dark:text-zinc-500'>
+                      Updated {formatDateTime(requirements.createdAt)}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => setShowHistory((v) => !v)}
+                  className='flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 border rounded-lg px-2 py-1'
+                >
+                  <History size={12} /> History{" "}
+                  <ChevronDown
+                    size={11}
+                    className={cn(
+                      "transition-transform",
+                      showHistory && "rotate-180",
+                    )}
+                  />
+                </button>
+                {canProject("ai:analyze") && (
+                  <button
+                    onClick={() => setShowUpdateRequirementsConfirm(true)}
+                    disabled={updateReqMutation.isPending}
+                    className='flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 disabled:opacity-50'
+                  >
+                    {updateReqMutation.isPending ? (
+                      <Loader2 size={12} className='animate-spin' />
+                    ) : (
+                      <RefreshCw size={12} />
+                    )}
+                    Update Requirements
+                  </button>
                 )}
               </div>
-              <button
-                onClick={() => setShowHistory((v) => !v)}
-                className='flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 border rounded-lg px-2 py-1'
-              >
-                <History size={12} /> History{" "}
-                <ChevronDown
-                  size={11}
-                  className={cn(
-                    "transition-transform",
-                    showHistory && "rotate-180",
-                  )}
-                />
-              </button>
-              {canProject("ai:analyze") && (
-                <button
-                  onClick={() => setShowUpdateRequirementsConfirm(true)}
-                  disabled={updateReqMutation.isPending}
-                  className='flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 disabled:opacity-50'
-                >
-                  {updateReqMutation.isPending ? (
-                    <Loader2 size={12} className='animate-spin' />
-                  ) : (
-                    <RefreshCw size={12} />
-                  )}
-                  Update Requirements
-                </button>
-              )}
-            </div>
 
-            {/* History dropdown */}
-            {showHistory && (
-              <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-3'>
-                <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2'>
-                  Version history
-                </p>
-                {(reqHistory as any[]).length === 0 ? (
-                  <p className='text-xs text-zinc-400 dark:text-zinc-500'>No history yet</p>
-                ) : (
-                  <div className='space-y-2'>
-                    {(reqHistory as any[]).map((h: any) => (
-                      <div
-                        key={h.id}
-                        className='border border-zinc-200 dark:border-white/5 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
-                        onClick={() =>
-                          aiApi
-                            .getVersion(projectId, h.id)
-                            .then((r) => setPreviewVersion(r.data))
-                        }
-                      >
-                        <div className='flex items-center justify-between mb-1'>
-                          <span className='text-xs font-semibold text-sky-700'>
-                            v{h.version}
-                          </span>
-                          <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                            {formatDateTime(h.createdAt)}
-                          </span>
+              {/* History dropdown */}
+              {showHistory && (
+                <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-3'>
+                  <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2'>
+                    Version history
+                  </p>
+                  {(reqHistory as any[]).length === 0 ? (
+                    <p className='text-xs text-zinc-400 dark:text-zinc-500'>No history yet</p>
+                  ) : (
+                    <div className='space-y-2'>
+                      {(reqHistory as any[]).map((h: any) => (
+                        <div
+                          key={h.id}
+                          className='border border-zinc-200 dark:border-white/5 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
+                          onClick={() =>
+                            aiApi
+                              .getVersion(projectId, h.id)
+                              .then((r) => setPreviewVersion(r.data))
+                          }
+                        >
+                          <div className='flex items-center justify-between mb-1'>
+                            <span className='text-xs font-semibold text-sky-700'>
+                              v{h.version}
+                            </span>
+                            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
+                              {formatDateTime(h.createdAt)}
+                            </span>
+                          </div>
+                          {h.changesSummary ? (
+                            <p className='text-xs text-zinc-500 dark:text-zinc-400 whitespace-pre-line leading-relaxed'>
+                              {h.changesSummary}
+                            </p>
+                          ) : (
+                            <p className='text-xs text-zinc-400 dark:text-zinc-500 italic'>
+                              Initial version
+                            </p>
+                          )}
                         </div>
-                        {h.changesSummary ? (
-                          <p className='text-xs text-zinc-500 dark:text-zinc-400 whitespace-pre-line leading-relaxed'>
-                            {h.changesSummary}
-                          </p>
-                        ) : (
-                          <p className='text-xs text-zinc-400 dark:text-zinc-500 italic'>
-                            Initial version
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Requirements content */}
+              <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto'>
+                {requirements?.content ? (
+                  <div className='max-w-none text-sm leading-6 text-zinc-700 dark:text-zinc-300'>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({ children }) => (
+                          <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950 dark:text-zinc-50'>
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className='mb-2 mt-5 text-base font-semibold text-zinc-900 dark:text-zinc-100'>
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800 dark:text-zinc-200'>
+                            {children}
+                          </h3>
+                        ),
+                        p: ({ children }) => (
+                          <p className='mb-3 text-sm text-zinc-700 dark:text-zinc-300'>{children}</p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className='mb-3 list-disc space-y-1 pl-5'>
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className='mb-3 list-decimal space-y-1 pl-5'>
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className='pl-1 text-sm text-zinc-700 dark:text-zinc-300'>
+                            {children}
+                          </li>
+                        ),
+                        blockquote: ({ children }) => (
+                          <blockquote className='mb-3 border-l-4 border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
+                            {children}
+                          </blockquote>
+                        ),
+                        table: ({ children }) => (
+                          <div className='mb-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-white/5'>
+                            <table className='min-w-full divide-y divide-gray-100 dark:divide-white/5 text-left text-xs'>
+                              {children}
+                            </table>
+                          </div>
+                        ),
+                        thead: ({ children }) => (
+                          <thead className='bg-zinc-50 dark:bg-white/5'>{children}</thead>
+                        ),
+                        th: ({ children }) => (
+                          <th className='px-3 py-2 font-semibold text-zinc-700 dark:text-zinc-300'>
+                            {children}
+                          </th>
+                        ),
+                        td: ({ children }) => (
+                          <td className='border-t border-zinc-200 dark:border-white/5 px-3 py-2 align-top text-zinc-700 dark:text-zinc-300'>
+                            {children}
+                          </td>
+                        ),
+                        code: ({ children }) => (
+                          <code className='rounded bg-gray-100 dark:bg-white/10 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre className='mb-4 overflow-x-auto rounded-lg bg-gray-950 p-3 text-xs leading-relaxed text-gray-50'>
+                            {children}
+                          </pre>
+                        ),
+                      }}
+                    >
+                      {requirements.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500'>
+                    <FileText size={32} className='mb-2 opacity-40' />
+                    <p className='text-sm'>No requirements yet</p>
+                    <p className='text-xs mt-1'>
+                      Click "Update Requirements" to generate them with AI
+                    </p>
                   </div>
                 )}
               </div>
-            )}
-
-            {/* Requirements content */}
-            <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto'>
-              {requirements?.content ? (
-                <div className='max-w-none text-sm leading-6 text-zinc-700 dark:text-zinc-300'>
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      h1: ({ children }) => (
-                        <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950 dark:text-zinc-50'>
-                          {children}
-                        </h1>
-                      ),
-                      h2: ({ children }) => (
-                        <h2 className='mb-2 mt-5 text-base font-semibold text-zinc-900 dark:text-zinc-100'>
-                          {children}
-                        </h2>
-                      ),
-                      h3: ({ children }) => (
-                        <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800 dark:text-zinc-200'>
-                          {children}
-                        </h3>
-                      ),
-                      p: ({ children }) => (
-                        <p className='mb-3 text-sm text-zinc-700 dark:text-zinc-300'>{children}</p>
-                      ),
-                      ul: ({ children }) => (
-                        <ul className='mb-3 list-disc space-y-1 pl-5'>
-                          {children}
-                        </ul>
-                      ),
-                      ol: ({ children }) => (
-                        <ol className='mb-3 list-decimal space-y-1 pl-5'>
-                          {children}
-                        </ol>
-                      ),
-                      li: ({ children }) => (
-                        <li className='pl-1 text-sm text-zinc-700 dark:text-zinc-300'>
-                          {children}
-                        </li>
-                      ),
-                      blockquote: ({ children }) => (
-                        <blockquote className='mb-3 border-l-4 border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
-                          {children}
-                        </blockquote>
-                      ),
-                      table: ({ children }) => (
-                        <div className='mb-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-white/5'>
-                          <table className='min-w-full divide-y divide-gray-100 dark:divide-white/5 text-left text-xs'>
-                            {children}
-                          </table>
-                        </div>
-                      ),
-                      thead: ({ children }) => (
-                        <thead className='bg-zinc-50 dark:bg-white/5'>{children}</thead>
-                      ),
-                      th: ({ children }) => (
-                        <th className='px-3 py-2 font-semibold text-zinc-700 dark:text-zinc-300'>
-                          {children}
-                        </th>
-                      ),
-                      td: ({ children }) => (
-                        <td className='border-t border-zinc-200 dark:border-white/5 px-3 py-2 align-top text-zinc-700 dark:text-zinc-300'>
-                          {children}
-                        </td>
-                      ),
-                      code: ({ children }) => (
-                        <code className='rounded bg-gray-100 dark:bg-white/10 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
-                          {children}
-                        </code>
-                      ),
-                      pre: ({ children }) => (
-                        <pre className='mb-4 overflow-x-auto rounded-lg bg-gray-950 p-3 text-xs leading-relaxed text-gray-50'>
-                          {children}
-                        </pre>
-                      ),
-                    }}
-                  >
-                    {requirements.content}
-                  </ReactMarkdown>
-                </div>
-              ) : (
-                <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500'>
-                  <FileText size={32} className='mb-2 opacity-40' />
-                  <p className='text-sm'>No requirements yet</p>
-                  <p className='text-xs mt-1'>
-                    Click "Update Requirements" to generate them with AI
-                  </p>
-                </div>
-              )}
             </div>
-
-            {/* Uploaded files */}
-            <div className='flex-shrink-0'>
+          ) : (
+            <div className='flex flex-col gap-3 flex-1 overflow-hidden'>
               <div className='flex items-center justify-between mb-2'>
                 <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide'>
                   Uploaded documents
@@ -3457,30 +3618,38 @@ export default function ProjectDetailPage() {
                   </label>
                 )}
               </div>
-              <div className='space-y-1.5 max-h-40 overflow-y-auto'>
-                {project.documents?.filter(
-                  (d: any) => d.originalName !== "requirements.md",
+              <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto space-y-1.5'>
+                {documents?.filter(
+                  (d: any) =>
+                    d.originalName !== "requirements.md" &&
+                    !d.mimeType?.startsWith("image/"),
                 ).length === 0 ? (
-                  <p className='text-xs text-zinc-400 dark:text-zinc-500 text-center py-2'>
-                    No documents yet
-                  </p>
+                  <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500 py-12'>
+                    <FileText size={32} className='mb-2 opacity-40' />
+                    <p className='text-sm font-semibold'>No documents yet</p>
+                    <p className='text-xs mt-1'>Upload files to keep them with the project</p>
+                  </div>
                 ) : (
-                  project.documents
-                    ?.filter((d: any) => d.originalName !== "requirements.md")
+                  documents
+                    ?.filter(
+                      (d: any) =>
+                        d.originalName !== "requirements.md" &&
+                        !d.mimeType?.startsWith("image/"),
+                    )
                     .map((d: any) => (
                       <div
                         key={d.id}
-                        className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-lg px-3 py-2 flex items-center gap-2'
+                        className='bg-zinc-50/50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 rounded-lg px-4 py-3 flex items-center gap-3 hover:bg-zinc-100/50 dark:hover:bg-white/[0.04] transition-colors'
                       >
                         <FileText
-                          className='text-blue-400 flex-shrink-0'
-                          size={14}
+                          className='text-blue-500 flex-shrink-0'
+                          size={16}
                         />
                         <div className='flex-1 min-w-0'>
-                          <p className='text-xs font-medium text-gray-800 truncate dark:text-zinc-200'>
+                          <p className='text-xs font-semibold text-gray-800 truncate dark:text-zinc-200'>
                             {d.originalName}
                           </p>
-                          <p className='text-xs text-zinc-400 dark:text-zinc-500'>
+                          <p className='text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5'>
                             {(d.size / 1024).toFixed(1)} KB
                           </p>
                         </div>
@@ -3490,9 +3659,9 @@ export default function ProjectDetailPage() {
                               confirm("Delete?") &&
                               deleteDocMutation.mutate(d.id)
                             }
-                            className='p-1 text-gray-300 hover:text-red-500 flex-shrink-0'
+                            className='p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0'
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={14} />
                           </button>
                         )}
                       </div>
@@ -3500,7 +3669,7 @@ export default function ProjectDetailPage() {
                 )}
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

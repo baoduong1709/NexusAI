@@ -1,0 +1,241 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 7,
+      "nonEmptyLines": 5,
+      "sections": [
+        {
+          "heading": "AGENTS",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Local Execution Policy",
+          "level": 2,
+          "line": 3
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 123,
+      "nonEmptyLines": 100,
+      "sections": [
+        {
+          "heading": "NexusAI - AI-Powered Project & Resource Management System",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Tổng quan",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Tech Stack",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "Cấu trúc dự án",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "Cài đặt và chạy",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "Prerequisites",
+          "level": 3,
+          "line": 38
+        },
+        {
+          "heading": "Backend",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "Frontend",
+          "level": 3,
+          "line": 63
+        },
+        {
+          "heading": "Truy cập",
+          "level": 3,
+          "line": 72
+        },
+        {
+          "heading": "Tài khoản mặc định",
+          "level": 3,
+          "line": 77
+        },
+        {
+          "heading": "API Endpoints",
+          "level": 2,
+          "line": 81
+        },
+        {
+          "heading": "Auth",
+          "level": 3,
+          "line": 83
+        },
+        {
+          "heading": "Users",
+          "level": 3,
+          "line": 87
+        },
+        {
+          "heading": "Roles",
+          "level": 3,
+          "line": 93
+        },
+        {
+          "heading": "Projects",
+          "level": 3,
+          "line": 98
+        },
+        {
+          "heading": "Tasks",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "Documents",
+          "level": 3,
+          "line": 109
+        },
+        {
+          "heading": "AI",
+          "level": 3,
+          "line": 113
+        },
+        {
+          "heading": "Luồng sử dụng AI",
+          "level": 2,
+          "line": 118
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 19
+      }
+    },
+    {
+      "path": "docker-compose.yml",
+      "language": "yaml",
+      "fileCategory": "infra",
+      "totalLines": 40,
+      "nonEmptyLines": 36,
+      "sections": [
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "services",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "volumes",
+          "level": 1,
+          "line": 39
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "document.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 56,
+      "nonEmptyLines": 43,
+      "sections": [
+        {
+          "heading": "Project Specification: AI-Powered Project & Resource Management System",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Giới thiệu tổng quan",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "2. Mục tiêu hệ thống",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "3. Các tính năng chính (Core Features)",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "3.1. Quản lý Nhân sự & Phân quyền (RBAC)",
+          "level": 3,
+          "line": 13
+        },
+        {
+          "heading": "3.2. Quản lý Dự án (Project Management)",
+          "level": 3,
+          "line": 18
+        },
+        {
+          "heading": "3.3. Tích hợp AI (AI Automation)",
+          "level": 3,
+          "line": 23
+        },
+        {
+          "heading": "4. Kiến trúc kỹ thuật (Technical Stack)",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "5. Cấu trúc dữ liệu cơ bản (Database Schema)",
+          "level": 2,
+          "line": 39
+        },
+        {
+          "heading": "6. Luồng nghiệp vụ (Workflow)",
+          "level": 2,
+          "line": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    }
+  ]
+}

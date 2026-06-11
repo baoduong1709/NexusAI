@@ -1,0 +1,54 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/src/auth/auth.controller.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/auth.module.ts",
+      "language": "typescript",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/auth.service.ts",
+      "language": "typescript",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/dto/login.dto.ts",
+      "language": "typescript",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/strategies/jwt.strategy.ts",
+      "language": "typescript",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "backend/src/auth/auth.controller.ts": [
+      "backend/src/auth/auth.service.ts",
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/dto/login.dto.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts"
+    ],
+    "backend/src/auth/auth.module.ts": [
+      "backend/src/auth/auth.controller.ts",
+      "backend/src/auth/auth.service.ts",
+      "backend/src/auth/strategies/jwt.strategy.ts"
+    ],
+    "backend/src/auth/auth.service.ts": [
+      "backend/src/auth/dto/login.dto.ts",
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/auth/dto/login.dto.ts": [],
+    "backend/src/auth/strategies/jwt.strategy.ts": []
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "projectRoot": "c:/Project/NexusAI",
+  "batchFiles": [
+    {
+      "path": "backend/src/ai/ai.controller.ts",
+      "language": "typescript",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/dto/ai.dto.ts",
+      "language": "typescript",
+      "sizeLines": 180,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/dto/system-config.dto.ts",
+      "language": "typescript",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/system-configs.controller.ts",
+      "language": "typescript",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/ai/token-stats.controller.ts",
+      "language": "typescript",
+      "sizeLines": 197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/decorators/current-user.decorator.ts",
+      "language": "typescript",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/decorators/permissions.decorator.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/guards/jwt-auth.guard.ts",
+      "language": "typescript",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/guards/permissions.guard.ts",
+      "language": "typescript",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/auth/permissions.ts",
+      "language": "typescript",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/common/dto/paginated-query.dto.ts",
+      "language": "typescript",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/documents/documents.controller.ts",
+      "language": "typescript",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/documents/dto/documents-query.dto.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/projects/project-roles.ts",
+      "language": "typescript",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/roles/dto/create-role.dto.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/roles/roles.controller.ts",
+      "language": "typescript",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/roles/roles.module.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/roles/roles.service.ts",
+      "language": "typescript",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/tasks/dto/tasks-query.dto.ts",
+      "language": "typescript",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/src/tasks/tasks.controller.ts",
+      "language": "typescript",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "backend/src/ai/ai.controller.ts": [
+      "backend/src/ai/ai.service.ts",
+      "backend/src/ai/dto/ai.dto.ts",
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts"
+    ],
+    "backend/src/ai/dto/ai.dto.ts": [],
+    "backend/src/ai/dto/system-config.dto.ts": [],
+    "backend/src/ai/system-configs.controller.ts": [
+      "backend/src/ai/dto/system-config.dto.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/ai/token-stats.controller.ts": [
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/prisma/prisma.service.ts"
+    ],
+    "backend/src/auth/decorators/current-user.decorator.ts": [],
+    "backend/src/auth/decorators/permissions.decorator.ts": [],
+    "backend/src/auth/guards/jwt-auth.guard.ts": [],
+    "backend/src/auth/guards/permissions.guard.ts": [
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/permissions.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/projects/project-roles.ts"
+    ],
+    "backend/src/auth/permissions.ts": [],
+    "backend/src/common/dto/paginated-query.dto.ts": [],
+    "backend/src/documents/documents.controller.ts": [
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/documents/documents.service.ts",
+      "backend/src/documents/dto/documents-query.dto.ts"
+    ],
+    "backend/src/documents/dto/documents-query.dto.ts": [
+      "backend/src/common/dto/paginated-query.dto.ts"
+    ],
+    "backend/src/projects/project-roles.ts": [
+      "backend/src/auth/permissions.ts"
+    ],
+    "backend/src/roles/dto/create-role.dto.ts": [],
+    "backend/src/roles/roles.controller.ts": [
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/roles/dto/create-role.dto.ts",
+      "backend/src/roles/roles.service.ts"
+    ],
+    "backend/src/roles/roles.module.ts": [
+      "backend/src/roles/roles.controller.ts",
+      "backend/src/roles/roles.service.ts"
+    ],
+    "backend/src/roles/roles.service.ts": [
+      "backend/src/auth/permissions.ts",
+      "backend/src/prisma/prisma.service.ts",
+      "backend/src/roles/dto/create-role.dto.ts"
+    ],
+    "backend/src/tasks/dto/tasks-query.dto.ts": [
+      "backend/src/common/dto/paginated-query.dto.ts"
+    ],
+    "backend/src/tasks/tasks.controller.ts": [
+      "backend/src/auth/decorators/current-user.decorator.ts",
+      "backend/src/auth/decorators/permissions.decorator.ts",
+      "backend/src/auth/guards/jwt-auth.guard.ts",
+      "backend/src/auth/guards/permissions.guard.ts",
+      "backend/src/tasks/dto/create-task.dto.ts",
+      "backend/src/tasks/dto/tasks-query.dto.ts",
+      "backend/src/tasks/tasks.service.ts"
+    ]
+  }
+}
