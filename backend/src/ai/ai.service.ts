@@ -2183,9 +2183,25 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
                        ".txt", ".md", ".csv", ".json", ".xml", ".html",
                        ".htm", ".yaml", ".yml", ".log",
                      ]);
-                     const convertedMarkdownPath = `${docRecord.path}.md`;
+                     
+                     // Resolve dynamic path for environment portability
+                     let docPath = docRecord.path;
+                     if (!path.isAbsolute(docPath)) {
+                       docPath = path.join(process.cwd(), docPath);
+                     } else if (!fs.existsSync(docPath)) {
+                       // If absolute path in DB does not exist, fall back to relative path resolved under process.cwd()
+                       const relativePart = docRecord.path.split(/[\\/]uploads[\\/]/)[1];
+                       if (relativePart) {
+                         const fallbackPath = path.join(process.cwd(), 'uploads', relativePart);
+                         if (fs.existsSync(fallbackPath)) {
+                           docPath = fallbackPath;
+                         }
+                       }
+                     }
+
+                     const convertedMarkdownPath = `${docPath}.md`;
                      const readablePath = textExtensions.has(extension)
-                       ? docRecord.path
+                       ? docPath
                        : fs.existsSync(convertedMarkdownPath)
                          ? convertedMarkdownPath
                          : null;

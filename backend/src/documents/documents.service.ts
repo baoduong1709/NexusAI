@@ -104,11 +104,8 @@ export class DocumentsService {
              this.logger.error(`Failed to index converted markdown content: ${e.message}`);
            } finally {
              cleanLocalTempFile();
-             try {
-               if (fs.existsSync(`${file.path}.md`)) {
-                 fs.unlinkSync(`${file.path}.md`);
-               }
-             } catch {}
+             // Keep the converted markdown file so that the AI agent can read it via the read_document_content tool.
+             // It will be cleaned up in the remove() method when the document is deleted.
            }
         })
         .catch((err) => {

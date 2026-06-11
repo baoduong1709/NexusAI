@@ -26,6 +26,11 @@ function compactKeyword(value: string | null | undefined) {
 export class ProjectAiIndexService {
   private readonly logger = new Logger(ProjectAiIndexService.name);
 
+  // Debounce and concurrency queue controls
+  private rebuildTimeouts = new Map<number, NodeJS.Timeout>();
+  private rebuildPromises = new Map<number, Promise<any>>();
+  private nextRebuildQueued = new Map<number, boolean>();
+
   constructor(private prisma: PrismaService) {}
 
   async get(projectId: number) {
@@ -264,6 +269,47 @@ export class ProjectAiIndexService {
   }
 
   rebuildSoon(projectId: number) {
-    void this.rebuild(projectId);
+    // Clear existing timeout if any to debounce subsequent rebuild triggers (500ms)
+    if (this.rebuildTimeouts.has(projectId)) {
+      clearTimeout(this.rebuildTimeouts.get(projectId)!);
+    }
+
+    const timeout = setTimeout(() => {
+      this.rebuildTimeouts.delete(projectId);
+      void this.enqueueRebuild(projectId);
+    }, 500);
+
+    this.rebuildTimeouts.set(projectId, timeout);
+  }
+
+  private async enqueueRebuild(projectId: number): Promise<void> {
+    // If a rebuild is already in progress for this project
+    if (this.rebuildPromises.has(projectId)) {
+      // If a next rebuild is already queued, do nothing as it will catch the latest state
+      if (this.nextRebuildQueued.get(projectId)) {
+        return;
+      }
+
+      this.nextRebuildQueued.set(projectId, true);
+
+      try {
+        // Wait for the current rebuild promise to resolve/reject
+        await this.rebuildPromises.get(projectId);
+      } catch {}
+
+      this.nextRebuildQueued.delete(projectId);
+      // Recursively run to handle the queued rebuild
+      return this.enqueueRebuild(projectId);
+    }
+
+    // Start a new rebuild process
+    const promise = this.rebuild(projectId);
+    this.rebuildPromises.set(projectId, promise);
+
+    try {
+      await promise;
+    } finally {
+      this.rebuildPromises.delete(projectId);
+    }
   }
 }

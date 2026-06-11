@@ -121,10 +121,111 @@ export class RagService {
     }
   }
 
+  // 1.1 Generate Embeddings in Batch
+  async generateEmbeddings(texts: string[]): Promise<number[][]> {
+    if (!texts || texts.length === 0) {
+      return [];
+    }
+    const startTime = Date.now();
+    const model = await this.getSystemConfig(
+      "AI_EMBEDDING_MODEL",
+      this.config.get("AI_EMBEDDING_MODEL", "text-embedding-3-small"),
+    );
+    if (["disabled", "none", "off"].includes(model.trim().toLowerCase())) {
+      return [];
+    }
+    if (
+      this.embeddingUnavailableModel === model &&
+      Date.now() < this.embeddingUnavailableUntil
+    ) {
+      return [];
+    }
+
+    while (this.embeddingProbeLock) {
+      await this.embeddingProbeLock;
+      if (
+        this.embeddingUnavailableModel === model &&
+        Date.now() < this.embeddingUnavailableUntil
+      ) {
+        return [];
+      }
+    }
+
+    let releaseProbe: () => void = () => undefined;
+    this.embeddingProbeLock = new Promise<void>((resolve) => {
+      releaseProbe = resolve;
+    });
+
+    try {
+      const openai = await this.getOpenAIClient();
+      const response = await openai.embeddings.create({
+        model,
+        input: texts,
+      });
+      const durationMs = Date.now() - startTime;
+      AiLogger.log({
+        type: "embeddings_batch",
+        request: { model, count: texts.length },
+        response: { count: response.data.length },
+        durationMs,
+      });
+      this.embeddingUnavailableModel = undefined;
+      this.embeddingUnavailableUntil = 0;
+      
+      // Sort by index to make sure they match original order
+      return response.data
+        .sort((a, b) => a.index - b.index)
+        .map((d) => d.embedding);
+    } catch (error: any) {
+      const durationMs = Date.now() - startTime;
+      AiLogger.log({
+        type: "embeddings_batch",
+        request: { model, count: texts.length },
+        error: error.message || error,
+        durationMs,
+      });
+      const status = error?.status || error?.response?.status;
+      if (status === 404 || status === 503) {
+        this.embeddingUnavailableModel = model;
+        this.embeddingUnavailableUntil = Date.now() + 5 * 60 * 1000;
+        this.logger.warn(
+          `Embedding model ${model} is unavailable; using keyword search for 5 minutes`,
+        );
+      } else {
+        this.logger.error("Failed to generate batch embeddings", error);
+      }
+      return [];
+    } finally {
+      this.embeddingProbeLock = undefined;
+      releaseProbe();
+    }
+  }
+
   // 2. Chunk Text with Overlap
   chunkText(text: string, maxChars: number = 1000, overlap: number = 200): string[] {
     const chunks: string[] = [];
-    const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const rawSentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const sentences: string[] = [];
+
+    // Split sentences that exceed maxChars to prevent huge chunks
+    for (const sentence of rawSentences) {
+      if (sentence.length <= maxChars) {
+        sentences.push(sentence);
+      } else {
+        let remaining = sentence;
+        while (remaining.length > 0) {
+          let sliceLen = maxChars;
+          if (remaining.length > maxChars) {
+            const lastSpace = remaining.lastIndexOf(" ", maxChars);
+            if (lastSpace > maxChars * 0.7) {
+              sliceLen = lastSpace;
+            }
+          }
+          sentences.push(remaining.slice(0, sliceLen).trim());
+          remaining = remaining.slice(sliceLen).trim();
+        }
+      }
+    }
     
     let currentIndex = 0;
     while (currentIndex < sentences.length) {
@@ -273,19 +374,18 @@ Your summary (Return plain text, without markdown headers format):`;
   async indexDocument(projectId: number, documentId: number, content: string, title: string) {
     this.logger.log(`Indexing document ${documentId} for project ${projectId}`);
     
-    // Generate chunks with overlap & embeddings
+    // Generate chunks with overlap & embeddings in batch
     const chunks = this.chunkText(content, 1000, 200);
+    const vectors = await this.generateEmbeddings(chunks);
     const embeddings = [];
 
     for (let i = 0; i < chunks.length; i++) {
-      const vector = await this.generateEmbedding(chunks[i]);
-      // Save even if embedding generation fails, so we can fallback to keyword search
       embeddings.push({
         documentId,
         title,
         chunkIndex: i,
         text: chunks[i],
-        vector: vector || [],
+        vector: vectors[i] || [],
       });
     }
 
@@ -338,12 +438,24 @@ Your summary (Return plain text, without markdown headers format):`;
     let results = [];
 
     if (queryVector.length > 0) {
-      // Use Vector Cosine Similarity
-      this.logger.log(`Using vector search for query: "${query}"`);
-      results = embeddings.map((e: any) => {
-        const similarity = this.cosineSimilarity(queryVector, e.vector);
-        return { ...e, similarity };
-      });
+      // Check for dimension mismatch to avoid returning 0 results silently
+      const firstVector = embeddings[0]?.vector;
+      if (firstVector && firstVector.length > 0 && firstVector.length !== queryVector.length) {
+        this.logger.warn(
+          `Vector dimension mismatch (Query: ${queryVector.length}, Index: ${firstVector.length}). Falling back to keyword search.`
+        );
+        results = embeddings.map((e: any) => {
+          const similarity = this.getKeywordSimilarity(query, e.text);
+          return { ...e, similarity };
+        });
+      } else {
+        // Use Vector Cosine Similarity
+        this.logger.log(`Using vector search for query: "${query}"`);
+        results = embeddings.map((e: any) => {
+          const similarity = this.cosineSimilarity(queryVector, e.vector);
+          return { ...e, similarity };
+        });
+      }
     } else {
       // Fallback: Use Keyword Search
       this.logger.log(`Embedding model unavailable/failed (503). Falling back to keyword search for query: "${query}"`);
