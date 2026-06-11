@@ -66,7 +66,7 @@ npx prisma migrate deploy
 npm run build
 
 # 4. Khởi chạy Backend bằng PM2
-pm2 start dist/main.js --name "nexusai-backend"
+pm2 start dist/src/main.js --name "nexusai-backend"
 ```
 
 ---
