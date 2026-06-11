@@ -1,121 +1,63 @@
-# Hướng dẫn triển khai NexusAI lên AWS EC2 (Sử dụng DB PostgreSQL có sẵn)
+# Hướng dẫn triển khai NexusAI lên AWS EC2 (Sử dụng Nginx có sẵn trên Host)
 
-Tài liệu này hướng dẫn chi tiết từng bước để triển khai hệ thống NexusAI lên máy chủ ảo AWS EC2 bằng Docker Compose và Nginx Reverse Proxy, kết nối tới cơ sở dữ liệu PostgreSQL đã có sẵn trên máy chủ (hoặc AWS RDS).
+Tài liệu này hướng dẫn chi tiết từng bước để triển khai hệ thống NexusAI lên máy chủ ảo AWS EC2 bằng Docker Compose, kết nối tới cơ sở dữ liệu PostgreSQL có sẵn và sử dụng chính **Nginx đang chạy trên máy chủ** (Host) làm Reverse Proxy để tránh xung đột cổng 80/443 với các trang web hiện có (ví dụ: `baoduong.dev`).
 
 ---
 
 ## 1. Chuẩn bị Máy chủ AWS EC2
 
-### 1.1 Khởi tạo EC2 Instance
-1. Đăng nhập vào **AWS Console** và chuyển đến dịch vụ **EC2**.
-2. Nhấp chọn **Launch Instance**.
-3. Cấu hình máy chủ:
-   - **Name**: `nexusai-server`
-   - **OS (AMI)**: **Ubuntu Server 22.04 LTS** hoặc **Ubuntu Server 24.04 LTS**.
-   - **Instance Type**: Tối thiểu `t3.medium` (2 vCPUs, 4GB RAM) để đảm bảo NestJS & Next.js chạy mượt mà.
-   - **Key Pair**: Chọn hoặc tạo mới để SSH vào máy chủ.
-4. **Network Settings**:
-   - Chọn hoặc tạo mới Security Group mở các cổng (Inbound Rules):
-     - **Allow SSH traffic** (Cổng 22) từ IP của bạn hoặc Anywhere.
-     - **Allow HTTPS traffic** (Cổng 443) từ Anywhere.
-     - **Allow HTTP traffic** (Cổng 80) từ Anywhere.
-     - (Tùy chọn) **Allow PostgreSQL traffic** (Cổng 5432) nếu DB PostgreSQL nằm ở server khác và cần kết nối từ ngoài.
+### 1.1 Cấu hình Security Group (Inbound Rules)
+Đảm bảo Security Group của máy chủ EC2 đã mở các cổng:
+- **Cổng 22** (SSH) để truy cập máy chủ.
+- **Cổng 80** (HTTP) và **Cổng 443** (HTTPS) phục vụ website.
 
-### 1.2 Trỏ Tên miền (Domain Name)
-1. Lấy **Public IPv4** của instance vừa tạo.
-2. Tại trang quản lý tên miền (Cloudflare, GoDaddy, v.v.), tạo bản ghi **A Record** trỏ về địa chỉ IP của EC2:
-   - `nexusai.yourdomain.com` -> `IP_PUBLIC_EC2`
+### 1.2 Trỏ Tên miền phụ (Subdomain)
+Truy cập trang quản lý tên miền của bạn (ví dụ: Cloudflare) và tạo bản ghi **A Record** trỏ subdomain về IP của EC2:
+- `nexusai.baoduong.dev` -> `IP_PUBLIC_EC2`
 
 ---
 
-## 2. Cài đặt Docker & Docker Compose trên EC2
+## 2. Cấu hình Kết nối PostgreSQL đã có sẵn
 
-SSH vào máy chủ EC2:
-```bash
-ssh -i "your-key.pem" ubuntu@IP_PUBLIC_EC2
-```
+Vì ứng dụng chạy trong Docker container, việc kết nối tới PostgreSQL đã cài đặt ngoài Docker sẽ thông qua IP host ảo:
 
-Chạy script cài đặt nhanh Docker và Docker Compose:
-```bash
-# Cập nhật package list và cài đặt công cụ cần thiết
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
-
-# Thêm khóa GPG của Docker
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-# Thiết lập repository
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Cài đặt Docker Engine & Docker Compose
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Khởi động Docker
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Thêm user ubuntu vào nhóm docker
-sudo usermod -aG docker ubuntu
-```
-*Lưu ý: Sau khi chạy lệnh `usermod`, bạn cần thoát SSH ra (`exit`) và đăng nhập lại để thay đổi có hiệu lực mà không cần dùng `sudo` khi gọi lệnh docker.*
-
----
-
-## 3. Cấu hình Kết nối PostgreSQL đã có sẵn
-
-Vì ứng dụng chạy trong Docker container, việc kết nối tới PostgreSQL đã cài đặt sẵn ngoài Docker sẽ khác so với thông thường:
-
-### Trường hợp A: PostgreSQL chạy trực tiếp trên máy chủ EC2 (Localhost)
-1. Trong file `docker-compose.yml`, chúng tôi đã cấu hình `extra_hosts` map `host.docker.internal` tới gateway của Docker.
-2. Trong file `.env`, bạn sẽ kết nối tới DB bằng:
+1. Trong file `docker-compose.yml`, dịch vụ backend đã được cấu hình `extra_hosts` kết nối tới `host.docker.internal`.
+2. Trong file `.env` ở thư mục gốc của dự án, bạn sẽ khai báo `DATABASE_URL` trỏ tới host này:
    ```env
    DATABASE_URL="postgresql://db_user:db_password@host.docker.internal:5432/nexusai"
    ```
-3. **Quan trọng**: Cần cấu hình PostgreSQL trên EC2 để nhận kết nối từ IP của Docker container:
-   - Mở file cấu hình Postgres `postgresql.conf` (thường ở `/etc/postgresql/.../main/postgresql.conf`):
+3. **Mở cấu hình PostgreSQL trên Host** để chấp nhận kết nối từ Docker container:
+   - Mở file cấu hình Postgres `postgresql.conf`:
      ```bash
      sudo nano /etc/postgresql/16/main/postgresql.conf
      ```
-     Sửa dòng `listen_addresses` để cho phép nghe tất cả IP (hoặc IP docker):
+     Sửa dòng `listen_addresses`:
      ```ini
      listen_addresses = '*'
      ```
-   - Mở file phân quyền `pg_hba.conf` trong cùng thư mục:
+   - Mở file phân quyền `pg_hba.conf`:
      ```bash
      sudo nano /etc/postgresql/16/main/pg_hba.conf
      ```
-     Thêm dòng sau vào cuối file để cho phép subnet của Docker (thường là `172.17.0.0/16` hoặc `172.18.0.0/16`, an toàn nhất là cho phép dải docker):
+     Thêm dòng sau vào cuối file để cho phép subnet của Docker (thường là `172.17.0.0/16` hoặc `172.18.0.0/16`):
      ```text
      host    all             all             172.17.0.0/16           scram-sha-256
      host    all             all             172.18.0.0/16           scram-sha-256
      ```
-   - Khởi động lại dịch vụ PostgreSQL:
+   - Khởi động lại dịch vụ PostgreSQL trên host:
      ```bash
      sudo systemctl restart postgresql
      ```
 
-### Trường hợp B: PostgreSQL chạy trên dịch vụ bên ngoài (AWS RDS, Supabase, v.v.)
-Trong file `.env`, bạn chỉ cần khai báo địa chỉ host/IP Public hoặc DNS của RDS:
-```env
-DATABASE_URL="postgresql://db_user:db_password@rds-endpoint.amazonaws.com:5432/nexusai"
-```
-*Hãy đảm bảo AWS RDS Security Group đã cho phép Inbound connection từ IP của EC2.*
-
 ---
 
-## 4. Clone source code và Cấu hình Môi trường
+## 3. Cấu hình Môi trường `.env` trên EC2
 
-### 4.1 Clone Project
+Truy cập thư mục dự án trên EC2:
 ```bash
-git clone https://github.com/<your-username>/NexusAI.git
-cd NexusAI
+cd /var/www/baoduong.dev/NexusAI
 ```
 
-### 4.2 Tạo file `.env` cấu hình
 Tạo file `.env` tại thư mục gốc:
 ```bash
 nano .env
@@ -123,7 +65,7 @@ nano .env
 
 Nội dung file `.env` mẫu dành cho production (sử dụng DB có sẵn):
 ```env
-# Database Connection (Ví dụ sử dụng PostgreSQL cài trực tiếp trên EC2)
+# Database Connection
 DATABASE_URL="postgresql://postgres:your_password@host.docker.internal:5432/nexusai"
 
 # JWT configuration
@@ -135,7 +77,7 @@ AI_API_BASE=https://api.ai-box.vn/v1
 AI_API_KEY=your_ai_api_key_here
 AI_MODEL=deepseek-v4-flash[1m]
 
-# AWS S3 Storage (Cho upload ảnh)
+# AWS S3 Storage
 S3_ACCESS_KEY_ID=your_aws_s3_access_key_id_here
 S3_SECRET_ACCESS_KEY=your_aws_s3_secret_access_key_here
 S3_REGION=ap-southeast-1
@@ -144,94 +86,71 @@ S3_ENDPOINT=https://s3.ap-southeast-1.amazonaws.com
 S3_PUBLIC_URL=https://your_s3_bucket_name_here.s3.ap-southeast-1.amazonaws.com
 
 # URL Frontend & Backend
-# Đổi nexusai.yourdomain.com thành tên miền thực tế của bạn
-FRONTEND_URL=https://nexusai.yourdomain.com
-NEXT_PUBLIC_API_URL=https://nexusai.yourdomain.com/api
+# QUAN TRỌNG: Thiết lập URL theo subdomain của bạn
+FRONTEND_URL=https://nexusai.baoduong.dev
+NEXT_PUBLIC_API_URL=https://nexusai.baoduong.dev/api
 ```
 
 ---
 
-## 5. Build và Khởi chạy ứng dụng
+## 4. Khởi chạy Ứng dụng bằng Docker Compose
 
-### 5.1 Khởi chạy ban đầu (HTTP)
+Bởi vì chúng ta dùng Nginx của Host, các container frontend và backend chỉ bind cổng nội bộ (`127.0.0.1:3000` và `127.0.0.1:4000`) để đảm bảo an toàn bảo mật, tránh bị truy cập trực tiếp từ Internet mà không đi qua Nginx.
+
+### 4.1 Khởi chạy container
 ```bash
 # Thực hiện build và chạy container ngầm
-docker compose up --build -d
+sudo docker-compose up -d --build
 ```
-Docker sẽ tiến hành build image NestJS Backend và Next.js Frontend. Quá trình build của backend sẽ chạy lệnh `npx prisma migrate deploy` để tự động cập nhật cơ sở dữ liệu PostgreSQL của bạn.
 
-### 5.2 Seed dữ liệu mẫu (Chỉ chạy lần đầu tiên nếu DB trống)
+### 4.2 Seed dữ liệu mẫu (Chỉ chạy lần đầu tiên nếu DB trống)
 ```bash
-docker exec -it nexusai-backend npx prisma db seed
+sudo docker-compose exec backend npx prisma db seed
 ```
 
 Kiểm tra xem các container đã hoạt động bình thường chưa:
 ```bash
-docker compose ps
+sudo docker-compose ps
 ```
 
 ---
 
-## 6. Thiết lập HTTPS (SSL) miễn phí với Let's Encrypt
+## 5. Cấu hình Nginx trên Host (EC2)
 
-### 6.1 Cập nhật tên miền cho Nginx
-Cập nhật file `nginx/default.conf` trên máy chủ:
+Bây giờ bạn cần cấu hình Nginx đang chạy trên máy chủ để nhận traffic từ cổng 80/443 của tên miền `nexusai.baoduong.dev` và chuyển tiếp vào các container Docker đang chạy nội bộ.
+
+### 5.1 Tạo file cấu hình Nginx mới
+Tạo một file cấu hình ảo cho subdomain:
 ```bash
-nano nginx/default.conf
-```
-Thay thế dòng `server_name localhost;` bằng tên miền của bạn:
-```nginx
-server_name nexusai.yourdomain.com;
+sudo nano /etc/nginx/sites-available/nexusai
 ```
 
-Khởi động lại Nginx:
-```bash
-docker compose restart nginx
-```
-
-### 6.2 Cấp chứng chỉ SSL
-Chạy lệnh Certbot (thay đổi email và domain tương ứng):
-```bash
-docker compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot --email admin@yourdomain.com --agree-tos --no-eff-email -d nexusai.yourdomain.com
-```
-
-### 6.3 Chuyển đổi Nginx sang HTTPS hoàn chỉnh
-Mở lại cấu hình Nginx:
-```bash
-nano nginx/default.conf
-```
-
-Thay thế toàn bộ nội dung bằng cấu hình HTTPS:
+Thêm nội dung cấu hình proxy sau:
 ```nginx
 server {
     listen 80;
-    listen [::]:80;
-    server_name nexusai.yourdomain.com;
+    server_name nexusai.baoduong.dev;
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
+    # Chuyển hướng HTTP sang HTTPS
+    return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name nexusai.yourdomain.com;
+    server_name nexusai.baoduong.dev;
 
-    ssl_certificate /etc/letsencrypt/live/nexusai.yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/nexusai.yourdomain.com/privkey.pem;
+    # Sử dụng chứng chỉ SSL Let's Encrypt sẵn có trên máy chủ
+    # (Nếu chưa có, xem bước 5.3 bên dưới để sinh chứng chỉ trước)
+    ssl_certificate /etc/letsencrypt/live/nexusai.baoduong.dev/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nexusai.baoduong.dev/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
-    ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+    ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305';
 
-    # API Backend proxy pass
+    # API Backend Proxy
     location /api {
-        proxy_pass http://backend:4000/api;
+        proxy_pass http://127.0.0.1:4000/api;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -244,9 +163,9 @@ server {
         client_max_body_size 10M;
     }
 
-    # Next.js Frontend proxy pass
+    # Frontend Proxy
     location / {
-        proxy_pass http://frontend:3000;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -259,9 +178,37 @@ server {
 }
 ```
 
-Áp dụng cấu hình Nginx mới:
+### 5.2 Kích hoạt cấu hình Nginx
+Tạo liên kết symlink để kích hoạt cấu hình và tải lại Nginx:
 ```bash
-docker compose restart nginx
+# Tạo link sang thư mục sites-enabled
+sudo ln -s /etc/nginx/sites-available/nexusai /etc/nginx/sites-enabled/
+
+# Kiểm tra cú pháp Nginx
+sudo nginx -t
+
+# Tải lại cấu hình Nginx
+sudo systemctl reload nginx
 ```
 
-Hệ thống đã sẵn sàng tại địa chỉ `https://nexusai.yourdomain.com`.
+### 5.3 Cấp chứng chỉ SSL trên Host bằng Certbot
+Nếu bạn chưa có chứng chỉ SSL Let's Encrypt cho subdomain `nexusai.baoduong.dev`, hãy chạy lệnh sau trực tiếp trên máy chủ EC2 (sử dụng Certbot đã cài trên host):
+```bash
+sudo certbot --nginx -d nexusai.baoduong.dev
+```
+Lệnh này sẽ tự động sinh chứng chỉ và cập nhật trực tiếp đường dẫn file SSL vào file `/etc/nginx/sites-available/nexusai` cho bạn. Sau khi chạy xong, hãy chạy `sudo systemctl reload nginx` để áp dụng.
+
+---
+
+## 6. Xử lý sự cố thường gặp (Troubleshooting)
+
+### 6.1 Lỗi kết nối PostgreSQL (Connection Refused)
+- Kiểm tra xem PostgreSQL trên host có đang chạy và nghe đúng cổng 5432 không:
+  ```bash
+  sudo ss -tulpn | grep 5432
+  ```
+- Kiểm tra xem file cấu hình `/etc/postgresql/.../main/pg_hba.conf` đã cho phép dải IP Docker kết nối chưa.
+- Kiểm tra logs của backend để xem lỗi cụ thể:
+  ```bash
+  sudo docker-compose logs -f backend
+  ```
