@@ -244,7 +244,13 @@ export class AiDataAccessService {
     // Documents — requires project:read
     if (options.includeDocuments && has("project:read")) {
       const documents = await this.prisma.document.findMany({
-        where: { projectId },
+        where: {
+          projectId,
+          OR: [
+            { storageProvider: { not: "s3" } },
+            { storageProvider: null },
+          ],
+        },
         orderBy: { createdAt: "desc" },
       });
 
@@ -297,7 +303,13 @@ export class AiDataAccessService {
     }
 
     const documents = await this.prisma.document.findMany({
-      where: { projectId },
+      where: {
+        projectId,
+        OR: [
+          { storageProvider: { not: "s3" } },
+          { storageProvider: null },
+        ],
+      },
     });
 
     const TEXT_EXTS = new Set([

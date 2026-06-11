@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -177,4 +177,30 @@ export class UpdateSessionDto {
   messages?: any[];
 }
 
+export class GenerateTaskPromptDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  taskId?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiPropertyOptional()
+  @IsInt()
+  @IsOptional()
+  assigneeId?: number;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  labels?: string[];
+}

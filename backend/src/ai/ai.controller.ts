@@ -22,6 +22,7 @@ import {
   AiSummarizeDto,
   CreateSessionDto,
   UpdateSessionDto,
+  GenerateTaskPromptDto,
 } from "./dto/ai.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
@@ -131,6 +132,21 @@ export class AiController {
       dto.description,
       dto.instruction,
       dto.title,
+    );
+  }
+
+  @Post("description/generate-prompt")
+  @RequirePermissions("ai:analyze")
+  @ApiOperation({ summary: "Generate AI agent prompt based on description, assignee role, and labels" })
+  generateTaskAgentPrompt(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @CurrentUser() user: { id: number },
+    @Body() dto: GenerateTaskPromptDto,
+  ) {
+    return this.aiService.generateTaskAgentPrompt(
+      projectId,
+      user.id,
+      dto,
     );
   }
 

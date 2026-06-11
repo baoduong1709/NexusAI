@@ -848,11 +848,17 @@ Rules:
       projectId,
       userId,
     );
+    // Fetch project documents to provide rich context for task description assistance
+    const docContents = await this.dataAccess.getFilteredDocumentContents(
+      projectId,
+      userId,
+    );
+    const sourceManifest = this.buildSourceManifest(docContents.sources);
 
     const prompt = `You are an assistant for editing software task descriptions.
 Return strict JSON, no markdown:
 {
-  "message": "short response in Vietnamese",
+  "message": "short response in Vietnamese summarizing what changes were made",
   "description": "updated HTML snippet"
 }
 
@@ -865,11 +871,20 @@ ${description}
 User instruction:
 ${instruction}
 
+Project Requirements baseline (requirements.md):
+${ctx.requirementsContent || "No consolidated requirements.md exists yet."}
+
+Project source documents available for reference:
+${sourceManifest || "No uploaded source files."}
+
+${docContents.textDocs.length > 0 ? `Detailed source text/markdown files:\n${docContents.textDocs.join("\n\n")}` : ""}
+
 Rules:
-- Follow user instruction exactly.
-- Keep facts grounded in current description.
+- Follow the user instruction exactly.
+- Read and utilize the attached Project Requirements baseline and source documents to find any necessary specifications, business rules, acceptance criteria, or technical details related to the task or instruction.
+- The updated description must be extremely detailed, comprehensive, and clear for developers and QA, incorporating all necessary references, acceptance criteria, steps, and edge cases from the project documents.
 - Output description as valid HTML snippet using only: p, strong, em, ul, ol, li, br, code.
-- Keep it concise and actionable for engineering and QA.`;
+- Do NOT abbreviate or truncate details. Keep all existing relevant details and append new detailed specifications.`;
 
     const raw = await this.generateAiText(
       [{ role: "user", content: prompt }],
@@ -901,6 +916,111 @@ Rules:
         description: raw.trim() || description,
       };
     }
+  }
+
+  async generateTaskAgentPrompt(
+    projectId: number,
+    userId: number,
+    dto: {
+      taskId?: string;
+      title?: string;
+      description: string;
+      assigneeId?: number;
+      labels?: string[];
+    },
+  ): Promise<{ prompt: string }> {
+    const ctx = await this.dataAccess.getFilteredProjectContext(
+      projectId,
+      userId,
+    );
+    // Fetch project documents to provide context for AI agent prompt generation
+    const docContents = await this.dataAccess.getFilteredDocumentContents(
+      projectId,
+      userId,
+    );
+    const sourceManifest = this.buildSourceManifest(docContents.sources);
+
+    // Determine target assignee role (Developer vs QA/Tester vs generic)
+    let roleName = "Developer";
+    let taskType = "code implementation";
+
+    if (dto.assigneeId) {
+      const member = await this.prisma.projectMember.findUnique({
+        where: { projectId_userId: { projectId, userId: dto.assigneeId } },
+      });
+      if (member?.projectRole) {
+        roleName = member.projectRole;
+      }
+    }
+
+    const roleLower = roleName.toLowerCase();
+    const labelsStr = (dto.labels || []).join(" ").toLowerCase();
+    const isQA =
+      roleLower.includes("qa") ||
+      roleLower.includes("tester") ||
+      roleLower.includes("test") ||
+      labelsStr.includes("test") ||
+      labelsStr.includes("qa");
+
+    if (isQA) {
+      roleName = "QA Engineer / Tester";
+      taskType = "test case generation / verification";
+    }
+
+    // Prepare system prompt for AI prompt generator
+    const generatorPrompt = `You are an expert Prompt Engineer for AI agents.
+Your task is to generate a comprehensive, highly effective prompt for another AI agent (such as a Developer AI or a QA AI) that will perform a software engineering task on behalf of a user.
+
+Based on the task details, project requirements, and project documents provided below, construct a clear and complete prompt for that AI agent.
+
+### Input Data
+- Project Name: ${ctx.project.name}
+- Task Title: ${dto.title || "Untitled Task"}
+- Task Description: 
+${dto.description}
+- Target Role of the Agent: ${roleName}
+- Target Goal: ${taskType === "code implementation" ? "Implement code/features/fixes" : "Write test cases/verify functionality"}
+
+### Project Context (Use this to find affected areas, files, dependencies, or system rules)
+- Project Requirements:
+${ctx.requirementsContent || "No consolidated requirements.md exists yet."}
+- Project Documents Manifest:
+${sourceManifest || "No documents uploaded."}
+${docContents.textDocs.length > 0 ? `- Project Documents Content:\n${docContents.textDocs.join("\n\n")}` : ""}
+
+### Rules for Generating the Prompt
+1. **Target Audience**: The prompt you generate is for another AI agent that will do the task. Make it structured, clean, and direct.
+2. **Prioritization**: Always prioritize the Task Description over general project documents. The Task Description has the actual instructions for the task.
+3. **Detail Requirements**: In the generated prompt, you MUST include:
+   - **Context & Goal**: Explain what the task is and what role the AI agent plays (${roleName}).
+   - **Task Specifications**: List detailed requirements, acceptance criteria, and edge cases extracted from the description and relevant documents.
+   - **Potential Affected Components/Files**: Identify and list files, modules, or database tables that are likely affected or need to be modified/checked, based on the description and project documents.
+   - **Role-based Instructions**: 
+     - If the target goal is code implementation (${roleName} is Developer): Include instructions for code style, structure, error handling, and potential modules/files to modify.
+     - If the target goal is testing (${roleName} is QA/Tester): Include instructions for writing test scenarios, verification steps, test cases, and edge cases to test.
+4. **Format**: Output the prompt using clear Markdown sections (e.g. # Role, # Context, # Instructions, # Acceptance Criteria, # Affected Components).
+5. **Language**: Generate the prompt in English if the task description is in English, or Vietnamese if it's in Vietnamese.
+6. **No Commentary**: Return only the final markdown prompt, without any introduction or wrapping explanation (do not output "Here is the prompt:" or wrap in extra markdown block).`;
+
+    const generatedPrompt = await this.generateAiText(
+      [{ role: "user", content: generatorPrompt }],
+      "task agent prompt generation",
+      0.2,
+      projectId,
+      userId,
+    );
+
+    const trimmedPrompt = generatedPrompt.trim();
+
+    // Persist the generated prompt into the database if taskId is provided
+    if (dto.taskId) {
+      await this.prisma.task.update({
+        where: { id: dto.taskId },
+        data: { agentPrompt: trimmedPrompt },
+      });
+    }
+
+    return { prompt: trimmedPrompt };
   }
 
   // ─── Init empty requirements when project is created ──────────────────────

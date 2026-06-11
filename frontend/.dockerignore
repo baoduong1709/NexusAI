@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.next
+out
+.env
+.env.local
+.git
+.gitignore
+.understand-anything
+.vscode
+docker-compose.yml
+README.md
+document.md
+Dockerfile

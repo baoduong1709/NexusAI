@@ -71,6 +71,8 @@ import {
   WandSparkles,
   Minus,
   CheckSquare,
+  Copy,
+  Terminal,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
@@ -1434,6 +1436,8 @@ export default function ProjectDetailPage() {
   const [newEpicName, setNewEpicName] = useState("");
   const [newLabelName, setNewLabelName] = useState("");
   const [descriptionHtml, setDescriptionHtml] = useState("");
+  const [generatedTaskPrompt, setGeneratedTaskPrompt] = useState("");
+  const [generatingPrompt, setGeneratingPrompt] = useState(false);
   const [descriptionAiMessages, setDescriptionAiMessages] = useState<
     DescriptionAiMessage[]
   >([]);
@@ -2091,6 +2095,8 @@ export default function ProjectDetailPage() {
     });
     setDescriptionHtml("");
     setDescriptionAiMessages([]);
+    setGeneratedTaskPrompt("");
+    setGeneratingPrompt(false);
     setActivityTab("comments");
     setCommentDraft("");
     setWorkLogDraft("");
@@ -2118,6 +2124,8 @@ export default function ProjectDetailPage() {
     });
     setDescriptionHtml(initialDescription);
     setDescriptionAiMessages([]);
+    setGeneratedTaskPrompt(t.agentPrompt || "");
+    setGeneratingPrompt(false);
     setActivityTab("comments");
     setCommentDraft("");
     setWorkLogDraft("");
@@ -2245,6 +2253,38 @@ export default function ProjectDetailPage() {
     ]);
     if (editTask && !updateTaskMutation.isPending) {
       onTaskSubmit({ ...getValues(), description: improved });
+    }
+  };
+
+  const handleGenerateTaskPrompt = async () => {
+    const currentDesc = sanitizeRichTextHtml(getValues("description") || "");
+    if (!stripHtmlTags(currentDesc)) {
+      toast.error("Please enter a description before generating AI prompt");
+      return;
+    }
+
+    setGeneratingPrompt(true);
+    setGeneratedTaskPrompt("");
+    try {
+      const title = String(getValues("title") || "").trim() || undefined;
+      const assigneeIdVal = getValues("assigneeId");
+      const assigneeId = assigneeIdVal ? Number(assigneeIdVal) : undefined;
+      const labels = getValues("labels") || [];
+
+      const result = await aiApi.generateTaskPrompt(projectId, {
+        taskId: editTask?.id || undefined,
+        title,
+        description: currentDesc,
+        assigneeId,
+        labels,
+      });
+
+      setGeneratedTaskPrompt(result.data.prompt || "");
+      toast.success("Prompt generated successfully!");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to generate prompt");
+    } finally {
+      setGeneratingPrompt(false);
     }
   };
 
@@ -4722,6 +4762,51 @@ export default function ProjectDetailPage() {
                         updateTaskMutation.isPending
                       }
                     />
+                  </div>
+                  <div className='mt-4 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900/50 p-4'>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center gap-2'>
+                        <Terminal size={16} className='text-zinc-500 dark:text-zinc-400' />
+                        <span className='text-sm font-semibold text-zinc-900 dark:text-zinc-100'>
+                          AI Agent Prompt
+                        </span>
+                      </div>
+                      <button
+                        type='button'
+                        onClick={handleGenerateTaskPrompt}
+                        disabled={generatingPrompt || !descriptionHtml}
+                        className='inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50'
+                      >
+                        {generatingPrompt ? (
+                          <>
+                            <Loader2 size={13} className='animate-spin' />
+                            Generating...
+                          </>
+                        ) : (
+                          "Generate Agent Prompt"
+                        )}
+                      </button>
+                    </div>
+                    {generatedTaskPrompt && (
+                      <div className='mt-3 relative'>
+                        <textarea
+                          readOnly
+                          value={generatedTaskPrompt}
+                          className='w-full h-40 rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 px-3 py-2 text-xs font-mono text-zinc-700 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-blue-500'
+                        />
+                        <button
+                          type='button'
+                          onClick={() => {
+                            navigator.clipboard.writeText(generatedTaskPrompt);
+                            toast.success("Prompt copied to clipboard!");
+                          }}
+                          className='absolute right-2 top-2 rounded-md bg-zinc-100 dark:bg-zinc-800 p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
+                          title='Copy prompt'
+                        >
+                          <Copy size={13} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <section className='space-y-3'>
                     <h4 className='text-sm font-semibold text-zinc-900 dark:text-zinc-100'>

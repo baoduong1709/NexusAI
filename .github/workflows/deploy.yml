@@ -1,0 +1,42 @@
+name: Deploy NexusAI to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy project via SSH (Optional if repo is private and keys are not shared on EC2)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/NexusAI"
+
+      - name: Deploy and restart containers via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/NexusAI
+            
+            # Rebuild and run containers using Docker Compose
+            # Ensure the .env file exists on the EC2 host in /home/ubuntu/NexusAI/.env
+            docker compose up --build -d
+            
+            # Wait for postgres to be ready and apply migrations
+            docker exec nexusai-backend npx prisma migrate deploy
+            
+            # Prune unused docker images to save space on EC2
+            docker image prune -f

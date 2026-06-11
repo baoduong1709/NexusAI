@@ -149,6 +149,16 @@ export const aiApi = {
     projectId: number,
     payload: { title?: string; description: string; instruction: string },
   ) => api.post(`/projects/${projectId}/ai/description/assist`, payload),
+  generateTaskPrompt: (
+    projectId: number,
+    payload: {
+      taskId?: string;
+      title?: string;
+      description: string;
+      assigneeId?: number;
+      labels?: string[];
+    },
+  ) => api.post(`/projects/${projectId}/ai/description/generate-prompt`, payload),
   getChatSettings: () => api.get("/users/me/chat-settings"),
   updateChatSettings: (payload: { chatLanguage?: string; chatDescription?: string }) =>
     api.put("/users/me/chat-settings", payload),
