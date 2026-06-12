@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { aiApi, projectsApi } from "@/lib/api";
+import { useProjectWebsocket } from "@/lib/websocket";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -39,6 +40,11 @@ export default function AiAnalysisPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const activeJobIdRef = useRef(activeJobId);
+  useEffect(() => {
+    activeJobIdRef.current = activeJobId;
+  }, [activeJobId]);
 
   const { data: project } = useQuery({
     queryKey: ["project", projectId],
@@ -49,21 +55,39 @@ export default function AiAnalysisPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const websocketCallbacks = useMemo(() => ({
+    onAiJobCompleted: (data: any) => {
+      if (activeJobIdRef.current && data.jobId === activeJobIdRef.current && data.type === "analyze") {
+        setAnalysisResult(data.result);
+        setPhase("analyzed");
+        setMessages([
+          {
+            role: "assistant",
+            content: `I finished analyzing **${project?.name}** and generated a requirements.md file.\n\n**Summary:** ${data.result.summary}\n\nYou can now chat with me to create tasks. For example:\n- "Create tasks for the login module"\n- "Create QA tasks for feature X"\n- "Create 3 backend API tasks"`,
+          },
+        ]);
+        toast.success("Analysis completed. requirements.md has been created.");
+        setActiveJobId(null);
+      }
+    },
+    onAiJobFailed: (data: any) => {
+      if (activeJobIdRef.current && data.jobId === activeJobIdRef.current && data.type === "analyze") {
+        toast.error(data.error || "Analysis failed");
+        setActiveJobId(null);
+      }
+    },
+  }), [project?.name]);
+
+  useProjectWebsocket(projectId, websocketCallbacks);
+
   const analyzeMutation = useMutation({
     mutationFn: () => aiApi.analyze(projectId).then((r) => r.data),
     onSuccess: (data) => {
-      setAnalysisResult(data);
-      setPhase("analyzed");
-      setMessages([
-        {
-          role: "assistant",
-          content: `I finished analyzing **${project?.name}** and generated a requirements.md file.\n\n**Summary:** ${data.summary}\n\nYou can now chat with me to create tasks. For example:\n- "Create tasks for the login module"\n- "Create QA tasks for feature X"\n- "Create 3 backend API tasks"`,
-        },
-      ]);
-      toast.success("Analysis completed. requirements.md has been created.");
+      setActiveJobId(data.jobId);
+      toast.info("AI Analysis job queued. Processing in background...");
     },
     onError: (e: any) =>
-      toast.error(e.response?.data?.message || "Analysis failed"),
+      toast.error(e.response?.data?.message || "Failed to start analysis"),
   });
 
   const [chatLoading, setChatLoading] = useState(false);
@@ -212,10 +236,10 @@ export default function AiAnalysisPage() {
             </p>
             <button
               onClick={() => analyzeMutation.mutate()}
-              disabled={analyzeMutation.isPending}
+              disabled={analyzeMutation.isPending || !!activeJobId}
               className='inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 font-medium disabled:opacity-50'
             >
-              {analyzeMutation.isPending ? (
+              {analyzeMutation.isPending || activeJobId ? (
                 <>
                   <Loader2 className='animate-spin' size={18} /> Analyzing...
                 </>

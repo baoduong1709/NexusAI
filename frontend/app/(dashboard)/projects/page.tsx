@@ -108,9 +108,43 @@ export default function ProjectsPage() {
 
       {/* Grid List */}
       {isLoading ? (
-        <motion.div variants={itemAnim} className="py-24 flex flex-col justify-center items-center gap-3">
-          <Loader2 className="animate-spin text-indigo-500" size={32} />
-          <span className="text-sm text-zinc-500 font-medium">Loading your projects...</span>
+        <motion.div variants={container} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <motion.div
+              key={i}
+              variants={itemAnim}
+              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 p-6 shadow-xl relative overflow-hidden flex flex-col justify-between h-full min-h-[220px] animate-pulse"
+            >
+              <div>
+                <div className="flex items-start justify-between mb-4 gap-4">
+                  {/* Name Skeleton */}
+                  <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-2/3" />
+                  {/* Status Badge Skeleton */}
+                  <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-16" />
+                </div>
+                {/* Description Skeletons */}
+                <div className="space-y-2 mb-6">
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-full" />
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-5/6" />
+                </div>
+              </div>
+              
+              <div className="space-y-4 pt-4 border-t border-zinc-100 dark:border-white/5">
+                <div className="flex items-center gap-3">
+                  {/* Members count skeleton */}
+                  <div className="h-7 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-12" />
+                  {/* Tasks count skeleton */}
+                  <div className="h-7 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-12" />
+                </div>
+                <div className="flex items-center justify-between">
+                  {/* Date skeleton */}
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/3" />
+                  {/* Link skeleton */}
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-10" />
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       ) : projects.length === 0 ? (
         <motion.div variants={itemAnim} className="text-center py-24 bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl shadow-xl">

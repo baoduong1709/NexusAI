@@ -10,7 +10,7 @@ import {
 } from "@/lib/api";
 import AccessDenied from "@/components/layout/access-denied";
 import { toast } from "sonner";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -84,6 +84,12 @@ import {
   formatDate,
   formatDateTime,
   PRIORITY_COLORS,
+  stripHtmlTags,
+  toHours,
+  durationFromHours,
+  durationToHours,
+  parseDurationInput,
+  formatDuration,
 } from "@/lib/utils";
 import {
   ProjectWorkflowEditor,
@@ -98,6 +104,13 @@ import {
 } from "@/lib/project-roles";
 import { BrandLogo } from "@/components/brand-logo";
 import { motion, AnimatePresence } from "framer-motion";
+import { DescriptionEditor, sanitizeRichTextHtml } from "@/components/project/description-editor";
+import { CommentEditor, isHtmlEmpty } from "@/components/project/comment-editor";
+import { ProjectDocuments } from "@/components/project/tabs/project-documents";
+import { ProjectMembers } from "@/components/project/tabs/project-members";
+import { ProjectBoard } from "@/components/project/tabs/project-board";
+import { useProjectWebsocket } from "@/lib/websocket";
+
 
 
 type Tab =
@@ -368,1000 +381,7 @@ function previewTaskNamingRule(
   return rendered.replace(/\[\]/g, "").replace(/\s+/g, " ").trim();
 }
 
-function sanitizeRichTextHtml(input: string) {
-  if (!input) return "";
-  return input
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
-    .replace(/\son\w+="[^"]*"/gi, "")
-    .replace(/\son\w+='[^']*'/gi, "")
-    .replace(/javascript:/gi, "")
-    .trim();
-}
 
-function stripHtmlTags(input: string) {
-  return input
-    .replace(/<[^>]+>/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-type DescriptionEditorProps = {
-  value: string;
-  onChange: (next: string) => void;
-  onBlur?: () => void;
-  onImprove: () => void;
-  onAssist: (instruction: string) => void;
-  aiMessages: DescriptionAiMessage[];
-  assisting: boolean;
-  improving: boolean;
-  mentionItems: { id: string; label: string }[];
-  disabled?: boolean;
-  projectId: number;
-};
-
-function DescriptionEditor({
-  value,
-  onChange,
-  onBlur,
-  onImprove,
-  onAssist,
-  aiMessages,
-  assisting,
-  improving,
-  mentionItems,
-  disabled,
-  projectId,
-}: DescriptionEditorProps) {
-  const [aiInput, setAiInput] = useState("");
-  const [selectedMention, setSelectedMention] = useState("");
-  const [customStatus, setCustomStatus] = useState("");
-  const [panelToInsert, setPanelToInsert] = useState("");
-  const [dateToInsert, setDateToInsert] = useState("");
-  const [isTableActive, setIsTableActive] = useState(false);
-  const [showTableMenu, setShowTableMenu] = useState(false);
-
-  // Track document IDs of images uploaded in this editor session
-  const uploadedDocIds = useRef<Set<number>>(new Set());
-
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-      }),
-      UnderlineExt,
-      TaskList,
-      TaskItem.configure({ nested: true }),
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Mention.configure({
-        HTMLAttributes: {
-          class: "mention-chip",
-        },
-        renderText({ options, node }) {
-          return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
-        },
-        renderHTML({ options, node }) {
-          return [
-            "span",
-            mergeAttributes(options.HTMLAttributes, {
-              "data-mention-id": node.attrs.id,
-            }),
-            `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`,
-          ];
-        },
-      }),
-      TiptapImage.configure({
-        HTMLAttributes: {
-          class: "editor-image rounded-md max-w-full my-2 border border-zinc-200 dark:border-white/10",
-        },
-      }),
-      InfoPanelNode,
-      DateBadgeNode,
-      StatusBadgeNode,
-      ExpandBlockNode,
-      Placeholder.configure({
-        placeholder:
-          "Add task details, acceptance criteria, or steps to reproduce...",
-      }),
-    ],
-    content: value || "",
-    editable: !disabled,
-    immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      if (editor.isFocused) {
-        const html = sanitizeRichTextHtml(editor.getHTML());
-        onChange(html);
-
-        // Clean up images that were removed from the editor
-        const currentIds = new Set(collectImageDocIds(html));
-        uploadedDocIds.current.forEach((docId) => {
-          if (!currentIds.has(docId)) {
-            uploadedDocIds.current.delete(docId);
-            deleteDocument(projectId, docId);
-          }
-        });
-      }
-      setIsTableActive(editor.isActive("table"));
-    },
-    onSelectionUpdate: ({ editor }) => {
-      setIsTableActive(editor.isActive("table"));
-    },
-    onBlur: () => onBlur?.(),
-    editorProps: {
-      attributes: {
-        class:
-          "min-h-[180px] px-3 py-2 text-sm leading-6 text-zinc-900 dark:text-zinc-100 focus:outline-none",
-      },
-      handleDOMEvents: {
-        paste: (view, event) => {
-          const files = Array.from(event.clipboardData?.files || []);
-          const items = Array.from(event.clipboardData?.items || []);
-          const imageFiles: File[] = [];
-
-          for (const file of files) {
-            if (file.type.startsWith("image/")) {
-              imageFiles.push(file);
-            }
-          }
-
-          for (const item of items) {
-            if (item.type.startsWith("image/")) {
-              const file = item.getAsFile();
-              if (file && !imageFiles.some((f) => f.name === file.name && f.size === file.size)) {
-                imageFiles.push(file);
-              }
-            }
-          }
-
-          if (imageFiles.length === 0) return false;
-          event.preventDefault();
-          for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file, (docId) => {
-              uploadedDocIds.current.add(docId);
-            });
-          }
-          return true;
-        },
-        drop: (view, event) => {
-          const files = Array.from(event.dataTransfer?.files || []);
-          const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-          if (imageFiles.length === 0) return false;
-          event.preventDefault();
-          for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file, (docId) => {
-              uploadedDocIds.current.add(docId);
-            });
-          }
-          return true;
-        },
-      },
-    },
-  });
-
-  useEffect(() => {
-    if (!editor) return;
-    editor.setEditable(!disabled);
-  }, [editor, disabled]);
-
-  // Clean up orphan images when editor unmounts (e.g. modal closed without saving)
-  useEffect(() => {
-    return () => {
-      if (!editor) return;
-      const html = editor.getHTML();
-      const currentIds = new Set(collectImageDocIds(html));
-      uploadedDocIds.current.forEach((docId) => {
-        if (!currentIds.has(docId)) {
-          deleteDocument(projectId, docId);
-        }
-      });
-    };
-  }, [projectId]);
-
-  useEffect(() => {
-    if (!editor) return;
-    const current = sanitizeRichTextHtml(editor.getHTML());
-    const next = sanitizeRichTextHtml(value || "");
-    if (current !== next) {
-      // External value change — reset tracked doc IDs to match the new content
-      uploadedDocIds.current = new Set(collectImageDocIds(next));
-      editor.commands.setContent(next || "<p></p>", false);
-    }
-  }, [editor, value]);
-
-  const runWithFallback = (
-    action: (ed: NonNullable<typeof editor>) => boolean,
-    fallback?: (ed: NonNullable<typeof editor>) => boolean,
-  ) => {
-    if (!editor || disabled) return;
-    const ok = action(editor);
-    if (ok) return;
-    editor.chain().focus("end").insertContent("<p></p>").run();
-    if (fallback) {
-      fallback(editor);
-      return;
-    }
-    action(editor);
-  };
-
-  const insertInlineNode = (
-    node: { type: string; attrs?: Record<string, string> },
-    fallbackText: string,
-  ) => {
-    runWithFallback(
-      (ed) =>
-        ed
-          .chain()
-          .focus()
-          .insertContent([node, { type: "text", text: " " }])
-          .run(),
-      (ed) => ed.chain().focus().insertContent(fallbackText).run(),
-    );
-  };
-
-  return (
-    <div className='mt-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'>
-      <div className='flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-white/5 p-2'>
-        <button
-          type='button'
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={onImprove}
-          disabled={disabled || improving}
-          className='inline-flex items-center gap-1.5 rounded-md border border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-2.5 py-1.5 text-xs font-medium text-sky-700 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 disabled:opacity-50'
-        >
-          {improving ? (
-            <Loader2 size={13} className='animate-spin' />
-          ) : (
-            <WandSparkles size={13} />
-          )}
-          Improve description
-        </button>
-        <span className='mx-1 h-5 w-px bg-gray-200' />
-        {[
-          {
-            icon: Bold,
-            active: !!editor?.isActive("bold"),
-            action: () => editor?.chain().focus().toggleBold().run(),
-          },
-          {
-            icon: Italic,
-            active: !!editor?.isActive("italic"),
-            action: () => editor?.chain().focus().toggleItalic().run(),
-          },
-          {
-            icon: Underline,
-            active: !!editor?.isActive("underline"),
-            action: () => editor?.chain().focus().toggleUnderline().run(),
-          },
-          {
-            icon: List,
-            active: !!editor?.isActive("bulletList"),
-            action: () => editor?.chain().focus().toggleBulletList().run(),
-          },
-          {
-            icon: ListOrdered,
-            active: !!editor?.isActive("orderedList"),
-            action: () => editor?.chain().focus().toggleOrderedList().run(),
-          },
-          {
-            icon: Quote,
-            active: !!editor?.isActive("blockquote"),
-            action: () => editor?.chain().focus().toggleBlockquote().run(),
-          },
-          {
-            icon: Code2,
-            active: !!editor?.isActive("codeBlock"),
-            action: () => editor?.chain().focus().toggleCodeBlock().run(),
-          },
-          {
-            icon: Undo2,
-            active: false,
-            action: () => editor?.chain().focus().undo().run(),
-          },
-          {
-            icon: Redo2,
-            active: false,
-            action: () => editor?.chain().focus().redo().run(),
-          },
-        ].map((item, idx) => (
-          <button
-            key={`${idx}`}
-            type='button'
-            onMouseDown={(e) => {
-              e.preventDefault();
-              if (disabled) return;
-              item.action();
-            }}
-            disabled={disabled}
-            className={cn(
-              "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
-              item.active && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
-            )}
-          >
-            <item.icon size={14} />
-          </button>
-        ))}
-        <span className='mx-1 h-5 w-px bg-gray-200' />
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            if (disabled) return;
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "image/*";
-            input.onchange = async () => {
-              const file = input.files?.[0];
-              if (file && editor) {
-                uploadAndInsertImage(editor.view, projectId, file, (docId) => {
-                  uploadedDocIds.current.add(docId);
-                });
-              }
-            };
-            input.click();
-          }}
-          disabled={disabled}
-          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
-          title='Insert image'
-        >
-          <LucideImage size={14} />
-        </button>
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            runWithFallback((ed) => ed.chain().focus().toggleTaskList().run());
-          }}
-          disabled={disabled}
-          className={cn(
-            "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
-            editor?.isActive("taskList") && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
-          )}
-          title='Action item'
-        >
-          <CheckSquare size={14} />
-        </button>
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            runWithFallback((ed) =>
-              ed
-                .chain()
-                .focus()
-                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-                .run(),
-            );
-          }}
-          disabled={disabled}
-          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
-          title='Insert table'
-        >
-          <LayoutGrid size={14} />
-        </button>
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            runWithFallback((ed) =>
-              ed.chain().focus().setHorizontalRule().run(),
-            );
-          }}
-          disabled={disabled}
-          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
-          title='Divider'
-        >
-          <Minus size={14} />
-        </button>
-        <select
-          value={panelToInsert}
-          onChange={(e) => {
-            const panelType = e.target.value;
-            setPanelToInsert("");
-            if (!panelType) return;
-            const label =
-              panelType === "warning"
-                ? "Warning panel"
-                : panelType === "success"
-                  ? "Success panel"
-                  : "Info panel";
-            runWithFallback(
-              (ed) =>
-                ed
-                  .chain()
-                  .focus()
-                  .insertContent({
-                    type: "infoPanel",
-                    attrs: { panelType },
-                    content: [
-                      {
-                        type: "paragraph",
-                        content: [{ type: "text", text: label }],
-                      },
-                    ],
-                  })
-                  .run(),
-              (ed) =>
-                ed
-                  .chain()
-                  .focus()
-                  .insertContent(
-                    `<p><strong>${panelType.toUpperCase()}:</strong> ...</p>`,
-                  )
-                  .run(),
-            );
-          }}
-          disabled={disabled}
-          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
-          title='Info panel'
-        >
-          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Panel</option>
-          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='info'>Info</option>
-          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='warning'>Warning</option>
-          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='success'>Success</option>
-        </select>
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            runWithFallback(
-              (ed) =>
-                ed
-                  .chain()
-                  .focus()
-                  .insertContent({
-                    type: "expandBlock",
-                    attrs: {
-                      body: "Details content...",
-                    },
-                  })
-                  .run(),
-              (ed) =>
-                ed
-                  .chain()
-                  .focus()
-                  .insertContent(
-                    '<details data-node-type="expand-block" data-summary="Expand" data-body="Details content..."><summary>Expand</summary><div data-expand-body="">Details content...</div></details>',
-                  )
-                  .run(),
-            );
-          }}
-          disabled={disabled}
-          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
-        >
-          <ChevronDown size={14} />
-        </button>
-        <input
-          type='date'
-          value={dateToInsert}
-          onChange={(e) => {
-            const value = e.target.value;
-            setDateToInsert("");
-            if (!value) return;
-            insertInlineNode(
-              { type: "dateBadge", attrs: { value } },
-              ` <code>Date: ${value}</code> `,
-            );
-          }}
-          disabled={disabled}
-          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
-          title='Date'
-        />
-        <input
-          type='text'
-          value={customStatus}
-          onChange={(e) => setCustomStatus(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key !== "Enter") return;
-            e.preventDefault();
-            const value = customStatus.trim();
-            if (!value) return;
-            setCustomStatus("");
-            insertInlineNode(
-              { type: "statusBadge", attrs: { value } },
-              ` <code>${value}</code> `,
-            );
-          }}
-          disabled={disabled}
-          className='h-7 w-24 rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
-          placeholder='Status'
-        />
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            const value = customStatus.trim();
-            if (!value) return;
-            setCustomStatus("");
-            insertInlineNode(
-              { type: "statusBadge", attrs: { value } },
-              ` <code>${value}</code> `,
-            );
-          }}
-          disabled={disabled}
-          className='rounded-md border border-zinc-200 dark:border-white/10 px-2 py-1 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-50'
-          title='Insert custom status'
-        >
-          Add
-        </button>
-        <select
-          value={selectedMention}
-          onChange={(e) => {
-            const id = e.target.value;
-            setSelectedMention("");
-            if (!id || disabled) return;
-            const member = mentionItems.find((item) => item.id === id);
-            if (!member) return;
-            insertInlineNode(
-              {
-                type: "mention",
-                attrs: { id: member.id, label: member.label },
-              },
-              ` @${member.label} `,
-            );
-          }}
-          disabled={disabled}
-          className='h-7 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs text-zinc-700 dark:text-zinc-300'
-        >
-          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>@ mention</option>
-          {mentionItems.map((item) => (
-            <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={item.id} value={item.id}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <EditorContent editor={editor} />
-      {isTableActive && (
-        <div className='relative border-t border-zinc-200 dark:border-white/5 bg-slate-50 px-2 py-2'>
-          <button
-            type='button'
-            onMouseDown={(e) => {
-              e.preventDefault();
-              if (disabled) return;
-              editor?.chain().focus().addColumnAfter().run();
-            }}
-            disabled={disabled}
-            className='absolute left-1/2 top-2 z-10 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-sky-600 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-50'
-            title='Insert column'
-          >
-            +
-          </button>
-          <button
-            type='button'
-            onMouseDown={(e) => {
-              e.preventDefault();
-              if (disabled) return;
-              editor?.chain().focus().addRowAfter().run();
-            }}
-            disabled={disabled}
-            className='absolute left-2 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-sky-600 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-50'
-            title='Insert row'
-          >
-            +
-          </button>
-          <div className='flex items-center gap-2 pl-8'>
-            <button
-              type='button'
-              onMouseDown={(e) => {
-                e.preventDefault();
-                setShowTableMenu((open) => !open);
-              }}
-              disabled={disabled}
-              className='rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 disabled:opacity-50'
-            >
-              Table
-            </button>
-            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-              Select a cell to edit rows and columns
-            </span>
-          </div>
-          {showTableMenu && (
-            <div className='absolute left-8 top-10 z-20 w-52 overflow-hidden rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl shadow-lg'>
-              {[
-                {
-                  label: "Add row above",
-                  action: () => editor?.chain().focus().addRowBefore().run(),
-                },
-                {
-                  label: "Add row below",
-                  action: () => editor?.chain().focus().addRowAfter().run(),
-                },
-                {
-                  label: "Add column before",
-                  action: () =>
-                    editor?.chain().focus().addColumnBefore().run(),
-                },
-                {
-                  label: "Add column after",
-                  action: () => editor?.chain().focus().addColumnAfter().run(),
-                },
-                {
-                  label: "Delete row",
-                  action: () => editor?.chain().focus().deleteRow().run(),
-                },
-                {
-                  label: "Delete column",
-                  action: () => editor?.chain().focus().deleteColumn().run(),
-                },
-                {
-                  label: "Delete table",
-                  action: () => editor?.chain().focus().deleteTable().run(),
-                },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  type='button'
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    if (disabled) return;
-                    item.action();
-                    setShowTableMenu(false);
-                  }}
-                  disabled={disabled}
-                  className='block w-full px-3 py-2 text-left text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5 disabled:opacity-50'
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      <div className='border-t border-zinc-200 dark:border-white/5 p-2'>
-        <div className='max-h-32 space-y-1 overflow-y-auto rounded-md bg-zinc-50 dark:bg-white/5 p-2'>
-          {aiMessages.length === 0 ? (
-            <p className='text-xs text-zinc-400 dark:text-zinc-500'>
-              Ask AI: "thêm acceptance criteria", "viết lại ngắn gọn", "bổ sung
-              risks"...
-            </p>
-          ) : (
-            aiMessages.map((msg, idx) => (
-              <p
-                key={`${msg.role}-${idx}`}
-                className={cn(
-                  "text-xs",
-                  msg.role === "assistant" ? "text-sky-700" : "text-zinc-600 dark:text-zinc-400",
-                )}
-              >
-                <strong>{msg.role === "assistant" ? "AI" : "Bạn"}:</strong>{" "}
-                {msg.content}
-              </p>
-            ))
-          )}
-        </div>
-        <div className='mt-2 flex gap-2'>
-          <input
-            type='text'
-            value={aiInput}
-            onChange={(e) => setAiInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                const instruction = aiInput.trim();
-                if (!instruction || disabled || assisting) return;
-                onAssist(instruction);
-                setAiInput("");
-              }
-            }}
-            placeholder='Nhập yêu cầu cho AI...'
-            className='h-8 flex-1 bg-transparent rounded-md border border-zinc-200 dark:border-white/10 px-2 text-xs dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-sky-400'
-            disabled={disabled || assisting}
-          />
-          <button
-            type='button'
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => {
-              const instruction = aiInput.trim();
-              if (!instruction || disabled || assisting) return;
-              onAssist(instruction);
-              setAiInput("");
-            }}
-            disabled={disabled || assisting}
-            className='inline-flex h-8 items-center gap-1 rounded-md bg-slate-900 px-2.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50'
-          >
-            {assisting ? <Loader2 size={12} className='animate-spin' /> : null}
-            Apply
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function isHtmlEmpty(html: string) {
-  if (!html) return true;
-  const stripped = html.replace(/<[^>]+>/g, "").trim();
-  return stripped === "" && !html.includes("<img");
-}
-
-/** Extract document IDs from <img title="doc:{id}"> tags in HTML content */
-function collectImageDocIds(html: string): number[] {
-  if (!html) return [];
-  const ids: number[] = [];
-  const regex = /<img[^>]+title="doc:(\d+)"[^>]*>/g;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    ids.push(parseInt(match[1], 10));
-  }
-  return ids;
-}
-
-/** Fire-and-forget delete of an uploaded document. Swallows errors (404 = already deleted). */
-async function deleteDocument(projectId: number, docId: number) {
-  try {
-    await documentsApi.delete(projectId, docId);
-    console.log(`Cleaned up orphan image document ${docId}`);
-  } catch (e: any) {
-    if (e?.response?.status !== 404) {
-      console.error(`Failed to clean up image document ${docId}:`, e);
-    }
-  }
-}
-
-async function uploadAndInsertImage(
-  view: any,
-  projectId: number,
-  file: File,
-  onDocId?: (docId: number) => void,
-) {
-  try {
-    let processedFile = file;
-    // Check if filename has extension, otherwise determine from mime type
-    if (!file.name || !file.name.includes(".")) {
-      let ext = ".png";
-      if (file.type === "image/jpeg") ext = ".jpg";
-      else if (file.type === "image/gif") ext = ".gif";
-      else if (file.type === "image/webp") ext = ".webp";
-      processedFile = new File([file], `pasted-image-${Date.now()}${ext}`, { type: file.type });
-    }
-
-    console.log("Uploading rich text image:", processedFile.name, processedFile.type);
-    const res = await documentsApi.upload(projectId, processedFile);
-    const docId = res.data.id as number;
-    const filename = res.data.filename;
-    // Use the URL returned by the backend (respects S3 vs local storage)
-    const imageUrl = res.data.url || `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace(/\/api$/, "")}/uploads/project-${projectId}/${filename}`;
-
-    console.log("Uploaded rich text image URL:", imageUrl, "docId:", docId);
-    const { schema } = view.state;
-    const node = schema.nodes.image.create({
-      src: imageUrl,
-      alt: processedFile.name,
-      title: `doc:${docId}`,
-    });
-    const transaction = view.state.tr.replaceSelectionWith(node);
-    view.dispatch(transaction);
-    onDocId?.(docId);
-  } catch (error: any) {
-    console.error("Failed to upload/insert image:", error);
-    toast.error("Failed to upload image: " + (error?.response?.data?.message || error.message || "Unknown error"));
-  }
-}
-
-type CommentEditorProps = {
-  value: string;
-  onChange: (next: string) => void;
-  onSubmit: () => void;
-  projectId: number;
-  disabled?: boolean;
-};
-
-function CommentEditor({
-  value,
-  onChange,
-  onSubmit,
-  projectId,
-  disabled,
-}: CommentEditorProps) {
-  // Track document IDs of images uploaded in this editor session
-  const uploadedDocIds = useRef<Set<number>>(new Set());
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-      }),
-      UnderlineExt,
-      TiptapImage.configure({
-        HTMLAttributes: {
-          class: "editor-image rounded-md max-w-full my-2 border border-zinc-200 dark:border-white/10",
-        },
-      }),
-      Placeholder.configure({
-        placeholder: "Add a comment...",
-      }),
-    ],
-    content: value || "",
-    editable: !disabled,
-    immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      if (editor.isFocused) {
-        const html = sanitizeRichTextHtml(editor.getHTML());
-        onChange(html);
-
-        // Clean up images that were removed from the editor
-        const currentIds = new Set(collectImageDocIds(html));
-        uploadedDocIds.current.forEach((docId) => {
-          if (!currentIds.has(docId)) {
-            uploadedDocIds.current.delete(docId);
-            deleteDocument(projectId, docId);
-          }
-        });
-      }
-    },
-    editorProps: {
-      attributes: {
-        class:
-          "min-h-[80px] px-3 py-2 text-sm leading-6 text-zinc-900 dark:text-zinc-100 focus:outline-none",
-      },
-      handleDOMEvents: {
-        paste: (view, event) => {
-          const files = Array.from(event.clipboardData?.files || []);
-          const items = Array.from(event.clipboardData?.items || []);
-          const imageFiles: File[] = [];
-
-          for (const file of files) {
-            if (file.type.startsWith("image/")) {
-              imageFiles.push(file);
-            }
-          }
-
-          for (const item of items) {
-            if (item.type.startsWith("image/")) {
-              const file = item.getAsFile();
-              if (file && !imageFiles.some((f) => f.name === file.name && f.size === file.size)) {
-                imageFiles.push(file);
-              }
-            }
-          }
-
-          if (imageFiles.length === 0) return false;
-          event.preventDefault();
-          for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file, (docId) => {
-              uploadedDocIds.current.add(docId);
-            });
-          }
-          return true;
-        },
-        drop: (view, event) => {
-          const files = Array.from(event.dataTransfer?.files || []);
-          const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-          if (imageFiles.length === 0) return false;
-          event.preventDefault();
-          for (const file of imageFiles) {
-            uploadAndInsertImage(view, projectId, file, (docId) => {
-              uploadedDocIds.current.add(docId);
-            });
-          }
-          return true;
-        },
-      },
-    },
-  });
-
-  useEffect(() => {
-    if (!editor) return;
-    editor.setEditable(!disabled);
-  }, [editor, disabled]);
-
-  // Clean up orphan images when editor unmounts (e.g. switching tabs without submitting)
-  useEffect(() => {
-    return () => {
-      if (!editor) return;
-      const html = editor.getHTML();
-      const currentIds = new Set(collectImageDocIds(html));
-      uploadedDocIds.current.forEach((docId) => {
-        if (!currentIds.has(docId)) {
-          deleteDocument(projectId, docId);
-        }
-      });
-    };
-  }, [projectId]);
-
-  useEffect(() => {
-    if (!editor) return;
-    const current = sanitizeRichTextHtml(editor.getHTML());
-    const next = sanitizeRichTextHtml(value || "");
-    if (current !== next) {
-      // External value change — reset tracked doc IDs to match the new content
-      uploadedDocIds.current = new Set(collectImageDocIds(next));
-      editor.commands.setContent(next || "<p></p>", false);
-    }
-  }, [editor, value]);
-
-  const insertImage = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (file && editor) {
-        uploadAndInsertImage(editor.view, projectId, file, (docId) => {
-          uploadedDocIds.current.add(docId);
-        });
-      }
-    };
-    input.click();
-  };
-
-  return (
-    <div className='mt-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'>
-      <div className='flex flex-wrap items-center gap-1 border-b border-zinc-200 dark:border-white/5 p-1.5'>
-        {[
-          {
-            icon: Bold,
-            active: !!editor?.isActive("bold"),
-            action: () => editor?.chain().focus().toggleBold().run(),
-            title: "Bold",
-          },
-          {
-            icon: Italic,
-            active: !!editor?.isActive("italic"),
-            action: () => editor?.chain().focus().toggleItalic().run(),
-            title: "Italic",
-          },
-          {
-            icon: Underline,
-            active: !!editor?.isActive("underline"),
-            action: () => editor?.chain().focus().toggleUnderline().run(),
-            title: "Underline",
-          },
-        ].map((item, idx) => (
-          <button
-            key={`${idx}`}
-            type='button'
-            onMouseDown={(e) => {
-              e.preventDefault();
-              if (disabled) return;
-              item.action();
-            }}
-            disabled={disabled}
-            className={cn(
-              "rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50",
-              item.active && "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400",
-            )}
-            title={item.title}
-          >
-            <item.icon size={13} />
-          </button>
-        ))}
-        <span className='mx-1 h-4 w-px bg-gray-200' />
-        <button
-          type='button'
-          onMouseDown={(e) => {
-            e.preventDefault();
-            if (disabled) return;
-            insertImage();
-          }}
-          disabled={disabled}
-          className='rounded-md p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-gray-800 disabled:opacity-50'
-          title='Insert image'
-        >
-          <LucideImage size={13} />
-        </button>
-      </div>
-      <EditorContent editor={editor} />
-      <div className='mt-1.5 flex justify-end border-t border-zinc-100 dark:border-white/5 p-2'>
-        <button
-          type='button'
-          onClick={onSubmit}
-          disabled={
-            isHtmlEmpty(value) ||
-            disabled
-          }
-          className='rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50'
-        >
-          Comment
-        </button>
-      </div>
-    </div>
-  );
-}
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -1409,6 +429,11 @@ export default function ProjectDetailPage() {
   };
   const [chatInput, setChatInput] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [activeAiJob, setActiveAiJob] = useState<{ jobId: string; type: string } | null>(null);
+  const activeAiJobRef = useRef(activeAiJob);
+  useEffect(() => {
+    activeAiJobRef.current = activeAiJob;
+  }, [activeAiJob]);
   const [reviewTasks, setReviewTasks] = useState<SuggestedTask[] | null>(null);
   const [previewVersion, setPreviewVersion] = useState<{
     id: number;
@@ -1469,6 +494,25 @@ export default function ProjectDetailPage() {
     }
   });
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const websocketCallbacks = useMemo(() => ({
+    onAiJobCompleted: (data: any) => {
+      if (activeAiJobRef.current && data.jobId === activeAiJobRef.current.jobId) {
+        if (data.type === "updateRequirements") {
+          toast.success("AI update completed successfully!");
+        }
+        setActiveAiJob(null);
+      }
+    },
+    onAiJobFailed: (data: any) => {
+      if (activeAiJobRef.current && data.jobId === activeAiJobRef.current.jobId) {
+        toast.error(data.error || "AI job failed");
+        setActiveAiJob(null);
+      }
+    },
+  }), []);
+
+  useProjectWebsocket(projectId, websocketCallbacks);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
@@ -1633,10 +677,8 @@ export default function ProjectDetailPage() {
   const updateReqMutation = useMutation({
     mutationFn: () => aiApi.updateRequirements(projectId).then((r) => r.data),
     onSuccess: (data) => {
-      qc.invalidateQueries({ queryKey: ["requirements", projectId] });
-      qc.invalidateQueries({ queryKey: ["req-history", projectId] });
-      qc.invalidateQueries({ queryKey: ["project", projectId] });
-      toast.success(`Requirements updated - v${data.version}`);
+      setActiveAiJob({ jobId: data.jobId, type: "updateRequirements" });
+      toast.info("AI update job queued. Processing in background...");
     },
     onError: (e: any) =>
       toast.error(e.response?.data?.message || "Failed to update requirements"),
@@ -1969,63 +1011,7 @@ export default function ProjectDetailPage() {
     "calendar",
   ].includes(tab);
 
-  function toHours(value: any) {
-    const hours = Number(value);
-    return Number.isFinite(hours) ? hours : 0;
-  }
 
-  function durationFromHours(value: any) {
-    const totalMinutes = Math.max(0, Math.round(toHours(value) * 60));
-    const minutesPerDay = HOURS_PER_WORK_DAY * 60;
-    const days = Math.floor(totalMinutes / minutesPerDay);
-    const remainingMinutes = totalMinutes % minutesPerDay;
-    const hours = Math.floor(remainingMinutes / 60);
-    const minutes = remainingMinutes % 60;
-
-    return { days, hours, minutes };
-  }
-
-  function durationToHours(days: any, hours: any, minutes: any) {
-    const total =
-      toHours(days) * HOURS_PER_WORK_DAY +
-      toHours(hours) +
-      toHours(minutes) / 60;
-    return Math.round(total * 10000) / 10000;
-  }
-
-  function parseDurationInput(value: any) {
-    const text = String(value ?? "")
-      .trim()
-      .toLowerCase();
-    if (!text) return 0;
-
-    const tokenPattern = /(\d+(?:\.\d+)?)\s*([dhm])/g;
-    let total = 0;
-    let match: RegExpExecArray | null;
-    while ((match = tokenPattern.exec(text))) {
-      const amount = Number(match[1]);
-      const unit = match[2];
-      if (unit === "d") total += amount * HOURS_PER_WORK_DAY;
-      if (unit === "h") total += amount;
-      if (unit === "m") total += amount / 60;
-    }
-
-    const leftover = text.replace(tokenPattern, "").replace(/\s+/g, "");
-    if (leftover) return null;
-
-    return Math.round(total * 10000) / 10000;
-  }
-
-  function formatDuration(value: any) {
-    const { days, hours, minutes } = durationFromHours(value);
-    const parts = [
-      days ? `${days}d` : "",
-      hours ? `${hours}h` : "",
-      minutes ? `${minutes}m` : "",
-    ].filter(Boolean);
-
-    return parts.length ? parts.join(" ") : "0m";
-  }
 
   const totalEstimateHours =
     filteredTasks.reduce(
@@ -2399,7 +1385,7 @@ export default function ProjectDetailPage() {
     if (uploadInputRef.current) uploadInputRef.current.value = "";
   };
 
-  const memberIds = new Set(project?.members?.map((m: any) => m.userId));
+  const memberIds = new Set<number>(project?.members?.map((m: any) => m.userId) || []);
 
   if (isLoading)
     return (
@@ -3044,148 +2030,21 @@ export default function ProjectDetailPage() {
 
       {/* Board Tab */}
       {tab === "board" && (
-        <div className='flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-18rem)]'>
-          {workflowStatuses.map((status: string) => {
-            const statusTasks =
-              filteredTasks.filter((t: any) => t.status === status) || [];
-            const isDragOver = dragOverStatus === status;
-            return (
-              <div
-                key={status}
-                className='flex-shrink-0 w-72 flex flex-col'
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragOverStatus(status);
-                }}
-                onDragLeave={(e) => {
-                  const relatedTarget = e.relatedTarget;
-                  if (
-                    !(relatedTarget instanceof globalThis.Node) ||
-                    !e.currentTarget.contains(relatedTarget)
-                  ) {
-                    setDragOverStatus(null);
-                  }
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragOverStatus(null);
-                  if (dragTaskId == null) return;
-                  const task = tasks?.find(
-                    (t: any) => t.id === dragTaskId,
-                  );
-                  if (
-                    task &&
-                    task.status !== status &&
-                    canProject("task:update")
-                  ) {
-                    updateStatusMutation.mutate({ taskId: dragTaskId, status });
-                  }
-                  setDragTaskId(null);
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <span
-                    className='text-xs px-2.5 py-1 rounded-full font-medium border'
-                    style={getTaskStatusInlineStyle(status, projectWorkflow)}
-                  >
-                    {status}
-                  </span>
-                  <span className='text-xs bg-gray-100 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full'>
-                    {statusTasks.length}
-                  </span>
-                </div>
-                <div
-                  className={cn(
-                    "flex-1 space-y-2 rounded-xl p-2 min-h-32 transition-colors",
-                    isDragOver
-                      ? "bg-blue-50 ring-2 ring-blue-300"
-                      : "bg-zinc-50 dark:bg-white/5",
-                  )}
-                >
-                  {statusTasks.map((t: any) => (
-                    <div
-                      key={t.id}
-                      draggable={canProject("task:update")}
-                      onDragStart={() => setDragTaskId(t.id)}
-                      onDragEnd={() => {
-                        setDragTaskId(null);
-                        setDragOverStatus(null);
-                      }}
-                      className={cn(
-                        "bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border p-3 shadow-sm transition-all",
-                        canProject("task:update")
-                          ? "cursor-grab active:cursor-grabbing"
-                          : "cursor-pointer",
-                        dragTaskId === t.id
-                          ? "opacity-40 scale-95"
-                          : "hover:border-blue-200",
-                      )}
-                      onClick={() =>
-                        canProject("task:update") && openEditTask(t)
-                      }
-                    >
-                      <p className='text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1'>
-                        {t.title}
-                      </p>
-                      {stripHtmlTags(t.description || "") && (
-                        <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-2 mb-2'>
-                          {stripHtmlTags(t.description)}
-                        </p>
-                      )}
-                      <div className='flex items-center gap-2 flex-wrap'>
-                        <span
-                          className={cn(
-                            "text-xs px-1.5 py-0.5 rounded-full",
-                            PRIORITY_COLORS[
-                              t.priority as keyof typeof PRIORITY_COLORS
-                            ],
-                          )}
-                        >
-                          {t.priority}
-                        </span>
-                        {t.epic && (
-                          <span className='text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded-full'>
-                            {t.epic}
-                          </span>
-                        )}
-                        {t.labels?.map((label: string) => (
-                          <span
-                            key={label}
-                            className='text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full'
-                          >
-                            {label}
-                          </span>
-                        ))}
-                        {t.sprint && (
-                          <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                            #{t.sprint}
-                          </span>
-                        )}
-                        <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                          {formatDuration(t.loggedHours)} /{" "}
-                          {formatDuration(t.estimateHours)}
-                        </span>
-                        {t.assignee && (
-                          <span className='text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full ml-auto'>
-                            {t.assignee.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {canProject("task:create") && (
-                    <button
-                      onClick={openCreateTask}
-                      className='w-full py-2 text-xs text-zinc-400 dark:text-zinc-500 border border-dashed border-zinc-200 dark:border-white/10 rounded-xl hover:border-blue-300 hover:text-blue-500 flex items-center justify-center gap-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl'
-                    >
-                      <Plus size={12} /> Add task
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ProjectBoard
+          workflowStatuses={workflowStatuses}
+          filteredTasks={filteredTasks}
+          dragOverStatus={dragOverStatus}
+          setDragOverStatus={setDragOverStatus}
+          dragTaskId={dragTaskId}
+          setDragTaskId={setDragTaskId}
+          tasks={tasks || []}
+          canProject={canProject}
+          updateStatusMutation={updateStatusMutation}
+          projectWorkflow={projectWorkflow}
+          openEditTask={openEditTask}
+          openCreateTask={openCreateTask}
+          isLoading={tasksLoading}
+        />
       )}
 
       {/* Timeline Tab */}
@@ -3413,304 +2272,28 @@ export default function ProjectDetailPage() {
 
       {/* Documents Tab */}
       {tab === "documents" && (
-        <div className='flex flex-col gap-3 h-[calc(100vh-18rem)] overflow-hidden'>
-          {/* Sub-tabs Switcher */}
-          <div className='flex items-center border-b border-zinc-200 dark:border-white/10 pb-2 mb-1'>
-            <div className='flex space-x-1 bg-zinc-100 dark:bg-white/5 p-1 rounded-xl'>
-              <button
-                onClick={() => setDocSubTab("requirements")}
-                className={cn(
-                  "flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all",
-                  docSubTab === "requirements"
-                    ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                )}
-              >
-                <Bot size={13} />
-                Requirements
-              </button>
-              <button
-                onClick={() => setDocSubTab("files")}
-                className={cn(
-                  "flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all",
-                  docSubTab === "files"
-                    ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                )}
-              >
-                <FileText size={13} />
-                Uploaded Documents
-              </button>
-            </div>
-          </div>
-
-          {/* Conditional Sub-tab rendering */}
-          {docSubTab === "requirements" ? (
-            <div className='flex flex-col gap-3 flex-1 overflow-hidden'>
-              {/* Requirements header */}
-              <div className='flex items-center gap-2'>
-                <div className='flex items-center gap-2 flex-1'>
-                  <BrandLogo size={24} />
-                  <span className='font-semibold text-gray-800 text-sm dark:text-zinc-200'>
-                    Requirements
-                  </span>
-                  {requirements?.version && (
-                    <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
-                      v{requirements.version}
-                    </span>
-                  )}
-                  {requirements?.createdAt && (
-                    <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                      Updated {formatDateTime(requirements.createdAt)}
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={() => setShowHistory((v) => !v)}
-                  className='flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 border rounded-lg px-2 py-1'
-                >
-                  <History size={12} /> History{" "}
-                  <ChevronDown
-                    size={11}
-                    className={cn(
-                      "transition-transform",
-                      showHistory && "rotate-180",
-                    )}
-                  />
-                </button>
-                {canProject("ai:analyze") && (
-                  <button
-                    onClick={() => setShowUpdateRequirementsConfirm(true)}
-                    disabled={updateReqMutation.isPending}
-                    className='flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 disabled:opacity-50'
-                  >
-                    {updateReqMutation.isPending ? (
-                      <Loader2 size={12} className='animate-spin' />
-                    ) : (
-                      <RefreshCw size={12} />
-                    )}
-                    Update Requirements
-                  </button>
-                )}
-              </div>
-
-              {/* History dropdown */}
-              {showHistory && (
-                <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-3'>
-                  <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2'>
-                    Version history
-                  </p>
-                  {(reqHistory as any[]).length === 0 ? (
-                    <p className='text-xs text-zinc-400 dark:text-zinc-500'>No history yet</p>
-                  ) : (
-                    <div className='space-y-2'>
-                      {(reqHistory as any[]).map((h: any) => (
-                        <div
-                          key={h.id}
-                          className='border border-zinc-200 dark:border-white/5 rounded-lg p-2 hover:border-sky-200 hover:bg-sky-50 transition-colors cursor-pointer'
-                          onClick={() =>
-                            aiApi
-                              .getVersion(projectId, h.id)
-                              .then((r) => setPreviewVersion(r.data))
-                          }
-                        >
-                          <div className='flex items-center justify-between mb-1'>
-                            <span className='text-xs font-semibold text-sky-700'>
-                              v{h.version}
-                            </span>
-                            <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                              {formatDateTime(h.createdAt)}
-                            </span>
-                          </div>
-                          {h.changesSummary ? (
-                            <p className='text-xs text-zinc-500 dark:text-zinc-400 whitespace-pre-line leading-relaxed'>
-                              {h.changesSummary}
-                            </p>
-                          ) : (
-                            <p className='text-xs text-zinc-400 dark:text-zinc-500 italic'>
-                              Initial version
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Requirements content */}
-              <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto'>
-                {requirements?.content ? (
-                  <div className='max-w-none text-sm leading-6 text-zinc-700 dark:text-zinc-300'>
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        h1: ({ children }) => (
-                          <h1 className='mb-4 border-b border-zinc-200 dark:border-white/5 pb-3 text-xl font-semibold text-gray-950 dark:text-zinc-50'>
-                            {children}
-                          </h1>
-                        ),
-                        h2: ({ children }) => (
-                          <h2 className='mb-2 mt-5 text-base font-semibold text-zinc-900 dark:text-zinc-100'>
-                            {children}
-                          </h2>
-                        ),
-                        h3: ({ children }) => (
-                          <h3 className='mb-2 mt-4 text-sm font-semibold text-gray-800 dark:text-zinc-200'>
-                            {children}
-                          </h3>
-                        ),
-                        p: ({ children }) => (
-                          <p className='mb-3 text-sm text-zinc-700 dark:text-zinc-300'>{children}</p>
-                        ),
-                        ul: ({ children }) => (
-                          <ul className='mb-3 list-disc space-y-1 pl-5'>
-                            {children}
-                          </ul>
-                        ),
-                        ol: ({ children }) => (
-                          <ol className='mb-3 list-decimal space-y-1 pl-5'>
-                            {children}
-                          </ol>
-                        ),
-                        li: ({ children }) => (
-                          <li className='pl-1 text-sm text-zinc-700 dark:text-zinc-300'>
-                            {children}
-                          </li>
-                        ),
-                        blockquote: ({ children }) => (
-                          <blockquote className='mb-3 border-l-4 border-sky-200 dark:border-sky-500/20 bg-sky-50 dark:bg-sky-500/10 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300'>
-                            {children}
-                          </blockquote>
-                        ),
-                        table: ({ children }) => (
-                          <div className='mb-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-white/5'>
-                            <table className='min-w-full divide-y divide-gray-100 dark:divide-white/5 text-left text-xs'>
-                              {children}
-                            </table>
-                          </div>
-                        ),
-                        thead: ({ children }) => (
-                          <thead className='bg-zinc-50 dark:bg-white/5'>{children}</thead>
-                        ),
-                        th: ({ children }) => (
-                          <th className='px-3 py-2 font-semibold text-zinc-700 dark:text-zinc-300'>
-                            {children}
-                          </th>
-                        ),
-                        td: ({ children }) => (
-                          <td className='border-t border-zinc-200 dark:border-white/5 px-3 py-2 align-top text-zinc-700 dark:text-zinc-300'>
-                            {children}
-                          </td>
-                        ),
-                        code: ({ children }) => (
-                          <code className='rounded bg-gray-100 dark:bg-white/10 px-1 py-0.5 text-xs text-gray-800 dark:text-zinc-200'>
-                            {children}
-                          </code>
-                        ),
-                        pre: ({ children }) => (
-                          <pre className='mb-4 overflow-x-auto rounded-lg bg-gray-950 p-3 text-xs leading-relaxed text-gray-50'>
-                            {children}
-                          </pre>
-                        ),
-                      }}
-                    >
-                      {requirements.content}
-                    </ReactMarkdown>
-                  </div>
-                ) : (
-                  <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500'>
-                    <FileText size={32} className='mb-2 opacity-40' />
-                    <p className='text-sm'>No requirements yet</p>
-                    <p className='text-xs mt-1'>
-                      Click "Update Requirements" to generate them with AI
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className='flex flex-col gap-3 flex-1 overflow-hidden'>
-              <div className='flex items-center justify-between mb-2'>
-                <p className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide'>
-                  Uploaded documents
-                </p>
-                {canProject("document:upload") && (
-                  <label
-                    className={cn(
-                      "flex items-center gap-1.5 text-xs bg-blue-600 text-white px-2.5 py-1.5 rounded-lg hover:bg-blue-700 cursor-pointer",
-                      uploading && "opacity-50",
-                    )}
-                  >
-                    {uploading ? (
-                      <Loader2 className='animate-spin' size={12} />
-                    ) : (
-                      <Upload size={12} />
-                    )}
-                    Upload
-                    <input
-                      ref={uploadInputRef}
-                      type='file'
-                      className='hidden'
-                      onChange={handleFileUpload}
-                      disabled={uploading}
-                    />
-                  </label>
-                )}
-              </div>
-              <div className='flex-1 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-xl p-4 overflow-y-auto space-y-1.5'>
-                {documents?.filter(
-                  (d: any) =>
-                    d.originalName !== "requirements.md" &&
-                    !d.mimeType?.startsWith("image/"),
-                ).length === 0 ? (
-                  <div className='flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500 py-12'>
-                    <FileText size={32} className='mb-2 opacity-40' />
-                    <p className='text-sm font-semibold'>No documents yet</p>
-                    <p className='text-xs mt-1'>Upload files to keep them with the project</p>
-                  </div>
-                ) : (
-                  documents
-                    ?.filter(
-                      (d: any) =>
-                        d.originalName !== "requirements.md" &&
-                        !d.mimeType?.startsWith("image/"),
-                    )
-                    .map((d: any) => (
-                      <div
-                        key={d.id}
-                        className='bg-zinc-50/50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 rounded-lg px-4 py-3 flex items-center gap-3 hover:bg-zinc-100/50 dark:hover:bg-white/[0.04] transition-colors'
-                      >
-                        <FileText
-                          className='text-blue-500 flex-shrink-0'
-                          size={16}
-                        />
-                        <div className='flex-1 min-w-0'>
-                          <p className='text-xs font-semibold text-gray-800 truncate dark:text-zinc-200'>
-                            {d.originalName}
-                          </p>
-                          <p className='text-[10px] text-zinc-400 dark:text-zinc-500 font-medium mt-0.5'>
-                            {(d.size / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
-                        {canProject("document:delete") && (
-                          <button
-                            onClick={() =>
-                              confirm("Delete?") &&
-                              deleteDocMutation.mutate(d.id)
-                            }
-                            className='p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0'
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </div>
-                    ))
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        <ProjectDocuments
+          projectId={projectId}
+          requirements={requirements}
+          documents={documents}
+          uploading={uploading}
+          docSubTab={docSubTab}
+          setDocSubTab={setDocSubTab}
+          showHistory={showHistory}
+          setShowHistory={setShowHistory}
+          reqHistory={reqHistory}
+          previewVersion={previewVersion}
+          setPreviewVersion={setPreviewVersion}
+          setShowUpdateRequirementsConfirm={setShowUpdateRequirementsConfirm}
+          updateReqMutation={{
+            ...updateReqMutation,
+            isPending: updateReqMutation.isPending || activeAiJob?.type === "updateRequirements",
+          }}
+          canProject={canProject}
+          handleFileUpload={handleFileUpload}
+          deleteProjectDocument={deleteDocMutation.mutate}
+          uploadInputRef={uploadInputRef}
+        />
       )}
 
       {tab === "settings" && canProject("project:update") && (
@@ -3816,230 +2399,23 @@ export default function ProjectDetailPage() {
 
       {/* Members Tab */}
       {tab === "members" && (
-        <div className='space-y-3'>
-          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between'>
-            <div className='space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400'>
-                Project roles
-              </p>
-              <div className='flex flex-wrap gap-2'>
-                {projectRoles.map((role: string) => (
-                  <span
-                    key={role}
-                    className='text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-medium'
-                  >
-                    {role}
-                  </span>
-                ))}
-              </div>
-              <p className='text-xs text-zinc-400 dark:text-zinc-500'>
-                Project managers can create and name custom roles for each
-                project.
-              </p>
-            </div>
-            {canProject("project:update") && (
-              <button
-                onClick={openRolesEditor}
-                className='self-start px-3 py-2 text-sm border border-zinc-200 dark:border-white/10 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
-              >
-                Manage roles
-              </button>
-            )}
-          </div>
-          {canProject("project:update") && (
-            <div>
-              <p className='text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2'>
-                Add member
-              </p>
-              <div className='flex flex-wrap gap-2'>
-                {users
-                  .filter((u: any) => !memberIds.has(u.id))
-                  .map((u: any) => (
-                    <button
-                      key={u.id}
-                      onClick={() => {
-                        setAddMemberDialog({ userId: u.id, name: u.name });
-                        setAddMemberRole(projectRoles[0] || "");
-                      }}
-                      className='flex items-center gap-2 px-3 py-1.5 border border-dashed border-gray-300 rounded-full text-sm text-zinc-600 dark:text-zinc-400 hover:border-blue-400 hover:text-blue-600 transition-colors'
-                    >
-                      <Plus size={12} /> {u.name}
-                    </button>
-                  ))}
-              </div>
-            </div>
-          )}
-          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 divide-y divide-gray-50'>
-            {project.members?.length === 0 ? (
-              <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>No members yet</p>
-            ) : (
-              project.members.map((m: any) => (
-                <div
-                  key={m.userId}
-                  className='px-4 py-3 flex items-center gap-3'
-                >
-                  <div className='bg-blue-100 text-blue-700 font-semibold rounded-full w-8 h-8 flex items-center justify-center text-xs flex-shrink-0'>
-                    {m.user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className='flex-1'>
-                    <p className='font-medium text-zinc-900 dark:text-zinc-100 text-sm'>
-                      {m.user.name}
-                    </p>
-                    {editingRole?.userId === m.userId ? (
-                      <div className='flex items-center gap-1.5 mt-0.5'>
-                        <select
-                          value={editingRole!.value}
-                          onChange={(e) =>
-                            setEditingRole({
-                              userId: m.userId,
-                              value: e.target.value,
-                            })
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter")
-                              updateMemberRoleMutation.mutate({
-                                userId: m.userId,
-                                projectRole: editingRole!.value,
-                              });
-                            if (e.key === "Escape") setEditingRole(null);
-                          }}
-                          className='text-xs bg-transparent dark:text-zinc-100 border border-blue-300 dark:border-blue-500/50 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-400 w-36'
-                        >
-                          {projectRoles.map((role: string) => (
-                            <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
-                              {role}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() =>
-                            updateMemberRoleMutation.mutate({
-                              userId: m.userId,
-                              projectRole: editingRole!.value,
-                            })
-                          }
-                          className='text-xs text-blue-600 hover:text-blue-800 font-medium'
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingRole(null)}
-                          className='text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:text-zinc-400'
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div className='flex items-center gap-1 mt-0.5'>
-                        <span className='text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full'>
-                          {m.projectRole ||
-                            m.user.role?.name ||
-                            "No role assigned"}
-                        </span>
-                        {canProject("project:update") && (
-                          <button
-                            onClick={() =>
-                              setEditingRole({
-                                userId: m.userId,
-                                value:
-                                  (m.projectRole &&
-                                  projectRoles.includes(m.projectRole)
-                                    ? m.projectRole
-                                    : projectRoles[0]) || "",
-                              })
-                            }
-                            className='p-0.5 text-gray-300 hover:text-blue-500'
-                          >
-                            <Pencil size={10} />
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {canProject("project:update") && (
-                    <button
-                      onClick={() => removeMemberMutation.mutate(m.userId)}
-                      className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-red-500 hover:bg-red-50 rounded'
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Add Member Dialog */}
-      {addMemberDialog && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-sm p-6'>
-            <h3 className='font-semibold text-zinc-900 dark:text-zinc-100 mb-1'>Add member</h3>
-            <p className='text-sm text-zinc-500 dark:text-zinc-400 mb-4'>
-              Set the role for{" "}
-              <span className='font-medium text-gray-800 dark:text-zinc-200'>
-                {addMemberDialog.name}
-              </span>{" "}
-              in this project.
-            </p>
-            <div className='space-y-3'>
-              <div>
-                <label className='text-xs font-medium text-zinc-600 dark:text-zinc-400 block mb-1'>
-                  Project role
-                </label>
-                {canProject("project:update") && (
-                  <div className='flex justify-end mb-1'>
-                    <button
-                      type='button'
-                      onClick={() => {
-                        setAddMemberDialog(null);
-                        openRolesEditor();
-                      }}
-                      className='text-xs text-blue-600 hover:text-blue-700'
-                    >
-                      Manage roles
-                    </button>
-                  </div>
-                )}
-                <select
-                  value={addMemberRole}
-                  onChange={(e) => setAddMemberRole(e.target.value)}
-                  className='w-full bg-transparent text-sm border border-zinc-200 dark:border-white/10 dark:text-zinc-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                >
-                  {projectRoles.map((role: string) => (
-                    <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className='flex gap-2 mt-5'>
-              <button
-                onClick={() => setAddMemberDialog(null)}
-                className='flex-1 px-4 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() =>
-                  addMemberMutation.mutate({
-                    userId: addMemberDialog.userId,
-                    projectRole: addMemberRole,
-                  })
-                }
-                disabled={addMemberMutation.isPending}
-                className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2'
-              >
-                {addMemberMutation.isPending && (
-                  <Loader2 size={13} className='animate-spin' />
-                )}
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
+        <ProjectMembers
+          project={project}
+          users={users}
+          projectRoles={projectRoles}
+          memberIds={memberIds}
+          addMemberDialog={addMemberDialog}
+          setAddMemberDialog={setAddMemberDialog}
+          addMemberRole={addMemberRole}
+          setAddMemberRole={setAddMemberRole}
+          editingRole={editingRole}
+          setEditingRole={setEditingRole}
+          canProject={canProject}
+          openRolesEditor={openRolesEditor}
+          addMemberMutation={addMemberMutation}
+          updateMemberRoleMutation={updateMemberRoleMutation}
+          removeMemberMutation={removeMemberMutation}
+        />
       )}
 
       {/* Task Modal */}
@@ -5578,7 +3954,7 @@ export default function ProjectDetailPage() {
               <button
                 type='button'
                 onClick={() => setShowUpdateRequirementsConfirm(false)}
-                disabled={updateReqMutation.isPending}
+                disabled={updateReqMutation.isPending || activeAiJob?.type === "updateRequirements"}
                 className='rounded-lg border border-zinc-200 dark:border-white/10 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5 disabled:opacity-50'
               >
                 Cancel
@@ -5589,10 +3965,10 @@ export default function ProjectDetailPage() {
                   setShowUpdateRequirementsConfirm(false);
                   updateReqMutation.mutate();
                 }}
-                disabled={updateReqMutation.isPending}
+                disabled={updateReqMutation.isPending || activeAiJob?.type === "updateRequirements"}
                 className='inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50'
               >
-                {updateReqMutation.isPending && (
+                {(updateReqMutation.isPending || activeAiJob?.type === "updateRequirements") && (
                   <Loader2 size={14} className='animate-spin' />
                 )}
                 Update requirements

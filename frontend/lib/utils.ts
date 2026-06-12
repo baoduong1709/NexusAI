@@ -1,4 +1,4 @@
-﻿import { type ClassValue, clsx } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -217,3 +217,74 @@ export const PROJECT_STATUS_COLORS = {
   CANCELLED: "bg-red-100 text-red-700",
 };
 
+export function stripHtmlTags(input: string) {
+  return input
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function toHours(value: any) {
+  const hours = Number(value);
+  return Number.isFinite(hours) ? hours : 0;
+}
+
+export function durationFromHours(value: any, hoursPerWorkDay = 8) {
+  const totalMinutes = Math.max(0, Math.round(toHours(value) * 60));
+  const minutesPerDay = hoursPerWorkDay * 60;
+  const days = Math.floor(totalMinutes / minutesPerDay);
+  const remainingMinutes = totalMinutes % minutesPerDay;
+  const hours = Math.floor(remainingMinutes / 60);
+  const minutes = remainingMinutes % 60;
+
+  return { days, hours, minutes };
+}
+
+export function durationToHours(days: any, hours: any, minutes: any, hoursPerWorkDay = 8) {
+  const total =
+    toHours(days) * hoursPerWorkDay +
+    toHours(hours) +
+    toHours(minutes) / 60;
+  return Math.round(total * 10000) / 10000;
+}
+
+export function parseDurationInput(value: any, hoursPerWorkDay = 8) {
+  const text = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  if (!text) return 0;
+
+  const patterns = [
+    { regex: /(\d+(?:\.\d+)?)\s*d/g, multiplier: hoursPerWorkDay },
+    { regex: /(\d+(?:\.\d+)?)\s*h/g, multiplier: 1 },
+    { regex: /(\d+(?:\.\d+)?)\s*m/g, multiplier: 1 / 60 },
+  ];
+
+  let total = 0;
+  let hasMatch = false;
+
+  for (const { regex, multiplier } of patterns) {
+    let match;
+    const rx = new RegExp(regex);
+    while ((match = rx.exec(text)) !== null) {
+      total += parseFloat(match[1]) * multiplier;
+      hasMatch = true;
+    }
+  }
+
+  if (hasMatch) return total;
+
+  const num = parseFloat(text);
+  return Number.isFinite(num) ? num : 0;
+}
+
+export function formatDuration(value: any, hoursPerWorkDay = 8) {
+  const { days, hours, minutes } = durationFromHours(value, hoursPerWorkDay);
+  const parts = [
+    days ? `${days}d` : "",
+    hours ? `${hours}h` : "",
+    minutes ? `${minutes}m` : "",
+  ].filter(Boolean);
+
+  return parts.length ? parts.join(" ") : "0m";
+}

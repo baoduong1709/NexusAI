@@ -19,9 +19,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
   isLoading: boolean;
 }
@@ -30,32 +29,34 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("nexusai_token");
-    const storedUser = localStorage.getItem("nexusai_user");
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const restoreSession = async () => {
+      try {
+        const res = await authApi.getProfile();
+        setUser(res.data);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    restoreSession();
   }, []);
 
   const login = async (email: string, password: string) => {
     const res = await authApi.login(email, password);
-    const { access_token, user: userData } = res.data;
-    localStorage.setItem("nexusai_token", access_token);
-    localStorage.setItem("nexusai_user", JSON.stringify(userData));
-    setToken(access_token);
+    const { user: userData } = res.data;
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem("nexusai_token");
-    localStorage.removeItem("nexusai_user");
-    setToken(null);
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch (err) {
+      console.error("Failed to logout from server", err);
+    }
     setUser(null);
     window.location.href = "/login";
   };
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, hasPermission, isLoading }}
+      value={{ user, login, logout, hasPermission, isLoading }}
     >
       {children}
     </AuthContext.Provider>

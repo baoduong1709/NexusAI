@@ -3,7 +3,10 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import {
@@ -21,6 +24,7 @@ import {
 } from "../projects/project-workflow";
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
 import { StorageService } from "../common/storage/storage.service";
+import { WebsocketGateway } from "../common/websocket/websocket.gateway";
 import * as fs from "fs";
 
 const TASK_INCLUDE = {
@@ -189,6 +193,8 @@ export class TasksService {
     private prisma: PrismaService,
     private projectAiIndex: ProjectAiIndexService,
     private storageService: StorageService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private websocketGateway: WebsocketGateway,
   ) {}
 
   private async cleanUpImageDocuments(projectId: number, docIds: number[]) {
@@ -264,6 +270,8 @@ export class TasksService {
     });
 
     this.projectAiIndex.rebuildSoon(projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'tasksUpdated', { projectId });
     return task;
   }
 
@@ -271,6 +279,10 @@ export class TasksService {
     projectId: number,
     query: TasksQueryDto = {},
   ): Promise<PaginatedResponse<any>> {
+    const cacheKey = `tasks:project:${projectId}:query:${JSON.stringify(query)}`;
+    const cached = await this.cacheManager.get<any>(cacheKey);
+    if (cached) return cached;
+
     const {
       skip = 0,
       take = 50,
@@ -332,15 +344,23 @@ export class TasksService {
       return right.createdAt.getTime() - left.createdAt.getTime();
     });
 
-    return { data: sortedTasks, total, skip, take };
+    const result = { data: sortedTasks, total, skip, take };
+    await this.cacheManager.set(cacheKey, result, 10000);
+    return result;
   }
 
   async findOne(id: string) {
+    const cacheKey = `tasks:detail:${id}`;
+    const cached = await this.cacheManager.get<any>(cacheKey);
+    if (cached) return cached;
+
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: TASK_INCLUDE,
     });
     if (!task) throw new NotFoundException("Task not found");
+    
+    await this.cacheManager.set(cacheKey, task, 10000);
     return task;
   }
 
@@ -410,6 +430,8 @@ export class TasksService {
     }
 
     this.projectAiIndex.rebuildSoon(task.projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(task.projectId, 'tasksUpdated', { projectId: task.projectId });
     return updated;
   }
 
@@ -446,6 +468,8 @@ export class TasksService {
     }
 
     this.projectAiIndex.rebuildSoon(task.projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(task.projectId, 'tasksUpdated', { projectId: task.projectId });
     return updated;
   }
 
@@ -469,6 +493,8 @@ export class TasksService {
 
     const removed = await this.prisma.task.delete({ where: { id } });
     this.projectAiIndex.rebuildSoon(task.projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(task.projectId, 'tasksUpdated', { projectId: task.projectId });
     return removed;
   }
 
@@ -502,12 +528,15 @@ export class TasksService {
     const body = dto.body.trim();
     if (!body) throw new BadRequestException("Comment cannot be empty");
 
-    return this.createActivity({
+    const activity = await this.createActivity({
       taskId,
       userId,
       type: "COMMENT",
       body,
     });
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'tasksUpdated', { projectId });
+    return activity;
   }
 
   async addWorkLog(
@@ -544,6 +573,8 @@ export class TasksService {
     });
 
     this.projectAiIndex.rebuildSoon(projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'tasksUpdated', { projectId });
     return activity;
   }
 

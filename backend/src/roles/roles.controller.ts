@@ -12,6 +12,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { RolesService } from "./roles.service";
 import { CreateRoleDto } from "./dto/create-role.dto";
+import { UpdateRoleDto } from "./dto/update-role.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { RequirePermissions } from "../auth/decorators/permissions.decorator";
@@ -52,7 +53,7 @@ export class RolesController {
 
   @Put(":id")
   @RequirePermissions("role:update")
-  update(@Param("id", ParseIntPipe) id: number, @Body() dto: CreateRoleDto) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateRoleDto) {
     return this.rolesService.update(id, dto);
   }
 

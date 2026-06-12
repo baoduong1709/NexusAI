@@ -15,6 +15,7 @@ import { ProjectsService } from "./projects.service";
 import { CreateProjectDto, UpdateProjectDto } from "./dto/create-project.dto";
 import { UpdateProjectWorkflowDto } from "./dto/update-project-workflow.dto";
 import { UpdateProjectRolesDto } from "./dto/update-project-roles.dto";
+import { AddMemberDto, UpdateMemberRoleDto } from "./dto/member.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { RequirePermissions } from "../auth/decorators/permissions.decorator";
@@ -85,9 +86,9 @@ export class ProjectsController {
   addMember(
     @Param("id", ParseIntPipe) id: number,
     @Param("userId", ParseIntPipe) userId: number,
-    @Body() body: { projectRole?: string },
+    @Body() dto: AddMemberDto,
   ) {
-    return this.projectsService.addMember(id, userId, body?.projectRole);
+    return this.projectsService.addMember(id, userId, dto.projectRole);
   }
 
   @Patch(":id/members/:userId")
@@ -96,9 +97,9 @@ export class ProjectsController {
   updateMemberRole(
     @Param("id", ParseIntPipe) id: number,
     @Param("userId", ParseIntPipe) userId: number,
-    @Body() body: { projectRole: string },
+    @Body() dto: UpdateMemberRoleDto,
   ) {
-    return this.projectsService.updateMemberRole(id, userId, body.projectRole);
+    return this.projectsService.updateMemberRole(id, userId, dto.projectRole);
   }
 
   @Delete(":id/members/:userId")

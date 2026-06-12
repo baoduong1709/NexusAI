@@ -93,6 +93,7 @@ model ProjectMember {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([projectId, userId])
+  @@index([userId])
   @@map("project_members")
 }
 
@@ -112,6 +113,9 @@ model Document {
   project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   uploadedBy User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 
+  @@index([projectId])
+  @@index([projectId, folder])
+  @@index([uploadedById])
   @@map("documents")
 }
 
@@ -125,6 +129,7 @@ model RequirementsHistory {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  @@index([projectId, version])
   @@map("requirements_history")
 }
 
@@ -153,6 +158,8 @@ model Task {
   activities TaskActivity[]
 
   @@unique([projectId, sequence])
+  @@index([projectId, status])
+  @@index([assigneeId])
   @@map("tasks")
 }
 
@@ -188,6 +195,7 @@ model AiChatSession {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([projectId, userId])
   @@map("ai_chat_sessions")
 }
 
@@ -232,5 +240,6 @@ model AiTokenLog {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, createdAt])
   @@map("ai_token_logs")
 }

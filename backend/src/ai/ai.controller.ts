@@ -10,6 +10,8 @@ import {
   UseGuards,
   Res,
 } from "@nestjs/common";
+import { InjectQueue } from "@nestjs/bullmq";
+import { Queue } from "bullmq";
 import { Response } from "express";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { AiService } from "./ai.service";
@@ -34,16 +36,23 @@ import { CurrentUser } from "../auth/decorators/current-user.decorator";
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller("projects/:projectId/ai")
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(
+    private readonly aiService: AiService,
+    @InjectQueue("ai") private readonly aiQueue: Queue,
+  ) {}
 
   @Post("analyze")
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Analyze project documents and suggest tasks" })
-  analyze(
+  async analyze(
     @Param("projectId", ParseIntPipe) projectId: number,
     @CurrentUser() user: { id: number },
   ) {
-    return this.aiService.analyzeProject(projectId, user.id);
+    const job = await this.aiQueue.add("analyze", {
+      projectId,
+      userId: user.id,
+    });
+    return { jobId: job.id, status: "queued" };
   }
 
   @Get("requirements")
@@ -70,11 +79,15 @@ export class AiController {
   @Post("requirements/update")
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Re-analyze documents and update requirements.md" })
-  updateRequirements(
+  async updateRequirements(
     @Param("projectId", ParseIntPipe) projectId: number,
     @CurrentUser() user: { id: number },
   ) {
-    return this.aiService.updateRequirements(projectId, user.id);
+    const job = await this.aiQueue.add("updateRequirements", {
+      projectId,
+      userId: user.id,
+    });
+    return { jobId: job.id, status: "queued" };
   }
 
   @Post("confirm-tasks")

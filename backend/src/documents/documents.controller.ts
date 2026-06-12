@@ -11,6 +11,7 @@ import {
   Body,
   Query,
   Res,
+  BadRequestException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -55,7 +56,34 @@ export class DocumentsController {
 
   @Post("upload")
   @RequirePermissions("document:upload")
-  @UseInterceptors(FileInterceptor("file", { storage: uploadStorage }))
+  @UseInterceptors(FileInterceptor("file", {
+    storage: uploadStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+    fileFilter: (req, file, cb) => {
+      const allowedMimes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain',
+        'text/csv',
+        'text/markdown',
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+      ];
+      if (allowedMimes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new BadRequestException(`File type '${file.mimetype}' is not allowed`), false);
+      }
+    },
+  }))
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {

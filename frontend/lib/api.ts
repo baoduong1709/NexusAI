@@ -1,24 +1,25 @@
 import axios from "axios";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  CreateRolePayload,
+  UpdateRolePayload,
+  CreateProjectPayload,
+  UpdateProjectPayload,
+  CreateTaskPayload,
+  UpdateTaskPayload,
+  Task,
+} from './types';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
-});
-
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("nexusai_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("nexusai_token");
       localStorage.removeItem("nexusai_user");
       window.location.href = "/login";
     }
@@ -32,6 +33,7 @@ export default api;
 export const authApi = {
   login: (email: string, password: string) =>
     api.post("/auth/login", { email, password }),
+  logout: () => api.post("/auth/logout"),
   getProfile: () => api.get("/auth/profile"),
   generatePersonalToken: (expiresIn: string) => api.post("/auth/personal-token", { expiresIn }),
 };
@@ -40,8 +42,8 @@ export const authApi = {
 export const usersApi = {
   getAll: () => api.get("/users"),
   getOne: (id: number) => api.get(`/users/${id}`),
-  create: (data: any) => api.post("/users", data),
-  update: (id: number, data: any) => api.put(`/users/${id}`, data),
+  create: (data: CreateUserPayload) => api.post("/users", data),
+  update: (id: number, data: UpdateUserPayload) => api.put(`/users/${id}`, data),
   delete: (id: number) => api.delete(`/users/${id}`),
 };
 
@@ -49,8 +51,8 @@ export const usersApi = {
 export const rolesApi = {
   getAll: () => api.get("/roles"),
   getPermissions: () => api.get("/roles/permissions"),
-  create: (data: any) => api.post("/roles", data),
-  update: (id: number, data: any) => api.put(`/roles/${id}`, data),
+  create: (data: CreateRolePayload) => api.post("/roles", data),
+  update: (id: number, data: UpdateRolePayload) => api.put(`/roles/${id}`, data),
   delete: (id: number) => api.delete(`/roles/${id}`),
 };
 
@@ -58,11 +60,11 @@ export const rolesApi = {
 export const projectsApi = {
   getAll: () => api.get("/projects"),
   getOne: (id: number) => api.get(`/projects/${id}`),
-  create: (data: any) => api.post("/projects", data),
-  update: (id: number, data: any) => api.put(`/projects/${id}`, data),
-  updateWorkflow: (id: number, data: any) =>
+  create: (data: CreateProjectPayload) => api.post("/projects", data),
+  update: (id: number, data: UpdateProjectPayload) => api.put(`/projects/${id}`, data),
+  updateWorkflow: (id: number, data: { taskStatuses: string[]; taskWorkflow: Record<string, string[]> }) =>
     api.patch(`/projects/${id}/workflow`, data),
-  updateRoles: (id: number, data: any) =>
+  updateRoles: (id: number, data: { projectRoles: string[]; projectRoleConfigs: any[] }) =>
     api.patch(`/projects/${id}/roles`, data),
   delete: (id: number) => api.delete(`/projects/${id}`),
   addMember: (projectId: number, userId: number, projectRole?: string) =>
@@ -89,9 +91,9 @@ export const tasksApi = {
     dueTo?: string;
     ai?: string;
   }) => api.get(`/projects/${projectId}/tasks`, { params }),
-  create: (projectId: number, data: any) =>
+  create: (projectId: number, data: CreateTaskPayload) =>
     api.post(`/projects/${projectId}/tasks`, data),
-  update: (projectId: number, taskId: string, data: any) =>
+  update: (projectId: number, taskId: string, data: UpdateTaskPayload) =>
     api.put(`/projects/${projectId}/tasks/${taskId}`, data),
   updateStatus: (projectId: number, taskId: string, status: string) =>
     api.patch(`/projects/${projectId}/tasks/${taskId}/status`, { status }),
@@ -137,7 +139,7 @@ export const aiApi = {
     api.get(`/projects/${projectId}/ai/requirements/version/${historyId}`),
   updateRequirements: (projectId: number) =>
     api.post(`/projects/${projectId}/ai/requirements/update`),
-  confirmTasks: (projectId: number, tasks: any[]) =>
+  confirmTasks: (projectId: number, tasks: Partial<Task>[]) =>
     api.post(`/projects/${projectId}/ai/confirm-tasks`, { tasks }),
   suggestAssignee: (projectId: number, taskDescription: string) =>
     api.post(`/projects/${projectId}/ai/suggest-assignee`, { taskDescription }),
@@ -350,7 +352,7 @@ export const aiApi = {
   deleteSession: (projectId: number, sessionId: number) =>
     api.delete(`/projects/${projectId}/ai/sessions/${sessionId}`),
   getSystemConfigs: () => api.get("/ai/system-configs"),
-  updateSystemConfigs: (payload: any) => api.put("/ai/system-configs", payload),
+  updateSystemConfigs: (payload: Record<string, string>) => api.put("/ai/system-configs", payload),
   getTokenSummary: (userId?: number) => api.get("/ai/token-stats/summary", { params: { userId } }),
   getTokenCharts: (userId?: number) => api.get("/ai/token-stats/charts", { params: { userId } }),
   getTokenHistory: (userId?: number, page?: number, limit?: number) =>

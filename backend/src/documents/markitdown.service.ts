@@ -1,10 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { exec } from "child_process";
+import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs";
 
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 @Injectable()
 export class MarkitdownService implements OnModuleInit {
@@ -121,11 +122,12 @@ export class MarkitdownService implements OnModuleInit {
 
     try {
       this.logger.log(`Converting file to Markdown: ${inputPath} -> ${outputPath}`);
-      
-      const command = `${this.commandPrefix} "${inputPath}" -o "${outputPath}"`;
-      
-      // Run the command
-      await execAsync(command);
+
+      // Use execFile to prevent command injection (no shell interpolation)
+      const parts = this.commandPrefix.split(' ');
+      const program = parts[0];
+      const args = [...parts.slice(1), inputPath, '-o', outputPath];
+      await execFileAsync(program, args);
 
       if (fs.existsSync(outputPath)) {
         this.logger.log(`Successfully converted: ${inputPath}`);

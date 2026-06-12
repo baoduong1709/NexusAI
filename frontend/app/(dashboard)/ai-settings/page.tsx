@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { aiApi, usersApi } from "@/lib/api";
 import AccessDenied from "@/components/layout/access-denied";
@@ -65,7 +66,7 @@ export default function AiSettingsPage() {
 
   const [activeTab, setActiveTab] = useState<"stats" | "configs">("stats");
 
-  // Config State
+  // Config form state (local, editable)
   const [apiBase, setApiBase] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [proModel, setProModel] = useState("");
@@ -74,77 +75,63 @@ export default function AiSettingsPage() {
   const [embeddingModel, setEmbeddingModel] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSavingConfig, setIsSavingConfig] = useState(false);
-  const [isLoadingConfig, setIsLoadingConfig] = useState(false);
 
-  // Stats State
-  const [summary, setSummary] = useState<TokenSummary | null>(null);
-  const [chartData, setChartData] = useState<ChartItem[]>([]);
-  const [logs, setLogs] = useState<LogItem[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta>({ total: 0, page: 1, limit: 10, totalPages: 1 });
-  const [isLoadingStats, setIsLoadingStats] = useState(false);
+  // Stats UI state
   const [selectedUser, setSelectedUser] = useState<string>("all");
-  const [usersList, setUsersList] = useState<{ id: number; name: string; email: string }[]>([]);
+  const [statsPage, setStatsPage] = useState(1);
+  const qc = useQueryClient();
 
-  // 1. Fetch Config
+  // --- React Query: Config ---
+  const { data: configData, isLoading: isLoadingConfig } = useQuery({
+    queryKey: ["ai-system-configs"],
+    queryFn: () => aiApi.getSystemConfigs().then(r => r.data),
+    enabled: activeTab === "configs" && canWriteConfig,
+  });
+
+  // Initialize form state when config loads
   useEffect(() => {
-    if (activeTab === "configs" && canWriteConfig) {
-      setIsLoadingConfig(true);
-      aiApi.getSystemConfigs()
-        .then((res) => {
-          setApiBase(res.data.AI_API_BASE || "");
-          setApiKey(res.data.AI_API_KEY || "");
-          setProModel(res.data.AI_PRO_MODEL || "");
-          setFlashModel(res.data.AI_FLASH_MODEL || "");
-          setSummaryModel(res.data.AI_SUMMARY_MODEL || "");
-          setEmbeddingModel(res.data.AI_EMBEDDING_MODEL || "");
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error("Không thể tải cấu hình AI hệ thống");
-        })
-        .finally(() => setIsLoadingConfig(false));
+    if (configData) {
+      setApiBase(configData.AI_API_BASE || "");
+      setApiKey(configData.AI_API_KEY || "");
+      setProModel(configData.AI_PRO_MODEL || "");
+      setFlashModel(configData.AI_FLASH_MODEL || "");
+      setSummaryModel(configData.AI_SUMMARY_MODEL || "");
+      setEmbeddingModel(configData.AI_EMBEDDING_MODEL || "");
     }
-  }, [activeTab, canWriteConfig]);
+  }, [configData]);
 
-  // 2. Fetch Users List (for Admin Stats filter)
-  useEffect(() => {
-    if (isAdmin) {
-      usersApi.getAll()
-        .then((res) => {
-          setUsersList(res.data || []);
-        })
-        .catch(console.error);
-    }
-  }, [isAdmin]);
+  // --- React Query: Users List ---
+  const { data: usersList = [] } = useQuery<{ id: number; name: string; email: string }[]>({
+    queryKey: ["users-list"],
+    queryFn: () => usersApi.getAll().then(r => r.data || []),
+    enabled: isAdmin,
+  });
 
-  // 3. Fetch Token Stats & History
-  const fetchStats = (page = 1, userIdFilter?: string) => {
-    setIsLoadingStats(true);
-    const userIdNum = userIdFilter && userIdFilter !== "all" ? parseInt(userIdFilter, 10) : undefined;
-    
-    Promise.all([
-      aiApi.getTokenSummary(userIdNum),
-      aiApi.getTokenCharts(userIdNum),
-      aiApi.getTokenHistory(userIdNum, page, 10),
-    ])
-      .then(([summaryRes, chartsRes, historyRes]) => {
-        setSummary(summaryRes.data);
-        setChartData(chartsRes.data);
-        setLogs(historyRes.data.data || []);
-        setPagination(historyRes.data.meta);
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Không thể tải số liệu thống kê sử dụng");
-      })
-      .finally(() => setIsLoadingStats(false));
-  };
+  // --- React Query: Token Stats ---
+  const userIdNum = selectedUser && selectedUser !== "all" ? parseInt(selectedUser, 10) : undefined;
 
-  useEffect(() => {
-    if (activeTab === "stats" && hasAccess) {
-      fetchStats(1, selectedUser);
-    }
-  }, [activeTab, selectedUser, hasAccess]);
+  const { data: summaryData } = useQuery<TokenSummary | null>({
+    queryKey: ["token-summary", userIdNum],
+    queryFn: () => aiApi.getTokenSummary(userIdNum).then(r => r.data),
+    enabled: activeTab === "stats" && hasAccess,
+  });
+
+  const { data: chartData = [] } = useQuery({
+    queryKey: ["token-charts", userIdNum],
+    queryFn: () => aiApi.getTokenCharts(userIdNum).then(r => r.data),
+    enabled: activeTab === "stats" && hasAccess,
+  });
+
+  const { data: historyData, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["token-history", userIdNum, statsPage],
+    queryFn: () => aiApi.getTokenHistory(userIdNum, statsPage, 10).then(r => r.data),
+    enabled: activeTab === "stats" && hasAccess,
+  });
+
+  // Derive display values from query data
+  const summary = summaryData ?? null;
+  const logs: LogItem[] = historyData?.data || [];
+  const pagination: PaginationMeta = historyData?.meta || { total: 0, page: 1, limit: 10, totalPages: 1 };
 
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,7 +145,10 @@ export default function AiSettingsPage() {
         AI_SUMMARY_MODEL: summaryModel,
         AI_EMBEDDING_MODEL: embeddingModel,
       });
+      // Invalidate cached config so next tab switch fetches fresh data
+      qc.invalidateQueries({ queryKey: ["ai-system-configs"] });
       toast.success("Đã cập nhật cấu hình AI thành công");
+      qc.invalidateQueries({ queryKey: ["ai-system-configs"] });
     } catch (err: any) {
       console.error(err);
       toast.error(err.response?.data?.message || "Không thể lưu cấu hình");
@@ -359,7 +349,7 @@ export default function AiSettingsPage() {
               </span>
               <select
                 value={selectedUser}
-                onChange={(e) => setSelectedUser(e.target.value)}
+                onChange={(e) => { setSelectedUser(e.target.value); setStatsPage(1); }}
                 className="text-sm border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 bg-zinc-50/30 dark:bg-zinc-900/30 text-zinc-800 dark:text-zinc-100 focus:outline-none transition-all shadow-sm"
               >
                 <option value="all">Tất cả người dùng (Toàn hệ thống)</option>
@@ -533,14 +523,14 @@ export default function AiSettingsPage() {
                       <div className="flex items-center gap-1.5">
                         <button
                           disabled={pagination.page <= 1}
-                          onClick={() => fetchStats(pagination.page - 1, selectedUser)}
+                          onClick={() => setStatsPage(pagination.page - 1)}
                           className="p-1.5 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
                         >
                           <ChevronLeft size={16} />
                         </button>
                         <button
                           disabled={pagination.page >= pagination.totalPages}
-                          onClick={() => fetchStats(pagination.page + 1, selectedUser)}
+                          onClick={() => setStatsPage(pagination.page + 1)}
                           className="p-1.5 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
                         >
                           <ChevronRight size={16} />

@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProjectDto } from "./dto/create-project.dto";
@@ -25,6 +28,7 @@ import {
   ProjectRoleConfig,
 } from "./project-roles";
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
+import { WebsocketGateway } from "../common/websocket/websocket.gateway";
 
 const PROJECT_INCLUDE = {
   members: {
@@ -85,6 +89,8 @@ export class ProjectsService {
     private prisma: PrismaService,
     private aiService: AiService,
     private projectAiIndex: ProjectAiIndexService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private websocketGateway: WebsocketGateway,
   ) {}
 
   async create(dto: CreateProjectDto) {
@@ -130,10 +136,15 @@ export class ProjectsService {
       });
 
     this.projectAiIndex.rebuildSoon(project.id);
+    await this.cacheManager.clear();
     return this.attachProjectMetadata(project);
   }
 
   async findAll(user: { id: number; permissions?: string[] }) {
+    const cacheKey = `projects:all:user:${user.id}:${user.permissions?.join(",")}`;
+    const cached = await this.cacheManager.get<any[]>(cacheKey);
+    if (cached) return cached;
+
     const hasGlobalRead = user.permissions?.includes("project:read");
     const projects = hasGlobalRead
       ? await this.prisma.project.findMany({
@@ -169,17 +180,25 @@ export class ProjectsService {
               index,
           );
 
-    return projects.map((project) => this.attachProjectMetadata(project));
+    const result = projects.map((project) => this.attachProjectMetadata(project));
+    await this.cacheManager.set(cacheKey, result, 10000);
+    return result;
   }
 
   async findOne(id: number) {
+    const cacheKey = `projects:detail:${id}`;
+    const cached = await this.cacheManager.get<any>(cacheKey);
+    if (cached) return cached;
+
     const project = await this.prisma.project.findUnique({
       where: { id },
       include: PROJECT_INCLUDE,
     });
     if (!project) throw new NotFoundException("Project not found");
 
-    return this.attachProjectMetadata(project);
+    const result = this.attachProjectMetadata(project);
+    await this.cacheManager.set(cacheKey, result, 10000);
+    return result;
   }
 
   async update(id: number, dto: Partial<CreateProjectDto>) {
@@ -240,6 +259,8 @@ export class ProjectsService {
     });
 
     this.projectAiIndex.rebuildSoon(id);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id });
     return this.attachProjectMetadata(updatedProject);
   }
 
@@ -319,6 +340,8 @@ export class ProjectsService {
     });
 
     this.projectAiIndex.rebuildSoon(id);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id });
     return this.findOne(id);
   }
 
@@ -406,11 +429,15 @@ export class ProjectsService {
     });
 
     this.projectAiIndex.rebuildSoon(id);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id });
     return this.findOne(id);
   }
 
   async remove(id: number) {
     await this.findOne(id);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id, deleted: true });
     return this.prisma.project.delete({ where: { id } });
   }
 
@@ -424,6 +451,8 @@ export class ProjectsService {
       },
     });
     this.projectAiIndex.rebuildSoon(projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'projectUpdated', { projectId });
     return member;
   }
 
@@ -438,6 +467,8 @@ export class ProjectsService {
       data: { projectRole: normalizeProjectRole(projectRole) },
     });
     this.projectAiIndex.rebuildSoon(projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'projectUpdated', { projectId });
     return member;
   }
 
@@ -446,6 +477,8 @@ export class ProjectsService {
       where: { projectId_userId: { projectId, userId } },
     });
     this.projectAiIndex.rebuildSoon(projectId);
+    await this.cacheManager.clear();
+    this.websocketGateway.notifyProjectUpdate(projectId, 'projectUpdated', { projectId });
     return member;
   }
 
