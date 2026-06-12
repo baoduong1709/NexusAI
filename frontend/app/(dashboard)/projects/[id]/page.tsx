@@ -110,6 +110,9 @@ import { ProjectDocuments } from "@/components/project/tabs/project-documents";
 import { ProjectMembers } from "@/components/project/tabs/project-members";
 import { ProjectBoard } from "@/components/project/tabs/project-board";
 import { useProjectWebsocket } from "@/lib/websocket";
+import { ProjectHeader } from "@/components/project/project-header";
+import { TaskFilters } from "@/components/project/task-filters";
+import { TaskLinearList } from "@/components/project/task-linear-list";
 
 
 
@@ -1407,490 +1410,90 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className='space-y-6 max-w-[1400px] mx-auto'>
-      {/* Premium Header */}
-      <motion.div 
-        variants={headerVariants}
-        initial="hidden"
-        animate="show"
-        className='bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl p-6 shadow-xl shadow-black/5 dark:shadow-black/20 relative overflow-hidden'
-      >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] pointer-events-none rounded-full" />
-        
-        <div className='flex items-start sm:items-center gap-5 relative z-10'>
-          <button
-            onClick={() => router.push("/projects")}
-            className='p-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-zinc-100/50 hover:bg-zinc-200 dark:bg-zinc-900/95 backdrop-blur-xl/5 dark:hover:bg-zinc-800/95 backdrop-blur-xl/10 rounded-2xl transition-all'
-          >
-            <ChevronLeft size={22} />
-          </button>
-          
-          <div className='flex-1'>
-            <h1 className='text-3xl font-black text-zinc-900 dark:text-white'>{project.name}</h1>
-            {project.description && (
-              <p className='text-zinc-500 dark:text-zinc-400 text-sm mt-1.5 font-medium max-w-3xl'>
-                {project.description}
-              </p>
-            )}
-            
-            {/* Stats bar within header */}
-            <div className='flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-500 mt-4'>
-              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                <Users size={14} className="text-emerald-500" /> {project.members?.length} members
-              </span>
-              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                <FileText size={14} className="text-indigo-500" /> {tasksPage?.total ?? tasks.length} tasks
-              </span>
-              <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                <LayoutGrid size={14} className="text-amber-500" /> {docsPage?.total ?? documents.length} documents
-              </span>
-              {project.startDate && (
-                <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900/95 backdrop-blur-xl/5 px-2.5 py-1.5 rounded-lg">
-                  <CalendarDays size={14} className="text-blue-500" /> Start: {formatDate(project.startDate)}
-                </span>
-              )}
-            </div>
-          </div>
-          
-          {canProject("project:delete") && (
-            <button
-              onClick={() =>
-                confirm("Delete this project?") && deleteProjectMutation.mutate()
-              }
-              className='p-3 text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-2xl transition-colors'
-              title="Delete Project"
-            >
-              <Trash2 size={20} />
-            </button>
-          )}
-        </div>
-      </motion.div>
+    <div className="space-y-3 max-w-[1400px] mx-auto select-none">
+      <ProjectHeader
+        project={project}
+        totalTasks={tasksPage?.total ?? tasks.length}
+        doneTasks={tasks.filter((t: any) => t.status === "DONE").length}
+        totalDocs={docsPage?.total ?? documents.length}
+        canDelete={canProject("project:delete")}
+        canCreateTask={canProject("task:create")}
+        onDeleteProject={() => confirm("Delete this project?") && deleteProjectMutation.mutate()}
+        onAddTask={openCreateTask}
+      />
 
-      {/* Tabs */}
-      <div className='flex overflow-x-auto hide-scrollbar border-b border-zinc-200 dark:border-white/10'>
-        <div className="flex space-x-1 min-w-max pb-px">
+      {/* Sticky Container for Navigation and Filters */}
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl py-2 space-y-2 border-b border-white/5 -mx-6 px-6">
+        {/* Modern Segmented Navigation Tabs */}
+        <div className="bg-zinc-950/40 border border-white/5 p-0.5 rounded-lg flex overflow-x-auto hide-scrollbar max-w-max h-8">
           {tabs.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               onClick={() => setTab(key as Tab)}
               className={cn(
-                "flex items-center gap-2 px-5 py-3.5 text-sm font-bold transition-all relative whitespace-nowrap group",
+                "flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold transition-all relative whitespace-nowrap rounded-md group",
                 tab === key
-                  ? "text-indigo-600 dark:text-indigo-400"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white",
+                  ? "text-white"
+                  : "text-zinc-400 hover:text-zinc-200"
               )}
             >
-              <Icon size={16} className={cn("transition-colors", tab === key ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300")} /> 
-              {label}
               {tab === key && (
                 <motion.div
                   layoutId="activeTabIndicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-t-full"
+                  className="absolute inset-0 bg-white/5 border border-white/10 rounded-md shadow-sm"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
+              <Icon size={12} className={cn("relative z-10 transition-colors", tab === key ? "text-indigo-400" : "text-zinc-500 group-hover:text-zinc-300")} /> 
+              <span className="relative z-10">{label}</span>
             </button>
           ))}
         </div>
+
+        {showTaskFilters && (
+          <TaskFilters
+            filters={taskFilters}
+            setFilters={setTaskFilters}
+            workflowStatuses={workflowStatuses}
+            allEpics={allEpics}
+            allLabels={allLabels}
+            allSprints={allSprints}
+            members={project.members || []}
+            clearFilters={clearTaskFilters}
+            hasFilters={!!hasTaskFilters}
+            filteredCount={filteredTasks.length}
+            totalCount={(tasksPage?.total ?? tasks.length) || 0}
+          />
+        )}
       </div>
 
-      {showTaskFilters && (
-        <div className='rounded-xl border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-3 py-2 shadow-sm'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <input
-              value={taskFilters.search}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, search: e.target.value }))
-              }
-              placeholder='Search tasks'
-              className='h-9 min-w-[220px] flex-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent dark:bg-zinc-900 px-3 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
-            <select
-              value={taskFilters.status}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, status: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Status</option>
-              {workflowStatuses.map((status: string) => (
-                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-            <select
-              value={taskFilters.priority}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({
-                  ...prev,
-                  priority: e.target.value,
-                }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Priority</option>
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
-            </select>
-            <select
-              value={taskFilters.epic}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, epic: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Epic</option>
-              {allEpics.map((epic: string) => (
-                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
-                  {epic}
-                </option>
-              ))}
-            </select>
-            <div className='relative'>
-              <button
-                type='button'
-                onClick={() => setShowLabelFilterMenu((value) => !value)}
-                className={cn(
-                  "flex h-9 min-w-[116px] items-center justify-between gap-2 rounded-lg border px-3 text-sm",
-                  taskFilters.labels.length
-                    ? "border-blue-200 bg-blue-50 text-blue-700"
-                    : "border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5",
-                )}
-              >
-                <span>
-                  {taskFilters.labels.length
-                    ? `${taskFilters.labels.length} labels`
-                    : "Labels"}
-                </span>
-                <ChevronDown size={14} />
-              </button>
-              {showLabelFilterMenu && (
-                <div className='absolute left-0 top-10 z-30 w-52 rounded-lg border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900/95 backdrop-blur-xl p-2 shadow-lg'>
-                  {allLabels.length === 0 ? (
-                    <p className='px-2 py-1.5 text-xs text-zinc-400 dark:text-zinc-500'>
-                      No labels
-                    </p>
-                  ) : (
-                    allLabels.map((label: string) => (
-                      <label
-                        key={label}
-                        className='flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:bg-white/5'
-                      >
-                        <input
-                          type='checkbox'
-                          checked={taskFilters.labels.includes(label)}
-                          onChange={(e) =>
-                            setTaskFilters((prev) => ({
-                              ...prev,
-                              labels: e.target.checked
-                                ? [...prev.labels, label]
-                                : prev.labels.filter(
-                                    (value) => value !== label,
-                                  ),
-                            }))
-                          }
-                        />
-                        {label}
-                      </label>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-            <select
-              value={taskFilters.sprint}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, sprint: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Sprint</option>
-              {allSprints.map((sprint) => (
-                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={sprint} value={sprint}>
-                  {sprint}
-                </option>
-              ))}
-            </select>
-            <select
-              value={taskFilters.assigneeId}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({
-                  ...prev,
-                  assigneeId: e.target.value,
-                }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Assignee</option>
-              {project.members?.map((member: any) => (
-                <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={member.userId} value={member.userId}>
-                  {member.user.name}
-                </option>
-              ))}
-            </select>
-            <input
-              type='date'
-              value={taskFilters.dueFrom}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, dueFrom: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-              title='Due from'
-            />
-            <input
-              type='date'
-              value={taskFilters.dueTo}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, dueTo: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-              title='Due to'
-            />
-            <select
-              value={taskFilters.ai}
-              onChange={(e) =>
-                setTaskFilters((prev) => ({ ...prev, ai: e.target.value }))
-              }
-              className='h-9 rounded-lg border border-zinc-200 dark:border-white/10 bg-transparent px-2 text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Source</option>
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='ai'>AI generated</option>
-              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='manual'>Manual</option>
-            </select>
-            <div className='ml-auto flex h-9 items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400'>
-              <span className='whitespace-nowrap'>
-                {filteredTasks.length}/{(tasksPage?.total ?? tasks.length) || 0}
-              </span>
-              {hasTaskFilters && (
-                <button
-                  onClick={clearTaskFilters}
-                  className='rounded-lg border border-zinc-200 dark:border-white/10 px-3 py-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:bg-white/5'
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-          {taskFilters.labels.length > 0 && (
-            <div className='mt-2 flex flex-wrap gap-1.5'>
-              {taskFilters.labels.map((label) => (
-                <button
-                  key={label}
-                  onClick={() =>
-                    setTaskFilters((prev) => ({
-                      ...prev,
-                      labels: prev.labels.filter((value) => value !== label),
-                    }))
-                  }
-                  className='rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 hover:bg-slate-200'
-                >
-                  {label} ×
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
       {/* Backlog Tab */}
       {tab === "backlog" && (
-        <div className='space-y-3'>
-          <div className='flex items-center justify-between gap-3'>
-            <div className='flex flex-wrap items-center gap-2'>
-              <button
-                onClick={() => setShowSprintModal(true)}
-                className='flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:bg-white/5'
-              >
-                <GitBranch size={14} /> Manage Sprints
-                {allSprints.length > 0 && (
-                  <span className='bg-gray-100 text-zinc-600 dark:text-zinc-400 text-xs px-1.5 py-0.5 rounded-full'>
-                    {allSprints.length}
-                  </span>
-                )}
-              </button>
-            </div>
-            {canProject("task:create") && (
-              <button
-                onClick={openCreateTask}
-                className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm'
-              >
-                <Plus size={16} /> Add task
-              </button>
-            )}
-          </div>
+        <div className="space-y-2">
           {filteredTasks.length === 0 ? (
-            <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>
+            <p className="text-center text-zinc-400 dark:text-zinc-500 py-8 text-xs">
               {hasTaskFilters ? "No tasks match these filters" : "No tasks yet"}
             </p>
           ) : (
-            <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'>
-              <table className='w-full'>
-                <thead className='bg-zinc-50 dark:bg-white/5 border-b border-zinc-200 dark:border-white/5'>
-                  <tr>
-                    {[
-                      "ID",
-                      "Title",
-                      "Assignee",
-                      "Priority",
-                      "Epic",
-                      "Labels",
-                      "Sprint",
-                      "Est",
-                      "Logged",
-                      "Deadline",
-                      "Status",
-                      "AI",
-                      "",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        className='px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase'
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className='divide-y divide-gray-50'>
-                  {filteredTasks.map((t: any) => (
-                    <tr key={t.id} className='hover:bg-zinc-50 dark:bg-white/5'>
-                      <td className='px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400'>
-                        {t.id}
-                      </td>
-                      <td className='px-4 py-3'>
-                        <p className='font-medium text-zinc-900 dark:text-zinc-100 text-sm'>
-                          {t.title}
-                        </p>
-                        {stripHtmlTags(t.description || "") && (
-                          <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-1 mt-0.5'>
-                            {stripHtmlTags(t.description)}
-                          </p>
-                        )}
-                      </td>
-                      <td className='px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400'>
-                        {t.assignee?.name || "-"}
-                      </td>
-                      <td className='px-4 py-3'>
-                        <span
-                          className={cn(
-                            "text-xs px-2 py-0.5 rounded-full",
-                            PRIORITY_COLORS[
-                              t.priority as keyof typeof PRIORITY_COLORS
-                            ],
-                          )}
-                        >
-                          {t.priority}
-                        </span>
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {t.epic ? (
-                          <span className='rounded-full bg-indigo-50 px-2 py-0.5 font-medium text-indigo-600'>
-                            {t.epic}
-                          </span>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {t.labels?.length ? (
-                          <div className='flex flex-wrap gap-1'>
-                            {t.labels.map((label: string) => (
-                              <span
-                                key={label}
-                                className='rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600'
-                              >
-                                {label}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {t.sprint || "-"}
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {formatDuration(t.estimateHours)}
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {formatDuration(t.loggedHours)}
-                      </td>
-                      <td className='px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400'>
-                        {t.dueDate ? formatDate(t.dueDate) : "-"}
-                      </td>
-                      <td className='px-4 py-3'>
-                        {canProject("task:update") ? (
-                          <select
-                            value={t.status}
-                            onChange={(e) =>
-                              updateStatusMutation.mutate({
-                                taskId: t.id,
-                                status: e.target.value,
-                              })
-                            }
-                            className='text-xs px-2.5 py-1 rounded-full font-medium border focus:outline-none focus:ring-2 focus:ring-blue-300'
-                            style={getTaskStatusInlineStyle(
-                              t.status,
-                              projectWorkflow,
-                            )}
-                          >
-                            {getAllowedTransitionStatuses(
-                              projectWorkflow,
-                              t.status,
-                            ).map((status: string) => (
-                              <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={status} value={status}>
-                                {status}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <span
-                            className='text-xs px-2.5 py-1 rounded-full font-medium border'
-                            style={getTaskStatusInlineStyle(
-                              t.status,
-                              projectWorkflow,
-                            )}
-                          >
-                            {t.status}
-                          </span>
-                        )}
-                      </td>
-                      <td className='px-4 py-3'>
-                        {t.isAiGenerated && (
-                          <span className='text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full'>
-                            AI
-                          </span>
-                        )}
-                      </td>
-                      <td className='px-4 py-3'>
-                        <div className='flex gap-1 justify-end'>
-                          {canProject("task:update") && (
-                            <button
-                              onClick={() => openEditTask(t)}
-                              className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-blue-600 hover:bg-blue-50 rounded'
-                            >
-                              <Pencil size={13} />
-                            </button>
-                          )}
-                          {canProject("task:delete") && (
-                            <button
-                              onClick={() =>
-                                confirm("Delete this task?") &&
-                                deleteTaskMutation.mutate(t.id)
-                              }
-                              className='p-1.5 text-zinc-400 dark:text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded'
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <TaskLinearList
+              tasks={filteredTasks}
+              projectWorkflow={projectWorkflow}
+              onEditTask={openEditTask}
+              onDeleteTask={(id) => deleteTaskMutation.mutate(id)}
+              onStatusChange={(taskId, status) => updateStatusMutation.mutate({ taskId, status })}
+              canUpdateTask={canProject("task:update")}
+              canDeleteTask={canProject("task:delete")}
+              onAiAssist={(t) => {
+                openEditTask(t);
+              }}
+              getAllowedTransitionStatuses={getAllowedTransitionStatuses}
+              allSprints={allSprints}
+              sprintFilter={taskFilters.sprint}
+              onSprintFilterChange={(sprint) => setTaskFilters((prev) => ({ ...prev, sprint }))}
+              onManageSprints={() => setShowSprintModal(true)}
+              canCreateTask={canProject("task:create")}
+              onAddTask={openCreateTask}
+            />
           )}
         </div>
       )}

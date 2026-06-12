@@ -126,6 +126,10 @@ export const documentsApi = {
   },
   delete: (projectId: number, docId: number) =>
     api.delete(`/projects/${projectId}/documents/${docId}`),
+  download: (projectId: number, docId: number) =>
+    api.get(`/projects/${projectId}/documents/${docId}/download`, {
+      responseType: "blob",
+    }),
 };
 
 // ---- AI ----

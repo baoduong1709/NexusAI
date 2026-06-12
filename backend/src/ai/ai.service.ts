@@ -255,7 +255,7 @@ export class AiService {
 
     // 2. Otherwise run classifier
     try {
-      const plan = await this.classifyChatRequest(ctx, messages, summary, projectIndex);
+      const plan = await this.classifyChatRequest(ctx, messages, summary, projectIndex, undefined);
       const isComplex = plan.complexity === "complex";
       const configKey = isComplex ? "AI_PRO_MODEL" : "AI_FLASH_MODEL";
       const defaultModel = isComplex ? "deepseek-v4-pro[1m]" : "deepseek-v4-flash[1m]";
@@ -568,6 +568,7 @@ ${recentEvidence}`;
     messages: ChatMessage[],
     summary?: string,
     projectIndex?: unknown,
+    userSettings?: any,
   ): Promise<ChatPlan> {
     const lastMessage = messages[messages.length - 1]?.content?.trim() || "";
     const fallback = this.fallbackChatPlan(lastMessage);
@@ -596,6 +597,11 @@ Rules:
 - document_question: asks about requirements, uploaded documents, source files, or specs.
 - Only include data that is necessary.
 - If answering directly, keep directAnswer concise and in the same language as the user.
+
+User context (use this only to answer greetings or questions about who the user is):
+- User name: ${userSettings?.name || "unknown"}
+- Project role: ${ctx.userProjectRole || "unknown"}
+- User description: ${userSettings?.chatDescription || "Not specified"}
 
 Recent messages:
 ${recentMessages}`;
@@ -1612,7 +1618,7 @@ Return only the summary text, with no extra explanation.`;
       this.projectAiIndex.get(projectId),
       this.prisma.user.findUnique({
         where: { id: userId },
-        select: { chatLanguage: true, chatDescription: true },
+        select: { name: true, chatLanguage: true, chatDescription: true },
       }),
     ]);
     const projectIndex = projectIndexRaw as any;
@@ -1622,7 +1628,8 @@ Return only the summary text, with no extra explanation.`;
     const lowerMsg = lastMessage.toLowerCase();
     const simpleKeywords = [
       "hi", "hello", "chào", "chao", "thank", "cảm ơn", "cam on", "ok", "bye", 
-      "tạm biệt", "ai là ai", "bạn là ai", "what is your name", "who are you"
+      "tạm biệt", "ai là ai", "bạn là ai", "what is your name", "who are you",
+      "tôi là ai", "who am i", "tên tôi là gì", "tên của tôi"
     ];
     const isVeryShort = lastMessage.length < 50;
     const hasSimpleKeyword = simpleKeywords.some(kw => lowerMsg.includes(kw));
@@ -1638,7 +1645,12 @@ Return only the summary text, with no extra explanation.`;
       
       const systemPrompt = `You are NexusAI, the project assistant for "${ctx.project.name}".
 Reply in ${targetLang}. Be direct, calm, concise, and natural.
-Answer the user's greeting or general question without inventing project facts.`;
+Answer the user's greeting or general question without inventing project facts.
+
+User context:
+- User name: ${userSettings?.name || "unknown"}
+- Project role: ${ctx.userProjectRole || "unknown"}
+- User description: ${userSettings?.chatDescription || "Not specified"}`;
 
       const startLlmTime = Date.now();
       res.write(`event: agent_log\ndata: ${JSON.stringify({ id: "llm_simple", type: "llm_call", name: `AI Reasoning`, status: "running", details: `Model: ${flashModel}` })}\n\n`);
@@ -1698,7 +1710,7 @@ Answer the user's greeting or general question without inventing project facts.`
     // Run classifier to plan the next steps
     res.write(`event: agent_log\ndata: ${JSON.stringify({ id: "classifier", type: "llm_call", name: `Classifying request`, status: "running", details: `Model: ${await this.getSystemConfig("AI_FLASH_MODEL", "deepseek-v4-flash[1m]")}` })}\n\n`);
     const startClassifyTime = Date.now();
-    const plan = await this.classifyChatRequest(ctx, messages, summary, projectIndex);
+    const plan = await this.classifyChatRequest(ctx, messages, summary, projectIndex, userSettings);
     const classifyDuration = Date.now() - startClassifyTime;
     res.write(`event: agent_log\ndata: ${JSON.stringify({ id: "classifier", type: "llm_call", name: `Classifying request`, status: "completed", duration: classifyDuration, details: `Intent: ${plan.intent}` })}\n\n`);
 
@@ -1724,7 +1736,12 @@ Answer the user's greeting or general question without inventing project facts.`
       try {
         const systemPrompt = `You are NexusAI, the project assistant for "${ctx.project.name}".
 Reply in ${targetLang}. Be direct, calm, concise, and natural.
-Answer the user's greeting or general question without inventing project facts.`;
+Answer the user's greeting or general question without inventing project facts.
+
+User context:
+- User name: ${userSettings?.name || "unknown"}
+- Project role: ${ctx.userProjectRole || "unknown"}
+- User description: ${userSettings?.chatDescription || "Not specified"}`;
 
         const stream = await openai.chat.completions.create({
           model: flashModel,
@@ -1800,6 +1817,7 @@ Communication style:
 - Do not reveal private chain-of-thought. Provide short conclusions and relevant rationale instead.
 
 User context:
+- User name: ${userSettings?.name || "unknown"}
 - Project role: ${ctx.userProjectRole || "unknown"}
 - User description: ${userSettings?.chatDescription || "Not specified"}
 - Adapt technical depth to this context without changing factual standards.

@@ -12,6 +12,7 @@ import {
   Query,
   Res,
   BadRequestException,
+  NotFoundException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -136,6 +137,37 @@ export class DocumentsController {
     @Query() query: DocumentsQueryDto,
   ) {
     return this.documentsService.findByProject(projectId, query);
+  }
+
+  @Get(":id/download")
+  @RequirePermissions("project:read")
+  @ApiOperation({ summary: "Download a document file directly" })
+  async download(
+    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("id", ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    const doc = await this.documentsService.findOne(id);
+    if (!doc || doc.projectId !== projectId) {
+      throw new NotFoundException("Document not found");
+    }
+
+    if (doc.storageProvider === "s3") {
+      const url = this.documentsService.getFileUrl(
+        projectId,
+        doc.path,
+        doc.filename,
+        doc.folder,
+        doc.storageProvider,
+      );
+      return res.redirect(url);
+    }
+
+    if (existsSync(doc.path)) {
+      return res.download(doc.path, doc.originalName);
+    }
+
+    throw new NotFoundException("File not found on server");
   }
 
   @Delete(":id")

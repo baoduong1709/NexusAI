@@ -146,7 +146,7 @@ export class DocumentsService {
     };
   }
 
-  private getFileUrl(
+  getFileUrl(
     projectId: number,
     path: string,
     filename: string,
@@ -264,6 +264,17 @@ export class DocumentsService {
       ...removed,
       url: this.getFileUrl(doc.projectId, doc.path, doc.filename, doc.folder, doc.storageProvider),
     };
+  }
+
+  async findOne(id: number) {
+    return this.prisma.document.findUnique({
+      where: { id },
+      include: {
+        uploadedBy: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    });
   }
 
   async getDocumentContent(

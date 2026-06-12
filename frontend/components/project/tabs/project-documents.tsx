@@ -12,10 +12,13 @@ import {
   RefreshCw,
   Upload,
   Trash2,
+  Download,
 } from "lucide-react";
 import { cn, formatDateTime } from "@/lib/utils";
-import { aiApi } from "@/lib/api";
+import { aiApi, documentsApi } from "@/lib/api";
 import { Document, RequirementsHistory } from "@/lib/types";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export interface ProjectDocumentsProps {
   projectId: number;
@@ -61,6 +64,33 @@ export function ProjectDocuments({
   deleteProjectDocument,
   uploadInputRef,
 }: ProjectDocumentsProps) {
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+
+  const handleDownload = async (docId: number, originalName: string) => {
+    setDownloadingId(docId);
+    try {
+      const response = await documentsApi.download(projectId, docId);
+      
+      // Axios response data is a Blob
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.setAttribute("download", originalName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      toast.success("Tải tài liệu thành công");
+    } catch (error: any) {
+      console.error("Failed to download document:", error);
+      toast.error("Không thể tải tài liệu về máy");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   return (
     <div className='flex flex-col gap-3 h-[calc(100vh-18rem)] overflow-hidden'>
       {/* Sub-tabs Switcher */}
@@ -342,15 +372,18 @@ export function ProjectDocuments({
                       </p>
                     </div>
                     <div className='flex items-center gap-1.5'>
-                      <a
-                        href={d.url}
-                        target='_blank'
-                        rel='noreferrer'
-                        className='p-1.5 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300 rounded hover:bg-zinc-100 dark:hover:bg-white/5'
+                      <button
+                        onClick={() => handleDownload(d.id, d.originalName)}
+                        disabled={downloadingId === d.id}
+                        className='p-1.5 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300 rounded hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-50'
                         title='Download'
                       >
-                        <FileText size={16} />
-                      </a>
+                        {downloadingId === d.id ? (
+                          <Loader2 size={16} className='animate-spin' />
+                        ) : (
+                          <Download size={16} />
+                        )}
+                      </button>
                       {canProject("document:delete") && (
                         <button
                           onClick={() => {
