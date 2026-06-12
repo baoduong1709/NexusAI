@@ -84,7 +84,7 @@ export default function ProjectsPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6 max-w-7xl mx-auto"
+      className="space-y-6"
     >
       {/* Page Header */}
       <motion.div variants={itemAnim} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
@@ -113,7 +113,7 @@ export default function ProjectsPage() {
             <motion.div
               key={i}
               variants={itemAnim}
-              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 p-6 shadow-xl relative overflow-hidden flex flex-col justify-between h-full min-h-[220px] animate-pulse"
+              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-white/5 p-6 shadow-xl relative overflow-hidden flex flex-col justify-between h-full min-h-[220px] animate-pulse"
             >
               <div>
                 <div className="flex items-start justify-between mb-4 gap-4">
@@ -147,7 +147,7 @@ export default function ProjectsPage() {
           ))}
         </motion.div>
       ) : projects.length === 0 ? (
-        <motion.div variants={itemAnim} className="text-center py-24 bg-card/80 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-3xl shadow-xl">
+        <motion.div variants={itemAnim} className="text-center py-24 bg-card/80 backdrop-blur-xl border border-zinc-200/80 dark:border-white/5 rounded-3xl shadow-xl">
           <FolderKanban size={48} className="mx-auto mb-4 text-zinc-300 dark:text-zinc-700" />
           <h3 className="text-xl font-bold text-zinc-900 dark:text-white">No projects yet</h3>
           <p className="text-sm text-zinc-500 mt-2 mb-8">Create your first project to start tracking tasks.</p>
@@ -169,7 +169,7 @@ export default function ProjectsPage() {
               <motion.div
                 variants={itemAnim}
                 whileHover={{ scale: 1.02, y: -4 }}
-                className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden flex flex-col justify-between h-full min-h-[220px]"
+                className="bg-card/80 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden flex flex-col justify-between h-full min-h-[220px]"
               >
                 {/* Glow effect */}
                 <div className="absolute -inset-x-2 -bottom-2 h-1/2 bg-gradient-to-t from-indigo-500/10 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

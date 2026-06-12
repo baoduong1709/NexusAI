@@ -8,7 +8,6 @@ import {
   FolderKanban,
   Settings,
   Users,
-  LogOut,
   ChevronRight,
   ChevronLeft,
   Cpu,
@@ -45,7 +44,7 @@ const navigation: NavigationItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { logout, hasPermission } = useAuth();
+  const { hasPermission } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
   const [currentWorkspace] = useState({
@@ -79,23 +78,23 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "h-[calc(100vh-2rem)] my-4 ml-4 flex flex-col bg-zinc-950/80 backdrop-blur-xl border border-white/5 rounded-3xl shadow-2xl relative overflow-visible transition-all duration-300 ease-in-out z-30",
+        "h-[calc(100vh-2rem)] my-4 ml-4 flex flex-col bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border border-zinc-200/80 dark:border-white/5 rounded-3xl shadow-2xl dark:shadow-zinc-950/50 relative overflow-visible transition-all duration-300 ease-in-out z-30",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
       {/* Workspace Switcher / Brand Header */}
-      <div className="h-16 flex items-center px-4 border-b border-white/5 relative">
+      <div className="h-16 flex items-center px-4 border-b border-zinc-200/60 dark:border-white/5 relative">
         {!isCollapsed ? (
           <div className="w-full">
             <button
               onClick={() => setShowWorkspaceMenu(!showWorkspaceMenu)}
-              className="w-full flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/5 transition-all text-left group"
+              className="w-full flex items-center gap-2 p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 transition-all text-left group"
             >
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-600/20">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-500/30">
                 <Building2 size={16} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-zinc-100 truncate flex items-center gap-1">
+                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate flex items-center gap-1">
                   {currentWorkspace.name}
                   <span className="text-[9px] bg-indigo-500/10 text-indigo-400 px-1 py-0.5 rounded uppercase font-bold tracking-wider">
                     PRO
@@ -103,7 +102,7 @@ export default function Sidebar() {
                 </p>
                 <p className="text-xs text-zinc-500 truncate">{currentWorkspace.plan}</p>
               </div>
-              <ChevronsUpDown size={14} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+              <ChevronsUpDown size={14} className="text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors" />
             </button>
             
             {/* Simple Dropdown Menu Mock */}
@@ -113,19 +112,19 @@ export default function Sidebar() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute left-4 right-4 top-14 mt-2 bg-zinc-900 border border-white/10 rounded-2xl p-2 shadow-2xl z-50"
+                  className="absolute left-4 right-4 top-14 mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-2xl p-2 shadow-2xl z-50"
                 >
-                  <p className="text-[10px] font-bold text-zinc-500 px-2.5 py-1.5 uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 px-2.5 py-1.5 uppercase tracking-wider">
                     Workspaces
                   </p>
-                  <button className="w-full flex items-center gap-2 p-2 rounded-xl bg-white/5 text-left text-sm text-white">
+                  <button className="w-full flex items-center gap-2 p-2 rounded-xl bg-indigo-50 dark:bg-white/5 text-left text-sm text-zinc-900 dark:text-white">
                     <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
                       N
                     </div>
                     NexusAI Org
                   </button>
-                  <button className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-white/5 text-left text-sm text-zinc-400 hover:text-white transition-all mt-1">
-                    <div className="w-6 h-6 rounded-md bg-zinc-700 flex items-center justify-center text-xs font-bold text-white">
+                  <button className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 text-left text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all mt-1">
+                    <div className="w-6 h-6 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-600 dark:text-white">
                       P
                     </div>
                     Personal Space
@@ -138,10 +137,10 @@ export default function Sidebar() {
           <div className="w-full flex justify-center">
             <button
               onClick={toggleCollapse}
-              className="w-10 h-10 rounded-xl hover:bg-white/5 flex items-center justify-center transition-all group relative"
+              className="w-10 h-10 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 flex items-center justify-center transition-all group relative"
             >
               <BrandLogo size={24} />
-              <span className="absolute left-14 bg-zinc-900 border border-white/10 text-xs text-zinc-200 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-md">
+               <span className="absolute left-16 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs text-zinc-700 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
                 NexusAI Org
               </span>
             </button>
@@ -160,8 +159,8 @@ export default function Sidebar() {
               className={cn(
                 "group flex items-center rounded-xl text-sm font-medium transition-all duration-200 relative overflow-visible",
                 isActive
-                  ? "text-white bg-white/5"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.02]",
+                  ? "text-indigo-600 dark:text-white bg-indigo-50 dark:bg-white/5"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/[0.02]",
                 isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-2.5"
               )}
             >
@@ -181,8 +180,8 @@ export default function Sidebar() {
                 className={cn(
                   "transition-transform duration-200 group-hover:scale-105 shrink-0",
                   isActive
-                    ? "text-indigo-400"
-                    : "text-zinc-500 group-hover:text-zinc-300"
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300"
                 )}
               />
               
@@ -190,7 +189,7 @@ export default function Sidebar() {
 
               {/* Tooltip for Collapsed Sidebar */}
               {isCollapsed && (
-                <span className="absolute left-16 bg-zinc-900 border border-white/10 text-xs text-zinc-200 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-md">
+                <span className="absolute left-16 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs text-zinc-700 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
                   {item.name}
                 </span>
               )}
@@ -202,33 +201,12 @@ export default function Sidebar() {
       {/* Collapse Toggle Button */}
       <button
         onClick={toggleCollapse}
-        className="absolute -right-3 top-20 w-6 h-6 bg-zinc-900 hover:bg-zinc-800 border border-white/10 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all shadow-md z-50"
+        className="absolute -right-3 top-20 w-6 h-6 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-white/10 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition-all shadow-md z-50"
       >
         {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
 
-      {/* Logout Button */}
-      <div className="p-3 border-t border-white/5 mt-auto">
-        <button
-          onClick={logout}
-          className={cn(
-            "w-full group flex items-center rounded-xl text-sm font-medium transition-all duration-200 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10",
-            isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-2.5"
-          )}
-        >
-          <LogOut
-            size={18}
-            className="transition-transform duration-200 group-hover:translate-x-0.5 shrink-0"
-          />
-          {!isCollapsed && <span className="flex-1 text-left">Logout</span>}
-          
-          {isCollapsed && (
-            <span className="absolute left-16 bg-zinc-900 border border-white/10 text-xs text-rose-400 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-md">
-              Logout
-            </span>
-          )}
-        </button>
-      </div>
+
     </aside>
   );
 }

@@ -5,6 +5,7 @@ import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "sonner";
 import QueryProvider from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ConfirmProvider } from "@/components/providers/confirm-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,8 +25,10 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="system">
           <QueryProvider>
             <AuthProvider>
-              {children}
-              <Toaster richColors position='top-right' />
+              <ConfirmProvider>
+                {children}
+                <Toaster richColors position='top-right' />
+              </ConfirmProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>

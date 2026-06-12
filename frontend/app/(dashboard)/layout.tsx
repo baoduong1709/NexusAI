@@ -32,19 +32,19 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="flex h-screen bg-background dark:bg-grid-white/[0.02] bg-grid-black/[0.02] relative overflow-hidden font-sans">
       {/* Animated Aurora Backgrounds */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute w-[40vw] h-[40vw] bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full blur-[100px] mix-blend-screen animate-aurora-1" />
-        <div className="absolute w-[50vw] h-[50vw] bg-violet-500/20 dark:bg-violet-500/10 rounded-full blur-[120px] mix-blend-screen animate-aurora-2" />
-        <div className="absolute w-[30vw] h-[30vw] bg-fuchsia-500/10 dark:bg-fuchsia-500/5 rounded-full blur-[90px] mix-blend-screen animate-aurora-3" />
+        <div className="absolute w-[40vw] h-[40vw] bg-indigo-500/[0.07] dark:bg-indigo-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-aurora-1" />
+        <div className="absolute w-[50vw] h-[50vw] bg-violet-500/[0.07] dark:bg-violet-500/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-aurora-2" />
+        <div className="absolute w-[30vw] h-[30vw] bg-fuchsia-500/[0.04] dark:bg-fuchsia-500/5 rounded-full blur-[90px] mix-blend-multiply dark:mix-blend-screen animate-aurora-3" />
       </div>
       
       {/* Grid Mask */}
       <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_10%,black_80%)] z-0" />
 
       <Sidebar />
-      <div className="flex-1 flex flex-col relative z-10 overflow-hidden">
+      <div className="flex-1 flex flex-col relative overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 pl-2 pb-6 scroll-smooth">
-          <div className="w-full h-full max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+          <div className="w-full h-full px-6 pt-4 pb-6">
             {children}
           </div>
         </main>

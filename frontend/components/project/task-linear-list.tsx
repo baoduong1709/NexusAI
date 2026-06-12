@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/providers/confirm-provider";
+import { CustomSelect } from "@/components/ui/custom-select";
 import {
   Pencil,
   Trash2,
@@ -70,27 +72,24 @@ function StatusPill({ status, allowedStatuses, onChangeStatus, canUpdate }: Stat
 
   if (!canUpdate) {
     return (
-      <span className={cn("inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold border tracking-wide uppercase", pillStyle)}>
+      <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border tracking-wide uppercase", pillStyle)}>
         {status}
       </span>
     );
   }
 
+  const statusOptions = allowedStatuses.map((s) => ({ value: s, label: s }));
+
   return (
-    <div className={cn("relative inline-flex items-center rounded border px-1.5 py-0.5 transition-all text-[9px] font-semibold tracking-wide uppercase select-none hover:brightness-110", pillStyle)}>
-      <select
-        value={status}
-        onChange={(e) => onChangeStatus && onChangeStatus(e.target.value)}
-        className="bg-transparent border-0 outline-none text-[9px] font-semibold tracking-wide uppercase cursor-pointer appearance-none pr-3"
-      >
-        {allowedStatuses.map((s) => (
-          <option key={s} value={s} className="bg-zinc-950 text-zinc-200">
-            {s}
-          </option>
-        ))}
-      </select>
-      <ChevronDown size={8} className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
-    </div>
+    <CustomSelect
+      value={status}
+      onChange={(val) => onChangeStatus && onChangeStatus(val)}
+      options={statusOptions}
+      placeholder={status}
+      size="sm"
+      buttonClassName={cn("bg-transparent border-0 text-[10px] font-semibold tracking-wide uppercase cursor-pointer hover:bg-transparent dark:hover:bg-transparent p-0 h-auto", pillStyle.replace("bg-", "text-").replace("border-", ""))}
+      className={cn("rounded px-2 py-0.5 border select-none transition-all hover:brightness-110", pillStyle)}
+    />
   );
 }
 
@@ -131,39 +130,39 @@ export function TaskLinearList({
   canCreateTask,
   onAddTask,
 }: TaskLinearListProps) {
+  const confirm = useConfirm();
+
+  const sprintOptions = [
+    { value: "", label: "All Sprints" },
+    ...allSprints.map((sprint) => ({ value: sprint, label: sprint }))
+  ];
   
   return (
-    <div className="bg-zinc-950/40 border border-white/5 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl flex flex-col min-h-0 select-none">
+    <div className="bg-white/80 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-white/5 rounded-xl overflow-hidden shadow-lg dark:shadow-2xl backdrop-blur-xl flex flex-col min-h-0 select-none">
       
       {/* Dynamic Integrated Table Header Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-zinc-900/20 shrink-0 h-9">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-200/60 dark:border-white/5 bg-zinc-50/80 dark:bg-zinc-900/20 shrink-0 h-10">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-zinc-200">
+          <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
             Tasks ({tasks.length})
           </span>
-          <span className="text-zinc-700 text-xs">|</span>
+          <span className="text-zinc-300 dark:text-zinc-700 text-xs">|</span>
           
           {/* Integrated Sprint Selector Dropdown */}
-          <div className="relative flex items-center gap-1.5">
-            <GitBranch size={11} className="text-zinc-400" />
-            <select
+          <div className="flex items-center gap-1.5">
+            <GitBranch size={11} className="text-zinc-400 shrink-0" />
+            <CustomSelect
               value={sprintFilter}
-              onChange={(e) => onSprintFilterChange(e.target.value)}
-              className="bg-transparent border-0 outline-none text-[11px] font-semibold text-zinc-400 hover:text-white cursor-pointer appearance-none pr-4"
-            >
-              <option value="" className="bg-zinc-950 text-zinc-400">All Sprints</option>
-              {allSprints.map((sprint) => (
-                <option key={sprint} value={sprint} className="bg-zinc-950 text-zinc-200">
-                  {sprint}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={9} className="absolute right-0 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
+              onChange={onSprintFilterChange}
+              options={sprintOptions}
+              placeholder="All Sprints"
+              buttonClassName="bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-900/40 border-0 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white font-semibold pr-2.5 h-7 rounded px-1.5 text-xs"
+            />
           </div>
 
           <button
             onClick={onManageSprints}
-            className="text-[10px] font-medium text-zinc-500 hover:text-zinc-300 ml-1"
+            className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 ml-1"
           >
             Manage Sprints
           </button>
@@ -173,9 +172,9 @@ export function TaskLinearList({
         {canCreateTask && (
           <button
             onClick={onAddTask}
-            className="flex items-center gap-1 bg-white/5 hover:bg-white/10 text-zinc-200 hover:text-white px-2 py-0.5 rounded text-[10px] font-medium transition-all active:scale-95 border border-white/5 h-6"
+            className="flex items-center gap-1 bg-zinc-100 dark:bg-white/5 hover:bg-zinc-200 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-white px-2.5 py-1 rounded text-xs font-medium transition-all active:scale-95 border border-zinc-200 dark:border-white/5 h-7"
           >
-            <Plus size={11} /> Add Task
+            <Plus size={12} /> Add Task
           </button>
         )}
       </div>
@@ -184,22 +183,22 @@ export function TaskLinearList({
       <div className="overflow-x-auto flex-1 min-h-0 scrollbar-thin">
         <table className="w-full text-left border-collapse table-fixed">
           {/* Sticky Table Header */}
-          <thead className="sticky top-0 bg-zinc-950 z-20 shadow-sm border-b border-white/5">
-            <tr className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider select-none bg-zinc-900/40">
-              <th className="pl-4 pr-2 py-1.5 w-20">ID</th>
-              <th className="px-3 py-1.5 w-[35%]">Title & Description</th>
-              <th className="px-3 py-1.5 w-[12%]">Assignee</th>
-              <th className="px-3 py-1.5 w-[10%]">Priority</th>
-              <th className="px-3 py-1.5 w-[12%]">Epic</th>
-              <th className="px-3 py-1.5 w-[10%] font-mono">Est/Log</th>
-              <th className="px-3 py-1.5 w-[11%]">Due Date</th>
-              <th className="px-3 py-1.5 w-[12%]">Status</th>
-              <th className="pr-4 pl-1 py-1.5 w-20 text-right">Actions</th>
+          <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-950 z-20 shadow-sm border-b border-zinc-200/60 dark:border-white/5">
+            <tr className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider select-none bg-zinc-100/60 dark:bg-zinc-900/40">
+              <th className="pl-4 pr-2 py-2.5 w-20">ID</th>
+              <th className="px-3 py-2.5 w-[35%]">Title</th>
+              <th className="px-3 py-2.5 w-[12%]">Assignee</th>
+              <th className="px-3 py-2.5 w-[10%]">Priority</th>
+              <th className="px-3 py-2.5 w-[12%]">Epic</th>
+              <th className="px-3 py-2.5 w-[10%] font-mono">Est/Log</th>
+              <th className="px-3 py-2.5 w-[11%]">Due Date</th>
+              <th className="px-3 py-2.5 w-[12%]">Status</th>
+              <th className="pr-4 pl-1 py-2.5 w-20 text-right">Actions</th>
             </tr>
           </thead>
 
           {/* Table Body */}
-          <tbody className="divide-y divide-white/[0.03]">
+          <tbody className="divide-y divide-zinc-100 dark:divide-white/[0.03]">
             {tasks.map((task) => {
               const priorityInfo = getPriorityBadge(task.priority);
               const initials = task.assignee?.name
@@ -217,87 +216,83 @@ export function TaskLinearList({
               return (
                 <tr
                   key={task.id}
-                  className="group hover:bg-white/[0.02] active:bg-white/[0.01] transition-all cursor-pointer duration-100 border-b border-white/[0.01]"
+                  className="group hover:bg-zinc-50 dark:hover:bg-white/[0.02] active:bg-zinc-100 dark:active:bg-white/[0.01] transition-all cursor-pointer duration-100"
                   onClick={() => onEditTask(task)}
                 >
                   {/* Task ID */}
-                  <td className="pl-4 pr-2 py-1 font-mono text-[10px] font-bold text-zinc-500 group-hover:text-zinc-400 transition-colors">
+                  <td className="pl-4 pr-2 py-2.5 font-mono text-xs font-bold text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
                     {task.id}
                   </td>
 
                   {/* Title & Short Description */}
-                  <td className="px-3 py-1 truncate">
+                  <td className="px-3 py-2.5 truncate">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <p className="text-xs font-semibold text-zinc-200 group-hover:text-white transition-colors truncate">
+                      <p className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors truncate">
                         {task.title}
                       </p>
                       {task.isAiGenerated && (
-                        <span className="inline-flex shrink-0 items-center gap-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1 py-0.2 rounded text-[8px] font-bold tracking-wide uppercase">
-                          <Sparkles size={7} /> AI
+                        <span className="inline-flex shrink-0 items-center gap-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide uppercase">
+                          <Sparkles size={8} /> AI
                         </span>
                       )}
-                      {cleanDesc && (
-                        <span className="text-[10px] text-zinc-500 font-normal truncate opacity-60 ml-2">
-                          {cleanDesc}
-                        </span>
-                      )}
+
                     </div>
                   </td>
 
                   {/* Assignee */}
-                  <td className="px-3 py-1" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                     {task.assignee ? (
                       <div className="flex items-center gap-1.5" title={task.assignee.name}>
-                        <div className="w-4.5 h-4.5 rounded-full bg-indigo-600/80 border border-indigo-500/20 flex items-center justify-center text-[8px] font-bold text-white shadow-sm shrink-0">
+                        <div className="w-5.5 h-5.5 rounded-full bg-indigo-600/80 border border-indigo-500/20 flex items-center justify-center text-[9px] font-bold text-white shadow-sm shrink-0">
                           {initials}
                         </div>
-                        <span className="text-[10px] text-zinc-300 truncate">
+                        <span className="text-xs text-zinc-600 dark:text-zinc-300 truncate">
                           {task.assignee.name.split(" ")[0]}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[10px] italic text-zinc-600">Unassigned</span>
+                      <span className="text-xs italic text-zinc-400 dark:text-zinc-600">Unassigned</span>
                     )}
                   </td>
 
                   {/* Priority */}
-                  <td className="px-3 py-1" onClick={(e) => e.stopPropagation()}>
-                    <span className={cn("inline-flex items-center px-1.5 py-0.2 rounded text-[8px] font-semibold border tracking-wide uppercase", priorityInfo.class)}>
+                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border tracking-wide uppercase", priorityInfo.class)}>
                       {priorityInfo.label}
                     </span>
                   </td>
 
                   {/* Epic */}
-                  <td className="px-3 py-1" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                     {task.epic ? (
-                      <span className="inline-flex px-1.5 py-0.2 rounded text-[8px] font-semibold bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 truncate max-w-full">
+                      <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 truncate max-w-full">
                         {task.epic}
                       </span>
                     ) : (
-                      <span className="text-zinc-700 text-[10px]">-</span>
+                      <span className="text-zinc-300 dark:text-zinc-700 text-xs">-</span>
                     )}
                   </td>
 
                   {/* Est / Logged */}
-                  <td className="px-3 py-1 font-mono text-[9px] text-zinc-500" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5 font-mono text-xs text-zinc-400 dark:text-zinc-500" onClick={(e) => e.stopPropagation()}>
                     <span title="Est">{formatDuration(task.estimateHours)}</span>
-                    <span className="text-zinc-700 mx-0.5">/</span>
-                    <span className="text-indigo-400 font-bold" title="Logged">{formatDuration(task.loggedHours)}</span>
+                    <span className="text-zinc-300 dark:text-zinc-700 mx-0.5">/</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-bold" title="Logged">{formatDuration(task.loggedHours)}</span>
                   </td>
 
                   {/* Due Date */}
-                  <td className="px-3 py-1" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                     {task.dueDate ? (
-                      <span className="text-[10px] text-zinc-400 font-mono">
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                         {formatDate(task.dueDate)}
                       </span>
                     ) : (
-                      <span className="text-zinc-700 text-[10px]">-</span>
+                      <span className="text-zinc-300 dark:text-zinc-700 text-xs">-</span>
                     )}
                   </td>
 
                   {/* Status Pill Dropdown */}
-                  <td className="px-3 py-1" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5 relative focus-within:z-40" onClick={(e) => e.stopPropagation()}>
                     <StatusPill
                       status={task.status}
                       allowedStatuses={transitions}
@@ -307,35 +302,44 @@ export function TaskLinearList({
                   </td>
 
                   {/* Quick Actions */}
-                  <td className="pr-4 pl-1 py-1" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                  <td className="pr-4 pl-1 py-2.5" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-1.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                       {onAiAssist && (
                         <button
                           onClick={() => onAiAssist(task)}
-                          className="p-1 text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-600 rounded transition-all"
+                          className="p-1.5 text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-600 rounded transition-all"
                           title="Ask AI Assistant"
                         >
-                          <Sparkles size={10} />
+                          <Sparkles size={12} />
                         </button>
                       )}
                       {canUpdateTask && (
                         <button
                           onClick={() => onEditTask(task)}
-                          className="p-1 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded transition-all"
+                          className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-white/5 hover:bg-zinc-200 dark:hover:bg-white/10 rounded transition-all"
                           title="Edit Task"
                         >
-                          <Pencil size={10} />
+                          <Pencil size={12} />
                         </button>
                       )}
                       {canDeleteTask && (
                         <button
-                          onClick={() =>
-                            confirm("Delete this task?") && onDeleteTask(task.id)
+                        onClick={async () => {
+                          const isConfirmed = await confirm({
+                            title: "Xóa công việc",
+                            message: `Bạn có chắc chắn muốn xóa công việc "${task.title || 'này'}" không? Hành động này không thể hoàn tác.`,
+                            confirmText: "Xóa",
+                            cancelText: "Hủy",
+                            variant: "destructive",
+                          });
+                          if (isConfirmed) {
+                            onDeleteTask(task.id);
                           }
-                          className="p-1 text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-500 rounded transition-all"
-                          title="Delete Task"
+                        }}
+                        className="p-1.5 text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-500 rounded transition-all"
+                        title="Delete Task"
                         >
-                          <Trash2 size={10} />
+                          <Trash2 size={12} />
                         </button>
                       )}
                     </div>

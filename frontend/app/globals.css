@@ -58,6 +58,14 @@
   }
 }
 
+/* Card border utility for light/dark mode */
+.border-card {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.dark .border-card {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
 /* Utilities for Premium Effects */
 .bg-grid-white {
   background-size: 40px 40px;

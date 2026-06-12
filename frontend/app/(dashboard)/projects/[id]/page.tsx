@@ -11,6 +11,7 @@ import {
 import AccessDenied from "@/components/layout/access-denied";
 import { toast } from "sonner";
 import { useState, useRef, useEffect, useMemo } from "react";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -109,8 +110,9 @@ import { CommentEditor, isHtmlEmpty } from "@/components/project/comment-editor"
 import { ProjectDocuments } from "@/components/project/tabs/project-documents";
 import { ProjectMembers } from "@/components/project/tabs/project-members";
 import { ProjectBoard } from "@/components/project/tabs/project-board";
+import { ProjectSummaryTab } from "@/components/project/tabs/project-summary";
 import { useProjectWebsocket } from "@/lib/websocket";
-import { ProjectHeader } from "@/components/project/project-header";
+
 import { TaskFilters } from "@/components/project/task-filters";
 import { TaskLinearList } from "@/components/project/task-linear-list";
 
@@ -1410,22 +1412,13 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className="space-y-3 max-w-[1400px] mx-auto select-none">
-      <ProjectHeader
-        project={project}
-        totalTasks={tasksPage?.total ?? tasks.length}
-        doneTasks={tasks.filter((t: any) => t.status === "DONE").length}
-        totalDocs={docsPage?.total ?? documents.length}
-        canDelete={canProject("project:delete")}
-        canCreateTask={canProject("task:create")}
-        onDeleteProject={() => confirm("Delete this project?") && deleteProjectMutation.mutate()}
-        onAddTask={openCreateTask}
-      />
+    <div className="space-y-2 select-none">
+
 
       {/* Sticky Container for Navigation and Filters */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl py-2 space-y-2 border-b border-white/5 -mx-6 px-6">
+      <div className="sticky top-0 z-20 bg-background backdrop-blur-xl -mt-4 pt-3 pb-1.5 space-y-1.5 border-b border-zinc-200/60 dark:border-white/5 -mx-6 px-6">
         {/* Modern Segmented Navigation Tabs */}
-        <div className="bg-zinc-950/40 border border-white/5 p-0.5 rounded-lg flex overflow-x-auto hide-scrollbar max-w-max h-8">
+        <div className="bg-zinc-100 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-white/5 p-0.5 rounded-lg flex overflow-x-auto hide-scrollbar max-w-max h-8">
           {tabs.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -1433,18 +1426,18 @@ export default function ProjectDetailPage() {
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold transition-all relative whitespace-nowrap rounded-md group",
                 tab === key
-                  ? "text-white"
-                  : "text-zinc-400 hover:text-zinc-200"
+                  ? "text-zinc-900 dark:text-white"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
               )}
             >
               {tab === key && (
                 <motion.div
                   layoutId="activeTabIndicator"
-                  className="absolute inset-0 bg-white/5 border border-white/10 rounded-md shadow-sm"
+                  className="absolute inset-0 bg-white dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 rounded-md shadow-sm"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <Icon size={12} className={cn("relative z-10 transition-colors", tab === key ? "text-indigo-400" : "text-zinc-500 group-hover:text-zinc-300")} /> 
+              <Icon size={12} className={cn("relative z-10 transition-colors", tab === key ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-300")} /> 
               <span className="relative z-10">{label}</span>
             </button>
           ))}
@@ -1464,6 +1457,29 @@ export default function ProjectDetailPage() {
             filteredCount={filteredTasks.length}
             totalCount={(tasksPage?.total ?? tasks.length) || 0}
           />
+        )}
+
+        {/* Board Status Headers - sticky with navigation */}
+        {tab === "board" && (
+          <div className='flex gap-4 pt-2 pb-1 overflow-x-auto hide-scrollbar'>
+            {workflowStatuses.map((status: string) => {
+              const count =
+                filteredTasks.filter((t: any) => t.status === status).length || 0;
+              return (
+                <div key={status} className='flex-shrink-0 w-72 flex items-center gap-2'>
+                  <span
+                    className='text-xs px-2.5 py-1 rounded-full font-medium border'
+                    style={getTaskStatusInlineStyle(status, projectWorkflow)}
+                  >
+                    {status}
+                  </span>
+                  <span className='text-xs bg-gray-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full'>
+                    {count}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
@@ -1500,135 +1516,18 @@ export default function ProjectDetailPage() {
 
       {/* Summary Tab */}
       {tab === "summary" && (
-        <div className='space-y-4'>
-          <div className='grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3'>
-            {[
-              { label: "Tổng tasks", value: filteredTasks.length },
-              { label: "Thành viên", value: project.members?.length || 0 },
-              { label: "Estimate", value: formatDuration(totalEstimateHours) },
-              { label: "Logged", value: formatDuration(totalLoggedHours) },
-              {
-                label: "Tài liệu",
-                value:
-                  documents?.filter(
-                    (d: any) =>
-                      d.originalName !== "requirements.md" &&
-                      !d.mimeType?.startsWith("image/"),
-                  ).length || 0,
-              },
-              {
-                label: "Hoàn thành",
-                value:
-                  filteredTasks.filter(
-                    (t: any) =>
-                      t.status ===
-                      workflowStatuses[workflowStatuses.length - 1],
-                  ).length || 0,
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-4'
-              >
-                <p className='text-xs text-zinc-500 dark:text-zinc-400'>{stat.label}</p>
-                <p className='text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-1'>
-                  {stat.value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5'>
-            <h3 className='text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3'>
-              Tasks theo trạng thái
-            </h3>
-            <div className='space-y-2'>
-              {workflowStatuses.map((status: string) => {
-                const count =
-                  filteredTasks.filter((t: any) => t.status === status)
-                    .length || 0;
-                const total = filteredTasks.length || 1;
-                return (
-                  <div key={status} className='flex items-center gap-3'>
-                    <span
-                      className='text-xs px-2 py-0.5 rounded-full font-medium border w-28 text-center truncate flex-shrink-0'
-                      style={getTaskStatusInlineStyle(status, projectWorkflow)}
-                    >
-                      {status}
-                    </span>
-                    <div className='flex-1 bg-gray-100 rounded-full h-2'>
-                      <div
-                        className='h-2 rounded-full bg-blue-500 transition-all'
-                        style={{
-                          width: `${total > 0 ? (count / total) * 100 : 0}%`,
-                        }}
-                      />
-                    </div>
-                    <span className='text-xs text-zinc-500 dark:text-zinc-400 w-6 text-right'>
-                      {count}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 p-5'>
-            <h3 className='text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3'>
-              Tasks gần đây
-            </h3>
-            {filteredTasks.length === 0 ? (
-              <p className='text-sm text-zinc-400 dark:text-zinc-500 text-center py-4'>
-                Chưa có task nào
-              </p>
-            ) : (
-              <div className='divide-y divide-gray-50'>
-                {filteredTasks.slice(0, 6).map((t: any) => (
-                  <div
-                    key={t.id}
-                    className='flex items-center gap-3 py-2.5 cursor-pointer hover:bg-zinc-50 dark:bg-white/5 rounded-lg px-1 -mx-1'
-                    onClick={() => openEditTask(t)}
-                  >
-                    <span
-                      className='text-xs px-2 py-0.5 rounded-full font-medium border flex-shrink-0'
-                      style={getTaskStatusInlineStyle(
-                        t.status,
-                        projectWorkflow,
-                      )}
-                    >
-                      {t.status}
-                    </span>
-                    <div className='min-w-0 flex-1'>
-                      <p className='text-sm text-gray-800 truncate dark:text-zinc-200'>
-                        {t.title}
-                      </p>
-                      <p className='text-[11px] font-semibold text-zinc-400 dark:text-zinc-500'>
-                        {t.id}
-                      </p>
-                    </div>
-                    <span
-                      className={cn(
-                        "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
-                        PRIORITY_COLORS[
-                          t.priority as keyof typeof PRIORITY_COLORS
-                        ],
-                      )}
-                    >
-                      {t.priority}
-                    </span>
-                    <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
-                      {formatDuration(t.loggedHours)} /{" "}
-                      {formatDuration(t.estimateHours)}
-                    </span>
-                    <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
-                      {t.assignee?.name || "-"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        <ProjectSummaryTab
+          filteredTasks={filteredTasks}
+          workflowStatuses={workflowStatuses}
+          projectWorkflow={projectWorkflow}
+          project={project}
+          documents={documents}
+          totalEstimateHours={totalEstimateHours}
+          totalLoggedHours={totalLoggedHours}
+          getTaskStatusInlineStyle={getTaskStatusInlineStyle}
+          openEditTask={openEditTask}
+          formatDuration={formatDuration}
+        />
       )}
 
       {/* Board Tab */}
@@ -1652,26 +1551,39 @@ export default function ProjectDetailPage() {
 
       {/* Timeline Tab */}
       {tab === "timeline" && (
-        <div className='space-y-3'>
+        <div className='space-y-4'>
+          {/* Manage Sprints button */}
           <div className='flex flex-wrap items-center gap-2'>
             <button
               onClick={() => setShowSprintModal(true)}
-              className='flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:bg-white/5'
+              className='group flex items-center gap-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-zinc-800/60 px-4 py-2 rounded-xl hover:border-blue-300 dark:hover:border-blue-500/30 hover:bg-blue-50/50 dark:hover:bg-blue-500/5 shadow-sm hover:shadow transition-all duration-200'
             >
-              <GitBranch size={14} /> Manage Sprints
+              <GitBranch size={15} className='text-zinc-400 dark:text-zinc-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors' /> Manage Sprints
               {allSprints.length > 0 && (
-                <span className='bg-gray-100 text-zinc-600 dark:text-zinc-400 text-xs px-1.5 py-0.5 rounded-full'>
+                <span className='bg-zinc-100 dark:bg-zinc-700/60 text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-2 py-0.5 rounded-full'>
                   {allSprints.length}
                 </span>
               )}
             </button>
           </div>
+
+          {/* Empty state */}
           {!filteredTasks.length ? (
-            <p className='text-center text-zinc-400 dark:text-zinc-500 py-8'>
-              {hasTaskFilters
-                ? "No tasks match these filters"
-                : "Chưa có task nào"}
-            </p>
+            <div className='flex flex-col items-center justify-center py-16 px-4'>
+              <div className='w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center mb-4'>
+                <Layers size={24} className='text-zinc-300 dark:text-zinc-600' />
+              </div>
+              <p className='text-sm font-medium text-zinc-400 dark:text-zinc-500'>
+                {hasTaskFilters
+                  ? "No tasks match these filters"
+                  : "Chưa có task nào"}
+              </p>
+              <p className='text-xs text-zinc-300 dark:text-zinc-600 mt-1'>
+                {hasTaskFilters
+                  ? "Try adjusting your filters"
+                  : "Create a task to get started"}
+              </p>
+            </div>
           ) : (
             (() => {
               const sprintGroups = Array.from(
@@ -1685,29 +1597,53 @@ export default function ProjectDetailPage() {
                 const tasks = filteredTasks.filter((t: any) =>
                   sprint === "" ? !t.sprint : t.sprint === sprint,
                 );
+                const completedCount = tasks.filter((t: any) => t.status === "Done" || t.status === "Closed").length;
+                const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
                 return (
                   <div
                     key={sprint || "__nosprint"}
-                    className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'
+                    className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200/80 dark:border-white/5 overflow-hidden shadow-sm'
                   >
-                    <div className='px-4 py-3 bg-zinc-50 dark:bg-white/5 border-b border-zinc-200 dark:border-white/5 flex items-center gap-2'>
-                      <GitBranch size={14} className='text-zinc-400 dark:text-zinc-500' />
-                      <span className='text-sm font-semibold text-zinc-700 dark:text-zinc-300'>
-                        {sprint || "Chưa có sprint"}
-                      </span>
-                      <span className='text-xs text-zinc-400 dark:text-zinc-500 ml-1'>
-                        {tasks.length} tasks
-                      </span>
+                    {/* Sprint group header */}
+                    <div className='relative px-4 py-3.5 bg-zinc-50/80 dark:bg-zinc-800/40 border-b border-zinc-200/80 dark:border-white/5'>
+                      {/* Gradient left accent bar */}
+                      <div className='absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-violet-500 rounded-r' />
+                      <div className='flex items-center gap-3'>
+                        <div className='w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0'>
+                          <GitBranch size={14} className='text-blue-500 dark:text-blue-400' />
+                        </div>
+                        <span className='text-sm font-semibold text-zinc-800 dark:text-zinc-200'>
+                          {sprint || "Chưa có sprint"}
+                        </span>
+                        <span className='text-xs font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-700/50 px-2 py-0.5 rounded-full'>
+                          {tasks.length} tasks
+                        </span>
+                        {/* Progress indicator */}
+                        <div className='flex items-center gap-2 ml-auto'>
+                          <div className='w-24 h-1.5 bg-zinc-200/60 dark:bg-zinc-700/40 rounded-full overflow-hidden'>
+                            <div
+                              className='h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-500'
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                          <span className='text-[10px] font-medium text-zinc-400 dark:text-zinc-500 tabular-nums'>
+                            {progressPercent}%
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className='divide-y divide-gray-50'>
+
+                    {/* Task list */}
+                    <div className='divide-y divide-zinc-100 dark:divide-white/5'>
                       {tasks.map((t: any) => (
                         <div
                           key={t.id}
-                          className='px-4 py-2.5 flex items-center gap-3 hover:bg-zinc-50 dark:bg-white/5 cursor-pointer'
+                          className='group px-4 py-3 flex items-center gap-3 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/30 cursor-pointer transition-colors duration-150'
                           onClick={() => openEditTask(t)}
                         >
+                          {/* Status badge */}
                           <span
-                            className='text-xs px-2 py-0.5 rounded-full font-medium border flex-shrink-0'
+                            className='text-[11px] px-2.5 py-1 rounded-full font-medium border flex-shrink-0 leading-none'
                             style={getTaskStatusInlineStyle(
                               t.status,
                               projectWorkflow,
@@ -1715,31 +1651,45 @@ export default function ProjectDetailPage() {
                           >
                             {t.status}
                           </span>
-                          <p className='flex-1 text-sm text-gray-800 truncate dark:text-zinc-200'>
+
+                          {/* Task title */}
+                          <p className='flex-1 text-sm text-zinc-800 dark:text-zinc-200 truncate group-hover:text-zinc-900 dark:group-hover:text-white transition-colors'>
                             {t.title}
                           </p>
+
+                          {/* Priority dot + label */}
                           <span
                             className={cn(
-                              "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
+                              "flex items-center gap-1.5 text-xs flex-shrink-0",
                               PRIORITY_COLORS[
                                 t.priority as keyof typeof PRIORITY_COLORS
                               ],
                             )}
                           >
+                            <span className='w-2 h-2 rounded-full bg-current opacity-70' />
                             {t.priority}
                           </span>
-                          <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
+
+                          {/* Logged / Estimate */}
+                          <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0 tabular-nums'>
                             {formatDuration(t.loggedHours)} /{" "}
                             {formatDuration(t.estimateHours)}
                           </span>
+
+                          {/* Due date with calendar icon */}
                           {t.dueDate && (
-                            <span className='text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
+                            <span className='flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0'>
+                              <CalendarDays size={12} className='opacity-60' />
                               {formatDate(t.dueDate)}
                             </span>
                           )}
+
+                          {/* Assignee avatar circle */}
                           {t.assignee && (
-                            <span className='text-xs text-zinc-500 dark:text-zinc-400 flex-shrink-0'>
-                              {t.assignee.name}
+                            <span className='flex items-center gap-1.5 flex-shrink-0' title={t.assignee.name}>
+                              <span className='w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-violet-500 flex items-center justify-center text-[10px] font-semibold text-white uppercase leading-none'>
+                                {t.assignee.name?.charAt(0) || "?"}
+                              </span>
                             </span>
                           )}
                         </div>
@@ -1755,35 +1705,48 @@ export default function ProjectDetailPage() {
 
       {/* Calendar Tab */}
       {tab === "calendar" && (
-        <div className='space-y-3'>
-          <div className='flex items-center gap-3'>
-            <button
-              onClick={() =>
-                setCalendarDate(
-                  (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
-                )
-              }
-              className='p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400'
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <h3 className='text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex-1 text-center capitalize'>
+        <div className='space-y-4'>
+          {/* Navigation header */}
+          <div className='flex items-center justify-between gap-3'>
+            <div className='flex items-center gap-1'>
+              <button
+                onClick={() =>
+                  setCalendarDate(
+                    (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
+                  )
+                }
+                className='p-2 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/60 text-zinc-500 dark:text-zinc-400 transition-colors'
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={() =>
+                  setCalendarDate(
+                    (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
+                  )
+                }
+                className='p-2 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/60 text-zinc-500 dark:text-zinc-400 transition-colors'
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            <h3 className='text-base font-bold text-zinc-900 dark:text-zinc-100 text-center capitalize'>
               {calendarDate.toLocaleString("vi-VN", {
                 month: "long",
                 year: "numeric",
               })}
             </h3>
+
+            {/* Today button */}
             <button
-              onClick={() =>
-                setCalendarDate(
-                  (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
-                )
-              }
-              className='p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400'
+              onClick={() => setCalendarDate(new Date())}
+              className='text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/20 bg-blue-50/50 dark:bg-blue-500/5 px-3 py-1.5 rounded-lg hover:bg-blue-100/60 dark:hover:bg-blue-500/10 transition-colors'
             >
-              <ChevronRight size={16} />
+              Today
             </button>
           </div>
+
           {(() => {
             const year = calendarDate.getFullYear();
             const month = calendarDate.getMonth();
@@ -1802,24 +1765,39 @@ export default function ProjectDetailPage() {
             });
             const today = new Date();
             return (
-              <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-white/5 overflow-hidden'>
-                <div className='grid grid-cols-7 border-b border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5'>
-                  {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => (
+              <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200/80 dark:border-white/5 overflow-hidden shadow-sm'>
+                {/* Day headers */}
+                <div className='grid grid-cols-7 border-b border-zinc-200/80 dark:border-white/5 bg-zinc-50/80 dark:bg-zinc-800/40'>
+                  {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d, i) => (
                     <div
                       key={d}
-                      className='py-2 text-center text-xs font-semibold text-zinc-400 dark:text-zinc-500'
+                      className={cn(
+                        'py-2.5 text-center text-xs font-bold tracking-wide uppercase',
+                        i >= 5
+                          ? 'text-rose-400/70 dark:text-rose-400/50'
+                          : 'text-zinc-400 dark:text-zinc-500',
+                      )}
                     >
                       {d}
                     </div>
                   ))}
                 </div>
+
+                {/* Day cells grid */}
                 <div className='grid grid-cols-7'>
                   {cells.map((day, idx) => {
+                    const colIndex = idx % 7;
+                    const isWeekend = colIndex >= 5;
                     if (!day)
                       return (
                         <div
                           key={`empty-${idx}`}
-                          className='min-h-[80px] border-r border-b border-gray-50 bg-zinc-50 dark:bg-white/5/50'
+                          className={cn(
+                            'min-h-[100px] border-r border-b border-zinc-100 dark:border-white/5',
+                            isWeekend
+                              ? 'bg-zinc-50/60 dark:bg-zinc-800/20'
+                              : 'bg-zinc-50/40 dark:bg-zinc-800/10',
+                          )}
                         />
                       );
                     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -1831,34 +1809,50 @@ export default function ProjectDetailPage() {
                     return (
                       <div
                         key={idx}
-                        className='min-h-[80px] p-1.5 border-r border-b border-gray-50 hover:bg-zinc-50 dark:bg-white/5/80'
+                        className={cn(
+                          'min-h-[100px] p-1.5 border-r border-b border-zinc-100 dark:border-white/5 transition-colors duration-100',
+                          isToday && 'bg-blue-50/40 dark:bg-blue-500/5 ring-1 ring-inset ring-blue-200/60 dark:ring-blue-500/20',
+                          !isToday && isWeekend && 'bg-zinc-50/40 dark:bg-zinc-800/20',
+                          !isToday && !isWeekend && 'bg-white dark:bg-transparent',
+                          'hover:bg-zinc-50 dark:hover:bg-zinc-800/30',
+                        )}
                       >
+                        {/* Day number */}
                         <div
                           className={cn(
-                            "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1 ml-auto",
+                            "text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full mb-1 ml-auto",
                             isToday
-                              ? "bg-blue-600 text-white"
-                              : "text-zinc-600 dark:text-zinc-400",
+                              ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
+                              : isWeekend
+                                ? "text-rose-400/70 dark:text-rose-400/50"
+                                : "text-zinc-500 dark:text-zinc-400",
                           )}
                         >
                           {day}
                         </div>
+
+                        {/* Task chips */}
                         <div className='space-y-0.5'>
                           {tasks.slice(0, 2).map((t: any) => (
                             <div
                               key={t.id}
-                              className='text-[10px] px-1 py-0.5 rounded truncate cursor-pointer hover:opacity-80'
-                              style={getTaskStatusInlineStyle(
-                                t.status,
-                                projectWorkflow,
-                              )}
+                              className='group/chip flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-zinc-50 dark:bg-zinc-800/50 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-colors'
                               onClick={() => openEditTask(t)}
+                              title={t.title}
                             >
-                              {t.title}
+                              <span
+                                className='w-1.5 h-1.5 rounded-full flex-shrink-0'
+                                style={{
+                                  backgroundColor: getTaskStatusInlineStyle(t.status, projectWorkflow)?.backgroundColor || '#94a3b8',
+                                }}
+                              />
+                              <span className='truncate text-zinc-600 dark:text-zinc-300'>
+                                {t.title}
+                              </span>
                             </div>
                           ))}
                           {tasks.length > 2 && (
-                            <div className='text-[10px] text-zinc-400 dark:text-zinc-500 px-1'>
+                            <div className='text-[10px] font-medium text-zinc-400 dark:text-zinc-500 px-1.5'>
                               +{tasks.length - 2} more
                             </div>
                           )}
@@ -2103,23 +2097,27 @@ export default function ProjectDetailPage() {
                   <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3 ml-7'>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Priority</p>
-                      <select
+                      <CustomSelect
                         value={task.priority || "MEDIUM"}
-                        onChange={(e) =>
+                        onChange={(val) =>
                           setReviewTasks((prev) =>
                             prev!.map((t, i) =>
                               i === idx
-                                ? { ...t, priority: e.target.value as any }
+                                ? { ...t, priority: val as any }
                                 : t,
                             ),
                           )
                         }
-                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
-                      </select>
+                        options={[
+                          { value: "HIGH", label: "HIGH" },
+                          { value: "MEDIUM", label: "MEDIUM" },
+                          { value: "LOW", label: "LOW" },
+                        ]}
+                        placeholder="Priority"
+                        size="sm"
+                        className="w-full"
+                        buttonClassName="w-full text-left border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Deadline</p>
@@ -2140,26 +2138,26 @@ export default function ProjectDetailPage() {
                     </div>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Epic</p>
-                      <select
+                      <CustomSelect
                         value={task.epic || ""}
-                        onChange={(e) =>
+                        onChange={(val) =>
                           setReviewTasks((prev) =>
                             prev!.map((t, i) =>
                               i === idx
-                                ? { ...t, epic: e.target.value || undefined }
+                                ? { ...t, epic: val || undefined }
                                 : t,
                             ),
                           )
                         }
-                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- No epic -</option>
-                        {allEpics.map((epic: string) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
-                            {epic}
-                          </option>
-                        ))}
-                      </select>
+                        options={[
+                          { value: "", label: "- No epic -" },
+                          ...allEpics.map((epic: string) => ({ value: epic, label: epic })),
+                        ]}
+                        placeholder="- No epic -"
+                        size="sm"
+                        className="w-full"
+                        buttonClassName="w-full text-left border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Labels</p>
@@ -2206,26 +2204,26 @@ export default function ProjectDetailPage() {
                     </div>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Sprint</p>
-                      <select
+                      <CustomSelect
                         value={task.sprint || ""}
-                        onChange={(e) =>
+                        onChange={(val) =>
                           setReviewTasks((prev) =>
                             prev!.map((t, i) =>
                               i === idx
-                                ? { ...t, sprint: e.target.value || undefined }
+                                ? { ...t, sprint: val || undefined }
                                 : t,
                             ),
                           )
                         }
-                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- Không có sprint -</option>
-                        {allSprints.map((s) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
+                        options={[
+                          { value: "", label: "- Không có sprint -" },
+                          ...allSprints.map((s: string) => ({ value: s, label: s })),
+                        ]}
+                        placeholder="- Không có sprint -"
+                        size="sm"
+                        className="w-full"
+                        buttonClassName="w-full text-left border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div className='xl:col-span-2'>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Estimate</p>
@@ -2343,31 +2341,32 @@ export default function ProjectDetailPage() {
                     </div>
                     <div>
                       <p className='text-xs text-zinc-400 dark:text-zinc-500 mb-1'>Assignee</p>
-                      <select
-                        value={task.assigneeId ?? ""}
-                        onChange={(e) =>
+                      <CustomSelect
+                        value={task.assigneeId ? task.assigneeId.toString() : ""}
+                        onChange={(val) =>
                           setReviewTasks((prev) =>
                             prev!.map((t, i) =>
                               i === idx
                                 ? {
                                     ...t,
-                                    assigneeId: e.target.value
-                                      ? Number(e.target.value)
-                                      : null,
+                                    assigneeId: val ? Number(val) : null,
                                   }
                                 : t,
                             ),
                           )
                         }
-                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>- Unassigned</option>
-                        {(project?.members || []).map((m: any) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={m.userId} value={m.userId}>
-                            {m.user?.name || `User ${m.userId}`}
-                          </option>
-                        ))}
-                      </select>
+                        options={[
+                          { value: "", label: "- Unassigned" },
+                          ...(project?.members || []).map((m: any) => ({
+                            value: m.userId.toString(),
+                            label: m.user?.name || `User ${m.userId}`,
+                          })),
+                        ]}
+                        placeholder="- Unassigned"
+                        size="sm"
+                        className="w-full"
+                        buttonClassName="w-full text-left border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                   </div>
                 </div>
@@ -2682,17 +2681,24 @@ export default function ProjectDetailPage() {
                     </div>
                     <div className='grid gap-x-10 gap-y-5 text-sm md:grid-cols-[180px_minmax(0,1fr)]'>
                       <span className='text-zinc-500 dark:text-zinc-400'>Assignee</span>
-                      <select
-                        {...register("assigneeId", { onBlur: autoSaveTask })}
-                        className='max-w-sm rounded-md border border-transparent bg-transparent px-0 py-1 text-sm text-zinc-900 dark:text-zinc-100 hover:border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:bg-white/5 focus:border-blue-300 focus:bg-white dark:bg-zinc-900/95 backdrop-blur-xl focus:outline-none'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>Unassigned</option>
-                        {project.members?.map((m: any) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={m.userId} value={m.userId}>
-                            {m.user.name}
-                          </option>
-                        ))}
-                      </select>
+                      <CustomSelect
+                        value={watch("assigneeId") ? watch("assigneeId").toString() : ""}
+                        onChange={(val) => {
+                          setValue("assigneeId", val ? Number(val) : "", { shouldDirty: true });
+                          autoSaveTask();
+                        }}
+                        options={[
+                          { value: "", label: "Unassigned" },
+                          ...(project.members || []).map((m: any) => ({
+                            value: m.userId.toString(),
+                            label: m.user.name,
+                          })),
+                        ]}
+                        placeholder="Unassigned"
+                        size="sm"
+                        className="max-w-sm"
+                        buttonClassName="w-full text-left bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800 border-0 text-zinc-900 dark:text-zinc-100 py-1 h-7 px-2"
+                      />
 
                       <span className='text-zinc-500 dark:text-zinc-400'>Due date</span>
                       <input
@@ -3032,30 +3038,42 @@ export default function ProjectDetailPage() {
                       <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Priority
                       </label>
-                      <select
-                        {...register("priority", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='LOW'>LOW</option>
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='MEDIUM'>MEDIUM</option>
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value='HIGH'>HIGH</option>
-                      </select>
+                      <CustomSelect
+                        value={watch("priority") || "MEDIUM"}
+                        onChange={(val) => {
+                          setValue("priority", val, { shouldDirty: true });
+                          autoSaveTask();
+                        }}
+                        options={[
+                          { value: "LOW", label: "LOW" },
+                          { value: "MEDIUM", label: "MEDIUM" },
+                          { value: "HIGH", label: "HIGH" },
+                        ]}
+                        placeholder="Priority"
+                        size="sm"
+                        className="mt-1 w-full"
+                        buttonClassName="w-full text-left bg-white dark:bg-zinc-900/95 border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div>
                       <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Epic
                       </label>
-                      <select
-                        {...register("epic", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>No epic</option>
-                        {allEpics.map((epic: string) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={epic} value={epic}>
-                            {epic}
-                          </option>
-                        ))}
-                      </select>
+                      <CustomSelect
+                        value={watch("epic") || ""}
+                        onChange={(val) => {
+                          setValue("epic", val, { shouldDirty: true });
+                          autoSaveTask();
+                        }}
+                        options={[
+                          { value: "", label: "No epic" },
+                          ...allEpics.map((epic: string) => ({ value: epic, label: epic })),
+                        ]}
+                        placeholder="No epic"
+                        size="sm"
+                        className="mt-1 w-full"
+                        buttonClassName="w-full text-left bg-white dark:bg-zinc-900/95 border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div>
                       <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
@@ -3090,17 +3108,21 @@ export default function ProjectDetailPage() {
                       <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>
                         Sprint
                       </label>
-                      <select
-                        {...register("sprint", { onBlur: autoSaveTask })}
-                        className='mt-1 w-full rounded-md border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/95 backdrop-blur-xl px-2 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      >
-                        <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" value=''>No sprint</option>
-                        {allSprints.map((s) => (
-                          <option className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-200" key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
+                      <CustomSelect
+                        value={watch("sprint") || ""}
+                        onChange={(val) => {
+                          setValue("sprint", val, { shouldDirty: true });
+                          autoSaveTask();
+                        }}
+                        options={[
+                          { value: "", label: "No sprint" },
+                          ...allSprints.map((s: string) => ({ value: s, label: s })),
+                        ]}
+                        placeholder="No sprint"
+                        size="sm"
+                        className="mt-1 w-full"
+                        buttonClassName="w-full text-left bg-white dark:bg-zinc-900/95 border border-zinc-200 dark:border-white/10"
+                      />
                     </div>
                     <div>
                       <label className='text-xs font-medium text-zinc-500 dark:text-zinc-400'>

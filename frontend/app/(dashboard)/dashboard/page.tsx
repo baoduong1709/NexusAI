@@ -83,7 +83,7 @@ export default function DashboardPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8 max-w-7xl mx-auto"
+      className="space-y-8"
     >
       {/* Welcome header */}
       <motion.div variants={itemAnim} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           <Link key={s.label} href={s.href}>
             <motion.div
               whileHover={{ scale: 1.02, y: -4 }}
-              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden h-full flex flex-col justify-between"
+              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden h-full flex flex-col justify-between"
             >
               {/* Glow background */}
               <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${s.color} blur-[50px] opacity-50 group-hover:opacity-100 transition-opacity duration-500 -z-10`} />
@@ -127,10 +127,10 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Recent Projects Bento Box */}
-      <motion.div variants={itemAnim} className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden relative">
+      <motion.div variants={itemAnim} className="bg-card/80 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden relative">
         <div className="absolute top-[-50%] left-[-10%] w-[50%] h-[100%] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
         
-        <div className="flex items-center justify-between px-8 py-6 border-b border-white/5">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-zinc-200/60 dark:border-white/5">
           <div>
             <h2 className="font-bold text-zinc-900 dark:text-white text-xl">Recent Projects</h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Quick access to recently created or edited projects</p>

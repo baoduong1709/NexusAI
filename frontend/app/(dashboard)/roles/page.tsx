@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { rolesApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useConfirm } from "@/components/providers/confirm-provider";
 import {
   Plus,
   Pencil,
@@ -38,6 +39,7 @@ import AccessDenied from "@/components/layout/access-denied";
 export default function RolesPage() {
   const { hasPermission } = useAuth();
   const qc = useQueryClient();
+  const confirm = useConfirm();
   const [showModal, setShowModal] = useState(false);
   const [editRole, setEditRole] = useState<any>(null);
 
@@ -153,7 +155,7 @@ export default function RolesPage() {
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="space-y-8 max-w-7xl mx-auto"
+      className="space-y-8"
     >
       {/* Page Header */}
       <motion.div
@@ -201,7 +203,7 @@ export default function RolesPage() {
               key={r.id}
               variants={itemVariants}
               whileHover={{ scale: 1.02, y: -4 }}
-              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden flex flex-col justify-between min-h-[220px]"
+              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-white/5 p-6 shadow-xl shadow-black/5 dark:shadow-black/20 group relative overflow-hidden flex flex-col justify-between min-h-[220px]"
             >
               {/* Dynamic Glow Aura */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/10 to-violet-500/5 blur-[50px] opacity-50 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
@@ -229,10 +231,18 @@ export default function RolesPage() {
                     )}
                     {hasPermission("role:delete") && (
                       <button
-                        onClick={() =>
-                          confirm(`Delete role "${r.name}"?`) &&
-                          deleteMutation.mutate(r.id)
-                        }
+                        onClick={async () => {
+                          const isConfirmed = await confirm({
+                            title: "Xóa vai trò",
+                            message: `Bạn có chắc chắn muốn xóa vai trò "${r.name}" không? Hành động này không thể hoàn tác.`,
+                            confirmText: "Xóa",
+                            cancelText: "Hủy",
+                            variant: "destructive",
+                          });
+                          if (isConfirmed) {
+                            deleteMutation.mutate(r.id);
+                          }
+                        }}
                         className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                       >
                         <Trash2 size={15} />
@@ -248,7 +258,7 @@ export default function RolesPage() {
                     return (
                       <span
                         key={p}
-                        className="inline-flex items-center gap-1 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-indigo-500/10 backdrop-blur-md"
+                        className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-indigo-200/60 dark:border-indigo-500/15"
                       >
                         <Icon size={10} />
                         {p}
