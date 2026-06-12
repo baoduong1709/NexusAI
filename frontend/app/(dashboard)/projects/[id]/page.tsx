@@ -390,7 +390,7 @@ function previewTaskNamingRule(
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const projectId = Number(id);
+  const projectId = id as string;
   const { hasPermission, user } = useAuth();
   const qc = useQueryClient();
   const router = useRouter();
@@ -1097,32 +1097,7 @@ export default function ProjectDetailPage() {
   };
 
   const openEditTask = (t: any) => {
-    const initialDescription = t.description || "";
-    reset({
-      title: t.title,
-      description: initialDescription,
-      priority: t.priority,
-      status: t.status,
-      assigneeId: t.assignee?.id || "",
-      dueDate: t.dueDate ? t.dueDate.slice(0, 10) : "",
-      epic: t.epic || "",
-      labels: t.labels || [],
-      sprint: t.sprint || "",
-      estimateInput: toHours(t.estimateHours)
-        ? formatDuration(t.estimateHours)
-        : "",
-      loggedInput: toHours(t.loggedHours) ? formatDuration(t.loggedHours) : "",
-    });
-    setDescriptionHtml(initialDescription);
-    setDescriptionAiMessages([]);
-    setGeneratedTaskPrompt(t.agentPrompt || "");
-    setGeneratingPrompt(false);
-    setActivityTab("comments");
-    setCommentDraft("");
-    setWorkLogDraft("");
-    setWorkLogNote("");
-    setEditTask(t);
-    setShowTaskModal(true);
+    router.push(`/tasks/${t.id}`);
   };
 
   const onTaskSubmit = (data: any) => {

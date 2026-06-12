@@ -294,7 +294,7 @@ export class AiService {
     messages: { role: "system" | "user" | "assistant"; content: string }[],
     context: string,
     temperature = 0.3,
-    projectId?: number,
+    projectId?: string,
     userId?: number,
     overrideModel?: string,
   ): Promise<string> {
@@ -391,7 +391,7 @@ export class AiService {
   }
 
   private async finalizeTaskSuggestionWithFlash(
-    projectId: number,
+    projectId: string,
     userId: number,
     contextMessages: any[],
     candidateAnalysis: string,
@@ -620,7 +620,7 @@ ${recentMessages}`;
   }
 
   async analyzeProject(
-    projectId: number,
+    projectId: string,
     userId: number,
   ): Promise<AiAnalysisResult> {
     const ctx = await this.dataAccess.getFilteredProjectContext(
@@ -739,7 +739,7 @@ Please analyze the above and respond with a JSON object in this exact format:
     }
   }
 
-  async confirmAndCreateTasks(projectId: number, tasks: any[]) {
+  async confirmAndCreateTasks(projectId: string, tasks: any[]) {
     return this.tasksService.bulkCreate(
       projectId,
       tasks.map((t) => ({
@@ -759,7 +759,7 @@ Please analyze the above and respond with a JSON object in this exact format:
   }
 
   async suggestAssignees(
-    projectId: number,
+    projectId: string,
     taskDescription: string,
     userId: number,
   ) {
@@ -803,7 +803,7 @@ Return a JSON array of up to 3 best-suited member IDs in order of suitability:
   }
 
   async improveTaskDescription(
-    projectId: number,
+    projectId: string,
     userId: number,
     description: string,
     title?: string,
@@ -844,7 +844,7 @@ Rules:
   }
 
   async assistTaskDescription(
-    projectId: number,
+    projectId: string,
     userId: number,
     description: string,
     instruction: string,
@@ -925,7 +925,7 @@ Rules:
   }
 
   async generateTaskAgentPrompt(
-    projectId: number,
+    projectId: string,
     userId: number,
     dto: {
       taskId?: string;
@@ -1032,7 +1032,7 @@ ${docContents.textDocs.length > 0 ? `- Project Documents Content:\n${docContents
   // ─── Init empty requirements when project is created ──────────────────────
 
   async initRequirements(
-    projectId: number,
+    projectId: string,
     projectName: string,
     description?: string,
   ): Promise<void> {
@@ -1064,7 +1064,7 @@ ${docContents.textDocs.length > 0 ? `- Project Documents Content:\n${docContents
 
   // ─── Extract key requirements from a document that is too long ─────────────
   private async extractKeyRequirementsFromDoc(
-    projectId: number,
+    projectId: string,
     userId: number,
     docName: string,
     docContent: string,
@@ -1093,7 +1093,7 @@ Extracted Requirements:`;
   // ─── Update requirements from documents + AI ───────────────────────────────
 
   async updateRequirements(
-    projectId: number,
+    projectId: string,
     userId: number,
   ): Promise<{ content: string; version: number }> {
     const ctx = await this.dataAccess.getFilteredProjectContext(
@@ -1280,7 +1280,7 @@ Return only the list of changes (each line starts with "- "):`;
   }
 
   async getRequirementsContent(
-    projectId: number,
+    projectId: string,
   ): Promise<{ content: string; version: number; createdAt: Date } | null> {
     const latest = await this.prisma.requirementsHistory.findFirst({
       where: { projectId },
@@ -1295,7 +1295,7 @@ Return only the list of changes (each line starts with "- "):`;
       : null;
   }
 
-  async getRequirementsHistory(projectId: number) {
+  async getRequirementsHistory(projectId: string) {
     return this.prisma.requirementsHistory.findMany({
       where: { projectId },
       orderBy: { version: "desc" },
@@ -1327,7 +1327,7 @@ Return only the list of changes (each line starts with "- "):`;
     });
   }
 
-  private async saveRequirementsFile(projectId: number, content: string) {
+  private async saveRequirementsFile(projectId: string, content: string) {
     const uploadDir = this.config.get("UPLOAD_DIR", "./uploads");
     const dir = path.join(uploadDir, `project-${projectId}`);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -1359,7 +1359,7 @@ Return only the list of changes (each line starts with "- "):`;
   // ─── Chat with AI — data filtered by user permissions ──────────────────────
 
   async chat(
-    projectId: number,
+    projectId: string,
     userId: number,
     messages: ChatMessage[],
     summary?: string,
@@ -1378,7 +1378,7 @@ Return only the list of changes (each line starts with "- "):`;
   }
 
   async summarize(
-    projectId: number,
+    projectId: string,
     currentSummary: string,
     messages: ChatMessage[],
   ): Promise<string> {
@@ -1548,7 +1548,7 @@ Return only the summary text, with no extra explanation.`;
 
   // ── Chat session CRUD ───────────────────────────────────────────────────────
 
-  async listSessions(projectId: number, userId: number) {
+  async listSessions(projectId: string, userId: number) {
     return this.prisma.aiChatSession.findMany({
       where: { projectId, userId },
       orderBy: { updatedAt: "desc" },
@@ -1563,7 +1563,7 @@ Return only the summary text, with no extra explanation.`;
     });
   }
 
-  async createSession(projectId: number, userId: number, name: string) {
+  async createSession(projectId: string, userId: number, name: string) {
     return this.prisma.aiChatSession.create({
       data: { projectId, userId, name, messages: [] },
     });
@@ -1599,7 +1599,7 @@ Return only the summary text, with no extra explanation.`;
 
 
   async chatStream(
-    projectId: number,
+    projectId: string,
     userId: number,
     messages: ChatMessage[],
     summary: string | undefined,

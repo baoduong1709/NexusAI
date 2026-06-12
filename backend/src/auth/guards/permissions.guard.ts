@@ -102,7 +102,7 @@ export class PermissionsGuard implements CanActivate {
     originalUrl?: string;
   }) {
     const projectIdParam = request.params?.projectId;
-    if (projectIdParam) return Number(projectIdParam);
+    if (projectIdParam) return projectIdParam;
 
     const projectDetailId = request.params?.id;
     if (
@@ -110,7 +110,7 @@ export class PermissionsGuard implements CanActivate {
       request.originalUrl?.includes("/projects/") &&
       !request.originalUrl.includes("/roles/")
     ) {
-      return Number(projectDetailId);
+      return projectDetailId;
     }
 
     return undefined;

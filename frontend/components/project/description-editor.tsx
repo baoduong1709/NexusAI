@@ -243,7 +243,7 @@ export function collectImageDocIds(html: string): number[] {
   return ids;
 }
 
-export async function deleteDocument(projectId: number, docId: number) {
+export async function deleteDocument(projectId: string, docId: number) {
   try {
     await documentsApi.delete(projectId, docId);
   } catch (e: any) {
@@ -255,7 +255,7 @@ export async function deleteDocument(projectId: number, docId: number) {
 
 export async function uploadAndInsertImage(
   view: EditorView,
-  projectId: number,
+  projectId: string,
   file: File,
   onDocId?: (docId: number) => void,
 ) {
@@ -302,7 +302,7 @@ export type DescriptionEditorProps = {
   improving: boolean;
   mentionItems: { id: string; label: string }[];
   disabled?: boolean;
-  projectId: number;
+  projectId: string;
 };
 
 export function DescriptionEditor({

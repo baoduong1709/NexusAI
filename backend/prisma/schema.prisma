@@ -45,7 +45,7 @@ model User {
 }
 
 model Project {
-  id             Int           @id @default(autoincrement())
+  id             String        @id
   name           String
   description    String?
   budget         Float?
@@ -73,7 +73,7 @@ model Project {
 }
 
 model ProjectAiIndex {
-  projectId Int      @id @map("project_id")
+  projectId String      @id @map("project_id")
   data      Json     @default("{}")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -84,7 +84,7 @@ model ProjectAiIndex {
 }
 
 model ProjectMember {
-  projectId   Int      @map("project_id")
+  projectId   String   @map("project_id")
   userId      Int      @map("user_id")
   projectRole String?  @map("project_role")
   joinedAt    DateTime @default(now()) @map("joined_at")
@@ -99,7 +99,7 @@ model ProjectMember {
 
 model Document {
   id              Int       @id @default(autoincrement())
-  projectId       Int       @map("project_id")
+  projectId       String    @map("project_id")
   filename        String
   originalName    String    @map("original_name")
   mimeType        String    @map("mime_type")
@@ -121,7 +121,7 @@ model Document {
 
 model RequirementsHistory {
   id             Int      @id @default(autoincrement())
-  projectId      Int      @map("project_id")
+  projectId      String   @map("project_id")
   version        Int
   content        String   @db.Text
   changesSummary String?  @db.Text @map("changes_summary")
@@ -136,7 +136,7 @@ model RequirementsHistory {
 model Task {
   id            String    @id
   sequence      Int
-  projectId     Int       @map("project_id")
+  projectId     String    @map("project_id")
   title         String
   description   String?
   assigneeId    Int?      @map("assignee_id")
@@ -184,7 +184,7 @@ model TaskActivity {
 
 model AiChatSession {
   id        Int      @id @default(autoincrement())
-  projectId Int      @map("project_id")
+  projectId String      @map("project_id")
   userId    Int      @map("user_id")
   name      String
   summary   String?  @db.Text

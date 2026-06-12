@@ -20,16 +20,16 @@ export const getSocket = (): Socket => {
 };
 
 export interface WebsocketCallbacks {
-  onAiJobStarted?: (data: { jobId: string; projectId: number; type: string }) => void;
-  onAiJobCompleted?: (data: { jobId: string; projectId: number; type: string; result: any }) => void;
-  onAiJobFailed?: (data: { jobId: string; projectId: number; type: string; error: string }) => void;
+  onAiJobStarted?: (data: { jobId: string; projectId: string; type: string }) => void;
+  onAiJobCompleted?: (data: { jobId: string; projectId: string; type: string; result: any }) => void;
+  onAiJobFailed?: (data: { jobId: string; projectId: string; type: string; error: string }) => void;
 }
 
-export function useProjectWebsocket(projectId: number, callbacks?: WebsocketCallbacks) {
+export function useProjectWebsocket(projectId: string, callbacks?: WebsocketCallbacks) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!projectId || isNaN(projectId)) return;
+    if (!projectId) return;
 
     const socket = getSocket();
 
@@ -42,7 +42,7 @@ export function useProjectWebsocket(projectId: number, callbacks?: WebsocketCall
     socket.emit("joinProject", { projectId });
 
     // Handle project updates
-    const handleProjectUpdated = (data: { projectId: number }) => {
+    const handleProjectUpdated = (data: { projectId: string }) => {
       console.log("Real-time: Project updated, invalidating cache", data);
       queryClient.invalidateQueries({
         queryKey: ["project", projectId],
@@ -55,7 +55,7 @@ export function useProjectWebsocket(projectId: number, callbacks?: WebsocketCall
     };
 
     // Handle tasks updates
-    const handleTasksUpdated = (data: { projectId: number }) => {
+    const handleTasksUpdated = (data: { projectId: string }) => {
       console.log("Real-time: Tasks updated, invalidating cache", data);
       queryClient.invalidateQueries({
         queryKey: ["project-tasks", projectId],

@@ -45,7 +45,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Analyze project documents and suggest tasks" })
   async analyze(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
   ) {
     const job = await this.aiQueue.add("analyze", {
@@ -58,14 +58,14 @@ export class AiController {
   @Get("requirements")
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Get current requirements content" })
-  getRequirements(@Param("projectId", ParseIntPipe) projectId: number) {
+  getRequirements(@Param("projectId") projectId: string) {
     return this.aiService.getRequirementsContent(projectId);
   }
 
   @Get("requirements/history")
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Get requirements version history" })
-  getHistory(@Param("projectId", ParseIntPipe) projectId: number) {
+  getHistory(@Param("projectId") projectId: string) {
     return this.aiService.getRequirementsHistory(projectId);
   }
 
@@ -80,7 +80,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Re-analyze documents and update requirements.md" })
   async updateRequirements(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
   ) {
     const job = await this.aiQueue.add("updateRequirements", {
@@ -94,7 +94,7 @@ export class AiController {
   @RequirePermissions("task:approve_ai")
   @ApiOperation({ summary: "Confirm AI-generated tasks and add to project" })
   confirmTasks(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Body() dto: ConfirmAiTasksDto,
   ) {
     return this.aiService.confirmAndCreateTasks(projectId, dto.tasks);
@@ -104,7 +104,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Get AI-suggested assignees for a task" })
   suggestAssignee(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: SuggestAssigneeDto,
   ) {
@@ -119,7 +119,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Improve task description with AI" })
   improveDescription(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: ImproveDescriptionDto,
   ) {
@@ -135,7 +135,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Assist task description by instruction" })
   assistDescription(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: AssistDescriptionDto,
   ) {
@@ -152,7 +152,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Generate AI agent prompt based on description, assignee role, and labels" })
   generateTaskAgentPrompt(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: GenerateTaskPromptDto,
   ) {
@@ -167,7 +167,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Chat with AI to manage project tasks" })
   chat(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: AiChatDto,
   ) {
@@ -178,7 +178,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Chat with AI as a real-time stream" })
   async chatStream(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: AiChatDto,
     @Res() res: Response,
@@ -202,7 +202,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Summarize chat history into a compressed memory" })
   summarize(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Body() dto: AiSummarizeDto,
   ) {
     return this.aiService.summarize(
@@ -218,7 +218,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "List chat sessions for current user and project" })
   listSessions(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
   ) {
     return this.aiService.listSessions(projectId, user.id);
@@ -228,7 +228,7 @@ export class AiController {
   @RequirePermissions("ai:analyze")
   @ApiOperation({ summary: "Create a new chat session" })
   createSession(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @CurrentUser() user: { id: number },
     @Body() dto: CreateSessionDto,
   ) {

@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { useConfirm } from "@/components/providers/confirm-provider";
 
 export interface ProjectDocumentsProps {
-  projectId: number;
+  projectId: string;
   requirements: {
     id: number;
     version: number;

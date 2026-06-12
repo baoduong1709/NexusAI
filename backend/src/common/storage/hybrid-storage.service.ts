@@ -17,7 +17,7 @@ export class HybridStorageService extends StorageService {
   }
 
   async uploadFile(
-    projectId: number,
+    projectId: string,
     file: Express.Multer.File,
     folder?: string,
   ): Promise<{
@@ -43,7 +43,7 @@ export class HybridStorageService extends StorageService {
     return { ...result, storageProvider: 'local' };
   }
 
-  async deleteFile(projectId: number, path: string): Promise<void> {
+  async deleteFile(projectId: string, path: string): Promise<void> {
     // Try both providers — the one that owns the file will succeed
     try {
       await this.local.deleteFile(projectId, path);

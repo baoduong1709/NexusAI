@@ -36,7 +36,7 @@ export class TasksController {
   @RequirePermissions("task:create")
   @ApiOperation({ summary: "Create task in project" })
   create(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Body() dto: CreateTaskDto,
     @CurrentUser() user: { id: number },
   ) {
@@ -47,7 +47,7 @@ export class TasksController {
   @RequirePermissions("task:read")
   @ApiOperation({ summary: "Get paginated tasks in project with optional filters" })
   findAll(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Query() query: TasksQueryDto,
   ) {
     return this.tasksService.findByProject(projectId, query);
@@ -84,7 +84,7 @@ export class TasksController {
   @RequirePermissions("task:read")
   @ApiOperation({ summary: "Get task activity" })
   getActivities(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Param("id") id: string,
   ) {
     return this.tasksService.getActivities(projectId, id);
@@ -94,7 +94,7 @@ export class TasksController {
   @RequirePermissions("task:update")
   @ApiOperation({ summary: "Add task comment" })
   addComment(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Param("id") id: string,
     @Body() dto: CreateTaskCommentDto,
     @CurrentUser() user: { id: number },
@@ -106,7 +106,7 @@ export class TasksController {
   @RequirePermissions("task:update")
   @ApiOperation({ summary: "Add task work log" })
   addWorkLog(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Param("id") id: string,
     @Body() dto: CreateTaskWorkLogDto,
     @CurrentUser() user: { id: number },

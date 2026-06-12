@@ -34,7 +34,7 @@ export class S3StorageService extends StorageService {
   }
 
   async uploadFile(
-    projectId: number,
+    projectId: string,
     file: Express.Multer.File,
     folder?: string,
   ): Promise<{
@@ -76,7 +76,7 @@ export class S3StorageService extends StorageService {
     };
   }
 
-  async deleteFile(projectId: number, path: string): Promise<void> {
+  async deleteFile(projectId: string, path: string): Promise<void> {
     this.logger.log(`Deleting file from S3: ${path}`);
     try {
       await this.s3Client.send(

@@ -97,7 +97,7 @@ export class DocumentsController {
   })
   @ApiOperation({ summary: "Upload a document to an employee folder in the project" })
   upload(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body("folder") folder?: string,
     @CurrentUser() user?: { id: number },
@@ -110,7 +110,7 @@ export class DocumentsController {
   @Get("folders")
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "List all employee document folders in a project" })
-  getFolders(@Param("projectId", ParseIntPipe) projectId: number) {
+  getFolders(@Param("projectId") projectId: string) {
     return this.documentsService.getFolders(projectId);
   }
 
@@ -119,7 +119,7 @@ export class DocumentsController {
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "List paginated documents in a specific employee folder" })
   findByFolder(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Param("folder") folder: string,
     @Query() query: DocumentsQueryDto,
   ) {
@@ -133,7 +133,7 @@ export class DocumentsController {
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "Get paginated documents for a project, optionally filtered by folder" })
   findAll(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Query() query: DocumentsQueryDto,
   ) {
     return this.documentsService.findByProject(projectId, query);
@@ -143,7 +143,7 @@ export class DocumentsController {
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "Download a document file directly" })
   async download(
-    @Param("projectId", ParseIntPipe) projectId: number,
+    @Param("projectId") projectId: string,
     @Param("id", ParseIntPipe) id: number,
     @Res() res: Response,
   ) {

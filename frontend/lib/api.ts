@@ -59,25 +59,25 @@ export const rolesApi = {
 // ---- Projects ----
 export const projectsApi = {
   getAll: () => api.get("/projects"),
-  getOne: (id: number) => api.get(`/projects/${id}`),
+  getOne: (id: string) => api.get(`/projects/${id}`),
   create: (data: CreateProjectPayload) => api.post("/projects", data),
-  update: (id: number, data: UpdateProjectPayload) => api.put(`/projects/${id}`, data),
-  updateWorkflow: (id: number, data: { taskStatuses: string[]; taskWorkflow: Record<string, string[]> }) =>
+  update: (id: string, data: UpdateProjectPayload) => api.put(`/projects/${id}`, data),
+  updateWorkflow: (id: string, data: { taskStatuses: string[]; taskWorkflow: Record<string, string[]> }) =>
     api.patch(`/projects/${id}/workflow`, data),
-  updateRoles: (id: number, data: { projectRoles: string[]; projectRoleConfigs: any[] }) =>
+  updateRoles: (id: string, data: { projectRoles: string[]; projectRoleConfigs: any[] }) =>
     api.patch(`/projects/${id}/roles`, data),
-  delete: (id: number) => api.delete(`/projects/${id}`),
-  addMember: (projectId: number, userId: number, projectRole?: string) =>
+  delete: (id: string) => api.delete(`/projects/${id}`),
+  addMember: (projectId: string, userId: number, projectRole?: string) =>
     api.post(`/projects/${projectId}/members/${userId}`, { projectRole }),
-  updateMemberRole: (projectId: number, userId: number, projectRole: string) =>
+  updateMemberRole: (projectId: string, userId: number, projectRole: string) =>
     api.patch(`/projects/${projectId}/members/${userId}`, { projectRole }),
-  removeMember: (projectId: number, userId: number) =>
+  removeMember: (projectId: string, userId: number) =>
     api.delete(`/projects/${projectId}/members/${userId}`),
 };
 
 // ---- Tasks ----
 export const tasksApi = {
-  getAll: (projectId: number, params?: {
+  getAll: (projectId: string, params?: {
     skip?: number;
     take?: number;
     status?: string;
@@ -91,42 +91,44 @@ export const tasksApi = {
     dueTo?: string;
     ai?: string;
   }) => api.get(`/projects/${projectId}/tasks`, { params }),
-  create: (projectId: number, data: CreateTaskPayload) =>
+  create: (projectId: string, data: CreateTaskPayload) =>
     api.post(`/projects/${projectId}/tasks`, data),
-  update: (projectId: number, taskId: string, data: UpdateTaskPayload) =>
+  update: (projectId: string, taskId: string, data: UpdateTaskPayload) =>
     api.put(`/projects/${projectId}/tasks/${taskId}`, data),
-  updateStatus: (projectId: number, taskId: string, status: string) =>
+  updateStatus: (projectId: string, taskId: string, status: string) =>
     api.patch(`/projects/${projectId}/tasks/${taskId}/status`, { status }),
-  getActivities: (projectId: number, taskId: string) =>
+  getActivities: (projectId: string, taskId: string) =>
     api.get(`/projects/${projectId}/tasks/${taskId}/activities`),
-  addComment: (projectId: number, taskId: string, body: string) =>
+  addComment: (projectId: string, taskId: string, body: string) =>
     api.post(`/projects/${projectId}/tasks/${taskId}/comments`, { body }),
   addWorkLog: (
-    projectId: number,
+    projectId: string,
     taskId: string,
     data: { durationHours: number; note?: string },
   ) => api.post(`/projects/${projectId}/tasks/${taskId}/worklogs`, data),
-  delete: (projectId: number, taskId: string) =>
+  delete: (projectId: string, taskId: string) =>
     api.delete(`/projects/${projectId}/tasks/${taskId}`),
+  getOneWithoutProject: (taskId: string) =>
+    api.get(`/tasks/${taskId}`),
 };
 
 // ---- Documents ----
 export const documentsApi = {
-  getAll: (projectId: number, params?: {
+  getAll: (projectId: string, params?: {
     skip?: number;
     take?: number;
     folder?: string;
   }) => api.get(`/projects/${projectId}/documents`, { params }),
-  upload: (projectId: number, file: File) => {
+  upload: (projectId: string, file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     return api.post(`/projects/${projectId}/documents/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
-  delete: (projectId: number, docId: number) =>
+  delete: (projectId: string, docId: number) =>
     api.delete(`/projects/${projectId}/documents/${docId}`),
-  download: (projectId: number, docId: number) =>
+  download: (projectId: string, docId: number) =>
     api.get(`/projects/${projectId}/documents/${docId}/download`, {
       responseType: "blob",
     }),
@@ -134,29 +136,29 @@ export const documentsApi = {
 
 // ---- AI ----
 export const aiApi = {
-  analyze: (projectId: number) => api.post(`/projects/${projectId}/ai/analyze`),
-  getRequirements: (projectId: number) =>
+  analyze: (projectId: string) => api.post(`/projects/${projectId}/ai/analyze`),
+  getRequirements: (projectId: string) =>
     api.get(`/projects/${projectId}/ai/requirements`),
-  getHistory: (projectId: number) =>
+  getHistory: (projectId: string) =>
     api.get(`/projects/${projectId}/ai/requirements/history`),
-  getVersion: (projectId: number, historyId: number) =>
+  getVersion: (projectId: string, historyId: number) =>
     api.get(`/projects/${projectId}/ai/requirements/version/${historyId}`),
-  updateRequirements: (projectId: number) =>
+  updateRequirements: (projectId: string) =>
     api.post(`/projects/${projectId}/ai/requirements/update`),
-  confirmTasks: (projectId: number, tasks: Partial<Task>[]) =>
+  confirmTasks: (projectId: string, tasks: Partial<Task>[]) =>
     api.post(`/projects/${projectId}/ai/confirm-tasks`, { tasks }),
-  suggestAssignee: (projectId: number, taskDescription: string) =>
+  suggestAssignee: (projectId: string, taskDescription: string) =>
     api.post(`/projects/${projectId}/ai/suggest-assignee`, { taskDescription }),
   improveDescription: (
-    projectId: number,
+    projectId: string,
     payload: { title?: string; description: string },
   ) => api.post(`/projects/${projectId}/ai/description/improve`, payload),
   assistDescription: (
-    projectId: number,
+    projectId: string,
     payload: { title?: string; description: string; instruction: string },
   ) => api.post(`/projects/${projectId}/ai/description/assist`, payload),
   generateTaskPrompt: (
-    projectId: number,
+    projectId: string,
     payload: {
       taskId?: string;
       title?: string;
@@ -169,7 +171,7 @@ export const aiApi = {
   updateChatSettings: (payload: { chatLanguage?: string; chatDescription?: string }) =>
     api.put("/users/me/chat-settings", payload),
   chatStream: async (
-    projectId: number,
+    projectId: string,
     messages: { role: string; content: string }[],
     summary?: string,
     onChunk?: (text: string) => void,
@@ -331,12 +333,12 @@ export const aiApi = {
     }
   },
   chat: (
-    projectId: number,
+    projectId: string,
     messages: { role: string; content: string }[],
     summary?: string,
   ) => api.post(`/projects/${projectId}/ai/chat`, { messages, summary }),
   summarize: (
-    projectId: number,
+    projectId: string,
     currentSummary: string,
     messages: { role: string; content: string }[],
   ) =>
@@ -344,16 +346,16 @@ export const aiApi = {
       currentSummary,
       messages,
     }),
-  listSessions: (projectId: number) =>
+  listSessions: (projectId: string) =>
     api.get(`/projects/${projectId}/ai/sessions`),
-  createSession: (projectId: number, name: string) =>
+  createSession: (projectId: string, name: string) =>
     api.post(`/projects/${projectId}/ai/sessions`, { name }),
   updateSession: (
-    projectId: number,
+    projectId: string,
     sessionId: number,
     data: { name?: string; summary?: string; messages?: any[] },
   ) => api.put(`/projects/${projectId}/ai/sessions/${sessionId}`, data),
-  deleteSession: (projectId: number, sessionId: number) =>
+  deleteSession: (projectId: string, sessionId: number) =>
     api.delete(`/projects/${projectId}/ai/sessions/${sessionId}`),
   getSystemConfigs: () => api.get("/ai/system-configs"),
   updateSystemConfigs: (payload: Record<string, string>) => api.put("/ai/system-configs", payload),

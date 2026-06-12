@@ -28,7 +28,7 @@ export interface User {
 }
 
 export interface ProjectMember {
-  projectId: number;
+  projectId: string;
   userId: number;
   projectRole: string | null;
   joinedAt: string;
@@ -36,7 +36,7 @@ export interface ProjectMember {
 }
 
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   description: string | null;
   budget: number | null;
@@ -59,7 +59,7 @@ export interface Project {
 export interface Task {
   id: string;
   sequence: number;
-  projectId: number;
+  projectId: string;
   title: string;
   description: string | null;
   assigneeId: number | null;
@@ -81,7 +81,7 @@ export interface Task {
 
 export interface Document {
   id: number;
-  projectId: number;
+  projectId: string;
   filename: string;
   originalName: string;
   mimeType: string;
@@ -111,7 +111,7 @@ export interface TaskActivity {
 
 export interface AiChatSession {
   id: number;
-  projectId: number;
+  projectId: string;
   userId: number;
   name: string;
   summary: string | null;
@@ -155,6 +155,7 @@ export interface UpdateRolePayload {
 }
 
 export interface CreateProjectPayload {
+  id: string;
   name: string;
   description?: string;
   budget?: number;
@@ -197,7 +198,7 @@ export interface PaginatedResponse<T> {
 
 export interface RequirementsHistory {
   id: number;
-  projectId?: number;
+  projectId?: string;
   version: number;
   content: string;
   changesSummary: string | null;

@@ -19,7 +19,7 @@ export interface CommentEditorProps {
   value: string;
   onChange: (next: string) => void;
   onSubmit: () => void;
-  projectId: number;
+  projectId: string;
   disabled?: boolean;
 }
 

@@ -47,7 +47,7 @@ export class DocumentsService {
   ) {}
 
   async uploadFile(
-    projectId: number,
+    projectId: string,
     file: Express.Multer.File,
     folder?: string,
     uploadedById?: number,
@@ -147,7 +147,7 @@ export class DocumentsService {
   }
 
   getFileUrl(
-    projectId: number,
+    projectId: string,
     path: string,
     filename: string,
     folder?: string | null,
@@ -170,7 +170,7 @@ export class DocumentsService {
   }
 
   async findByProject(
-    projectId: number,
+    projectId: string,
     query: DocumentsQueryDto = {},
   ): Promise<PaginatedResponse<any>> {
     const { skip = 0, take = 50, folder } = query;
@@ -207,7 +207,7 @@ export class DocumentsService {
   }
 
   /** List all employee folders in a project with user info */
-  async getFolders(projectId: number) {
+  async getFolders(projectId: string) {
     const folders = await this.prisma.document.groupBy({
       by: ["folder", "uploadedById"],
       where: {

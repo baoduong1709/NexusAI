@@ -31,7 +31,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   @SubscribeMessage("joinProject")
-  handleJoinProject(client: Socket, payload: { projectId: number }) {
+  handleJoinProject(client: Socket, payload: { projectId: string }) {
     const roomId = `project:${payload.projectId}`;
     client.join(roomId);
     this.logger.log(`Client ${client.id} joined room ${roomId}`);
@@ -39,14 +39,14 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   @SubscribeMessage("leaveProject")
-  handleLeaveProject(client: Socket, payload: { projectId: number }) {
+  handleLeaveProject(client: Socket, payload: { projectId: string }) {
     const roomId = `project:${payload.projectId}`;
     client.leave(roomId);
     this.logger.log(`Client ${client.id} left room ${roomId}`);
     return { event: "left", room: roomId };
   }
 
-  notifyProjectUpdate(projectId: number, event: string, payload: any) {
+  notifyProjectUpdate(projectId: string, event: string, payload: any) {
     const roomId = `project:${projectId}`;
     this.logger.log(`Broadcasting event "${event}" to room "${roomId}"`);
     this.server.to(roomId).emit(event, payload);

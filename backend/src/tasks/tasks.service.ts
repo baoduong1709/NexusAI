@@ -197,7 +197,7 @@ export class TasksService {
     private websocketGateway: WebsocketGateway,
   ) {}
 
-  private async cleanUpImageDocuments(projectId: number, docIds: number[]) {
+  private async cleanUpImageDocuments(projectId: string, docIds: number[]) {
     if (!docIds || docIds.length === 0) return;
     
     for (const docId of docIds) {
@@ -226,7 +226,7 @@ export class TasksService {
     }
   }
 
-  async create(projectId: number, dto: CreateTaskDto, userId?: number) {
+  async create(projectId: string, dto: CreateTaskDto, userId?: number) {
     const workflowStatus = await this.resolveWorkflowStatus(projectId, dto.status);
     const projectMetadata = await this.validateTaskMetadata(projectId, dto);
     const title = buildTaskTitle(projectMetadata.taskNamingRule, dto);
@@ -237,8 +237,8 @@ export class TasksService {
         orderBy: { sequence: "desc" },
         select: { sequence: true },
       });
-      let sequence = (latestTask?.sequence ?? 0) + 1;
-      const prefix = buildProjectTaskPrefix(projectMetadata.name);
+       let sequence = (latestTask?.sequence ?? 0) + 1;
+      const prefix = projectMetadata.id;
       let id = `${prefix}-${sequence}`;
       while (await tx.task.findUnique({ where: { id }, select: { id: true } })) {
         sequence += 1;
@@ -276,7 +276,7 @@ export class TasksService {
   }
 
   async findByProject(
-    projectId: number,
+    projectId: string,
     query: TasksQueryDto = {},
   ): Promise<PaginatedResponse<any>> {
     const cacheKey = `tasks:project:${projectId}:query:${JSON.stringify(query)}`;
@@ -498,7 +498,7 @@ export class TasksService {
     return removed;
   }
 
-  async bulkCreate(projectId: number, tasks: CreateTaskDto[]) {
+  async bulkCreate(projectId: string, tasks: CreateTaskDto[]) {
     const created = [];
     for (const dto of tasks) {
       created.push(await this.create(projectId, dto));
@@ -506,7 +506,7 @@ export class TasksService {
     return created;
   }
 
-  async getActivities(projectId: number, taskId: string) {
+  async getActivities(projectId: string, taskId: string) {
     await this.ensureTaskInProject(projectId, taskId);
 
     return (this.prisma as any).taskActivity.findMany({
@@ -519,7 +519,7 @@ export class TasksService {
   }
 
   async addComment(
-    projectId: number,
+    projectId: string,
     taskId: string,
     userId: number | undefined,
     dto: CreateTaskCommentDto,
@@ -540,7 +540,7 @@ export class TasksService {
   }
 
   async addWorkLog(
-    projectId: number,
+    projectId: string,
     taskId: string,
     userId: number | undefined,
     dto: CreateTaskWorkLogDto,
@@ -578,7 +578,7 @@ export class TasksService {
     return activity;
   }
 
-  private async getProjectWorkflow(projectId: number) {
+  private async getProjectWorkflow(projectId: string) {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
       select: { id: true, taskStatuses: true, taskWorkflow: true },
@@ -588,10 +588,10 @@ export class TasksService {
     return project;
   }
 
-  private async validateTaskMetadata(projectId: number, dto: Partial<CreateTaskDto>) {
+  private async validateTaskMetadata(projectId: string, dto: Partial<CreateTaskDto>) {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
-      select: { name: true, epics: true, labels: true, taskNamingRule: true },
+      select: { id: true, name: true, epics: true, labels: true, taskNamingRule: true },
     });
 
     if (!project) throw new NotFoundException("Project not found");
@@ -631,7 +631,7 @@ export class TasksService {
     return project;
   }
 
-  private async resolveWorkflowStatus(projectId: number, status?: string) {
+  private async resolveWorkflowStatus(projectId: string, status?: string) {
     const project = await this.getProjectWorkflow(projectId);
     const workflow = normalizeTaskWorkflow(project.taskWorkflow, project.taskStatuses);
     const workflowStatus = status?.trim() || getDefaultTaskStatus(workflow);
@@ -645,7 +645,7 @@ export class TasksService {
     return workflowStatus;
   }
 
-  private async ensureTaskInProject(projectId: number, taskId: string) {
+  private async ensureTaskInProject(projectId: string, taskId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id: taskId, projectId },
       select: { id: true },

@@ -27,20 +27,20 @@ export class ProjectAiIndexService {
   private readonly logger = new Logger(ProjectAiIndexService.name);
 
   // Debounce and concurrency queue controls
-  private rebuildTimeouts = new Map<number, NodeJS.Timeout>();
-  private rebuildPromises = new Map<number, Promise<any>>();
-  private nextRebuildQueued = new Map<number, boolean>();
+  private rebuildTimeouts = new Map<string, NodeJS.Timeout>();
+  private rebuildPromises = new Map<string, Promise<any>>();
+  private nextRebuildQueued = new Map<string, boolean>();
 
   constructor(private prisma: PrismaService) {}
 
-  async get(projectId: number) {
+  async get(projectId: string) {
     const index = await this.prisma.projectAiIndex.findUnique({
       where: { projectId },
     });
     return index?.data ?? null;
   }
 
-  async rebuild(projectId: number) {
+  async rebuild(projectId: string) {
     try {
       const [project, tasks, documents, latestRequirements] =
         await Promise.all([
@@ -268,7 +268,7 @@ export class ProjectAiIndexService {
     }
   }
 
-  rebuildSoon(projectId: number) {
+  rebuildSoon(projectId: string) {
     // Clear existing timeout if any to debounce subsequent rebuild triggers (500ms)
     if (this.rebuildTimeouts.has(projectId)) {
       clearTimeout(this.rebuildTimeouts.get(projectId)!);
@@ -282,7 +282,7 @@ export class ProjectAiIndexService {
     this.rebuildTimeouts.set(projectId, timeout);
   }
 
-  private async enqueueRebuild(projectId: number): Promise<void> {
+  private async enqueueRebuild(projectId: string): Promise<void> {
     // If a rebuild is already in progress for this project
     if (this.rebuildPromises.has(projectId)) {
       // If a next rebuild is already queued, do nothing as it will catch the latest state

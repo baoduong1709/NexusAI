@@ -13,7 +13,7 @@ import * as path from "path";
  */
 export interface FilteredProjectContext {
   project: {
-    id: number;
+    id: string;
     name: string;
     description: string | null;
     status: string;
@@ -93,7 +93,7 @@ export class AiDataAccessService {
    * Merges global permissions (from system role) + project-scoped permissions (from project role).
    */
   async resolveUserPermissions(
-    projectId: number,
+    projectId: string,
     userId: number,
   ): Promise<{ permissions: string[]; projectRole: string | null }> {
     // 1. Get global permissions from system role
@@ -148,7 +148,7 @@ export class AiDataAccessService {
    * Retrieves project context filtered by user permissions.
    */
   async getFilteredProjectContext(
-    projectId: number,
+    projectId: string,
     userId: number,
     options: ProjectContextOptions = {
       includeMembers: true,
@@ -280,7 +280,7 @@ export class AiDataAccessService {
    * Retrieves document contents (text & binary files converted to text) — only when user has project:read.
    */
   async getFilteredDocumentContents(
-    projectId: number,
+    projectId: string,
     userId: number,
   ): Promise<{
     textDocs: string[];

@@ -15,7 +15,7 @@ export class AiLogger {
    */
   public static log(data: {
     type: "chat" | "chat_stream" | "embeddings" | "summary" | string;
-    projectId?: number;
+    projectId?: string;
     userId?: number;
     request: any;
     response?: any;

@@ -268,6 +268,20 @@ export default function ProjectsPage() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Project ID *
+                  </label>
+                  <input
+                    {...register("id", { required: true })}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm font-mono uppercase"
+                    placeholder="e.g. GLAPP"
+                  />
+                  <p className="text-[10px] text-zinc-500 mt-1">
+                    Used directly as the project ID and prefix for task IDs (e.g. GLAPP-1, GLAPP-2)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
                     Description
                   </label>
                   <textarea

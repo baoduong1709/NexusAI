@@ -10,7 +10,7 @@ export class LocalStorageService extends StorageService {
   }
 
   async uploadFile(
-    projectId: number,
+    projectId: string,
     file: Express.Multer.File,
     folder?: string,
   ): Promise<{
@@ -30,7 +30,7 @@ export class LocalStorageService extends StorageService {
     };
   }
 
-  async deleteFile(projectId: number, path: string): Promise<void> {
+  async deleteFile(projectId: string, path: string): Promise<void> {
     if (fs.existsSync(path)) {
       fs.unlinkSync(path);
     }

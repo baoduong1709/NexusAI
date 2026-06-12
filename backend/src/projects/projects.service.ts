@@ -107,6 +107,7 @@ export class ProjectsService {
     const project = await this.prisma.project.create({
       data: {
         ...data,
+        id: dto.id,
         epics,
         labels,
         taskNamingRule,
@@ -185,7 +186,7 @@ export class ProjectsService {
     return result;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const cacheKey = `projects:detail:${id}`;
     const cached = await this.cacheManager.get<any>(cacheKey);
     if (cached) return cached;
@@ -201,7 +202,7 @@ export class ProjectsService {
     return result;
   }
 
-  async update(id: number, dto: Partial<CreateProjectDto>) {
+  async update(id: string, dto: Partial<CreateProjectDto>) {
     const existingProject = await this.prisma.project.findUnique({
       where: { id },
       select: {
@@ -264,7 +265,7 @@ export class ProjectsService {
     return this.attachProjectMetadata(updatedProject);
   }
 
-  async updateWorkflow(id: number, dto: UpdateProjectWorkflowDto) {
+  async updateWorkflow(id: string, dto: UpdateProjectWorkflowDto) {
     const project = await this.prisma.project.findUnique({
       where: { id },
       select: { id: true, taskStatuses: true, taskWorkflow: true },
@@ -345,7 +346,7 @@ export class ProjectsService {
     return this.findOne(id);
   }
 
-  async updateRoles(id: number, dto: UpdateProjectRolesDto) {
+  async updateRoles(id: string, dto: UpdateProjectRolesDto) {
     const project = await this.prisma.project.findUnique({
       where: { id },
       select: { id: true, projectRoles: true, projectRoleConfigs: true },
@@ -434,14 +435,14 @@ export class ProjectsService {
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.findOne(id);
     await this.cacheManager.clear();
     this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id, deleted: true });
     return this.prisma.project.delete({ where: { id } });
   }
 
-  async addMember(projectId: number, userId: number, projectRole?: string) {
+  async addMember(projectId: string, userId: number, projectRole?: string) {
     await this.ensureProjectRoleExists(projectId, projectRole);
     const member = await this.prisma.projectMember.create({
       data: {
@@ -457,7 +458,7 @@ export class ProjectsService {
   }
 
   async updateMemberRole(
-    projectId: number,
+    projectId: string,
     userId: number,
     projectRole: string,
   ) {
@@ -472,7 +473,7 @@ export class ProjectsService {
     return member;
   }
 
-  async removeMember(projectId: number, userId: number) {
+  async removeMember(projectId: string, userId: number) {
     const member = await this.prisma.projectMember.delete({
       where: { projectId_userId: { projectId, userId } },
     });
@@ -483,7 +484,7 @@ export class ProjectsService {
   }
 
   private async ensureProjectRoleExists(
-    projectId: number,
+    projectId: string,
     projectRole?: string,
   ) {
     const normalizedRole = normalizeProjectRole(projectRole);

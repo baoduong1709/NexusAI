@@ -15,6 +15,11 @@ export class CreateProjectDto {
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()

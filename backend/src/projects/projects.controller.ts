@@ -44,13 +44,13 @@ export class ProjectsController {
   @Get(":id")
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "Get project detail" })
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id") id: string) {
     return this.projectsService.findOne(id);
   }
 
   @Put(":id")
   @RequirePermissions("project:update")
-  update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
+  update(@Param("id") id: string, @Body() dto: UpdateProjectDto) {
     return this.projectsService.update(id, dto);
   }
 
@@ -58,7 +58,7 @@ export class ProjectsController {
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update project task workflow" })
   updateWorkflow(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: UpdateProjectWorkflowDto,
   ) {
     return this.projectsService.updateWorkflow(id, dto);
@@ -68,7 +68,7 @@ export class ProjectsController {
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update project member roles" })
   updateRoles(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() dto: UpdateProjectRolesDto,
   ) {
     return this.projectsService.updateRoles(id, dto);
@@ -76,7 +76,7 @@ export class ProjectsController {
 
   @Delete(":id")
   @RequirePermissions("project:delete")
-  remove(@Param("id", ParseIntPipe) id: number) {
+  remove(@Param("id") id: string) {
     return this.projectsService.remove(id);
   }
 
@@ -84,7 +84,7 @@ export class ProjectsController {
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Add member to project" })
   addMember(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
     @Body() dto: AddMemberDto,
   ) {
@@ -95,7 +95,7 @@ export class ProjectsController {
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update member project role" })
   updateMemberRole(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
     @Body() dto: UpdateMemberRoleDto,
   ) {
@@ -106,7 +106,7 @@ export class ProjectsController {
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Remove member from project" })
   removeMember(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
   ) {
     return this.projectsService.removeMember(id, userId);

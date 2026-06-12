@@ -102,7 +102,7 @@ export default function AiChatBubble() {
   const qc = useQueryClient();
 
     const [open, setOpen] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
   const [activeSession, setActiveSession] = useState<ChatSession | null>(null);
@@ -215,8 +215,13 @@ export default function AiChatBubble() {
 
   // Detect project from URL
   const urlProjectId = (() => {
-    const match = pathname.match(/\/projects\/(\d+)/);
-    return match ? Number(match[1]) : null;
+    const match = pathname.match(/\/projects\/([^/]+)/);
+    if (match) {
+      const id = match[1];
+      if (["new", "settings"].includes(id)) return null;
+      return id;
+    }
+    return null;
   })();
 
   const { data: projects = [] } = useQuery({
@@ -644,7 +649,7 @@ export default function AiChatBubble() {
                         <select
                           value={selectedProjectId ?? ""}
                           onChange={(e) =>
-                            setSelectedProjectId(Number(e.target.value) || null)
+                            setSelectedProjectId(e.target.value || null)
                           }
                           className="w-full appearance-none text-xs border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3.5 py-2.5 pr-8 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 text-zinc-800 dark:text-zinc-200 font-medium transition-all shadow-sm"
                         >

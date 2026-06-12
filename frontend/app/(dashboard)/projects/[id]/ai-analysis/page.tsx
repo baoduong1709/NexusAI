@@ -31,7 +31,7 @@ interface ChatMessage {
 
 export default function AiAnalysisPage() {
   const { id } = useParams();
-  const projectId = Number(id);
+  const projectId = id as string;
   const router = useRouter();
   const qc = useQueryClient();
 

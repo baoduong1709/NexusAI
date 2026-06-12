@@ -371,7 +371,7 @@ Your summary (Return plain text, without markdown headers format):`;
   }
 
   // 5. Index a document
-  async indexDocument(projectId: number, documentId: number, content: string, title: string) {
+  async indexDocument(projectId: string, documentId: number, content: string, title: string) {
     this.logger.log(`Indexing document ${documentId} for project ${projectId}`);
     
     // Generate chunks with overlap & embeddings in batch
@@ -425,7 +425,7 @@ Your summary (Return plain text, without markdown headers format):`;
   }
 
   // 6. Search Documents
-  async searchDocuments(projectId: number, query: string, topK: number = 3) {
+  async searchDocuments(projectId: string, query: string, topK: number = 3) {
     const queryVector = await this.generateEmbedding(query);
 
     const index = await this.prisma.projectAiIndex.findUnique({ where: { projectId } });
