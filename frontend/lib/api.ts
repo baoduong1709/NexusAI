@@ -21,7 +21,14 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("nexusai_user");
-      window.location.href = "/login";
+      
+      // Avoid infinite redirect loop when already on login page or attempting to login
+      const isLoginPage = window.location.pathname === "/login";
+      const isLoginRequest = error.config?.url?.includes("/auth/login");
+      
+      if (!isLoginPage && !isLoginRequest) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },
