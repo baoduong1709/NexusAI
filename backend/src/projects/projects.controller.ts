@@ -31,8 +31,8 @@ export class ProjectsController {
   @Post()
   @RequirePermissions("project:create")
   @ApiOperation({ summary: "Create a project" })
-  create(@Body() dto: CreateProjectDto) {
-    return this.projectsService.create(dto);
+  create(@CurrentUser() user: any, @Body() dto: CreateProjectDto) {
+    return this.projectsService.create(user.companyId, dto);
   }
 
   @Get()
@@ -44,71 +44,76 @@ export class ProjectsController {
   @Get(":id")
   @RequirePermissions("project:read")
   @ApiOperation({ summary: "Get project detail" })
-  findOne(@Param("id") id: string) {
-    return this.projectsService.findOne(id);
+  findOne(@CurrentUser() user: any, @Param("id") id: string) {
+    return this.projectsService.findOne(id, user.companyId);
   }
 
   @Put(":id")
   @RequirePermissions("project:update")
-  update(@Param("id") id: string, @Body() dto: UpdateProjectDto) {
-    return this.projectsService.update(id, dto);
+  update(@CurrentUser() user: any, @Param("id") id: string, @Body() dto: UpdateProjectDto) {
+    return this.projectsService.update(id, user.companyId, dto);
   }
 
   @Patch(":id/workflow")
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update project task workflow" })
   updateWorkflow(
+    @CurrentUser() user: any,
     @Param("id") id: string,
     @Body() dto: UpdateProjectWorkflowDto,
   ) {
-    return this.projectsService.updateWorkflow(id, dto);
+    return this.projectsService.updateWorkflow(id, user.companyId, dto);
   }
 
   @Patch(":id/roles")
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update project member roles" })
   updateRoles(
+    @CurrentUser() user: any,
     @Param("id") id: string,
     @Body() dto: UpdateProjectRolesDto,
   ) {
-    return this.projectsService.updateRoles(id, dto);
+    return this.projectsService.updateRoles(id, user.companyId, dto);
   }
 
   @Delete(":id")
   @RequirePermissions("project:delete")
-  remove(@Param("id") id: string) {
-    return this.projectsService.remove(id);
+  remove(@CurrentUser() user: any, @Param("id") id: string) {
+    return this.projectsService.remove(id, user.companyId);
   }
 
   @Post(":id/members/:userId")
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Add member to project" })
   addMember(
+    @CurrentUser() user: any,
     @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
     @Body() dto: AddMemberDto,
   ) {
-    return this.projectsService.addMember(id, userId, dto.projectRole);
+    return this.projectsService.addMember(id, user.companyId, userId, dto.projectRole);
   }
 
   @Patch(":id/members/:userId")
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Update member project role" })
   updateMemberRole(
+    @CurrentUser() user: any,
     @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
     @Body() dto: UpdateMemberRoleDto,
   ) {
-    return this.projectsService.updateMemberRole(id, userId, dto.projectRole);
+    return this.projectsService.updateMemberRole(id, user.companyId, userId, dto.projectRole);
   }
 
   @Delete(":id/members/:userId")
   @RequirePermissions("project:update")
   @ApiOperation({ summary: "Remove member from project" })
   removeMember(
+    @CurrentUser() user: any,
     @Param("id") id: string,
     @Param("userId", ParseIntPipe) userId: number,
   ) {
-    return this.projectsService.removeMember(id, userId);
+    return this.projectsService.removeMember(id, user.companyId, userId);
   }
 }

@@ -31,6 +31,8 @@ export class AuthService {
       email: user.email,
       role: user.role?.name,
       permissions: user.role?.permissions || [],
+      companyId: user.companyId,
+      isSuperAdmin: user.isSuperAdmin,
     };
 
     return {
@@ -55,6 +57,8 @@ export class AuthService {
         skills: true,
         isActive: true,
         createdAt: true,
+        companyId: true,
+        isSuperAdmin: true,
         role: {
           select: { id: true, name: true, permissions: true },
         },
@@ -77,6 +81,8 @@ export class AuthService {
       email: user.email,
       role: user.role?.name,
       permissions: user.role?.permissions || [],
+      companyId: user.companyId,
+      isSuperAdmin: user.isSuperAdmin,
     };
 
     // 'never' is represented as 100 years (36500 days)

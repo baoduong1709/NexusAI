@@ -9,6 +9,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  users     User[]
+  projects  Project[]
+
+  @@map("companies")
+}
+
 model Role {
   id          Int      @id @default(autoincrement())
   name        String   @unique
@@ -28,12 +40,15 @@ model User {
   isActive        Boolean  @default(true) @map("is_active")
   skills          String[] @default([])
   roleId          Int?     @map("role_id")
+  companyId       Int?     @map("company_id")
+  isSuperAdmin    Boolean  @default(false) @map("is_super_admin")
   chatLanguage    String   @default("vi") @map("chat_language")
   chatDescription String?  @db.Text @map("chat_description")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   role           Role?           @relation(fields: [roleId], references: [id])
+  company        Company?        @relation(fields: [companyId], references: [id])
   projectMembers ProjectMember[]
   assignedTasks  Task[]          @relation("AssignedTasks")
   aiChatSessions AiChatSession[]
@@ -60,9 +75,11 @@ model Project {
   epics          String[]      @default([])
   labels         String[]      @default([])
   taskNamingRule String?       @map("task_naming_rule")
+  companyId      Int?          @map("company_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
+  company             Company?        @relation(fields: [companyId], references: [id])
   members             ProjectMember[]
   tasks               Task[]
   documents           Document[]

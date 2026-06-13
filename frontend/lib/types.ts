@@ -13,6 +13,13 @@ export interface Role {
   _count?: { users: number };
 }
 
+export interface Company {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: number;
   name: string;
@@ -22,7 +29,10 @@ export interface User {
   roleId: number | null;
   chatLanguage: string;
   chatDescription: string | null;
+  companyId: number | null;
+  isSuperAdmin: boolean;
   role?: Role;
+  company?: Company;
   createdAt: string;
   updatedAt: string;
 }
@@ -51,6 +61,8 @@ export interface Project {
   taskNamingRule: string | null;
   createdAt: string;
   updatedAt: string;
+  companyId: number | null;
+  company?: Company;
   members?: ProjectMember[];
   tasks?: Task[];
   _count?: { tasks: number; members: number; documents: number };

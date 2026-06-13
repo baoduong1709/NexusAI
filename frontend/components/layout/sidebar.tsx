@@ -24,6 +24,7 @@ interface NavigationItem {
   href: string;
   icon: any;
   permission?: string | ((hasPermission: (p: string) => boolean) => boolean);
+  requireSuperAdmin?: boolean;
 }
 
 const navigation: NavigationItem[] = [
@@ -40,11 +41,12 @@ const navigation: NavigationItem[] = [
       hasPermission("system:config:read") ||
       hasPermission("system:config:write"),
   },
+  { name: "Companies", href: "/companies", icon: Building2, requireSuperAdmin: true },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { hasPermission } = useAuth();
+  const { user, hasPermission } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
   const [currentWorkspace] = useState({
@@ -68,6 +70,7 @@ export default function Sidebar() {
 
   // Filter navigation items based on user permissions
   const visibleNavigation = navigation.filter((item) => {
+    if (item.requireSuperAdmin && !user?.isSuperAdmin) return false;
     if (!item.permission) return true;
     if (typeof item.permission === "function") {
       return item.permission(hasPermission);

@@ -15,6 +15,7 @@ interface User {
   email: string;
   role?: { id: number; name: string; permissions: string[] };
   skills: string[];
+  isSuperAdmin: boolean;
 }
 
 interface AuthContextType {
@@ -23,6 +24,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
   isLoading: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -67,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, hasPermission, isLoading }}
+      value={{ user, login, logout, hasPermission, isLoading, isSuperAdmin: user?.isSuperAdmin ?? false }}
     >
       {children}
     </AuthContext.Provider>

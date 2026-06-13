@@ -16,14 +16,17 @@ const USER_SELECT = {
   isActive: true,
   skills: true,
   createdAt: true,
+  isSuperAdmin: true,
   role: { select: { id: true, name: true } },
+  companyId: true,
+  company: { select: { id: true, name: true } },
 };
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateUserDto) {
+  async create(companyId: number | undefined, dto: CreateUserDto) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -31,13 +34,14 @@ export class UsersService {
 
     const hashed = await bcrypt.hash(dto.password, 10);
     return this.prisma.user.create({
-      data: { ...dto, password: hashed },
+      data: { ...dto, password: hashed, companyId },
       select: USER_SELECT,
     });
   }
 
-  findAll() {
+  findAll(companyId?: number) {
     return this.prisma.user.findMany({
+      where: companyId ? { companyId } : undefined,
       select: USER_SELECT,
       orderBy: { createdAt: "desc" },
     });

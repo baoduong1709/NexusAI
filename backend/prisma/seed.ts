@@ -4,6 +4,14 @@ import * as bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
+  const defaultCompany = await prisma.company.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      name: "NexusAI Default Company",
+    },
+  });
+
   // Create default roles
   const adminPermissions = [
     "user:create",
@@ -107,22 +115,139 @@ async function main() {
     },
   });
 
-  // Create admin user
+  // Create admin user (Demo)
   const hashedPassword = await bcrypt.hash("Admin@123", 10);
   await prisma.user.upsert({
     where: { email: "admin@nexusai.com" },
-    update: {},
+    update: {
+      isSuperAdmin: false,
+    },
     create: {
-      name: "System Admin",
+      name: "Demo Admin",
       email: "admin@nexusai.com",
       password: hashedPassword,
       roleId: adminRole.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
       skills: ["management", "planning"],
     },
   });
 
+  // Create real Super Admin user
+  const superAdminPassword = await bcrypt.hash("SuperAdmin@123", 10);
+  await prisma.user.upsert({
+    where: { email: "superadmin@nexusai.com" },
+    update: {
+      isSuperAdmin: true,
+    },
+    create: {
+      name: "Super Admin",
+      email: "superadmin@nexusai.com",
+      password: superAdminPassword,
+      roleId: adminRole.id,
+      companyId: defaultCompany.id, // Assign to default company just in case some APIs need it
+      isSuperAdmin: true,
+      skills: ["system management", "security"],
+    },
+  });
+
+  const devRole = await prisma.role.findUnique({ where: { name: "Developer" } });
+  const designerRole = await prisma.role.findUnique({ where: { name: "Designer" } });
+  const testerRole = await prisma.role.findUnique({ where: { name: "Tester" } });
+
+  // Create PM
+  await prisma.user.upsert({
+    where: { email: "pm@nexusai.com" },
+    update: {},
+    create: {
+      name: "Project Manager",
+      email: "pm@nexusai.com",
+      password: hashedPassword,
+      roleId: pmRole.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["agile", "scrum", "jira"],
+    },
+  });
+
+  // Create Lead
+  await prisma.user.upsert({
+    where: { email: "lead@nexusai.com" },
+    update: {},
+    create: {
+      name: "Tech Lead",
+      email: "lead@nexusai.com",
+      password: hashedPassword,
+      roleId: leadRole.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["architecture", "nodejs", "react"],
+    },
+  });
+
+  // Create Developer 1
+  await prisma.user.upsert({
+    where: { email: "dev1@nexusai.com" },
+    update: {},
+    create: {
+      name: "Frontend Developer",
+      email: "dev1@nexusai.com",
+      password: hashedPassword,
+      roleId: devRole?.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["react", "typescript", "tailwind"],
+    },
+  });
+
+  // Create Developer 2
+  await prisma.user.upsert({
+    where: { email: "dev2@nexusai.com" },
+    update: {},
+    create: {
+      name: "Backend Developer",
+      email: "dev2@nexusai.com",
+      password: hashedPassword,
+      roleId: devRole?.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["nestjs", "postgresql", "docker"],
+    },
+  });
+
+  // Create Designer
+  await prisma.user.upsert({
+    where: { email: "designer@nexusai.com" },
+    update: {},
+    create: {
+      name: "UI/UX Designer",
+      email: "designer@nexusai.com",
+      password: hashedPassword,
+      roleId: designerRole?.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["figma", "ui/ux", "prototyping"],
+    },
+  });
+
+  // Create Tester
+  await prisma.user.upsert({
+    where: { email: "tester@nexusai.com" },
+    update: {},
+    create: {
+      name: "QA Engineer",
+      email: "tester@nexusai.com",
+      password: hashedPassword,
+      roleId: testerRole?.id,
+      companyId: defaultCompany.id,
+      isSuperAdmin: false,
+      skills: ["cypress", "jest", "manual testing"],
+    },
+  });
+
   console.log("Seed completed!");
-  console.log("Admin login: admin@nexusai.com / Admin@123");
+  console.log("Demo Admin login: admin@nexusai.com / Admin@123");
+  console.log("Super Admin login: superadmin@nexusai.com / SuperAdmin@123");
 }
 
 main()

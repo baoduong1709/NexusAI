@@ -29,8 +29,8 @@ export class UsersController {
   @Post()
   @RequirePermissions("user:create")
   @ApiOperation({ summary: "Create a new user" })
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
+  create(@CurrentUser() user: any, @Body() dto: CreateUserDto) {
+    return this.usersService.create(user.companyId, dto);
   }
 
   @Get("me/chat-settings")
@@ -51,8 +51,8 @@ export class UsersController {
   @Get()
   @RequirePermissions("user:read")
   @ApiOperation({ summary: "Get all users" })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@CurrentUser() user: any) {
+    return this.usersService.findAll(user.companyId);
   }
 
   @Get(":id")

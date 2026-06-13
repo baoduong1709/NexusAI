@@ -61,6 +61,15 @@ export const usersApi = {
   delete: (id: number) => api.delete(`/users/${id}`),
 };
 
+export const companiesApi = {
+  getAll: () => api.get("/companies"),
+  create: (data: { name: string }) => api.post("/companies", data),
+  update: (id: number, data: { name: string }) => api.put(`/companies/${id}`, data),
+  delete: (id: number) => api.delete(`/companies/${id}`),
+  getCurrent: () => api.get("/companies/current"),
+  updateCurrent: (data: { name: string }) => api.patch("/companies/current", data),
+};
+
 // ---- Roles ----
 export const rolesApi = {
   getAll: () => api.get("/roles"),

@@ -93,7 +93,7 @@ export class ProjectsService {
     private websocketGateway: WebsocketGateway,
   ) {}
 
-  async create(dto: CreateProjectDto) {
+  async create(companyId: number | undefined, dto: CreateProjectDto) {
     const { memberIds, ...data } = dto;
     const projectRoleConfigs = normalizeProjectRoleConfigs(
       data.projectRoles?.length ? data.projectRoles : undefined,
@@ -108,6 +108,7 @@ export class ProjectsService {
       data: {
         ...data,
         id: dto.id,
+        companyId,
         epics,
         labels,
         taskNamingRule,
@@ -141,7 +142,7 @@ export class ProjectsService {
     return this.attachProjectMetadata(project);
   }
 
-  async findAll(user: { id: number; permissions?: string[] }) {
+  async findAll(user: { id: number; permissions?: string[]; companyId?: number }) {
     const cacheKey = `projects:all:user:${user.id}:${user.permissions?.join(",")}`;
     const cached = await this.cacheManager.get<any[]>(cacheKey);
     if (cached) return cached;
@@ -149,6 +150,7 @@ export class ProjectsService {
     const hasGlobalRead = user.permissions?.includes("project:read");
     const projects = hasGlobalRead
       ? await this.prisma.project.findMany({
+          where: user.companyId ? { companyId: user.companyId } : undefined,
           include: PROJECT_INCLUDE,
           orderBy: { createdAt: "desc" },
         })
@@ -186,13 +188,13 @@ export class ProjectsService {
     return result;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId?: number) {
     const cacheKey = `projects:detail:${id}`;
     const cached = await this.cacheManager.get<any>(cacheKey);
     if (cached) return cached;
 
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+    const project = await this.prisma.project.findFirst({
+      where: companyId ? { id, companyId } : { id },
       include: PROJECT_INCLUDE,
     });
     if (!project) throw new NotFoundException("Project not found");
@@ -202,9 +204,9 @@ export class ProjectsService {
     return result;
   }
 
-  async update(id: string, dto: Partial<CreateProjectDto>) {
-    const existingProject = await this.prisma.project.findUnique({
-      where: { id },
+  async update(id: string, companyId: number | undefined, dto: Partial<CreateProjectDto>) {
+    const existingProject = await this.prisma.project.findFirst({
+      where: companyId ? { id, companyId } : { id },
       select: {
         id: true,
         projectRoles: true,
@@ -265,9 +267,9 @@ export class ProjectsService {
     return this.attachProjectMetadata(updatedProject);
   }
 
-  async updateWorkflow(id: string, dto: UpdateProjectWorkflowDto) {
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+  async updateWorkflow(id: string, companyId: number | undefined, dto: UpdateProjectWorkflowDto) {
+    const project = await this.prisma.project.findFirst({
+      where: companyId ? { id, companyId } : { id },
       select: { id: true, taskStatuses: true, taskWorkflow: true },
     });
 
@@ -343,12 +345,12 @@ export class ProjectsService {
     this.projectAiIndex.rebuildSoon(id);
     await this.cacheManager.clear();
     this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id });
-    return this.findOne(id);
+    return this.findOne(id, companyId);
   }
 
-  async updateRoles(id: string, dto: UpdateProjectRolesDto) {
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+  async updateRoles(id: string, companyId: number | undefined, dto: UpdateProjectRolesDto) {
+    const project = await this.prisma.project.findFirst({
+      where: companyId ? { id, companyId } : { id },
       select: { id: true, projectRoles: true, projectRoleConfigs: true },
     });
 
@@ -432,18 +434,18 @@ export class ProjectsService {
     this.projectAiIndex.rebuildSoon(id);
     await this.cacheManager.clear();
     this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id });
-    return this.findOne(id);
+    return this.findOne(id, companyId);
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, companyId?: number) {
+    await this.findOne(id, companyId);
     await this.cacheManager.clear();
     this.websocketGateway.notifyProjectUpdate(id, 'projectUpdated', { projectId: id, deleted: true });
     return this.prisma.project.delete({ where: { id } });
   }
 
-  async addMember(projectId: string, userId: number, projectRole?: string) {
-    await this.ensureProjectRoleExists(projectId, projectRole);
+  async addMember(projectId: string, companyId: number | undefined, userId: number, projectRole?: string) {
+    await this.ensureProjectRoleExists(projectId, companyId, projectRole);
     const member = await this.prisma.projectMember.create({
       data: {
         projectId,
@@ -459,10 +461,11 @@ export class ProjectsService {
 
   async updateMemberRole(
     projectId: string,
+    companyId: number | undefined,
     userId: number,
     projectRole: string,
   ) {
-    await this.ensureProjectRoleExists(projectId, projectRole);
+    await this.ensureProjectRoleExists(projectId, companyId, projectRole);
     const member = await this.prisma.projectMember.update({
       where: { projectId_userId: { projectId, userId } },
       data: { projectRole: normalizeProjectRole(projectRole) },
@@ -473,7 +476,8 @@ export class ProjectsService {
     return member;
   }
 
-  async removeMember(projectId: string, userId: number) {
+  async removeMember(projectId: string, companyId: number | undefined, userId: number) {
+    await this.findOne(projectId, companyId);
     const member = await this.prisma.projectMember.delete({
       where: { projectId_userId: { projectId, userId } },
     });
@@ -485,13 +489,14 @@ export class ProjectsService {
 
   private async ensureProjectRoleExists(
     projectId: string,
+    companyId: number | undefined,
     projectRole?: string,
   ) {
     const normalizedRole = normalizeProjectRole(projectRole);
     if (!normalizedRole) return;
 
-    const project = await this.prisma.project.findUnique({
-      where: { id: projectId },
+    const project = await this.prisma.project.findFirst({
+      where: companyId ? { id: projectId, companyId } : { id: projectId },
       select: { id: true, projectRoles: true, projectRoleConfigs: true },
     });
 
