@@ -40,6 +40,7 @@ model User {
   taskActivities TaskActivity[]
   aiTokenLogs    AiTokenLog[]
   documents      Document[]
+  notifications  Notification[]
 
   @@map("users")
 }
@@ -156,6 +157,8 @@ model Task {
   project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   assignee   User?        @relation("AssignedTasks", fields: [assigneeId], references: [id])
   activities TaskActivity[]
+  sourceLinks TaskLink[] @relation("SourceTaskLinks")
+  targetLinks TaskLink[] @relation("TargetTaskLinks")
 
   @@unique([projectId, sequence])
   @@index([projectId, status])
@@ -243,3 +246,37 @@ model AiTokenLog {
   @@index([userId, createdAt])
   @@map("ai_token_logs")
 }
+
+model TaskLink {
+  id           Int      @id @default(autoincrement())
+  sourceTaskId String   @map("source_task_id")
+  targetTaskId String   @map("target_task_id")
+  type         String   @default("RELATES_TO")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  sourceTask   Task     @relation("SourceTaskLinks", fields: [sourceTaskId], references: [id], onDelete: Cascade)
+  targetTask   Task     @relation("TargetTaskLinks", fields: [targetTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceTaskId, targetTaskId])
+  @@index([sourceTaskId])
+  @@index([targetTaskId])
+  @@map("task_links")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  title     String
+  message   String
+  type      String
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+

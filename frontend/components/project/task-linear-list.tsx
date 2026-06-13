@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useConfirm } from "@/components/providers/confirm-provider";
 import { CustomSelect } from "@/components/ui/custom-select";
 import {
@@ -221,7 +222,13 @@ export function TaskLinearList({
                 >
                   {/* Task ID */}
                   <td className="pl-4 pr-2 py-2.5 font-mono text-xs font-bold text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
-                    {task.id}
+                    <Link
+                      href={`/browse/${task.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="hover:text-indigo-500 hover:underline transition-colors block"
+                    >
+                      {task.id}
+                    </Link>
                   </td>
 
                   {/* Title & Short Description */}
@@ -240,7 +247,7 @@ export function TaskLinearList({
                   </td>
 
                   {/* Assignee */}
-                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5">
                     {task.assignee ? (
                       <div className="flex items-center gap-1.5" title={task.assignee.name}>
                         <div className="w-5.5 h-5.5 rounded-full bg-indigo-600/80 border border-indigo-500/20 flex items-center justify-center text-[9px] font-bold text-white shadow-sm shrink-0">
@@ -256,14 +263,14 @@ export function TaskLinearList({
                   </td>
 
                   {/* Priority */}
-                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5">
                     <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border tracking-wide uppercase", priorityInfo.class)}>
                       {priorityInfo.label}
                     </span>
                   </td>
 
                   {/* Epic */}
-                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5">
                     {task.epic ? (
                       <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 truncate max-w-full">
                         {task.epic}
@@ -274,14 +281,14 @@ export function TaskLinearList({
                   </td>
 
                   {/* Est / Logged */}
-                  <td className="px-3 py-2.5 font-mono text-xs text-zinc-400 dark:text-zinc-500" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5 font-mono text-xs text-zinc-400 dark:text-zinc-500">
                     <span title="Est">{formatDuration(task.estimateHours)}</span>
                     <span className="text-zinc-300 dark:text-zinc-700 mx-0.5">/</span>
                     <span className="text-indigo-600 dark:text-indigo-400 font-bold" title="Logged">{formatDuration(task.loggedHours)}</span>
                   </td>
 
                   {/* Due Date */}
-                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-2.5">
                     {task.dueDate ? (
                       <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                         {formatDate(task.dueDate)}

@@ -10,7 +10,10 @@ import { Injectable, Logger } from "@nestjs/common";
 
 @WebSocketGateway({
   cors: {
-    origin: "*", // Allow all origins for development
+    origin: (requestOrigin: string, callback: (err: Error | null, allow?: any) => void) => {
+      // Dynamic origin reflection allows withCredentials to work correctly
+      callback(null, requestOrigin || "*");
+    },
     credentials: true,
   },
   namespace: "ws",
@@ -46,9 +49,31 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     return { event: "left", room: roomId };
   }
 
+  @SubscribeMessage("joinUser")
+  handleJoinUser(client: Socket, payload: { userId: number }) {
+    const roomId = `user:${payload.userId}`;
+    client.join(roomId);
+    this.logger.log(`Client ${client.id} joined user room ${roomId}`);
+    return { event: "joined", room: roomId };
+  }
+
+  @SubscribeMessage("leaveUser")
+  handleLeaveUser(client: Socket, payload: { userId: number }) {
+    const roomId = `user:${payload.userId}`;
+    client.leave(roomId);
+    this.logger.log(`Client ${client.id} left user room ${roomId}`);
+    return { event: "left", room: roomId };
+  }
+
   notifyProjectUpdate(projectId: string, event: string, payload: any) {
     const roomId = `project:${projectId}`;
     this.logger.log(`Broadcasting event "${event}" to room "${roomId}"`);
+    this.server.to(roomId).emit(event, payload);
+  }
+
+  notifyUser(userId: number, event: string, payload: any) {
+    const roomId = `user:${userId}`;
+    this.logger.log(`Sending event "${event}" to user room "${roomId}"`);
     this.server.to(roomId).emit(event, payload);
   }
 }

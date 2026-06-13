@@ -152,7 +152,7 @@ export class DocumentsController {
       throw new NotFoundException("Document not found");
     }
 
-    if (doc.storageProvider === "s3") {
+    if (doc.storageProvider === "r2") {
       const url = this.documentsService.getFileUrl(
         projectId,
         doc.path,

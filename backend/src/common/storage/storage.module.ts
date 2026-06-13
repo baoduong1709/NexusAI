@@ -2,7 +2,7 @@ import { Module, Global } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { StorageService } from './storage.service';
 import { LocalStorageService } from './local-storage.service';
-import { S3StorageService } from './s3-storage.service';
+import { R2StorageService } from './r2-storage.service';
 import { HybridStorageService } from './hybrid-storage.service';
 
 @Global()
@@ -10,16 +10,16 @@ import { HybridStorageService } from './hybrid-storage.service';
   imports: [ConfigModule],
   providers: [
     LocalStorageService,
-    S3StorageService,
+    R2StorageService,
     {
       provide: StorageService,
       useFactory: (
         local: LocalStorageService,
-        s3: S3StorageService,
+        r2: R2StorageService,
       ) => {
-        return new HybridStorageService(local, s3);
+        return new HybridStorageService(local, r2);
       },
-      inject: [LocalStorageService, S3StorageService],
+      inject: [LocalStorageService, R2StorageService],
     },
   ],
   exports: [StorageService],

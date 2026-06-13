@@ -165,7 +165,7 @@ export default function ProjectsPage() {
       ) : (
         <motion.div variants={container} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((p: any) => (
-            <Link key={p.id} href={`/projects/${p.id}`}>
+            <Link key={p.id} href={`/browse/${p.id}`}>
               <motion.div
                 variants={itemAnim}
                 whileHover={{ scale: 1.02, y: -4 }}

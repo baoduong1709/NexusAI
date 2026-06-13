@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
@@ -182,6 +183,15 @@ export function ProjectBoard({
                                   : "hover:border-blue-200 dark:hover:border-blue-800",
                               )}
                             >
+                              <div className="flex items-center justify-between mb-1">
+                                <Link
+                                  href={`/browse/${t.id}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-[10px] font-mono font-bold text-zinc-400 hover:text-indigo-500 hover:underline transition-colors bg-zinc-100 dark:bg-white/5 px-1.5 py-0.5 rounded"
+                                >
+                                  {t.id}
+                                </Link>
+                              </div>
                               <p className='text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1'>
                                 {t.title}
                               </p>

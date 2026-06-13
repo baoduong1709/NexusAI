@@ -158,7 +158,7 @@ export default function DashboardPage() {
             projects?.slice(0, 5).map((p: any) => (
               <Link
                 key={p.id}
-                href={`/projects/${p.id}`}
+                href={`/browse/${p.id}`}
                 className="flex items-center justify-between px-8 py-5 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors group"
               >
                 <div>

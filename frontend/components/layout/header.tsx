@@ -27,7 +27,9 @@ import {
 import { getInitials, cn } from "@/lib/utils";
 import { useTheme } from "@/components/providers/theme-provider";
 import { motion, AnimatePresence } from "framer-motion";
-import { authApi } from "@/lib/api";
+import { authApi, notificationsApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, MessageSquare, AlertCircle, Sparkles } from "lucide-react";
 
 // ─── Search / Quick nav items ─────────────────────────────────────────────────
 
@@ -88,12 +90,53 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotiOpen, setIsNotiOpen] = useState(false);
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [personalToken, setPersonalToken] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [isTokenVisible, setIsTokenVisible] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [expiresIn, setExpiresIn] = useState("365d");
+
+  // Notifications logic
+  const queryClient = useQueryClient();
+  const { data: notificationsData } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => notificationsApi.getAll().then((r) => r.data),
+    enabled: !!user,
+  });
+
+  const notifications = notificationsData?.notifications ?? [];
+  const unreadCount = notificationsData?.unreadCount ?? 0;
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: number) => notificationsApi.markAsRead(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => notificationsApi.markAllAsRead(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
+  // Relative time formatter for premium UI look
+  const formatRelativeTime = (dateStr: string | Date) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffSec < 60) return "Vừa xong";
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffDay === 1) return "Hôm qua";
+    if (diffDay < 7) return `${diffDay} ngày trước`;
+    return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
+  };
 
   // Search state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -294,14 +337,132 @@ export default function Header() {
         </motion.button>
 
         {/* Notifications */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative p-2 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-        >
-          <Bell size={16} />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-        </motion.button>
+        <div className="relative">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsNotiOpen(!isNotiOpen)}
+            className="relative p-2 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50 cursor-pointer"
+          >
+            <Bell size={16} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-zinc-950" />
+            )}
+          </motion.button>
+
+          <AnimatePresence>
+            {isNotiOpen && (
+              <>
+                {/* Backdrop to close on click outside */}
+                <div
+                  className="fixed inset-0 z-40 cursor-default"
+                  onClick={() => setIsNotiOpen(false)}
+                />
+
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                  transition={{ duration: 0.12 }}
+                  className="absolute right-0 top-[calc(100%+4px)] w-80 sm:w-96 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-2xl py-3 z-50 overflow-hidden font-sans"
+                >
+                  {/* Dropdown Header */}
+                  <div className="flex items-center justify-between px-4 pb-2 border-b border-zinc-100 dark:border-zinc-800/50">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Thông báo</span>
+                      {unreadCount > 0 && (
+                        <span className="text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full">
+                          {unreadCount} mới
+                        </span>
+                      )}
+                    </div>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={() => markAllAsReadMutation.mutate()}
+                        className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-750 hover:underline cursor-pointer"
+                      >
+                        Đọc tất cả
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Dropdown Content */}
+                  <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[360px] overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                        <div className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-zinc-400 dark:text-zinc-600 mb-3">
+                          <Bell size={20} className="opacity-80" />
+                        </div>
+                        <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Không có thông báo nào</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">Các thông báo mới về công việc sẽ xuất hiện ở đây.</p>
+                      </div>
+                    ) : (
+                      notifications.map((noti: any) => {
+                        const isUnread = !noti.isRead;
+                        // Select icon and color based on notification type
+                        let IconComponent = Bell;
+                        let iconColorClass = "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400";
+                        
+                        if (noti.type === "LINK_TASK_STATUS_CHANGED") {
+                          IconComponent = CheckCircle2;
+                          iconColorClass = "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400";
+                        } else if (noti.type === "AI_JOB") {
+                          IconComponent = Sparkles;
+                          iconColorClass = "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400";
+                        } else if (noti.type === "SYSTEM") {
+                          IconComponent = AlertCircle;
+                          iconColorClass = "bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400";
+                        }
+
+                        return (
+                          <div
+                            key={noti.id}
+                            onClick={async () => {
+                              if (isUnread) {
+                                markAsReadMutation.mutate(noti.id);
+                              }
+                              setIsNotiOpen(false);
+                              if (noti.link) {
+                                router.push(noti.link);
+                              }
+                            }}
+                            className={cn(
+                              "flex items-start gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer text-left relative",
+                              isUnread && "bg-indigo-50/20 dark:bg-indigo-500/[0.02]"
+                            )}
+                          >
+                            {/* Icon Wrapper */}
+                            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5", iconColorClass)}>
+                              <IconComponent size={15} />
+                            </div>
+
+                            {/* Message Area */}
+                            <div className="flex-1 min-w-0">
+                              <p className={cn("text-xs font-semibold text-zinc-800 dark:text-zinc-200 leading-snug", isUnread && "font-bold text-zinc-950 dark:text-white")}>
+                                {noti.title}
+                              </p>
+                              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-normal break-words">
+                                {noti.message}
+                              </p>
+                              <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-1.5 font-medium">
+                                {formatRelativeTime(noti.createdAt)}
+                              </p>
+                            </div>
+
+                            {/* Unread indicator */}
+                            {isUnread && (
+                              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full flex-shrink-0 mt-2 ml-1" />
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Dark/Light mode toggle */}
         <motion.button

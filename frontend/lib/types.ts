@@ -56,6 +56,16 @@ export interface Project {
   _count?: { tasks: number; members: number; documents: number };
 }
 
+export interface TaskLink {
+  id: number;
+  sourceTaskId: string;
+  targetTaskId: string;
+  type: string;
+  createdAt: string;
+  sourceTask?: Pick<Task, 'id' | 'title' | 'status' | 'assignee'>;
+  targetTask?: Pick<Task, 'id' | 'title' | 'status' | 'assignee'>;
+}
+
 export interface Task {
   id: string;
   sequence: number;
@@ -76,6 +86,8 @@ export interface Task {
   createdAt: string;
   updatedAt: string;
   assignee?: Pick<User, 'id' | 'name' | 'email'>;
+  sourceLinks?: TaskLink[];
+  targetLinks?: TaskLink[];
   _count?: { activities: number };
 }
 

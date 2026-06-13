@@ -15,6 +15,7 @@ import { AiModule } from "./ai/ai.module";
 import { LoggingMiddleware } from "./common/middleware/logging.middleware";
 import { StorageModule } from "./common/storage/storage.module";
 import { WebsocketModule } from "./common/websocket/websocket.module";
+import { NotificationModule } from "./notifications/notification.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { WebsocketModule } from "./common/websocket/websocket.module";
     AiModule,
     StorageModule,
     WebsocketModule,
+    NotificationModule,
   ],
   providers: [
     {

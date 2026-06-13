@@ -75,7 +75,7 @@ export class DocumentsService {
     const ext = extname(file.originalname).toLowerCase();
 
     const cleanLocalTempFile = () => {
-      const isCloud = uploadResult.storageProvider === 's3';
+      const isCloud = uploadResult.storageProvider === 'r2';
       if (isCloud && fs.existsSync(file.path)) {
         try {
           fs.unlinkSync(file.path);
@@ -153,14 +153,15 @@ export class DocumentsService {
     folder?: string | null,
     storageProvider?: string | null,
   ): string {
-    // If stored on S3, construct S3 URL
-    if (storageProvider === 's3') {
-      const publicUrl = this.config.get<string>("S3_PUBLIC_URL") || "";
+    // If stored on R2, construct R2 URL
+    if (storageProvider === 'r2') {
+      const publicUrl = this.config.get<string>("R2_PUBLIC_URL") || "";
       if (publicUrl) {
         return `${publicUrl}/${path}`;
       }
-      const bucketName = this.config.get<string>("S3_BUCKET_NAME") || "";
-      return `https://${bucketName}.s3.amazonaws.com/${path}`;
+      const endpoint = this.config.get<string>("R2_ENDPOINT") || "";
+      const bucketName = this.config.get<string>("R2_BUCKET_NAME") || "";
+      return `${endpoint}/${bucketName}/${path}`;
     }
     // Default: local storage
     const backendUrl =

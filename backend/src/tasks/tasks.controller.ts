@@ -114,6 +114,30 @@ export class TasksController {
     return this.tasksService.addWorkLog(projectId, id, user?.id, dto);
   }
 
+  @Post(":id/links")
+  @RequirePermissions("task:update")
+  @ApiOperation({ summary: "Link a task to another task" })
+  linkTask(
+    @Param("projectId") projectId: string,
+    @Param("id") id: string,
+    @Body("targetTaskId") targetTaskId: string,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.tasksService.linkTask(projectId, id, targetTaskId, user?.id);
+  }
+
+  @Delete(":id/links/:targetTaskId")
+  @RequirePermissions("task:update")
+  @ApiOperation({ summary: "Remove link between two tasks" })
+  unlinkTask(
+    @Param("projectId") projectId: string,
+    @Param("id") id: string,
+    @Param("targetTaskId") targetTaskId: string,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.tasksService.unlinkTask(projectId, id, targetTaskId, user?.id);
+  }
+
   @Delete(":id")
   @RequirePermissions("task:delete")
   remove(@Param("id") id: string) {

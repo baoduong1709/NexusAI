@@ -17,7 +17,7 @@ export class LocalStorageService extends StorageService {
     path: string;
     filename: string;
     url: string;
-    storageProvider: 'local' | 's3';
+    storageProvider: 'local' | 'r2';
   }> {
     const backendUrl = this.configService.get<string>('BACKEND_URL') || 'http://localhost:4000';
     const folderPrefix = folder ? `${folder}/` : '';

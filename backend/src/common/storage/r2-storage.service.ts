@@ -5,31 +5,31 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client
 import * as fs from 'fs';
 
 @Injectable()
-export class S3StorageService extends StorageService {
-  private readonly logger = new Logger(S3StorageService.name);
-  private s3Client: S3Client;
+export class R2StorageService extends StorageService {
+  private readonly logger = new Logger(R2StorageService.name);
+  private r2Client: S3Client;
   private bucketName: string;
   private publicUrl: string;
 
   constructor(private configService: ConfigService) {
     super();
     
-    const accessKeyId = this.configService.get<string>('S3_ACCESS_KEY_ID');
-    const secretAccessKey = this.configService.get<string>('S3_SECRET_ACCESS_KEY');
-    const region = this.configService.get<string>('S3_REGION') || 'us-east-1';
-    const endpoint = this.configService.get<string>('S3_ENDPOINT');
+    const accessKeyId = this.configService.get<string>('R2_ACCESS_KEY_ID');
+    const secretAccessKey = this.configService.get<string>('R2_SECRET_ACCESS_KEY');
+    const region = this.configService.get<string>('R2_REGION') || 'auto';
+    const endpoint = this.configService.get<string>('R2_ENDPOINT');
     
-    this.bucketName = this.configService.get<string>('S3_BUCKET_NAME') || '';
-    this.publicUrl = this.configService.get<string>('S3_PUBLIC_URL') || '';
+    this.bucketName = this.configService.get<string>('R2_BUCKET_NAME') || '';
+    this.publicUrl = this.configService.get<string>('R2_PUBLIC_URL') || '';
 
-    this.s3Client = new S3Client({
+    this.r2Client = new S3Client({
       region,
       credentials: {
         accessKeyId: accessKeyId || '',
         secretAccessKey: secretAccessKey || '',
       },
       endpoint: endpoint || undefined,
-      forcePathStyle: endpoint ? true : false,
+      forcePathStyle: true, // Cloudflare R2 works best with path style requests for custom endpoints
     });
   }
 
@@ -41,15 +41,15 @@ export class S3StorageService extends StorageService {
     path: string;
     filename: string;
     url: string;
-    storageProvider: 'local' | 's3';
+    storageProvider: 'local' | 'r2';
   }> {
     const folderPrefix = folder ? `${folder}/` : '';
     const fileKey = `uploads/project-${projectId}/${folderPrefix}${file.filename}`;
     const fileStream = fs.createReadStream(file.path);
 
-    this.logger.log(`Uploading file to S3: ${fileKey}`);
+    this.logger.log(`Uploading file to R2: ${fileKey}`);
 
-    await this.s3Client.send(
+    await this.r2Client.send(
       new PutObjectCommand({
         Bucket: this.bucketName,
         Key: fileKey,
@@ -58,35 +58,34 @@ export class S3StorageService extends StorageService {
       }),
     );
 
-
-
     // Construct URL
     let url = '';
     if (this.publicUrl) {
       url = `${this.publicUrl}/${fileKey}`;
     } else {
-      url = `https://${this.bucketName}.s3.amazonaws.com/${fileKey}`;
+      const endpoint = this.configService.get<string>('R2_ENDPOINT') || '';
+      url = `${endpoint}/${this.bucketName}/${fileKey}`;
     }
 
     return {
       path: fileKey,
       filename: file.filename,
       url,
-      storageProvider: 's3',
+      storageProvider: 'r2',
     };
   }
 
   async deleteFile(projectId: string, path: string): Promise<void> {
-    this.logger.log(`Deleting file from S3: ${path}`);
+    this.logger.log(`Deleting file from R2: ${path}`);
     try {
-      await this.s3Client.send(
+      await this.r2Client.send(
         new DeleteObjectCommand({
           Bucket: this.bucketName,
           Key: path,
         }),
       );
     } catch (e: any) {
-      this.logger.error(`Failed to delete file from S3: ${e.message}`);
+      this.logger.error(`Failed to delete file from R2: ${e.message}`);
     }
   }
 }

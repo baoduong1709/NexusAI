@@ -25,6 +25,7 @@ import {
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
 import { StorageService } from "../common/storage/storage.service";
 import { WebsocketGateway } from "../common/websocket/websocket.gateway";
+import { NotificationService } from "../notifications/notification.service";
 import * as fs from "fs";
 
 const TASK_INCLUDE = {
@@ -38,6 +39,30 @@ const TASK_INCLUDE = {
       epics: true,
       labels: true,
       taskNamingRule: true,
+    },
+  },
+  sourceLinks: {
+    include: {
+      targetTask: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          assignee: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+  },
+  targetLinks: {
+    include: {
+      sourceTask: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          assignee: { select: { id: true, name: true, email: true } },
+        },
+      },
     },
   },
 };
@@ -195,6 +220,7 @@ export class TasksService {
     private storageService: StorageService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private websocketGateway: WebsocketGateway,
+    private notificationService: NotificationService,
   ) {}
 
   private async cleanUpImageDocuments(projectId: string, docIds: number[]) {
@@ -429,6 +455,10 @@ export class TasksService {
       await (this.prisma as any).taskActivity.createMany({ data: changes });
     }
 
+    if (task.status !== updated.status) {
+      await this.handleLinkedTasksNotification(id, task.status, updated.status, userId);
+    }
+
     this.projectAiIndex.rebuildSoon(task.projectId);
     await this.cacheManager.clear();
     this.websocketGateway.notifyProjectUpdate(task.projectId, 'tasksUpdated', { projectId: task.projectId });
@@ -465,6 +495,7 @@ export class TasksService {
         fromValue: task.status,
         toValue: updated.status,
       });
+      await this.handleLinkedTasksNotification(id, task.status, updated.status, userId);
     }
 
     this.projectAiIndex.rebuildSoon(task.projectId);
@@ -670,6 +701,157 @@ export class TasksService {
         user: { select: { id: true, name: true, email: true } },
       },
     });
+  }
+
+  async linkTask(projectId: string, sourceTaskId: string, targetTaskId: string, userId?: number) {
+    if (sourceTaskId === targetTaskId) {
+      throw new BadRequestException("Cannot link a task to itself");
+    }
+
+    // Ensure both tasks exist and belong to the project
+    await this.ensureTaskInProject(projectId, sourceTaskId);
+    await this.ensureTaskInProject(projectId, targetTaskId);
+
+    // Create the task link
+    const link = await this.prisma.taskLink.upsert({
+      where: {
+        sourceTaskId_targetTaskId: {
+          sourceTaskId,
+          targetTaskId,
+        },
+      },
+      update: {},
+      create: {
+        sourceTaskId,
+        targetTaskId,
+        type: "RELATES_TO",
+      },
+    });
+
+    // Create history logs
+    const sourceTask = await this.prisma.task.findUnique({ where: { id: sourceTaskId } });
+    const targetTask = await this.prisma.task.findUnique({ where: { id: targetTaskId } });
+
+    await this.createActivity({
+      taskId: sourceTaskId,
+      userId,
+      type: "HISTORY",
+      field: "task_link",
+      body: `Linked to task ${targetTask?.title || targetTaskId}`,
+    });
+
+    await this.createActivity({
+      taskId: targetTaskId,
+      userId,
+      type: "HISTORY",
+      field: "task_link",
+      body: `Linked from task ${sourceTask?.title || sourceTaskId}`,
+    });
+
+    this.websocketGateway.notifyProjectUpdate(projectId, 'tasksUpdated', { projectId });
+    return link;
+  }
+
+  async unlinkTask(projectId: string, sourceTaskId: string, targetTaskId: string, userId?: number) {
+    // Ensure both tasks exist and belong to the project
+    await this.ensureTaskInProject(projectId, sourceTaskId);
+    await this.ensureTaskInProject(projectId, targetTaskId);
+
+    try {
+      await this.prisma.taskLink.delete({
+        where: {
+          sourceTaskId_targetTaskId: {
+            sourceTaskId,
+            targetTaskId,
+          },
+        },
+      });
+    } catch (e) {
+      // If link doesn't exist, we can ignore or return
+    }
+
+    const sourceTask = await this.prisma.task.findUnique({ where: { id: sourceTaskId } });
+    const targetTask = await this.prisma.task.findUnique({ where: { id: targetTaskId } });
+
+    await this.createActivity({
+      taskId: sourceTaskId,
+      userId,
+      type: "HISTORY",
+      field: "task_link",
+      body: `Unlinked task ${targetTask?.title || targetTaskId}`,
+    });
+
+    await this.createActivity({
+      taskId: targetTaskId,
+      userId,
+      type: "HISTORY",
+      field: "task_link",
+      body: `Unlinked from task ${sourceTask?.title || sourceTaskId}`,
+    });
+
+    this.websocketGateway.notifyProjectUpdate(projectId, 'tasksUpdated', { projectId });
+    return { success: true };
+  }
+
+  private async handleLinkedTasksNotification(taskId: string, oldStatus: string, newStatus: string, userId?: number) {
+    if (oldStatus === newStatus) return;
+
+    // Find all target tasks linked by this task (sourceTaskId = taskId)
+    const links = await this.prisma.taskLink.findMany({
+      where: { sourceTaskId: taskId },
+      include: {
+        sourceTask: {
+          select: {
+            id: true,
+            title: true,
+            projectId: true,
+          },
+        },
+        targetTask: {
+          select: {
+            id: true,
+            title: true,
+            assigneeId: true,
+          },
+        },
+      },
+    });
+
+    for (const link of links) {
+      const targetAssigneeId = link.targetTask.assigneeId;
+      if (targetAssigneeId) {
+        // 1. Create a TaskActivity history log in the target task
+        await this.createActivity({
+          taskId: link.targetTask.id,
+          userId,
+          type: "HISTORY",
+          field: "linked_task_status",
+          fromValue: oldStatus,
+          toValue: newStatus,
+          body: `Linked task "${link.sourceTask.title}" has changed status from "${oldStatus}" to "${newStatus}"`,
+        });
+
+        // 2. Create persistent notification in database (emits newNotification event)
+        await this.notificationService.create(targetAssigneeId, {
+          title: "Thay đổi trạng thái task liên kết",
+          message: `Task liên kết "${link.sourceTask.title}" đã chuyển sang trạng thái "${newStatus}" (ảnh hưởng tới task "${link.targetTask.title}" của bạn)`,
+          type: "LINK_TASK_STATUS_CHANGED",
+          link: `/browse/${link.targetTask.id}`,
+        });
+
+        // 3. Emit legacy Websocket event to the target user room for backward compatibility
+        this.websocketGateway.notifyUser(targetAssigneeId, "linkTaskStatusChanged", {
+          projectId: link.sourceTask.projectId,
+          sourceTaskId: link.sourceTask.id,
+          sourceTaskTitle: link.sourceTask.title,
+          targetTaskId: link.targetTask.id,
+          targetTaskTitle: link.targetTask.title,
+          targetAssigneeId,
+          oldStatus,
+          newStatus,
+        });
+      }
+    }
   }
 }
 

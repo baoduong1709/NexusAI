@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, CSSProperties } from "react";
+import Link from "next/link";
 import {
   ListChecks,
   CheckCircle,
@@ -531,9 +532,13 @@ export function ProjectSummaryTab({
                   <p className="text-sm text-zinc-800 dark:text-zinc-200 truncate">
                     {t.title}
                   </p>
-                  <p className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500">
+                  <Link
+                    href={`/browse/${t.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] font-semibold text-zinc-400 hover:text-indigo-500 hover:underline transition-colors block w-fit"
+                  >
                     {t.id}
-                  </p>
+                  </Link>
                 </div>
                 <span
                   className={cn(

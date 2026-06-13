@@ -13,10 +13,50 @@ export const getSocket = (): Socket => {
     socketInstance = io(`${SOCKET_URL}/ws`, {
       autoConnect: false,
       withCredentials: true,
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
     });
   }
   return socketInstance;
+};
+
+// A helper map to keep track of debounce timers for query invalidations.
+// Using global Record to store setTimeout IDs.
+const debounceTimers: Record<string, any> = {};
+
+// Tracking local mutations to avoid redundant refetches on the initiator's side
+let lastLocalMutationTime = 0;
+
+export const recordLocalMutation = () => {
+  lastLocalMutationTime = Date.now();
+  console.log("Real-time: Recorded local mutation at", lastLocalMutationTime);
+};
+
+export const isRecentLocalMutation = (threshold = 2000): boolean => {
+  const isRecent = Date.now() - lastLocalMutationTime < threshold;
+  if (isRecent) {
+    console.log(`Real-time: Recent local mutation detected (${Date.now() - lastLocalMutationTime}ms ago)`);
+  }
+  return isRecent;
+};
+
+/**
+ * Debounces the invalidation of a query key to avoid spamming the backend API
+ * when multiple real-time updates happen in quick succession.
+ */
+export const debounceInvalidate = (
+  queryClient: any,
+  queryKey: any[],
+  delay = 300
+) => {
+  const keyStr = JSON.stringify(queryKey);
+  if (debounceTimers[keyStr]) {
+    clearTimeout(debounceTimers[keyStr]);
+  }
+  debounceTimers[keyStr] = setTimeout(() => {
+    console.log("Real-time: Performing debounced invalidation for key", queryKey);
+    queryClient.invalidateQueries({ queryKey });
+    delete debounceTimers[keyStr];
+  }, delay);
 };
 
 export interface WebsocketCallbacks {
@@ -38,29 +78,22 @@ export function useProjectWebsocket(projectId: string, callbacks?: WebsocketCall
       socket.connect();
     }
 
-    // Join project room
-    socket.emit("joinProject", { projectId });
+    // We no longer emit joinProject/leaveProject here because it's handled globally in layout.tsx!
+    // This prevents component unmounts from removing the client from the room,
+    // which would break the global background updates.
+    // socket.emit("joinProject", { projectId });
 
     // Handle project updates
     const handleProjectUpdated = (data: { projectId: string }) => {
-      console.log("Real-time: Project updated, invalidating cache", data);
-      queryClient.invalidateQueries({
-        queryKey: ["project", projectId],
-      });
-      // Also invalidate projects list
-      queryClient.invalidateQueries({
-        queryKey: ["projects"],
-      });
-      toast.info("Project details updated in real-time");
+      console.log("Real-time: Project updated, debouncing invalidation", data);
+      debounceInvalidate(queryClient, ["project", projectId]);
+      debounceInvalidate(queryClient, ["projects"]);
     };
 
     // Handle tasks updates
     const handleTasksUpdated = (data: { projectId: string }) => {
-      console.log("Real-time: Tasks updated, invalidating cache", data);
-      queryClient.invalidateQueries({
-        queryKey: ["project-tasks", projectId],
-      });
-      toast.info("Tasks synchronized in real-time");
+      console.log("Real-time: Tasks updated, debouncing invalidation", data);
+      debounceInvalidate(queryClient, ["project-tasks", projectId]);
     };
 
     // Handle AI Job updates
@@ -73,20 +106,12 @@ export function useProjectWebsocket(projectId: string, callbacks?: WebsocketCall
       console.log("Real-time: AI Job completed", data);
       // Invalidate queries based on job type
       if (data.type === "analyze") {
-        queryClient.invalidateQueries({
-          queryKey: ["project-tasks", projectId],
-        });
+        debounceInvalidate(queryClient, ["project-tasks", projectId]);
       } else if (data.type === "updateRequirements") {
         // Invalidate requirements
-        queryClient.invalidateQueries({
-          queryKey: ["requirements", projectId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["req-history", projectId],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["project", projectId],
-        });
+        debounceInvalidate(queryClient, ["requirements", projectId]);
+        debounceInvalidate(queryClient, ["req-history", projectId]);
+        debounceInvalidate(queryClient, ["project", projectId]);
       }
       callbacks?.onAiJobCompleted?.(data);
     };
@@ -104,7 +129,7 @@ export function useProjectWebsocket(projectId: string, callbacks?: WebsocketCall
 
     // Clean up
     return () => {
-      socket.emit("leaveProject", { projectId });
+      // socket.emit("leaveProject", { projectId });
       socket.off("projectUpdated", handleProjectUpdated);
       socket.off("tasksUpdated", handleTasksUpdated);
       socket.off("aiJobStarted", handleAiJobStarted);

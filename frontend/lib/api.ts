@@ -29,6 +29,13 @@ api.interceptors.response.use(
 
 export default api;
 
+// ---- Notifications ----
+export const notificationsApi = {
+  getAll: () => api.get("/notifications"),
+  markAsRead: (id: number) => api.patch(`/notifications/${id}/read`),
+  markAllAsRead: () => api.post("/notifications/read-all"),
+};
+
 // ---- Auth ----
 export const authApi = {
   login: (email: string, password: string) =>
@@ -110,6 +117,10 @@ export const tasksApi = {
     api.delete(`/projects/${projectId}/tasks/${taskId}`),
   getOneWithoutProject: (taskId: string) =>
     api.get(`/tasks/${taskId}`),
+  linkTask: (projectId: string, taskId: string, targetTaskId: string) =>
+    api.post(`/projects/${projectId}/tasks/${taskId}/links`, { targetTaskId }),
+  unlinkTask: (projectId: string, taskId: string, targetTaskId: string) =>
+    api.delete(`/projects/${projectId}/tasks/${taskId}/links/${targetTaskId}`),
 };
 
 // ---- Documents ----

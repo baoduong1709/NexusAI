@@ -1071,10 +1071,10 @@ export default function AiChatBubble() {
                             <div
                               key={idx}
                               className={cn(
-                                "flex gap-4 p-4 rounded-2xl transition-all animate-in fade-in duration-300",
+                                "flex gap-4 p-4 rounded-2xl transition-all animate-in fade-in duration-300 max-w-[85%] w-fit",
                                 msg.role === "assistant"
-                                  ? "bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-900/40"
-                                  : ""
+                                  ? "bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-900/40 mr-auto"
+                                  : "flex-row-reverse ml-auto bg-indigo-50/40 dark:bg-indigo-950/10 border border-indigo-100/30 dark:border-indigo-900/20"
                               )}
                             >
                               <div className="flex-shrink-0">

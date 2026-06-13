@@ -10,7 +10,7 @@ export abstract class StorageService {
     path: string;
     filename: string;
     url: string;
-    storageProvider: 'local' | 's3';
+    storageProvider: 'local' | 'r2';
   }>;
 
   abstract deleteFile(projectId: string, path: string): Promise<void>;

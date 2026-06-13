@@ -247,7 +247,7 @@ export class AiDataAccessService {
         where: {
           projectId,
           OR: [
-            { storageProvider: { not: "s3" } },
+            { storageProvider: { not: "r2" } },
             { storageProvider: null },
           ],
         },
@@ -306,7 +306,7 @@ export class AiDataAccessService {
       where: {
         projectId,
         OR: [
-          { storageProvider: { not: "s3" } },
+          { storageProvider: { not: "r2" } },
           { storageProvider: null },
         ],
       },
