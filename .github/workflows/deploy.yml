@@ -9,9 +9,34 @@ on:
       - main
 
 jobs:
+  # ─── DETECT CHANGES ────────────────────────────────────────────────────────
+  detect-changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/deploy.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/deploy.yml'
+
   # ─── CONTINUOUS INTEGRATION (CI) ───────────────────────────────────────────
   ci-backend:
     name: 🧪 CI Backend
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +68,8 @@ jobs:
 
   ci-frontend:
     name: 🧪 CI Frontend
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -73,9 +100,16 @@ jobs:
   # ─── CONTINUOUS DEPLOYMENT (CD) ────────────────────────────────────────────
   deploy:
     name: 🚀 Deploy to VPS
-    needs: [ci-backend, ci-frontend]
+    needs: [detect-changes, ci-backend, ci-frontend]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: |
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' &&
+      needs.detect-changes.result == 'success' &&
+      (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true') &&
+      (needs.ci-backend.result == 'success' || needs.ci-backend.result == 'skipped') &&
+      (needs.ci-frontend.result == 'success' || needs.ci-frontend.result == 'skipped')
 
     steps:
       - name: Deploy via SSH
@@ -97,55 +131,75 @@ jobs:
 
             cd $APP_DIR
 
-            # Pull latest code
+            # Fetch mới nhất để so sánh Git diff
+            echo "🔍 Fetching remote repository..."
+            git fetch origin main
+
+            # Kiểm tra thay đổi bằng git diff trước khi pull
+            # So sánh HEAD hiện tại của VPS với commit mới nhất trên origin/main
+            CHANGES_BACKEND=$(git diff --name-only HEAD origin/main | grep '^backend/' || true)
+            CHANGES_FRONTEND=$(git diff --name-only HEAD origin/main | grep '^frontend/' || true)
+
+            # Kéo code mới
             echo "📥 Pulling latest code..."
             git reset --hard HEAD
             git pull origin main
 
-            # ─── BACKEND ───────────────────────────────
-            echo ""
-            echo "── Backend ──"
-            cd $APP_DIR/backend
+            # ─── DEPLOY BACKEND ────────────────────────
+            if [ ! -z "$CHANGES_BACKEND" ]; then
+                echo ""
+                echo "⚡ [Backend] Changes detected. Updating..."
+                cd $APP_DIR/backend
 
-            echo "📦 Installing backend dependencies..."
-            npm ci
+                echo "📦 Installing backend dependencies..."
+                npm ci
 
-            echo "🗃️ Running Prisma migrations..."
-            npx prisma generate
-            npx prisma migrate deploy
+                echo "🗃️ Running Prisma migrations..."
+                npx prisma generate
+                npx prisma migrate deploy
 
-            echo "🔨 Building NestJS..."
-            npm run build
+                echo "🔨 Building NestJS..."
+                npm run build
 
-            echo "🔄 Restarting backend..."
-            if pm2 describe nexusai-backend > /dev/null 2>&1; then
-                pm2 restart nexusai-backend
+                echo "🔄 Restarting backend..."
+                if pm2 describe nexusai-backend > /dev/null 2>&1; then
+                    pm2 restart nexusai-backend
+                else
+                    pm2 start dist/src/main.js \
+                        --name nexusai-backend \
+                        --cwd $APP_DIR/backend
+                fi
             else
-                pm2 start dist/src/main.js \
-                    --name nexusai-backend \
-                    --cwd $APP_DIR/backend
+                echo ""
+                echo "⏭️ [Backend] No changes. Skipping build & restart."
             fi
 
-            # ─── FRONTEND ──────────────────────────────
-            echo ""
-            echo "── Frontend ──"
-            cd $APP_DIR/frontend
+            # ─── DEPLOY FRONTEND ───────────────────────
+            if [ ! -z "$CHANGES_FRONTEND" ]; then
+                echo ""
+                echo "⚡ [Frontend] Changes detected. Updating..."
+                cd $APP_DIR/frontend
 
-            echo "📦 Installing frontend dependencies..."
-            npm ci
+                echo "📦 Installing frontend dependencies..."
+                npm ci
 
-            echo "🔨 Building Next.js..."
-            npm run build
+                echo "🔨 Building Next.js..."
+                npm run build
 
-            echo "🔄 Restarting frontend..."
-            if pm2 describe nexusai-frontend > /dev/null 2>&1; then
-                pm2 restart nexusai-frontend
+                echo "🔄 Restarting frontend..."
+                if pm2 describe nexusai-frontend > /dev/null 2>&1; then
+                    pm2 restart nexusai-frontend
+                else
+                    pm2 start npm \
+                        --name nexusai-frontend \
+                        -- start
+                fi
             else
-                pm2 start npm \
-                    --name nexusai-frontend \
-                    -- start
+                echo ""
+                echo "⏭️ [Frontend] No changes. Skipping build & restart."
             fi
 
+            # Lưu cấu hình PM2
             pm2 save
 
             echo ""
