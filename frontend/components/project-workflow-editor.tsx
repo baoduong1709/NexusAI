@@ -497,7 +497,7 @@ export function ProjectWorkflowEditor({
           </button>
         </div>
 
-        <div className='grid flex-1 gap-0 lg:grid-cols-[minmax(0,1fr)_320px]'>
+        <div className='grid flex-1 min-h-0 gap-0 lg:grid-cols-[minmax(0,1fr)_320px]'>
           <div className='flex min-h-0 flex-col border-r border-slate-200 dark:border-white/10'>
             <div className='flex items-center gap-2 border-b border-slate-200 dark:border-white/10 px-5 py-3'>
               <button
@@ -565,7 +565,7 @@ export function ProjectWorkflowEditor({
             </div>
           </div>
 
-          <div className='flex min-h-0 flex-col bg-slate-50 dark:bg-white/5/70'>
+          <div className='flex min-h-0 flex-col bg-slate-50 dark:bg-black/20'>
             <div className='border-b border-slate-200 dark:border-white/10 px-5 py-4'>
               <p className='text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400'>
                 {selectedEdgeId ? "Connection Detail" : "Status Detail"}
@@ -613,11 +613,11 @@ export function ProjectWorkflowEditor({
                           xóa liên kết này.
                         </p>
                       </div>
-                      <div className='rounded-2xl border border-red-100 bg-red-50 p-3'>
+                      <div className='rounded-2xl border border-red-100 dark:border-red-950/30 bg-red-50 dark:bg-red-950/10 p-3'>
                         <button
                           type='button'
                           onClick={() => removeEdge(edge.id)}
-                          className='inline-flex items-center gap-2 text-sm font-medium text-red-600'
+                          className='inline-flex items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400'
                         >
                           <Trash2 size={14} />
                           Xóa liên kết này
@@ -796,12 +796,12 @@ export function ProjectWorkflowEditor({
                     </div>
                   </div>
 
-                  <div className='rounded-2xl border border-red-100 bg-red-50 p-3'>
+                  <div className='rounded-2xl border border-red-100 dark:border-red-950/30 bg-red-50 dark:bg-red-950/10 p-3'>
                     <button
                       type='button'
                       disabled={workflow.nodes.length === 1}
                       onClick={() => removeNode(selectedNode.id)}
-                      className='inline-flex items-center gap-2 text-sm font-medium text-red-600 disabled:opacity-50'
+                      className='inline-flex items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400 disabled:opacity-50'
                     >
                       <Trash2 size={14} />
                       Delete this status
@@ -830,11 +830,11 @@ export function ProjectWorkflowEditor({
                         className={cn(
                           "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm",
                           selectedNodeId === node.id
-                            ? "border-sky-300 bg-sky-50"
-                            : "border-transparent hover:border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5",
+                            ? "border-sky-300 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-950/20 text-sky-900 dark:text-sky-200"
+                            : "border-transparent hover:border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 dark:bg-white/5 text-slate-700 dark:text-zinc-300",
                         )}
                       >
-                        <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500 dark:text-slate-400'>
+                        <span className='flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-800 text-xs font-semibold text-slate-500 dark:text-slate-400'>
                           {index + 1}
                         </span>
                         <span

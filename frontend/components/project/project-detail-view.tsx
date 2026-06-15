@@ -2050,7 +2050,7 @@ export function ProjectDetailView() {
                           ),
                         )
                       }
-                      className='flex-1 text-sm font-semibold border-0 border-b border-zinc-200 dark:border-white/10 focus:outline-none focus:border-sky-400 py-1'
+                      className='flex-1 text-sm font-semibold border-0 border-b border-zinc-200 dark:border-white/10 bg-transparent text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-sky-400 py-1'
                       placeholder='Task title *'
                     />
                     <button
@@ -2118,7 +2118,7 @@ export function ProjectDetailView() {
                             ),
                           )
                         }
-                        className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                        className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                       />
                     </div>
                     <div>
@@ -2228,7 +2228,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -2246,7 +2246,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -2264,7 +2264,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                       </div>
                     </div>
@@ -2284,7 +2284,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -2302,7 +2302,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                         <input
                           type='number'
@@ -2320,7 +2320,7 @@ export function ProjectDetailView() {
                               e.target.value,
                             )
                           }
-                          className='w-full text-xs border border-zinc-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
+                          className='w-full text-xs border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-sky-300'
                         />
                       </div>
                     </div>
@@ -2469,7 +2469,7 @@ export function ProjectDetailView() {
                   className='border border-zinc-200 dark:border-white/10 rounded-xl p-3 space-y-3'
                 >
                   <div className='flex items-center gap-2'>
-                    <span className='w-7 h-7 rounded-full bg-slate-100 text-slate-500 text-xs font-semibold flex items-center justify-center'>
+                    <span className='w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 text-xs font-semibold flex items-center justify-center'>
                       {index + 1}
                     </span>
                     <input
@@ -2483,7 +2483,7 @@ export function ProjectDetailView() {
                           ),
                         )
                       }
-                      className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+                      className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
                       placeholder='Role name'
                     />
                     <button
@@ -2494,7 +2494,7 @@ export function ProjectDetailView() {
                           prev.filter((_, itemIndex) => itemIndex !== index),
                         )
                       }
-                      className='px-3 py-2 text-sm border border-red-200 text-red-600 rounded-lg disabled:opacity-40'
+                      className='px-3 py-2 text-sm border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg disabled:opacity-40 hover:bg-red-50 dark:hover:bg-red-950/20'
                     >
                       Delete
                     </button>
@@ -2552,7 +2552,7 @@ export function ProjectDetailView() {
                 </div>
               ))}
 
-              <div className='border border-dashed border-gray-300 rounded-xl p-3 flex items-center gap-2'>
+              <div className='border border-dashed border-gray-300 dark:border-white/10 rounded-xl p-3 flex items-center gap-2'>
                 <input
                   value={newProjectRole}
                   onChange={(e) => setNewProjectRole(e.target.value)}
@@ -2568,7 +2568,7 @@ export function ProjectDetailView() {
                       setNewProjectRole("");
                     }
                   }}
-                  className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+                  className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
                   placeholder='Add a new role...'
                 />
                 <button
@@ -3237,7 +3237,7 @@ export function ProjectDetailView() {
                       }
                     }}
                     placeholder='Authentication'
-                    className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                    className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500'
                   />
                   <button
                     onClick={() => {
@@ -3419,7 +3419,7 @@ export function ProjectDetailView() {
                   }
                 }}
                 placeholder='Tên sprint (vd: Sprint 1)'
-                className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
               <button
                 onClick={() => {

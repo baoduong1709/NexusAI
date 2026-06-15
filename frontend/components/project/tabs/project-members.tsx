@@ -133,9 +133,9 @@ export function ProjectMembers({
       )}
 
       {/* ── Members Table ── */}
-      <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200/80 dark:border-white/5 overflow-hidden'>
+      <div className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl border border-zinc-200/80 dark:border-white/5 overflow-visible'>
         {/* Table header */}
-        <div className='hidden sm:grid sm:grid-cols-[auto_1fr_auto_auto] gap-4 items-center px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-white/5'>
+        <div className='hidden sm:grid sm:grid-cols-[auto_1fr_auto_auto] gap-4 items-center px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-white/5 rounded-t-xl'>
           <span className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-8' />
           <span className='text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider'>
             Member
@@ -147,7 +147,7 @@ export function ProjectMembers({
         </div>
 
         {!project.members || project.members.length === 0 ? (
-          <div className='flex flex-col items-center justify-center py-12 text-zinc-400 dark:text-zinc-500'>
+          <div className='flex flex-col items-center justify-center py-12 text-zinc-400 dark:text-zinc-500 rounded-b-xl max-sm:rounded-t-xl'>
             <div className='p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 mb-3'>
               <Users size={28} className='opacity-50' />
             </div>
@@ -156,13 +156,17 @@ export function ProjectMembers({
           </div>
         ) : (
           <div className='divide-y divide-zinc-100 dark:divide-white/5'>
-            {project.members.map((m) => {
+            {project.members.map((m, index) => {
               const displayRole =
                 m.projectRole || m.user.role?.name || "No role assigned";
               return (
                 <div
                   key={m.userId}
-                  className='group px-4 py-3 flex items-center gap-3 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02] transition-colors duration-150'
+                  className={cn(
+                    'group px-4 py-3 flex items-center gap-3 hover:bg-zinc-50/70 dark:hover:bg-white/[0.02] transition-colors duration-150',
+                    index === 0 && 'max-sm:rounded-t-xl',
+                    index === project.members!.length - 1 && 'rounded-b-xl'
+                  )}
                 >
                   {/* Avatar */}
                   <div
