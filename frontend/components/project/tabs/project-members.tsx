@@ -277,7 +277,7 @@ export function ProjectMembers({
       {addMemberDialog && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
           <div
-            className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ring-1 ring-zinc-200/80 dark:ring-white/10 w-full max-w-sm overflow-hidden'
+            className='bg-white dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ring-1 ring-zinc-200/80 dark:ring-white/10 w-full max-w-sm'
           >
             {/* Dialog header */}
             <div className='px-6 pt-6 pb-2'>

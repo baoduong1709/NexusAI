@@ -2465,7 +2465,7 @@ export function ProjectDetailView() {
             <div className='flex-1 overflow-y-auto p-5 space-y-3'>
               {roleDraft.map((role, index) => (
                 <div
-                  key={`${role.name}-${index}`}
+                  key={index}
                   className='border border-zinc-200 dark:border-white/10 rounded-xl p-3 space-y-3'
                 >
                   <div className='flex items-center gap-2'>
@@ -2501,7 +2501,7 @@ export function ProjectDetailView() {
                   </div>
                   <div className='space-y-2'>
                     {PROJECT_ROLE_PERMISSION_GROUPS.map((group) => (
-                      <div key={`${role.name}-${group.label}`}>
+                      <div key={`${index}-${group.label}`}>
                         <p className='text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5'>
                           {group.label}
                         </p>
