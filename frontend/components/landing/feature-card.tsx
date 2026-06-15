@@ -1,16 +1,27 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
+import { Brain, Zap, Shield, Workflow, BarChart3, Clock, LucideIcon } from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  brain: Brain,
+  zap: Zap,
+  shield: Shield,
+  workflow: Workflow,
+  "bar-chart": BarChart3,
+  clock: Clock,
+};
 
 interface FeatureCardProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: string;
   delay?: number;
 }
 
-export const FeatureCard = ({ title, description, icon: Icon, delay = 0 }: FeatureCardProps) => {
+export const FeatureCard = ({ title, description, icon, delay = 0 }: FeatureCardProps) => {
+  const Icon = iconMap[icon] || Brain;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

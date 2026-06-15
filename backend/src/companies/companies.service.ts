@@ -45,6 +45,37 @@ export class CompaniesService {
     });
   }
 
+  async createAdmin(companyId: number, data: any) {
+    const company = await this.prisma.company.findUnique({ where: { id: companyId } });
+    if (!company) throw new NotFoundException('Company not found');
+
+    const adminRole = await this.prisma.role.findFirst({
+      where: { name: 'Admin' },
+    });
+    if (!adminRole) throw new NotFoundException('Admin role not found');
+
+    const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) {
+      throw new Error('Email already in use');
+    }
+
+    const bcrypt = require('bcrypt');
+    const hashed = await bcrypt.hash(data.password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashed,
+        companyId,
+        roleId: adminRole.id,
+        isSuperAdmin: false,
+        skills: [],
+      },
+      select: { id: true, name: true, email: true },
+    });
+  }
+
   async remove(id: number) {
     const company = await this.prisma.company.findUnique({ where: { id } });
     if (!company) {

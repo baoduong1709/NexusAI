@@ -68,8 +68,10 @@ export default function Sidebar() {
     localStorage.setItem("sidebar-collapsed", String(nextState));
   };
 
-  // Filter navigation items based on user permissions
   const visibleNavigation = navigation.filter((item) => {
+    if (user?.isSuperAdmin) {
+      return item.name === "Dashboard" || item.name === "Companies";
+    }
     if (item.requireSuperAdmin && !user?.isSuperAdmin) return false;
     if (!item.permission) return true;
     if (typeof item.permission === "function") {
@@ -98,7 +100,7 @@ export default function Sidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate flex items-center gap-1">
-                  {currentWorkspace.name}
+                  {user?.isSuperAdmin ? "NexusAI Admin" : (user?.company?.name || currentWorkspace.name)}
                   <span className="text-[9px] bg-indigo-500/10 text-indigo-400 px-1 py-0.5 rounded uppercase font-bold tracking-wider">
                     PRO
                   </span>
@@ -122,9 +124,9 @@ export default function Sidebar() {
                   </p>
                   <button className="w-full flex items-center gap-2 p-2 rounded-xl bg-indigo-50 dark:bg-white/5 text-left text-sm text-zinc-900 dark:text-white">
                     <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">
-                      N
+                      {(user?.isSuperAdmin ? "NexusAI Admin" : (user?.company?.name || currentWorkspace.name)).charAt(0).toUpperCase()}
                     </div>
-                    NexusAI Org
+                    {user?.isSuperAdmin ? "NexusAI Admin" : (user?.company?.name || currentWorkspace.name)}
                   </button>
                   <button className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 text-left text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all mt-1">
                     <div className="w-6 h-6 rounded-md bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-600 dark:text-white">
@@ -144,7 +146,7 @@ export default function Sidebar() {
             >
               <BrandLogo size={24} />
                <span className="absolute left-16 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs text-zinc-700 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
-                NexusAI Org
+                {user?.isSuperAdmin ? "NexusAI Admin" : (user?.company?.name || currentWorkspace.name)}
               </span>
             </button>
           </div>

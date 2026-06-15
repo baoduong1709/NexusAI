@@ -22,11 +22,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("nexusai_user");
       
-      // Avoid infinite redirect loop when already on login page or attempting to login
-      const isLoginPage = window.location.pathname === "/login";
+      // Avoid redirecting when on public pages (like landing '/' or '/login') or attempting to login
+      const isPublicPage = window.location.pathname === "/" || window.location.pathname.startsWith("/login");
       const isLoginRequest = error.config?.url?.includes("/auth/login");
       
-      if (!isLoginPage && !isLoginRequest) {
+      if (!isPublicPage && !isLoginRequest) {
         window.location.href = "/login";
       }
     }
@@ -68,6 +68,7 @@ export const companiesApi = {
   delete: (id: number) => api.delete(`/companies/${id}`),
   getCurrent: () => api.get("/companies/current"),
   updateCurrent: (data: { name: string }) => api.patch("/companies/current", data),
+  createAdmin: (id: number, data: any) => api.post(`/companies/${id}/admin`, data),
 };
 
 // ---- Roles ----

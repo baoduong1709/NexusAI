@@ -1,40 +1,38 @@
 import { HeroSection } from "@/components/landing/hero-section";
 import { FeatureCard } from "@/components/landing/feature-card";
-import { Brain, Zap, Shield, Workflow, BarChart3, Clock } from "lucide-react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+
 
 export default function Home() {
   const features = [
     {
       title: "Smart Task Generation",
       description: "Simply describe your project goal, and our AI automatically breaks it down into actionable tasks and milestones.",
-      icon: Brain,
+      icon: "brain",
     },
     {
       title: "Predictive Scheduling",
       description: "NexusAI learns from your team's velocity to accurately predict deadlines and identify potential bottlenecks before they happen.",
-      icon: Clock,
+      icon: "clock",
     },
     {
       title: "Automated Workflows",
       description: "Set up triggers and let the AI handle routine assignments, status updates, and stakeholder notifications.",
-      icon: Workflow,
+      icon: "workflow",
     },
     {
       title: "Risk Analysis",
       description: "Real-time scanning of project health. The AI flags scope creep and resource exhaustion instantly.",
-      icon: Shield,
+      icon: "shield",
     },
     {
       title: "Instant Insights",
       description: "Stop building reports manually. Ask the AI queries like 'How are we doing on Q3 goals?' for instant visual data.",
-      icon: BarChart3,
+      icon: "bar-chart",
     },
     {
       title: "Lightning Fast UI",
       description: "Built for speed. Keyboard shortcuts and AI-assisted commands mean you spend less time managing and more time doing.",
-      icon: Zap,
+      icon: "zap",
     },
   ];
 
@@ -69,23 +67,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-purple-900/20"></div>
-        <div className="max-w-4xl mx-auto text-center relative z-10 p-8 sm:p-12 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to upgrade your team?</h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Join thousands of forward-thinking teams who have replaced manual management with AI precision.
-          </p>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-blue-600 px-8 py-4 text-base font-bold text-white transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(168,85,247,0.5)]"
-          >
-            Start Your Free Trial
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer className="py-8 text-center text-gray-500 text-sm border-t border-white/10">

@@ -5,7 +5,7 @@ import { companiesApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useConfirm } from "@/components/providers/confirm-provider";
-import { Plus, Pencil, Trash2, Loader2, Search, X, Building2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Search, X, Building2, UserPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
 import { getInitials, cn } from "@/lib/utils";
@@ -21,6 +21,9 @@ export default function CompaniesPage() {
   const [editCompany, setEditCompany] = useState<any>(null);
 
   const isSuperAdmin = user?.isSuperAdmin ?? false;
+
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [selectedCompanyForAdmin, setSelectedCompanyForAdmin] = useState<any>(null);
 
   const { data: companies = [], isLoading } = useQuery({
     queryKey: ["companies"],
@@ -58,7 +61,19 @@ export default function CompaniesPage() {
     onError: (e: any) => toast.error(e.response?.data?.message || "Error deleting company"),
   });
 
+  const createAdminMutation = useMutation({
+    mutationFn: ({ id, data }: any) => companiesApi.createAdmin(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["companies"] });
+      toast.success("Admin created successfully");
+      setShowAdminModal(false);
+      setSelectedCompanyForAdmin(null);
+    },
+    onError: (e: any) => toast.error(e.response?.data?.message || "Error creating admin"),
+  });
+
   const { register, handleSubmit, reset } = useForm<any>();
+  const { register: registerAdmin, handleSubmit: handleSubmitAdmin, reset: resetAdmin } = useForm<any>();
 
   if (!isSuperAdmin) {
     return <AccessDenied />;
@@ -76,12 +91,22 @@ export default function CompaniesPage() {
     setShowModal(true);
   };
 
+  const openAdmin = (c: any) => {
+    resetAdmin({ name: "", email: "", password: "" });
+    setSelectedCompanyForAdmin(c);
+    setShowAdminModal(true);
+  };
+
   const onSubmit = (data: any) => {
     if (editCompany) {
       updateMutation.mutate({ id: editCompany.id, data });
     } else {
       createMutation.mutate(data);
     }
+  };
+
+  const onSubmitAdmin = (data: any) => {
+    createAdminMutation.mutate({ id: selectedCompanyForAdmin.id, data });
   };
 
   const filtered = companies.filter((c: any) =>
@@ -211,6 +236,13 @@ export default function CompaniesPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <div className="flex gap-1 justify-end">
                         <button
+                          onClick={() => openAdmin(c)}
+                          className="p-2 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all"
+                          title="Create Admin"
+                        >
+                          <UserPlus size={15} />
+                        </button>
+                        <button
                           onClick={() => openEdit(c)}
                           className="p-2 text-zinc-400 hover:text-indigo-500 hover:bg-indigo-500/10 rounded-xl transition-all"
                           title="Edit Company"
@@ -314,6 +346,97 @@ export default function CompaniesPage() {
                       <Loader2 className="animate-spin" size={16} />
                     )}
                     {editCompany ? "Save Changes" : "Create Company"}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showAdminModal && selectedCompanyForAdmin && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-[#0a0a0a] border border-black/5 dark:border-white/10 rounded-[2rem] shadow-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="font-black text-2xl text-zinc-900 dark:text-white">
+                    Create Admin
+                  </h3>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    Add an administrator for {selectedCompanyForAdmin.name}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAdminModal(false)}
+                  className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmitAdmin(onSubmitAdmin)} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Admin Name *
+                  </label>
+                  <input
+                    {...registerAdmin("name", { required: true })}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="e.g. John Doe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Admin Email *
+                  </label>
+                  <input
+                    type="email"
+                    {...registerAdmin("email", { required: true })}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="e.g. john@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                    Password *
+                  </label>
+                  <input
+                    type="password"
+                    {...registerAdmin("password", { required: true })}
+                    className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white transition-all text-sm"
+                    placeholder="Enter secure password"
+                  />
+                </div>
+
+                <div className="flex gap-3 justify-end mt-8 border-t border-zinc-200 dark:border-white/10 pt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminModal(false)}
+                    className="px-6 py-3 text-sm text-zinc-500 font-bold hover:text-zinc-900 dark:hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={createAdminMutation.isPending}
+                    className="px-6 py-3 text-sm bg-indigo-500 text-white rounded-xl font-bold flex items-center gap-2 disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                  >
+                    {createAdminMutation.isPending && (
+                      <Loader2 className="animate-spin" size={16} />
+                    )}
+                    Create Admin
                   </motion.button>
                 </div>
               </form>

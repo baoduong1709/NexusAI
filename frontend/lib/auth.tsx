@@ -14,6 +14,7 @@ interface User {
   name: string;
   email: string;
   role?: { id: number; name: string; permissions: string[] };
+  company?: { id: number; name: string };
   skills: string[];
   isSuperAdmin: boolean;
 }

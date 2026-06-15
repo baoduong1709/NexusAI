@@ -21,10 +21,12 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
     
+    const isLocal = process.env.FRONTEND_URL?.includes("localhost") || process.env.FRONTEND_URL?.includes("127.0.0.1");
+
     // Set JWT token in an HttpOnly cookie
     response.cookie("nexusai_token", result.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" && !isLocal,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: "/",
@@ -39,9 +41,10 @@ export class AuthController {
   @Post("logout")
   @ApiOperation({ summary: "Logout" })
   logout(@Res({ passthrough: true }) response: Response) {
+    const isLocal = process.env.FRONTEND_URL?.includes("localhost") || process.env.FRONTEND_URL?.includes("127.0.0.1");
     response.clearCookie("nexusai_token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" && !isLocal,
       sameSite: "lax",
       path: "/",
     });

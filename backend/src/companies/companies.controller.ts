@@ -41,6 +41,13 @@ export class CompaniesController {
     return this.companiesService.create(createCompanyDto);
   }
 
+  @Post(':id/admin')
+  @UseGuards(SuperAdminGuard)
+  @RequireSuperAdmin()
+  createAdmin(@Param('id', ParseIntPipe) id: number, @Body() createAdminDto: any) {
+    return this.companiesService.createAdmin(id, createAdminDto);
+  }
+
   @Put(':id')
   @UseGuards(SuperAdminGuard)
   @RequireSuperAdmin()
