@@ -1460,7 +1460,7 @@ Return only the summary text, with no extra explanation.`;
 
   // ── Constants ──────────────────────────────────────────────────────────────
 
-  private static readonly MAX_TOOL_CALL_ROUNDS = 6;
+  private static readonly MAX_TOOL_CALL_ROUNDS = 100;
   // Rough token estimate: ~1 token per 3 chars on average (handles English + Vietnamese)
   private static readonly CHARS_PER_TOKEN_ESTIMATE = 3;
   private static readonly MAX_CONTEXT_TOKENS = 90000;
