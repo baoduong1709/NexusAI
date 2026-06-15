@@ -11,6 +11,7 @@ import {
   stripHtmlTags,
   formatDuration,
   TaskWorkflow,
+  stripTaskPrefix,
 } from "@/lib/utils";
 import { Task } from "@/lib/types";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -193,7 +194,7 @@ export function ProjectBoard({
                                 </Link>
                               </div>
                               <p className='text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1'>
-                                {t.title}
+                                {stripTaskPrefix(t.title)}
                               </p>
                               {stripHtmlTags(t.description || "") && (
                                 <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-2 mb-2'>
@@ -203,9 +204,9 @@ export function ProjectBoard({
                               <div className='flex items-center gap-2 flex-wrap'>
                                 <span
                                   className={cn(
-                                    "text-xs px-1.5 py-0.5 rounded-full",
+                                    "text-[10px] font-semibold border px-2 py-0.5 rounded uppercase tracking-wide",
                                     PRIORITY_COLORS[
-                                      t.priority as keyof typeof PRIORITY_COLORS
+                                      (t.priority?.toUpperCase() || "LOW") as keyof typeof PRIORITY_COLORS
                                     ],
                                   )}
                                 >

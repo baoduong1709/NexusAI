@@ -41,10 +41,14 @@ export function getInitials(name: string) {
     .slice(0, 2);
 }
 
+export function stripTaskPrefix(title: string) {
+  return title.replace(/^(\[[^\]]+\]\s*)+/, "").trim();
+}
+
 export const PRIORITY_COLORS = {
-  HIGH: "bg-red-100 text-red-700",
-  MEDIUM: "bg-yellow-100 text-yellow-700",
-  LOW: "bg-green-100 text-green-700",
+  HIGH: "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20",
+  MEDIUM: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+  LOW: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
 };
 
 const TASK_STATUS_COLOR_PALETTE = [

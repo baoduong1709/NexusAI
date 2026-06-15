@@ -91,6 +91,7 @@ import {
   durationToHours,
   parseDurationInput,
   formatDuration,
+  stripTaskPrefix,
 } from "@/lib/utils";
 import {
   ProjectWorkflowEditor,
@@ -354,10 +355,6 @@ function parseTaskLabels(value: unknown): string[] {
         .filter(Boolean),
     ),
   );
-}
-
-function stripTaskPrefix(title: string) {
-  return title.replace(/^(\[[^\]]+\]\s*)+/, "").trim();
 }
 
 function previewTaskNamingRule(
@@ -1639,19 +1636,18 @@ export function ProjectDetailView() {
 
                           {/* Task title */}
                           <p className='flex-1 text-sm text-zinc-800 dark:text-zinc-200 truncate group-hover:text-zinc-900 dark:group-hover:text-white transition-colors'>
-                            {t.title}
+                            {stripTaskPrefix(t.title)}
                           </p>
 
                           {/* Priority dot + label */}
                           <span
                             className={cn(
-                              "flex items-center gap-1.5 text-xs flex-shrink-0",
+                              "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border tracking-wide uppercase flex-shrink-0",
                               PRIORITY_COLORS[
-                                t.priority as keyof typeof PRIORITY_COLORS
+                                (t.priority?.toUpperCase() || "LOW") as keyof typeof PRIORITY_COLORS
                               ],
                             )}
                           >
-                            <span className='w-2 h-2 rounded-full bg-current opacity-70' />
                             {t.priority}
                           </span>
 
@@ -3317,7 +3313,7 @@ export function ProjectDetailView() {
                       }
                     }}
                     placeholder='FE'
-                    className='flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500'
+                    className='flex-1 px-3 py-2 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500'
                   />
                   <button
                     onClick={() => {

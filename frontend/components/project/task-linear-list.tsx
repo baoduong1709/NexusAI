@@ -15,7 +15,7 @@ import {
   Plus,
   GitBranch,
 } from "lucide-react";
-import { cn, stripHtmlTags, formatDate } from "@/lib/utils";
+import { cn, stripHtmlTags, formatDate, stripTaskPrefix } from "@/lib/utils";
 
 // Format estimates/logged time
 const formatDuration = (hours: number | null | undefined) => {
@@ -235,7 +235,7 @@ export function TaskLinearList({
                   <td className="px-3 py-2.5 truncate">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <p className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors truncate">
-                        {task.title}
+                        {stripTaskPrefix(task.title)}
                       </p>
                       {task.isAiGenerated && (
                         <span className="inline-flex shrink-0 items-center gap-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide uppercase">

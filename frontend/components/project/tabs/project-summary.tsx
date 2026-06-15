@@ -18,6 +18,8 @@ import {
   formatDate,
   PRIORITY_COLORS,
   TaskWorkflow,
+  formatDuration,
+  stripTaskPrefix,
 } from "@/lib/utils";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -530,7 +532,7 @@ export function ProjectSummaryTab({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-zinc-800 dark:text-zinc-200 truncate">
-                    {t.title}
+                    {stripTaskPrefix(t.title)}
                   </p>
                   <Link
                     href={`/browse/${t.id}`}
@@ -542,9 +544,9 @@ export function ProjectSummaryTab({
                 </div>
                 <span
                   className={cn(
-                    "text-xs px-2 py-0.5 rounded-full flex-shrink-0",
+                    "inline-flex items-center text-[10px] font-semibold border px-2 py-0.5 rounded uppercase tracking-wide flex-shrink-0",
                     PRIORITY_COLORS[
-                      t.priority as keyof typeof PRIORITY_COLORS
+                      (t.priority?.toUpperCase() || "LOW") as keyof typeof PRIORITY_COLORS
                     ],
                   )}
                 >
