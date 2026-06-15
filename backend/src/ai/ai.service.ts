@@ -13,6 +13,8 @@ import { RagService } from "./rag.service";
 import OpenAI from "openai";
 import * as fs from "fs";
 import * as path from "path";
+import { spawn, spawnSync, ChildProcess } from "child_process";
+import * as readline from "readline";
 import { ProjectAiIndexService } from "../project-ai-index/project-ai-index.service";
 import { AiLogger } from "./ai-logger.util";
 import {
@@ -46,6 +48,128 @@ export interface ChatResponse {
     estimateHours?: number;
     loggedHours?: number;
   }[];
+}
+
+class SimpleMcpClient {
+  private process: ChildProcess | null = null;
+  private messageId = 1;
+  private pendingRequests = new Map<number, (resolve: any) => void>();
+  private stdoutReader: readline.Interface | null = null;
+
+  constructor(
+    public readonly name: string,
+    private readonly command: string,
+    private readonly args: string[]
+  ) {}
+
+  async start() {
+    try {
+      this.process = spawn(this.command, this.args, {
+        stdio: ["pipe", "pipe", "inherit"],
+        shell: true
+      });
+
+      if (!this.process.stdout || !this.process.stdin) {
+        throw new Error("Failed to establish stdio pipes with MCP server");
+      }
+
+      this.stdoutReader = readline.createInterface({
+        input: this.process.stdout,
+        terminal: false
+      });
+
+      this.stdoutReader.on("line", (line) => {
+        const trimmed = line.trim();
+        if (trimmed) {
+          this.handleMessage(trimmed);
+        }
+      });
+
+      this.process.on("error", (err) => {
+        console.error(`MCP server process error (${this.name}):`, err);
+      });
+
+      // Send initialize request
+      await this.request("initialize", {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "nexusai-mcp-client", version: "1.0.0" }
+      });
+      
+      // Send initialized notification
+      this.notify("notifications/initialized", {});
+    } catch (error: any) {
+      console.error(`Failed to start MCP server (${this.name}):`, error);
+      throw error;
+    }
+  }
+
+  private handleMessage(line: string) {
+    try {
+      const parsed = JSON.parse(line);
+      if (parsed.id !== undefined && this.pendingRequests.has(parsed.id)) {
+        const resolve = this.pendingRequests.get(parsed.id);
+        if (resolve) {
+          this.pendingRequests.delete(parsed.id);
+          resolve(parsed);
+        }
+      }
+    } catch (e) {
+      console.error(`Error parsing MCP message line from ${this.name}:`, e);
+    }
+  }
+
+  request(method: string, params: any): Promise<any> {
+    return new Promise((resolve) => {
+      if (!this.process || !this.process.stdin) {
+        resolve({ error: { message: "MCP server not started" } });
+        return;
+      }
+      const id = this.messageId++;
+      this.pendingRequests.set(id, resolve);
+      const msg = JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n";
+      this.process.stdin.write(msg);
+    });
+  }
+
+  notify(method: string, params: any) {
+    if (!this.process || !this.process.stdin) return;
+    const msg = JSON.stringify({ jsonrpc: "2.0", method, params }) + "\n";
+    this.process.stdin.write(msg);
+  }
+
+  async listTools(): Promise<any[]> {
+    const response = await this.request("tools/list", {});
+    if (response.error) {
+      console.error(`MCP listTools error (${this.name}):`, response.error);
+      return [];
+    }
+    return response.result?.tools || [];
+  }
+
+  async callTool(name: string, args: any): Promise<any> {
+    const response = await this.request("tools/call", { name, arguments: args });
+    if (response.error) {
+      return {
+        content: [{ type: "text", text: `Error: ${response.error.message}` }],
+        isError: true
+      };
+    }
+    return response.result || { content: [{ type: "text", text: "Tool call returned empty response" }], isError: true };
+  }
+
+  stop() {
+    try {
+      if (this.stdoutReader) {
+        this.stdoutReader.close();
+      }
+      if (this.process) {
+        this.process.kill();
+      }
+    } catch (e) {
+      console.error(`Error stopping MCP server (${this.name}):`, e);
+    }
+  }
 }
 
 class BufferedChatStreamResponse {
@@ -1458,6 +1582,202 @@ Return only the summary text, with no extra explanation.`;
     return hints.length > 0 ? hints.join("\n") : "- The user has full access to all project data and permissions.";
   }
 
+  // ── Local Coding Helper Methods ──────────────────────────────────────────
+
+  private localReadFile(filePath: string, startLine?: number, endLine?: number): string {
+    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    if (!fs.existsSync(resolvedPath)) {
+      return `Error: File not found at path ${filePath}`;
+    }
+    const stat = fs.statSync(resolvedPath);
+    if (stat.isDirectory()) {
+      return `Error: Path ${filePath} is a directory, not a file`;
+    }
+    const content = fs.readFileSync(resolvedPath, "utf-8");
+    const lines = content.split(/\r?\n/);
+    const totalLines = lines.length;
+    
+    let start = startLine !== undefined ? Math.max(1, startLine) : 1;
+    let end = endLine !== undefined ? Math.min(totalLines, endLine) : totalLines;
+    if (start > end) {
+      return `Error: startLine (${start}) must be less than or equal to endLine (${end})`;
+    }
+    
+    const slicedLines = lines.slice(start - 1, end);
+    const resultText = slicedLines.join("\n");
+    return JSON.stringify({
+      filePath: resolvedPath,
+      content: resultText,
+      numLines: slicedLines.length,
+      startLine: start,
+      totalLines: totalLines
+    });
+  }
+
+  private localWriteFile(filePath: string, content: string): string {
+    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    const dir = path.dirname(resolvedPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(resolvedPath, content, "utf-8");
+    return `Successfully wrote file to ${resolvedPath}`;
+  }
+
+  private localEditFile(filePath: string, targetContent: string, replacementContent: string): string {
+    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    if (!fs.existsSync(resolvedPath)) {
+      return `Error: File not found at path ${filePath}`;
+    }
+    const content = fs.readFileSync(resolvedPath, "utf-8");
+    
+    const occurrences = content.split(targetContent).length - 1;
+    if (occurrences === 0) {
+      return `Error: Target content was not found in the file. Make sure whitespace and line endings match exactly.`;
+    }
+    if (occurrences > 1) {
+      return `Error: Target content was found ${occurrences} times. It must be unique to avoid incorrect replacements.`;
+    }
+    
+    const updatedContent = content.replace(targetContent, replacementContent);
+    fs.writeFileSync(resolvedPath, updatedContent, "utf-8");
+    return `Successfully edited file ${resolvedPath}`;
+  }
+
+  private localRunCommand(command: string): string {
+    try {
+      const maxOutputChars = 15000;
+      const result = spawnSync(command, {
+        shell: true,
+        encoding: "utf-8",
+        cwd: process.cwd(),
+        timeout: 60000
+      });
+      
+      const stdout = result.stdout || "";
+      const stderr = result.stderr || "";
+      let output = `[Exit Code: ${result.status ?? "unknown"}]\n`;
+      if (stdout) output += `[Stdout]\n${stdout}\n`;
+      if (stderr) output += `[Stderr]\n${stderr}\n`;
+      
+      if (output.length > maxOutputChars) {
+        output = output.slice(0, maxOutputChars) + `\n... [Output truncated because it exceeds limit of ${maxOutputChars} characters] ...`;
+      }
+      return output;
+    } catch (e: any) {
+      return `Error executing command: ${e.message}`;
+    }
+  }
+
+  private localGlobFiles(pattern: string, dir = process.cwd()): string[] {
+    const results: string[] = [];
+    
+    const regexPattern = pattern
+      .replace(/[+^${}()|[\]\\]/g, "\\$&")
+      .replace(/\?/g, ".")
+      .replace(/\*\*/g, ".*")
+      .replace(/(?<!\.)\*/g, "[^/]*");
+      
+    const regex = new RegExp(`^${regexPattern}$`, "i");
+    
+    const search = (currentDir: string) => {
+      if (!fs.existsSync(currentDir)) return;
+      let files;
+      try {
+        files = fs.readdirSync(currentDir);
+      } catch {
+        return;
+      }
+      for (const file of files) {
+        const fullPath = path.join(currentDir, file);
+        const relativePath = path.relative(dir, fullPath).replace(/\\/g, "/");
+        
+        let stat;
+        try {
+          stat = fs.statSync(fullPath);
+        } catch {
+          continue;
+        }
+        
+        if (stat.isDirectory()) {
+          if (file !== "node_modules" && file !== "dist" && file !== ".git" && file !== ".understand-anything") {
+            search(fullPath);
+          }
+        } else {
+          if (regex.test(relativePath) || regex.test(file)) {
+            results.push(relativePath);
+          }
+        }
+      }
+    };
+    
+    search(dir);
+    return results;
+  }
+
+  private localGrepSearch(query: string, isRegex = false, dir = process.cwd()): string {
+    const MathLimit = 100;
+    const results: any[] = [];
+    let searchRegex: RegExp;
+    try {
+      searchRegex = isRegex ? new RegExp(query, "i") : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    } catch (err: any) {
+      return `Error: Invalid regular expression: ${err.message}`;
+    }
+    
+    const search = (currentDir: string) => {
+      if (!fs.existsSync(currentDir)) return;
+      let files;
+      try {
+        files = fs.readdirSync(currentDir);
+      } catch {
+        return;
+      }
+      for (const file of files) {
+        const fullPath = path.join(currentDir, file);
+        const relativePath = path.relative(dir, fullPath).replace(/\\/g, "/");
+        
+        let stat;
+        try {
+          stat = fs.statSync(fullPath);
+        } catch {
+          continue;
+        }
+        
+        if (stat.isDirectory()) {
+          if (file !== "node_modules" && file !== "dist" && file !== ".git" && file !== ".understand-anything") {
+            search(fullPath);
+          }
+        } else {
+          const ext = path.extname(file).toLowerCase();
+          const textExtensions = new Set([
+            ".ts", ".js", ".tsx", ".jsx", ".json", ".md", ".html", ".css", ".txt", ".yml", ".yaml", ".prisma"
+          ]);
+          if (!textExtensions.has(ext)) continue;
+          
+          try {
+            const content = fs.readFileSync(fullPath, "utf-8");
+            const lines = content.split(/\r?\n/);
+            for (let index = 0; index < lines.length; index++) {
+              const line = lines[index];
+              if (searchRegex.test(line)) {
+                results.push({
+                  file: relativePath,
+                  lineNumber: index + 1,
+                  content: line.trim()
+                });
+                if (results.length >= MathLimit) return;
+              }
+            }
+          } catch {}
+        }
+      }
+    };
+    
+    search(dir);
+    return JSON.stringify(results.slice(0, MathLimit));
+  }
+
   // ── Constants ──────────────────────────────────────────────────────────────
 
   private static readonly MAX_TOOL_CALL_ROUNDS = 100;
@@ -1806,7 +2126,42 @@ User context:
     const documentSummaries = projectIndex?.documentSummaries || {};
     const sourceManifest = this.buildSourceManifest(docContents.sources);
 
+    // Parse Plan Mode state from session summary JSON
+    let isPlanMode = false;
+    let actualSummary = summary;
+    if (summary && summary.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(summary);
+        isPlanMode = !!parsed.isPlanMode;
+        actualSummary = parsed.summary;
+      } catch {}
+    }
+
+    // Load external MCP servers config
+    const mcpClients: SimpleMcpClient[] = [];
+    const mcpConfigPath = path.resolve(process.cwd(), "mcp_servers.json");
+    if (fs.existsSync(mcpConfigPath)) {
+      try {
+        const configContent = fs.readFileSync(mcpConfigPath, "utf-8");
+        const config = JSON.parse(configContent);
+        if (config.mcpServers) {
+          for (const [name, server] of Object.entries<any>(config.mcpServers)) {
+            if (server.command) {
+              const client = new SimpleMcpClient(name, server.command, server.args || []);
+              await client.start();
+              mcpClients.push(client);
+              res.write(`event: agent_log\ndata: ${JSON.stringify({ id: `mcp_init_${name}`, type: "info", name: `MCP Server connected`, details: `Connected to ${name} MCP server` })}\n\n`);
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error("Failed to parse or initialize MCP servers:", err);
+      }
+    }
+
     const systemPrompt = `You are NexusAI, a senior project-management assistant for "${ctx.project.name}".
+
+Plan Mode: ${isPlanMode ? "ON. You are currently in Plan Mode. In this mode, you MUST focus on investigating, reading files, and writing a comprehensive implementation plan. The local execution tools (write_file, edit_file, run_command) are disabled. Propose your plan first and explain to the user. To exit Plan Mode and start execution, you can call exit_plan_mode when ready." : "OFF. You are in active Execution Mode. You can read, write, edit files and run commands to complete the task."}
 
 Communication style:
 - Reply in ${targetLang} with a calm, direct, thoughtful tone.
@@ -1823,6 +2178,8 @@ User context:
 - Adapt technical depth to this context without changing factual standards.
 
 Tool policy:
+- NEVER perform direct database queries or updates (such as writing raw scripts or commands to query/modify the database). All database reads or modifications must be executed through the provided API tools (e.g., get_project_tasks, suggest_tasks, get_project_members).
+- NEVER edit or modify documents uploaded by the user in the project documentation. You are only allowed to modify compilation/summary files (like task lists, plans, or summary outputs) when explicitly requested.
 - Use tools whenever the answer depends on current project tasks, members, workload, requirements, or documents.
 - Call independent data tools together when possible. During a tool-call turn, output only tool calls.
 - For a specific module or feature, pass a focused query instead of loading the entire project.
@@ -1848,7 +2205,7 @@ Project reference:
 - Epics: ${ctx.project.epics.length ? ctx.project.epics.join(", ") : "None"}
 - Labels: ${ctx.project.labels.length ? ctx.project.labels.join(", ") : "None"}
 - Source files: ${sourceManifest || "None uploaded"}
-${summary ? `\nConversation memory:\n${summary}` : ""}`;
+${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
 
     const availableTools = [
       {
@@ -1868,7 +2225,9 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
             type: "object",
             properties: {
               filename: { type: "string", description: "The original name of the document to read (e.g. 'requirements.md', 'spec.txt')." },
-              section: { type: "string", description: "Optional: name of a specific section to read (e.g. 'Yêu cầu chức năng', 'Acceptance Criteria'). Omit to get the full TOC + first portion." }
+              section: { type: "string", description: "Optional: name of a specific section to read (e.g. 'Yêu cầu chức năng', 'Acceptance Criteria'). Omit to get the full TOC + first portion." },
+              offset: { type: "integer", description: "Optional: The character offset to start reading from. Defaults to 0." },
+              limit: { type: "integer", description: "Optional: The maximum number of characters to read. Defaults to 10000. Max 15000." }
             },
             required: ["filename"]
           },
@@ -1883,6 +2242,34 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
             type: "object",
             properties: {
               query: { type: "string", description: "Natural language search query. Be specific — include technical terms, feature names, or business concepts you're looking for." }
+            },
+            required: ["query"]
+          },
+        },
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "get_document_outline",
+          description: "Retrieve the full hierarchical outline (Table of Contents tree) of a specific document. Use this for extremely large documents to understand their structure and locate sections before reading.",
+          parameters: {
+            type: "object",
+            properties: {
+              filename: { type: "string", description: "The original name of the document to get the outline for (e.g. 'requirements.md')." }
+            },
+            required: ["filename"]
+          },
+        },
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "search_document_exact",
+          description: "Perform a case-insensitive keyword search for exact word/phrase matches across all project documents. Use this to find specific technical codes, error constants (e.g. 'ERR_401'), or specific variable names that semantic RAG search might miss.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: { type: "string", description: "The exact word or phrase to look for (case-insensitive)." }
             },
             required: ["query"]
           },
@@ -1983,8 +2370,133 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
             required: ["message", "tasks"],
           },
         },
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "enter_plan_mode",
+          description: "Chuyển Agent sang chế độ Plan Mode để lập kế hoạch sửa đổi. Khi ở chế độ này, bạn chỉ có thể đọc file và phân tích thông tin. Các tool ghi/sửa file, chạy command sẽ bị tạm khóa.",
+          parameters: { type: "object", properties: {}, required: [] }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "exit_plan_mode",
+          description: "Thoát khỏi chế độ Plan Mode để chuyển sang active Execution Mode.",
+          parameters: { type: "object", properties: {}, required: [] }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "read_file",
+          description: "Đọc nội dung một tệp tin trên hệ thống cục bộ.",
+          parameters: {
+            type: "object",
+            properties: {
+              filePath: { type: "string", description: "Đường dẫn tuyệt đối hoặc tương đối tới tệp tin." },
+              startLine: { type: "number", description: "Dòng bắt đầu đọc (1-indexed, inclusive)" },
+              endLine: { type: "number", description: "Dòng kết thúc đọc (1-indexed, inclusive)" }
+            },
+            required: ["filePath"]
+          }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "write_file",
+          description: "Tạo mới hoặc ghi đè một tệp tin cục bộ.",
+          parameters: {
+            type: "object",
+            properties: {
+              filePath: { type: "string", description: "Đường dẫn tệp tin cần viết." },
+              content: { type: "string", description: "Nội dung tệp tin cần ghi." }
+            },
+            required: ["filePath", "content"]
+          }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "edit_file",
+          description: "Chỉnh sửa tệp tin bằng cách thay thế một khối mã (Search and Replace). TargetContent phải khớp duy nhất và chính xác trong file.",
+          parameters: {
+            type: "object",
+            properties: {
+              filePath: { type: "string", description: "Đường dẫn file cần sửa." },
+              targetContent: { type: "string", description: "Khối mã chính xác cần được thay thế." },
+              replacementContent: { type: "string", description: "Khối mã mới để thay thế." }
+            },
+            required: ["filePath", "targetContent", "replacementContent"]
+          }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "run_command",
+          description: "Thực thi lệnh shell/bash cục bộ trên hệ thống.",
+          parameters: {
+            type: "object",
+            properties: {
+              command: { type: "string", description: "Lệnh shell cần thực thi." }
+            },
+            required: ["command"]
+          }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "glob_files",
+          description: "Tìm kiếm các file theo pattern trong workspace (ví dụ: src/**/*.ts).",
+          parameters: {
+            type: "object",
+            properties: {
+              pattern: { type: "string", description: "Pattern tìm kiếm đệ quy (e.g. *.js hoặc src/**/*.ts)." }
+            },
+            required: ["pattern"]
+          }
+        }
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "grep_search",
+          description: "Tìm kiếm từ khóa hoặc regular expression trong các tệp tin của workspace.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: { type: "string", description: "Từ khóa hoặc pattern regex cần tìm." },
+              isRegex: { type: "boolean", description: "Set true nếu query là regular expression." }
+            },
+            required: ["query"]
+          }
+        }
       }
     ];
+
+    // Get tools from MCP servers and register them dynamically
+    for (const client of mcpClients) {
+      try {
+        const tools = await client.listTools();
+        for (const tool of tools) {
+          availableTools.push({
+            type: "function" as const,
+            function: {
+              name: `mcp__${client.name}__${tool.name}`,
+              description: `[MCP: ${client.name}] ${tool.description}`,
+              parameters: tool.inputSchema || { type: "object", properties: {} }
+            }
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to list tools from MCP server ${client.name}:`, err);
+      }
+    }
 
     let currentMessages: any[] = [
       { role: "system", content: systemPrompt },
@@ -1999,6 +2511,13 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
       res.on("close", () => {
         clientDisconnected = true;
         this.logger.log("Client disconnected, aborting chatStream");
+        for (const client of mcpClients) {
+          try {
+            client.stop();
+          } catch (err) {
+            console.error(`Failed to stop MCP client ${client.name} on close:`, err);
+          }
+        }
       });
 
       let finalFullText = "";
@@ -2188,89 +2707,284 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
                  }
                  result = JSON.stringify({ summary, workload });
               } else if (tc.function.name === "read_document_content") {
-                 const docName = args.filename;
-                 const requestedSection = args.section || null;
-                 let content = "";
-                 const docRecord = await this.prisma.document.findFirst({
-                   where: { projectId, originalName: docName },
-                 });
-                 if (docRecord) {
-                   try {
-                     const extension = path.extname(docRecord.originalName).toLowerCase();
-                     const textExtensions = new Set([
-                       ".txt", ".md", ".csv", ".json", ".xml", ".html",
-                       ".htm", ".yaml", ".yml", ".log",
-                     ]);
-                     
-                     // Resolve dynamic path for environment portability
-                     let docPath = docRecord.path;
-                     if (!path.isAbsolute(docPath)) {
-                       docPath = path.join(process.cwd(), docPath);
-                     } else if (!fs.existsSync(docPath)) {
-                       // If absolute path in DB does not exist, fall back to relative path resolved under process.cwd()
-                       const relativePart = docRecord.path.split(/[\\/]uploads[\\/]/)[1];
-                       if (relativePart) {
-                         const fallbackPath = path.join(process.cwd(), 'uploads', relativePart);
-                         if (fs.existsSync(fallbackPath)) {
-                           docPath = fallbackPath;
-                         }
-                       }
-                     }
+                  const docName = args.filename;
+                  const requestedSection = args.section || null;
+                  const offset = typeof args.offset === "number" ? Math.max(0, args.offset) : 0;
+                  const limit = typeof args.limit === "number" ? Math.min(15000, Math.max(1, args.limit)) : 10000;
+                  
+                  let content = "";
+                  const docRecord = await this.prisma.document.findFirst({
+                    where: { projectId, originalName: docName },
+                  });
+                  if (docRecord) {
+                    try {
+                      const extension = path.extname(docRecord.originalName).toLowerCase();
+                      const textExtensions = new Set([
+                        ".txt", ".md", ".csv", ".json", ".xml", ".html",
+                        ".htm", ".yaml", ".yml", ".log",
+                      ]);
+                      
+                      let docPath = docRecord.path;
+                      if (!path.isAbsolute(docPath)) {
+                        docPath = path.join(process.cwd(), docPath);
+                      } else if (!fs.existsSync(docPath)) {
+                        const relativePart = docRecord.path.split(/[\\/]uploads[\\/]/)[1];
+                        if (relativePart) {
+                          const fallbackPath = path.join(process.cwd(), 'uploads', relativePart);
+                          if (fs.existsSync(fallbackPath)) {
+                            docPath = fallbackPath;
+                          }
+                        }
+                      }
 
-                     const convertedMarkdownPath = `${docPath}.md`;
-                     const readablePath = textExtensions.has(extension)
-                       ? docPath
-                       : fs.existsSync(convertedMarkdownPath)
-                         ? convertedMarkdownPath
-                         : null;
-                     if (readablePath && fs.existsSync(readablePath)) {
-                       const fullContent = fs.readFileSync(readablePath, "utf-8");
-                       const headingRegex = /^(#{1,4})\s+(.+)$/gm;
-                       const headings: { level: number; title: string }[] = [];
-                       let match: RegExpExecArray | null;
-                       while ((match = headingRegex.exec(fullContent)) !== null) {
-                         headings.push({ level: match[1].length, title: match[2].trim() });
-                       }
-                       const toc = headings.slice(0, 40);
-                       if (requestedSection && headings.length > 0) {
-                         const sectionIdx = headings.findIndex(
-                           (h) => h.title.toLowerCase().includes(requestedSection.toLowerCase()),
-                         );
-                         if (sectionIdx >= 0) {
-                           const startH = headings[sectionIdx];
-                           const startPos = fullContent.indexOf(startH.title, fullContent.indexOf("#".repeat(startH.level) + " " + startH.title));
-                           let endPos = fullContent.length;
-                           for (let i = sectionIdx + 1; i < headings.length; i++) {
-                             if (headings[i].level <= startH.level) {
-                               endPos = fullContent.indexOf("#".repeat(headings[i].level) + " " + headings[i].title, startPos + 1);
-                               if (endPos === -1) endPos = fullContent.length;
-                               break;
-                             }
-                           }
-                           content = fullContent.slice(startPos, endPos).trim();
-                           content = content.length > 15000
-                             ? content.slice(0, 15000) + `\n\n[Section continues — request next portion with section="${requestedSection}" offset=${15000}]`
-                             : content;
-                         } else {
-                           content = `Section "${requestedSection}" not found. Available:\n${toc.map(h => `${"  ".repeat(h.level - 1)}- ${h.title}`).join("\n")}`;
-                         }
-                       } else if (fullContent.length > 15000) {
-                         const firstPortion = fullContent.slice(0, 6000);
-                         content = `📄 **${docName}** (${(fullContent.length / 1000).toFixed(0)}K chars, ${headings.length} sections)\n\n## Table of Contents\n${toc.map((h) => `${"  ".repeat(h.level - 1)}- ${h.title}`).join("\n")}\n\n---\n## First Portion\n${firstPortion}\n\n---\n💡 Use section parameter to read specific sections.`;
-                       } else {
-                         content = fullContent;
-                       }
-                     } else {
-                       content =
-                         "Không có bản text/markdown để đọc trực tiếp. Hãy dùng search_document hoặc get_document_summaries thay vì đọc file nhị phân.";
-                     }
-                   } catch (e: any) {
-                     content = `Lỗi khi đọc file tài liệu: ${e.message}`;
-                   }
-                 } else {
-                   content = `Lỗi: Không tìm thấy tài liệu "${docName}". Dùng get_document_summaries để xem danh sách.`;
-                 }
-                 result = content;
+                      const convertedMarkdownPath = `${docPath}.md`;
+                      const readablePath = textExtensions.has(extension)
+                        ? docPath
+                        : fs.existsSync(convertedMarkdownPath)
+                          ? convertedMarkdownPath
+                          : null;
+                      if (readablePath && fs.existsSync(readablePath)) {
+                        const fullContent = fs.readFileSync(readablePath, "utf-8");
+                        const headingRegex = /^(#{1,4})\s+(.+)$/gm;
+                        const headings: { level: number; title: string }[] = [];
+                        let match: RegExpExecArray | null;
+                        while ((match = headingRegex.exec(fullContent)) !== null) {
+                          headings.push({ level: match[1].length, title: match[2].trim() });
+                        }
+                        const toc = headings.slice(0, 40);
+                        
+                        let targetText = fullContent;
+                        let contextPrefix = "";
+
+                        if (requestedSection && headings.length > 0) {
+                          const sectionIdx = headings.findIndex(
+                            (h) => h.title.toLowerCase().includes(requestedSection.toLowerCase()),
+                          );
+                          if (sectionIdx >= 0) {
+                            const startH = headings[sectionIdx];
+                            const startPos = fullContent.indexOf(startH.title, fullContent.indexOf("#".repeat(startH.level) + " " + startH.title));
+                            let endPos = fullContent.length;
+                            for (let i = sectionIdx + 1; i < headings.length; i++) {
+                              if (headings[i].level <= startH.level) {
+                                endPos = fullContent.indexOf("#".repeat(headings[i].level) + " " + headings[i].title, startPos + 1);
+                                if (endPos === -1) endPos = fullContent.length;
+                                break;
+                              }
+                            }
+                            targetText = fullContent.slice(startPos, endPos).trim();
+                            contextPrefix = `📄 **Section: ${startH.title}** (Total section length: ${targetText.length} chars)\n\n`;
+                          } else {
+                            targetText = "";
+                            content = `Section "${requestedSection}" not found. Available headings:\n${toc.map(h => `${"  ".repeat(h.level - 1)}- ${h.title}`).join("\n")}`;
+                          }
+                        }
+
+                        if (targetText) {
+                          const sliceEnd = offset + limit;
+                          const hasMore = targetText.length > sliceEnd;
+                          const portion = targetText.slice(offset, sliceEnd);
+                          
+                          if (requestedSection) {
+                            content = contextPrefix + portion;
+                            if (hasMore) {
+                              content += `\n\n[Section continues — request next portion with section="${requestedSection}" offset=${sliceEnd}]`;
+                            }
+                          } else if (fullContent.length > limit && offset === 0 && headings.length > 0) {
+                            content = `📄 **${docName}** (Total length: ${(fullContent.length / 1000).toFixed(0)}K chars, ${headings.length} sections)\n\n## Table of Contents\n${toc.map((h) => `${"  ".repeat(h.level - 1)}- ${h.title}`).join("\n")}\n\n---\n## First Portion (characters 0 to ${limit})\n${portion}\n\n---\n💡 Use section parameter to read specific sections, or pagination with offset=${sliceEnd}.`;
+                          } else {
+                            content = portion;
+                            if (hasMore) {
+                              content += `\n\n[File continues — request next portion of "${docName}" with offset=${sliceEnd}]`;
+                            }
+                          }
+                        }
+                      } else {
+                        content =
+                          "Không có bản text/markdown để đọc trực tiếp. Hãy dùng search_document hoặc get_document_summaries thay vì đọc file nhị phân.";
+                      }
+                    } catch (e: any) {
+                      content = `Lỗi khi đọc file tài liệu: ${e.message}`;
+                    }
+                  } else {
+                    content = `Lỗi: Không tìm thấy tài liệu "${docName}". Dùng get_document_summaries để xem danh sách.`;
+                  }
+                  result = content;
+              } else if (isPlanMode && ["write_file", "edit_file", "run_command"].includes(tc.function.name)) {
+                  result = "Error: Agent đang ở Plan Mode. Bạn chỉ được phép đọc file, tìm kiếm thông tin và lập kế hoạch sửa đổi. Hãy giải thích kế hoạch cho user và đề xuất họ thoát Plan Mode bằng cách gọi exit_plan_mode khi sẵn sàng.";
+              } else if (tc.function.name === "enter_plan_mode") {
+                  isPlanMode = true;
+                  res.write(`event: summary\ndata: ${JSON.stringify({ summary: actualSummary, isPlanMode: true })}\n\n`);
+                  result = "Chuyển sang chế độ Plan Mode thành công. Hãy lập kế hoạch thay đổi (Implementation Plan) và giải thích cho user.";
+               } else if (tc.function.name === "exit_plan_mode") {
+                  isPlanMode = false;
+                  res.write(`event: summary\ndata: ${JSON.stringify({ summary: actualSummary, isPlanMode: false })}\n\n`);
+                  result = "Thoát khỏi chế độ Plan Mode thành công. Bạn đang ở active Execution Mode và có thể sử dụng các tool ghi/sửa file hoặc chạy command.";
+               } else if (tc.function.name === "read_file") {
+                  result = this.localReadFile(args.filePath, args.startLine, args.endLine);
+               } else if (tc.function.name === "write_file") {
+                  result = this.localWriteFile(args.filePath, args.content);
+               } else if (tc.function.name === "edit_file") {
+                  result = this.localEditFile(args.filePath, args.targetContent, args.replacementContent);
+               } else if (tc.function.name === "run_command") {
+                  result = this.localRunCommand(args.command);
+               } else if (tc.function.name === "glob_files") {
+                  result = JSON.stringify(this.localGlobFiles(args.pattern));
+               } else if (tc.function.name === "grep_search") {
+                  result = this.localGrepSearch(args.query, args.isRegex);
+               } else if (tc.function.name === "search_document") {
+                  const searchResults = await this.ragService.searchDocuments(projectId, args.query);
+                  result = JSON.stringify({
+                    query: args.query, resultsFound: searchResults.length,
+                    results: searchResults,
+                    _tip: searchResults.length === 0
+                      ? "No results found. Try different keywords or use get_document_summaries."
+                      : `Found ${searchResults.length} chunks. Use read_document_content to read full source.`,
+                  });
+               } else if (tc.function.name === "get_document_outline") {
+                  const docName = args.filename;
+                  let content = "";
+                  const docRecord = await this.prisma.document.findFirst({
+                    where: { projectId, originalName: docName },
+                  });
+                  if (docRecord) {
+                    try {
+                      const extension = path.extname(docRecord.originalName).toLowerCase();
+                      const textExtensions = new Set([
+                        ".txt", ".md", ".csv", ".json", ".xml", ".html",
+                        ".htm", ".yaml", ".yml", ".log",
+                      ]);
+                      
+                      let docPath = docRecord.path;
+                      if (!path.isAbsolute(docPath)) {
+                        docPath = path.join(process.cwd(), docPath);
+                      } else if (!fs.existsSync(docPath)) {
+                        const relativePart = docRecord.path.split(/[\\/]uploads[\\/]/)[1];
+                        if (relativePart) {
+                          const fallbackPath = path.join(process.cwd(), 'uploads', relativePart);
+                          if (fs.existsSync(fallbackPath)) {
+                            docPath = fallbackPath;
+                          }
+                        }
+                      }
+
+                      const convertedMarkdownPath = `${docPath}.md`;
+                      const readablePath = textExtensions.has(extension)
+                        ? docPath
+                        : fs.existsSync(convertedMarkdownPath)
+                          ? convertedMarkdownPath
+                          : null;
+                      if (readablePath && fs.existsSync(readablePath)) {
+                        const fullContent = fs.readFileSync(readablePath, "utf-8");
+                        const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+                        const headings: string[] = [];
+                        let match: RegExpExecArray | null;
+                        while ((match = headingRegex.exec(fullContent)) !== null) {
+                          const level = match[1].length;
+                          const title = match[2].trim();
+                          headings.push(`${"  ".repeat(level - 1)}- ${title}`);
+                        }
+                        if (headings.length > 0) {
+                          content = `📄 **Outline of ${docName}** (${headings.length} headings):\n\n${headings.join("\n")}`;
+                        } else {
+                          content = `Document "${docName}" has no markdown headings.`;
+                        }
+                      } else {
+                        content = "Không có bản text/markdown để sinh outline.";
+                      }
+                    } catch (e: any) {
+                      content = `Lỗi khi đọc file tài liệu: ${e.message}`;
+                    }
+                  } else {
+                    content = `Lỗi: Không tìm thấy tài liệu "${docName}". Dùng get_document_summaries để xem danh sách.`;
+                  }
+                  result = content;
+               } else if (tc.function.name === "search_document_exact") {
+                  const queryStr = (args.query || "").toLowerCase();
+                  if (!queryStr) {
+                    result = "Error: Query parameter cannot be empty.";
+                  } else {
+                    const textDocs = docContents.sources.filter(s => s.kind === "text");
+                    const searchResults: { filename: string; matches: { line: number; text: string }[] }[] = [];
+                    let totalMatches = 0;
+                    const maxMatchesTotal = 30;
+
+                    for (const s of textDocs) {
+                      if (totalMatches >= maxMatchesTotal) break;
+                      try {
+                        const docRecord = await this.prisma.document.findUnique({
+                          where: { id: s.id },
+                        });
+                        if (!docRecord) continue;
+                        let docPath = docRecord.path;
+                        if (!path.isAbsolute(docPath)) {
+                          docPath = path.join(process.cwd(), docPath);
+                        } else if (!fs.existsSync(docPath)) {
+                          const relativePart = docRecord.path.split(/[\\/]uploads[\\/]/)[1];
+                          if (relativePart) {
+                            const fallbackPath = path.join(process.cwd(), 'uploads', relativePart);
+                            if (fs.existsSync(fallbackPath)) {
+                              docPath = fallbackPath;
+                            }
+                          }
+                        }
+
+                        const extension = path.extname(s.originalName).toLowerCase();
+                        const textExtensions = new Set([
+                          ".txt", ".md", ".csv", ".json", ".xml", ".html",
+                          ".htm", ".yaml", ".yml", ".log",
+                        ]);
+                        const convertedMarkdownPath = `${docPath}.md`;
+                        const readablePath = textExtensions.has(extension)
+                          ? docPath
+                          : fs.existsSync(convertedMarkdownPath)
+                            ? convertedMarkdownPath
+                            : null;
+
+                        if (readablePath && fs.existsSync(readablePath)) {
+                          const fullContent = fs.readFileSync(readablePath, "utf-8");
+                          const lines = fullContent.split(/\r?\n/);
+                          const matches: { line: number; text: string }[] = [];
+
+                          for (let i = 0; i < lines.length; i++) {
+                            if (lines[i].toLowerCase().includes(queryStr)) {
+                              matches.push({ line: i + 1, text: lines[i].trim() });
+                              totalMatches++;
+                              if (totalMatches >= maxMatchesTotal || matches.length >= 10) {
+                                break;
+                              }
+                            }
+                          }
+
+                          if (matches.length > 0) {
+                            searchResults.push({ filename: s.originalName, matches });
+                          }
+                        }
+                      } catch (err) {
+                        console.error(`Failed to scan file ${s.originalName} for exact query:`, err);
+                      }
+                    }
+
+                    if (searchResults.length > 0) {
+                      result = JSON.stringify({
+                        query: args.query,
+                        totalMatchesFound: totalMatches,
+                        results: searchResults
+                      });
+                    } else {
+                      result = `No exact matches found for "${args.query}" in any project documents.`;
+                    }
+                  }
+               } else if (tc.function.name.startsWith("mcp__")) {
+                  const parts = tc.function.name.slice("mcp__".length).split("__");
+                  const serverName = parts[0];
+                  const toolName = parts.slice(1).join("__");
+                  const mcpClient = mcpClients.find(c => c.name === serverName);
+                  if (mcpClient) {
+                    const mcpResult = await mcpClient.callTool(toolName, args);
+                    result = JSON.stringify(mcpResult);
+                  } else {
+                    result = `Error: MCP Client for server ${serverName} not found`;
+                  }
               } else if (tc.function.name === "get_document_summaries") {
                  const summariesList = docContents.sources.map(s => ({
                    id: s.id, title: s.originalName, size: s.size, kind: s.kind,
@@ -2599,6 +3313,14 @@ ${summary ? `\nConversation memory:\n${summary}` : ""}`;
       });
       res.write(`event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`);
       res.end();
+    } finally {
+      for (const client of mcpClients) {
+        try {
+          client.stop();
+        } catch (err) {
+          console.error(`Failed to stop MCP client ${client.name}:`, err);
+        }
+      }
     }
   }
 

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "figma": {
+      "command": "node",
+      "args": ["C:/Users/bao/.gemini/antigravity/mcp/figma/index.js"]
+    }
+  }
+}
