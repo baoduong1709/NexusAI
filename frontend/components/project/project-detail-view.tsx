@@ -371,7 +371,8 @@ function previewTaskNamingRule(
   if (!rule.trim()) return title;
 
   const labels = sample.labels || [];
-  const rendered = rule
+  const safeRule = rule.includes("{title}") ? rule : `${rule.trim()} {title}`;
+  const rendered = safeRule
     .replaceAll("{title}", title)
     .replaceAll("{epic}", sample.epic || "")
     .replaceAll("{labels}", labels.join("]["))

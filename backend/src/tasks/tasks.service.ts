@@ -160,7 +160,9 @@ function buildTaskTitle(
   const remainingLabels = labels.slice(1).join("][");
   const allLabels = labels.join("][");
 
-  const rendered = rule
+  const safeRule = rule.includes("{title}") ? rule : `${rule.trim()} {title}`;
+
+  const rendered = safeRule
     .replaceAll("{title}", rawTitle)
     .replaceAll("{epic}", renderToken(task.epic))
     .replaceAll("{labels}", allLabels)

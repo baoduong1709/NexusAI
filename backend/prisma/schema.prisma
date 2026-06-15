@@ -1,5 +1,3 @@
-// This is your Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,9 +12,8 @@ model Company {
   name      String
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-
-  users     User[]
   projects  Project[]
+  users     User[]
 
   @@map("companies")
 }
@@ -33,70 +30,67 @@ model Role {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   name            String
-  email           String   @unique
+  email           String          @unique
   password        String
-  isActive        Boolean  @default(true) @map("is_active")
-  skills          String[] @default([])
-  roleId          Int?     @map("role_id")
-  companyId       Int?     @map("company_id")
-  isSuperAdmin    Boolean  @default(false) @map("is_super_admin")
-  chatLanguage    String   @default("vi") @map("chat_language")
-  chatDescription String?  @db.Text @map("chat_description")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  role           Role?           @relation(fields: [roleId], references: [id])
-  company        Company?        @relation(fields: [companyId], references: [id])
-  projectMembers ProjectMember[]
-  assignedTasks  Task[]          @relation("AssignedTasks")
-  aiChatSessions AiChatSession[]
-  taskActivities TaskActivity[]
-  aiTokenLogs    AiTokenLog[]
-  documents      Document[]
-  notifications  Notification[]
+  isActive        Boolean         @default(true) @map("is_active")
+  skills          String[]        @default([])
+  roleId          Int?            @map("role_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  chatLanguage    String          @default("vi") @map("chat_language")
+  chatDescription String?         @map("chat_description")
+  companyId       Int?            @map("company_id")
+  isSuperAdmin    Boolean         @default(false) @map("is_super_admin")
+  aiChatSessions  AiChatSession[]
+  aiTokenLogs     AiTokenLog[]
+  documents       Document[]
+  notifications   Notification[]
+  projectMembers  ProjectMember[]
+  taskActivities  TaskActivity[]
+  assignedTasks   Task[]          @relation("AssignedTasks")
+  company         Company?        @relation(fields: [companyId], references: [id])
+  role            Role?           @relation(fields: [roleId], references: [id])
 
   @@map("users")
 }
 
 model Project {
-  id             String        @id
-  name           String
-  description    String?
-  budget         Float?
-  startDate      DateTime?     @map("start_date")
-  endDate        DateTime?     @map("end_date")
-  status         ProjectStatus @default(ACTIVE)
-  projectRoles   String[]      @default(["Developer", "Tech Lead", "Designer", "Tester", "PM", "BA", "DevOps"]) @map("project_roles")
-  projectRoleConfigs Json        @default("[]") @map("project_role_configs")
-  taskStatuses   String[]      @default(["TODO", "IN_PROGRESS", "DONE"]) @map("task_statuses")
-  taskWorkflow   Json?         @map("task_workflow")
-  epics          String[]      @default([])
-  labels         String[]      @default([])
-  taskNamingRule String?       @map("task_naming_rule")
-  companyId      Int?          @map("company_id")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-
-  company             Company?        @relation(fields: [companyId], references: [id])
-  members             ProjectMember[]
-  tasks               Task[]
-  documents           Document[]
-  requirementsHistory RequirementsHistory[]
+  id                  String                @id
+  name                String
+  description         String?
+  budget              Float?
+  startDate           DateTime?             @map("start_date")
+  endDate             DateTime?             @map("end_date")
+  status              ProjectStatus         @default(ACTIVE)
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+  taskStatuses        String[]              @default(["TODO", "IN_PROGRESS", "DONE"]) @map("task_statuses")
+  taskWorkflow        Json?                 @map("task_workflow")
+  projectRoles        String[]              @default(["Developer", "Tech Lead", "Designer", "Tester", "PM", "BA", "DevOps"]) @map("project_roles")
+  projectRoleConfigs  Json                  @default("[]") @map("project_role_configs")
+  epics               String[]              @default([])
+  labels              String[]              @default([])
+  taskNamingRule      String?               @map("task_naming_rule")
+  companyId           Int?                  @map("company_id")
   aiChatSessions      AiChatSession[]
+  documents           Document[]
   aiIndex             ProjectAiIndex?
+  members             ProjectMember[]
+  company             Company?              @relation(fields: [companyId], references: [id])
+  requirementsHistory RequirementsHistory[]
+  tasks               Task[]
 
   @@map("projects")
 }
 
 model ProjectAiIndex {
-  projectId String      @id @map("project_id")
+  projectId String   @id @map("project_id")
   data      Json     @default("{}")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("project_ai_indexes")
 }
@@ -104,11 +98,10 @@ model ProjectAiIndex {
 model ProjectMember {
   projectId   String   @map("project_id")
   userId      Int      @map("user_id")
-  projectRole String?  @map("project_role")
   joinedAt    DateTime @default(now()) @map("joined_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectRole String?  @map("project_role")
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([projectId, userId])
   @@index([userId])
@@ -116,20 +109,19 @@ model ProjectMember {
 }
 
 model Document {
-  id              Int       @id @default(autoincrement())
-  projectId       String    @map("project_id")
+  id              Int      @id @default(autoincrement())
+  projectId       String   @map("project_id")
   filename        String
-  originalName    String    @map("original_name")
-  mimeType        String    @map("mime_type")
+  originalName    String   @map("original_name")
+  mimeType        String   @map("mime_type")
   size            Int
   path            String
+  createdAt       DateTime @default(now()) @map("created_at")
   folder          String?
-  uploadedById    Int?      @map("uploaded_by_id")
-  storageProvider String?   @map("storage_provider")
-  createdAt       DateTime  @default(now()) @map("created_at")
-
-  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  uploadedBy User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedById    Int?     @map("uploaded_by_id")
+  storageProvider String?  @map("storage_provider")
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy      User?    @relation(fields: [uploadedById], references: [id])
 
   @@index([projectId])
   @@index([projectId, folder])
@@ -141,41 +133,39 @@ model RequirementsHistory {
   id             Int      @id @default(autoincrement())
   projectId      String   @map("project_id")
   version        Int
-  content        String   @db.Text
-  changesSummary String?  @db.Text @map("changes_summary")
+  content        String
   createdAt      DateTime @default(now()) @map("created_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  changesSummary String?  @map("changes_summary")
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, version])
   @@map("requirements_history")
 }
 
 model Task {
-  id            String    @id
-  sequence      Int
-  projectId     String    @map("project_id")
+  projectId     String         @map("project_id")
   title         String
   description   String?
-  assigneeId    Int?      @map("assignee_id")
-  status        String    @default("TODO")
-  priority      Priority  @default(MEDIUM)
-  isAiGenerated Boolean   @default(false) @map("is_ai_generated")
-  dueDate       DateTime? @map("due_date")
-  epic          String?
-  labels        String[]  @default([])
+  assigneeId    Int?           @map("assignee_id")
+  status        String         @default("TODO")
+  priority      Priority       @default(MEDIUM)
+  isAiGenerated Boolean        @default(false) @map("is_ai_generated")
+  dueDate       DateTime?      @map("due_date")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
   sprint        String?
-  estimateHours Float     @default(0) @map("estimate_hours")
-  loggedHours   Float     @default(0) @map("logged_hours")
-  agentPrompt   String?   @map("agent_prompt")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee   User?        @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  activities TaskActivity[]
-  sourceLinks TaskLink[] @relation("SourceTaskLinks")
-  targetLinks TaskLink[] @relation("TargetTaskLinks")
+  estimateHours Float          @default(0) @map("estimate_hours")
+  loggedHours   Float          @default(0) @map("logged_hours")
+  epic          String?
+  labels        String[]       @default([])
+  sequence      Int
+  id            String         @id
+  agentPrompt   String?        @map("agent_prompt")
+  activities    TaskActivity[]
+  sourceLinks   TaskLink[]     @relation("SourceTaskLinks")
+  targetLinks   TaskLink[]     @relation("TargetTaskLinks")
+  assignee      User?          @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, sequence])
   @@index([projectId, status])
@@ -185,18 +175,17 @@ model Task {
 
 model TaskActivity {
   id            Int              @id @default(autoincrement())
-  taskId        String           @map("task_id")
   userId        Int?             @map("user_id")
   type          TaskActivityType
   field         String?
-  fromValue     String?          @db.Text @map("from_value")
-  toValue       String?          @db.Text @map("to_value")
-  body          String?          @db.Text
+  fromValue     String?          @map("from_value")
+  toValue       String?          @map("to_value")
+  body          String?
   durationHours Float?           @map("duration_hours")
   createdAt     DateTime         @default(now()) @map("created_at")
-
-  task Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  taskId        String           @map("task_id")
+  task          Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user          User?            @relation(fields: [userId], references: [id])
 
   @@index([taskId, createdAt])
   @@map("task_activities")
@@ -204,19 +193,74 @@ model TaskActivity {
 
 model AiChatSession {
   id        Int      @id @default(autoincrement())
-  projectId String      @map("project_id")
+  projectId String   @map("project_id")
   userId    Int      @map("user_id")
   name      String
-  summary   String?  @db.Text
+  summary   String?
   messages  Json     @default("[]")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([projectId, userId])
   @@map("ai_chat_sessions")
+}
+
+model SystemConfig {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+model AiTokenLog {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  model            String
+  promptTokens     Int      @map("prompt_tokens")
+  completionTokens Int      @map("completion_tokens")
+  totalTokens      Int      @map("total_tokens")
+  requestType      String   @map("request_type")
+  promptLength     Int      @map("prompt_length")
+  createdAt        DateTime @default(now()) @map("created_at")
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("ai_token_logs")
+}
+
+model TaskLink {
+  id           Int      @id @default(autoincrement())
+  sourceTaskId String   @map("source_task_id")
+  targetTaskId String   @map("target_task_id")
+  type         String   @default("RELATES_TO")
+  createdAt    DateTime @default(now()) @map("created_at")
+  sourceTask   Task     @relation("SourceTaskLinks", fields: [sourceTaskId], references: [id], onDelete: Cascade)
+  targetTask   Task     @relation("TargetTaskLinks", fields: [targetTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceTaskId, targetTaskId])
+  @@index([sourceTaskId])
+  @@index([targetTaskId])
+  @@map("task_links")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  title     String
+  message   String
+  type      String
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
 }
 
 enum Priority {
@@ -237,63 +281,3 @@ enum TaskActivityType {
   HISTORY
   WORK_LOG
 }
-
-model SystemConfig {
-  key       String   @id
-  value     String   @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("system_configs")
-}
-
-model AiTokenLog {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @map("user_id")
-  model            String
-  promptTokens     Int      @map("prompt_tokens")
-  completionTokens Int      @map("completion_tokens")
-  totalTokens      Int      @map("total_tokens")
-  requestType      String   @map("request_type")
-  promptLength     Int      @map("prompt_length")
-  createdAt        DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@map("ai_token_logs")
-}
-
-model TaskLink {
-  id           Int      @id @default(autoincrement())
-  sourceTaskId String   @map("source_task_id")
-  targetTaskId String   @map("target_task_id")
-  type         String   @default("RELATES_TO")
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  sourceTask   Task     @relation("SourceTaskLinks", fields: [sourceTaskId], references: [id], onDelete: Cascade)
-  targetTask   Task     @relation("TargetTaskLinks", fields: [targetTaskId], references: [id], onDelete: Cascade)
-
-  @@unique([sourceTaskId, targetTaskId])
-  @@index([sourceTaskId])
-  @@index([targetTaskId])
-  @@map("task_links")
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  title     String
-  message   String
-  type      String
-  link      String?
-  isRead    Boolean  @default(false) @map("is_read")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, isRead])
-  @@map("notifications")
-}
-
