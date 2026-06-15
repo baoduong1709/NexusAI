@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface BrandLogoProps {
@@ -8,7 +9,7 @@ interface BrandLogoProps {
 export function BrandLogo({ size = 36, className }: BrandLogoProps) {
   return (
     // Render the generated PNG logo instead of the old SVG logo
-    <img
+    <Image
       src="/logo.png"
       width={size}
       height={size}
