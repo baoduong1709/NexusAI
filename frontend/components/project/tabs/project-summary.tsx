@@ -19,7 +19,6 @@ import {
   PRIORITY_COLORS,
   TaskWorkflow,
   formatDuration,
-  stripTaskPrefix,
 } from "@/lib/utils";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
@@ -532,7 +531,7 @@ export function ProjectSummaryTab({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-zinc-800 dark:text-zinc-200 truncate">
-                    {stripTaskPrefix(t.title)}
+                    {t.title}
                   </p>
                   <Link
                     href={`/browse/${t.id}`}

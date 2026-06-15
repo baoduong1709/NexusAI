@@ -11,7 +11,6 @@ import {
   stripHtmlTags,
   formatDuration,
   TaskWorkflow,
-  stripTaskPrefix,
 } from "@/lib/utils";
 import { Task } from "@/lib/types";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -194,7 +193,7 @@ export function ProjectBoard({
                                 </Link>
                               </div>
                               <p className='text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1'>
-                                {stripTaskPrefix(t.title)}
+                                {t.title}
                               </p>
                               {stripHtmlTags(t.description || "") && (
                                 <p className='text-xs text-zinc-400 dark:text-zinc-500 line-clamp-2 mb-2'>

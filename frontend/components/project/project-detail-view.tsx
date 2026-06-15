@@ -1105,6 +1105,29 @@ export function ProjectDetailView() {
 
   const openEditTask = (t: any) => {
     setEditTask(t);
+    reset({
+      title: t.title,
+      description: t.description || "",
+      priority: t.priority,
+      status: t.status,
+      assigneeId: t.assignee?.id || t.assigneeId || "",
+      dueDate: t.dueDate ? t.dueDate.slice(0, 10) : "",
+      epic: t.epic || "",
+      labels: t.labels || [],
+      sprint: t.sprint || "",
+      estimateInput: toHours(t.estimateHours)
+        ? formatDuration(t.estimateHours)
+        : "",
+      loggedInput: toHours(t.loggedHours) ? formatDuration(t.loggedHours) : "",
+    });
+    setDescriptionHtml(t.description || "");
+    setDescriptionAiMessages([]);
+    setGeneratedTaskPrompt(t.agentPrompt || "");
+    setGeneratingPrompt(false);
+    setActivityTab("comments");
+    setCommentDraft("");
+    setWorkLogDraft("");
+    setWorkLogNote("");
     setShowTaskModal(true);
   };
 
@@ -1637,7 +1660,7 @@ export function ProjectDetailView() {
 
                           {/* Task title */}
                           <p className='flex-1 text-sm text-zinc-800 dark:text-zinc-200 truncate group-hover:text-zinc-900 dark:group-hover:text-white transition-colors'>
-                            {stripTaskPrefix(t.title)}
+                            {t.title}
                           </p>
 
                           {/* Priority dot + label */}
