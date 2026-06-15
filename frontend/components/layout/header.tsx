@@ -283,7 +283,8 @@ export default function Header() {
   };
 
   return (
-    <header className="h-14 px-6 flex items-center justify-between sticky top-0 z-40 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-xl border-b border-zinc-200/50 dark:border-white/5">
+    <>
+      <header className="h-14 px-6 flex items-center justify-between sticky top-0 z-40 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-xl border-b border-zinc-200/50 dark:border-white/5">
       {/* Left: Breadcrumb */}
       <div className="flex items-center gap-1.5 min-w-0">
         {breadcrumbs.map((crumb, i) => (
@@ -555,6 +556,7 @@ export default function Header() {
           </AnimatePresence>
         </div>
       </div>
+    </header>
 
       {/* ── Command Palette / Search Modal ──────────────────────────────────── */}
       <AnimatePresence>
@@ -828,6 +830,6 @@ export default function Header() {
           </div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
