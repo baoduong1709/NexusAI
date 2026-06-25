@@ -38,7 +38,7 @@ export default function LoginPage() {
       setLoading(true);
       await login(data.email, data.password);
       toast.success("Welcome back to NexusAI");
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Sign in failed");
     } finally {

@@ -1603,7 +1603,7 @@ export function ProjectDetailView() {
                 const tasks = filteredTasks.filter((t: any) =>
                   sprint === "" ? !t.sprint : t.sprint === sprint,
                 );
-                const completedCount = tasks.filter((t: any) => t.status === "Done" || t.status === "Closed").length;
+                const completedCount = tasks.filter((t: any) => t.status?.toUpperCase() === "DONE" || t.status?.toUpperCase() === "CLOSED").length;
                 const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
                 return (
                   <div
