@@ -2,6 +2,11 @@ import { IsOptional, IsString } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class UpdateSystemConfigsDto {
+  @ApiPropertyOptional({ description: 'AI provider: openai | google | claude | deepseek | custom' })
+  @IsString()
+  @IsOptional()
+  AI_PROVIDER?: string;
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()

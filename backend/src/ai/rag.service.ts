@@ -35,18 +35,37 @@ export class RagService {
       "AI_API_KEY",
       this.config.get("AI_API_KEY", ""),
     );
+    const provider = await this.getSystemConfig(
+      "AI_PROVIDER",
+      this.config.get("AI_PROVIDER", "custom"),
+    );
     let apiBase = await this.getSystemConfig(
       "AI_API_BASE",
       this.config.get("AI_API_BASE", "https://api.ai-box.vn/v1"),
     );
-    if (apiBase && !apiBase.endsWith("/v1") && !apiBase.endsWith("/v1/")) {
+
+    // Auto-set base URL for known providers
+    const providerBaseUrls: Record<string, string> = {
+      openai: "https://api.openai.com/v1",
+      google: "https://generativelanguage.googleapis.com/v1beta/openai",
+      claude: "https://api.anthropic.com/v1",
+      deepseek: "https://api.deepseek.com/v1",
+    };
+
+    if (provider !== "custom" && providerBaseUrls[provider]) {
+      apiBase = providerBaseUrls[provider];
+    } else if (apiBase && !apiBase.endsWith("/v1") && !apiBase.endsWith("/v1/")) {
       apiBase = apiBase.replace(/\/$/, "") + "/v1";
     }
 
-    return new OpenAI({
-      apiKey,
-      baseURL: apiBase,
-    });
+    const clientOpts: ConstructorParameters<typeof OpenAI>[0] = { apiKey, baseURL: apiBase };
+
+    // Claude requires special header
+    if (provider === "claude") {
+      clientOpts.defaultHeaders = { "anthropic-version": "2023-06-01" };
+    }
+
+    return new OpenAI(clientOpts);
   }
 
   // 1. Generate Embedding

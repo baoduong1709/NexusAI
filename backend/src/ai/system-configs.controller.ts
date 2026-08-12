@@ -22,6 +22,7 @@ export class SystemConfigsController {
     
     // Default system values (if not configured in DB)
     const defaults = {
+      AI_PROVIDER: process.env.AI_PROVIDER || "custom",
       AI_API_BASE: process.env.AI_API_BASE || "https://api.ai-box.vn/v1",
       AI_PRO_MODEL: process.env.AI_MODEL || "deepseek-v4-pro[1m]",
       AI_FLASH_MODEL: process.env.AI_MODEL || "deepseek-v4-flash[1m]", // Fallback if no flash config exists
@@ -79,5 +80,74 @@ export class SystemConfigsController {
     );
 
     return { success: true };
+  }
+
+  @Get('providers')
+  @RequirePermissions('system:config:read')
+  @ApiOperation({ summary: 'Get available AI providers' })
+  async getProviders() {
+    return [
+      {
+        id: 'openai',
+        name: 'OpenAI (GPT)',
+        icon: 'openai',
+        baseUrl: 'https://api.openai.com/v1',
+        models: {
+          pro: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'o3-mini'],
+          flash: ['gpt-4o-mini', 'gpt-3.5-turbo'],
+          summary: ['gpt-4o-mini', 'gpt-3.5-turbo'],
+          embedding: ['text-embedding-3-small', 'text-embedding-3-large', 'text-embedding-ada-002'],
+        },
+        description: 'API chính thức từ OpenAI',
+      },
+      {
+        id: 'google',
+        name: 'Google Gemini',
+        icon: 'google',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+        models: {
+          pro: ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash'],
+          flash: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+          summary: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+          embedding: ['text-embedding-004'],
+        },
+        description: 'Google AI Studio / Vertex AI',
+      },
+      {
+        id: 'claude',
+        name: 'Anthropic Claude',
+        icon: 'anthropic',
+        baseUrl: 'https://api.anthropic.com/v1',
+        models: {
+          pro: ['claude-sonnet-4-20250514', 'claude-3-5-sonnet-20241022', 'claude-3-opus-20240229'],
+          flash: ['claude-3-5-haiku-20241022', 'claude-3-haiku-20240307'],
+          summary: ['claude-3-5-haiku-20241022'],
+          embedding: [],
+        },
+        description: 'API từ Anthropic',
+        note: 'Claude không hỗ trợ embedding model',
+      },
+      {
+        id: 'deepseek',
+        name: 'Deepseek',
+        icon: 'deepseek',
+        baseUrl: 'https://api.deepseek.com/v1',
+        models: {
+          pro: ['deepseek-chat', 'deepseek-reasoner'],
+          flash: ['deepseek-chat'],
+          summary: ['deepseek-chat'],
+          embedding: [],
+        },
+        description: 'API từ Deepseek',
+      },
+      {
+        id: 'custom',
+        name: 'Custom / OpenAI Compatible',
+        icon: 'settings',
+        baseUrl: '',
+        models: { pro: [], flash: [], summary: [], embedding: [] },
+        description: 'Nhập Base URL và model tùy chỉnh',
+      },
+    ];
   }
 }

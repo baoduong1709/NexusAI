@@ -386,6 +386,7 @@ export const aiApi = {
   deleteSession: (projectId: string, sessionId: number) =>
     api.delete(`/projects/${projectId}/ai/sessions/${sessionId}`),
   getSystemConfigs: () => api.get("/ai/system-configs"),
+  getProviders: () => api.get("/ai/system-configs/providers"),
   updateSystemConfigs: (payload: Record<string, string>) => api.put("/ai/system-configs", payload),
   getTokenSummary: (userId?: number) => api.get("/ai/token-stats/summary", { params: { userId } }),
   getTokenCharts: (userId?: number) => api.get("/ai/token-stats/charts", { params: { userId } }),
