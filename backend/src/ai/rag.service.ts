@@ -396,29 +396,39 @@ Your summary (Return plain text, without markdown headers format):`;
     // Generate chunks with overlap & embeddings in batch
     const chunks = this.chunkText(content, 1000, 200);
     const vectors = await this.generateEmbeddings(chunks);
-    const embeddings = [];
 
-    for (let i = 0; i < chunks.length; i++) {
-      embeddings.push({
-        documentId,
-        title,
-        chunkIndex: i,
-        text: chunks[i],
-        vector: vectors[i] || [],
-      });
+    // Save vector chunks to project_ai_embeddings table
+    try {
+      await this.prisma.$executeRawUnsafe(
+        `DELETE FROM project_ai_embeddings WHERE document_id = $1`,
+        documentId
+      );
+
+      for (let i = 0; i < chunks.length; i++) {
+        const vec = vectors[i] || [];
+        if (vec.length > 0) {
+          await this.prisma.$executeRawUnsafe(
+            `INSERT INTO project_ai_embeddings (project_id, document_id, chunk_index, title, text, vector, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6::double precision[], NOW())`,
+            projectId,
+            documentId,
+            i,
+            title,
+            chunks[i],
+            vec
+          );
+        }
+      }
+    } catch (dbErr: any) {
+      this.logger.error(`Failed to save embeddings to project_ai_embeddings table: ${dbErr.message}`);
     }
 
     // Generate document summary
     const summary = await this.generateDocumentSummary(content, title);
 
-    // Save to ProjectAiIndex data, preserving existing keys
+    // Save to ProjectAiIndex data (for summaries and manifest)
     const index = await this.prisma.projectAiIndex.findUnique({ where: { projectId } });
     const data: any = index?.data || {};
-    
-    // Preserve old documentEmbeddings, remove only for this document
-    const oldEmbeddings = data.documentEmbeddings || [];
-    const filteredEmbeddings = oldEmbeddings.filter((e: any) => e.documentId !== documentId);
-    data.documentEmbeddings = [...filteredEmbeddings, ...embeddings];
 
     // Preserve old documentSummaries, add/update for this document
     const summaries = data.documentSummaries || {};
@@ -440,18 +450,35 @@ Your summary (Return plain text, without markdown headers format):`;
       create: { projectId, data },
       update: { data },
     });
-    this.logger.log(`Indexed ${embeddings.length} chunks and generated summary for document ${documentId}`);
+    this.logger.log(`Indexed ${chunks.length} chunks and generated summary for document ${documentId}`);
   }
 
   // 6. Search Documents
   async searchDocuments(projectId: string, query: string, topK: number = 3) {
     const queryVector = await this.generateEmbedding(query);
 
-    const index = await this.prisma.projectAiIndex.findUnique({ where: { projectId } });
-    if (!index || !index.data) return [];
+    // Fetch embeddings from project_ai_embeddings table
+    let embeddings: any[] = [];
+    try {
+      embeddings = await this.prisma.$queryRawUnsafe(
+        `SELECT document_id AS "documentId", title, text, vector
+         FROM project_ai_embeddings
+         WHERE project_id = $1`,
+        projectId
+      );
+    } catch (e: any) {
+      this.logger.warn(`Could not query project_ai_embeddings table: ${e.message}`);
+    }
 
-    const data: any = index.data;
-    const embeddings = data.documentEmbeddings || [];
+    // Fallback to JSON ProjectAiIndex if table is empty
+    if (embeddings.length === 0) {
+      const index = await this.prisma.projectAiIndex.findUnique({ where: { projectId } });
+      if (index && index.data) {
+        const data: any = index.data;
+        embeddings = data.documentEmbeddings || [];
+      }
+    }
+
     if (embeddings.length === 0) return [];
 
     let results = [];

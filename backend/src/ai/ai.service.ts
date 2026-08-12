@@ -1216,10 +1216,20 @@ ${docContents.textDocs.length > 0 ? `- Project Documents Content:\n${docContents
     docName: string,
     docContent: string,
   ): Promise<string> {
-    const prompt = `You are a professional Business Analyst.
-Analyze the following source document titled "${docName}" and extract all key software requirements, business rules, functional requirements, and non-functional requirements in detail.
-Focus only on concrete requirements and specifications. Avoid general introductory text.
-Return the requirements as a detailed, structured list of bullet points in Vietnamese.
+    const prompt = `You are a Senior Lead Business Analyst and Systems Architect.
+Your task is to perform an EXTREMELY RIGOROUS, COMPREHENSIVE, AND STRICT requirement extraction from the source document "${docName}".
+
+Rules for extraction:
+1. DO NOT omit any technical details, business rules, API specs, validation rules, or edge cases.
+2. DO NOT make assumptions or hallucinate requirements not present in the document.
+3. Group extracted requirements strictly into these structured categories:
+   - **Yêu cầu Chức năng (Functional Requirements - FR)**: Chi tiết từng module, luồng nghiệp vụ, vai trò người dùng (Actors).
+   - **Yêu cầu Phi Chức năng (Non-Functional Requirements - NFR)**: Hiệu năng, bảo mật, tải trọng, thời gian đáp ứng (SLA).
+   - **Quy tắc Nghiệp vụ (Business Rules - BR)**: Công thức tính toán, điều kiện ràng buộc, quy tắc xử lý lỗi.
+   - **Tiêu chí Nghiệm thu (Acceptance Criteria - AC)**: Điều kiện hoàn thành cụ thể.
+   - **Ràng buộc kỹ thuật & Tích hợp**: Công nghệ, DB, API 3rd party.
+4. Always append source citation inline: [Nguồn: ${docName}].
+5. Output in clear, professional Vietnamese using GitHub-style Markdown.
 
 Document Content:
 ${docContent}
@@ -1229,7 +1239,7 @@ Extracted Requirements:`;
     const response = await this.generateAiText(
       [{ role: "user", content: prompt }],
       "document requirements extraction",
-      0.2,
+      0.1,
       projectId,
       userId,
     );
@@ -1328,8 +1338,8 @@ Extracted Requirements:`;
       optimizedTextDocs.push(...(await Promise.all(promises)));
     }
 
-    const prompt = `You are NexusAI's requirements curator.
-Your job is to update the consolidated requirements.md for a complex software project.
+    const prompt = `You are a Principal Business Analyst and Requirements Architect for NexusAI.
+Your job is to generate a RIGOROUS, HIGHLY ACCURATE, AND STRICT CONSOLIDATED requirements.md document for the software project.
 
 Project: "${ctx.project.name}"
 Description: ${ctx.project.description || "N/A"}
@@ -1337,10 +1347,10 @@ Available epics: ${ctx.project.epics.length ? ctx.project.epics.join(", ") : "No
 Available labels: ${ctx.project.labels.length ? ctx.project.labels.join(", ") : "None"}
 Task naming rule: ${ctx.project.taskNamingRule || "None"}
 
-Team:
+Team Members:
 ${teamInfo || "No members"}
 
-Current consolidated requirements.md:
+Current consolidated requirements.md (Baseline v${version - 1}):
 ${previousRequirements}
 
 Uploaded source files for this update:
@@ -1348,29 +1358,28 @@ ${sourceManifest || "No uploaded source files."}
 
 ${optimizedTextDocs.length > 0 ? `Text source documents:\n${optimizedTextDocs.join("\n\n")}\n` : ""}
 
-Update rules:
-- Return the FULL updated requirements.md content, not a diff.
-- Preserve existing requirements that are still valid.
-- Merge new information from uploaded source files into the right sections.
-- Do not force a rigid format if the source documents are complex; keep domain-specific sections when needed.
-- Do not rewrite unrelated sections just for style.
-- If a new file conflicts with existing requirements, keep both facts and add a clear "## Conflicts / Needs PM Review" section.
-- Add source references inline where practical, using this format: [source: filename].
-- Maintain a "## Change Log" section at the bottom with a short entry for v${version} at ${updatedAt}.
-- The top metadata block must include: Cap nhat lan cuoi: ${updatedAt} - v${version}.
-- Output in Vietnamese. Do not wrap the answer in markdown code fences.
-
-Suggested baseline sections when no better domain-specific structure exists:
-# Tai lieu Yeu cau Du an: <project name>
-## Tong quan
-## Pham vi
-## Yeu cau chuc nang
-## Yeu cau phi chuc nang
-## Business rules
-## Acceptance criteria
-## Open questions
-## Conflicts / Needs PM Review
-## Change Log`;
+STRICT REQUIREMENTS CURATION RULES:
+1. Return the FULL updated requirements.md content, formatted in clean Vietnamese Markdown.
+2. DO NOT lose or delete any existing valid requirements. Merge new findings precisely.
+3. Every single requirement MUST specify its inline source reference format: [Nguồn: filename].
+4. Strictly organize the document into these professional sections:
+   # Tài liệu Yêu cầu Dự án: ${ctx.project.name}
+   > Cập nhật lần cuối: ${updatedAt} · Phiên bản: v${version}
+   
+   ## 1. Tổng quan & Mục tiêu Dự án
+   ## 2. Phạm vi Hệ thống (Scope & Out of Scope)
+   ## 3. Yêu cầu Chức năng (Functional Requirements - FR)
+      - Phân chia chi tiết theo Module / Vai trò người dùng (Actor).
+   ## 4. Yêu cầu Phi Chức năng (Non-Functional Requirements - NFR)
+      - Hiệu năng, Bảo mật, Quy mô, Khả năng mở rộng, SLA.
+   ## 5. Quy tắc Nghiệp vụ (Business Rules - BR)
+      - Điều kiện ràng buộc, công thức tính toán, xử lý ngoại lệ/lỗi.
+   ## 6. Tiêu chí Nghiệm thu (Acceptance Criteria / Definition of Done)
+   ## 7. Các điểm Mâu thuẫn & Thiếu sót (Conflicts & Open Questions)
+      - Nếu phát hiện mâu thuẫn giữa tài liệu mới và tài liệu cũ, liệt kê rõ tại đây kèm cờ ⚠️.
+   ## 8. Lịch sử Thay đổi (Change Log)
+      - Thêm dòng ghi nhận ngắn gọn cho v${version} vào ${updatedAt}.
+5. Do not wrap the response in markdown code blocks. Output plain markdown text only.`;
 
     let content = await this.generateAiText(
       [{ role: "user", content: prompt }],

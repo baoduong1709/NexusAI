@@ -109,7 +109,7 @@ export class SystemConfigsController {
           pro: ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash'],
           flash: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
           summary: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
-          embedding: ['text-embedding-004'],
+          embedding: ['gemini-embedding-2', 'gemini-embedding-001', 'text-embedding-004', 'text-embedding-005'],
         },
         description: 'Google AI Studio / Vertex AI',
       },
