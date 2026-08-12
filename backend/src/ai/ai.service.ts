@@ -318,6 +318,8 @@ export class AiService {
     }
   }
 
+  private _currentProvider: string = "custom";
+
   private async getOpenAIClient(): Promise<OpenAI> {
     const apiKey = await this.getSystemConfig("AI_API_KEY", this.config.get("AI_API_KEY", ""));
     const provider = await this.getSystemConfig("AI_PROVIDER", this.config.get("AI_PROVIDER", "custom"));
@@ -336,6 +338,9 @@ export class AiService {
     } else if (apiBase && !apiBase.endsWith("/v1") && !apiBase.endsWith("/v1/")) {
       apiBase = apiBase.replace(/\/$/, "") + "/v1";
     }
+
+    this._currentProvider = provider;
+    console.log(`[DEBUG OpenAI] provider=${provider}, apiBase=${apiBase}, apiKey=${apiKey?.substring(0, 8)}...`);
 
     const clientOpts: ConstructorParameters<typeof OpenAI>[0] = { apiKey, baseURL: apiBase };
 
@@ -451,12 +456,13 @@ export class AiService {
         let completionTokens = 0;
 
         const openai = await this.getOpenAIClient();
+        const supportsStreamOptions = !["google"].includes(this._currentProvider);
         const stream = await openai.chat.completions.create({
           model,
           messages,
           temperature,
           stream: true,
-          stream_options: { include_usage: true },
+          ...(supportsStreamOptions && { stream_options: { include_usage: true } }),
         });
 
         for await (const chunk of stream) {
@@ -2515,12 +2521,26 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
       }
     }
 
+    // ── Sanitize messages: remove empty content, merge consecutive same-role ──
+    const sanitizedMsgs: { role: string; content: string }[] = [];
+    for (const m of messages) {
+      const role = m.role === "user" ? "user" : "assistant";
+      const content = (m.content || "").trim();
+      if (!content) continue; // skip empty messages
+      // skip error messages from previous failed attempts
+      if (content.startsWith("⚠️ [Lỗi]")) continue;
+
+      if (sanitizedMsgs.length > 0 && sanitizedMsgs[sanitizedMsgs.length - 1].role === role) {
+        // Merge consecutive same-role messages
+        sanitizedMsgs[sanitizedMsgs.length - 1].content += "\n" + content;
+      } else {
+        sanitizedMsgs.push({ role, content });
+      }
+    }
+
     let currentMessages: any[] = [
       { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({
-        role: m.role === "user" ? "user" : "assistant",
-        content: m.content,
-      })),
+      ...sanitizedMsgs,
     ];
 
     try {
@@ -2583,36 +2603,93 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
               (tool) => tool.function.name === "suggest_tasks",
             )
           : availableTools;
-        const stream = await openai.chat.completions.create({
-          model,
-          messages: messagesForRound,
-          stream: true,
-          temperature: 0.2,
-          tools: toolsForRound,
-          stream_options: { include_usage: true },
-        });
+
+        // Google Gemini API doesn't support stream_options
+        const supportsStreamOptions = !["google"].includes(this._currentProvider);
+
+        // Try with tools first, fallback without tools on 400 error
+        let stream: any;
+        try {
+          stream = await openai.chat.completions.create({
+            model,
+            messages: messagesForRound,
+            stream: true,
+            temperature: 0.2,
+            tools: toolsForRound,
+            ...(supportsStreamOptions && { stream_options: { include_usage: true } }),
+          });
+        } catch (createError: any) {
+          const status = createError?.status || createError?.statusCode;
+          if (status === 400) {
+            console.log(`[DEBUG chatStream] LLM call failed with 400, retrying without tools and stream_options...`);
+            res.write(`event: agent_log\ndata: ${JSON.stringify({ id: `retry_${loopCount}`, type: "info", name: "Retrying", details: "Retrying without tools due to API compatibility" })}\n\n`);
+            stream = await openai.chat.completions.create({
+              model,
+              messages: messagesForRound,
+              stream: true,
+              temperature: 0.2,
+            });
+          } else {
+            throw createError;
+          }
+        }
 
         let fullText = "";
         let toolCalls: any[] = [];
+        let chunkCount = 0;
+        let finishReason: string | null = null;
 
         for await (const chunk of stream) {
-          const delta = chunk.choices[0]?.delta;
+          chunkCount++;
+          const choice = chunk.choices[0];
+          const delta = choice?.delta;
           
+          // Log first 5 chunks and any chunk with finish_reason for debugging
+          if (chunkCount <= 5 || choice?.finish_reason) {
+            console.log(`[DEBUG chatStream] Chunk #${chunkCount}:`, JSON.stringify({
+              finish_reason: choice?.finish_reason,
+              delta_keys: delta ? Object.keys(delta) : null,
+              delta_content: delta?.content?.substring(0, 100),
+              delta_tool_calls: delta?.tool_calls ? 'yes' : 'no',
+              delta_role: (delta as any)?.role,
+              has_usage: !!chunk.usage,
+            }));
+          }
+          
+          if (choice?.finish_reason) {
+            finishReason = choice.finish_reason;
+          }
+
           if (chunk.usage) {
             totalPromptTokens += chunk.usage.prompt_tokens;
             totalCompletionTokens += chunk.usage.completion_tokens;
           }
 
           if (delta?.tool_calls) {
+            // Log raw tool_calls for debugging Gemini compatibility
+            if (chunkCount <= 5) {
+              console.log(`[DEBUG chatStream] Raw tool_calls:`, JSON.stringify(delta.tool_calls));
+            }
             for (const tc of delta.tool_calls) {
-              const index = tc.index;
-              if (index !== undefined) {
-                if (!toolCalls[index]) {
-                  toolCalls[index] = { id: tc.id, type: tc.type, function: { name: tc.function?.name || "", arguments: "" } };
-                }
-                if (tc.function?.arguments) {
-                  toolCalls[index].function.arguments += tc.function.arguments;
-                }
+              // Gemini may not include `index` — default to sequential
+              const index = tc.index ?? toolCalls.length;
+              if (!toolCalls[index]) {
+                toolCalls[index] = {
+                  id: tc.id || `call_${index}`,
+                  type: tc.type || "function",
+                  function: { name: tc.function?.name || "", arguments: "" }
+                };
+              }
+              // Preserve extra_content (includes thought_signature for Gemini thinking models)
+              // Google API requires this to be sent back verbatim in the next turn
+              if ((tc as any).extra_content && !toolCalls[index].extra_content) {
+                toolCalls[index].extra_content = (tc as any).extra_content;
+              }
+              if (tc.function?.name && !toolCalls[index].function.name) {
+                toolCalls[index].function.name = tc.function.name;
+              }
+              if (tc.function?.arguments) {
+                toolCalls[index].function.arguments += tc.function.arguments;
               }
             }
           } else if (delta?.content) {
@@ -2624,10 +2701,14 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
           }
         }
 
+        console.log(`[DEBUG chatStream] Stream finished. totalChunks=${chunkCount}, finishReason=${finishReason}`);
+
         const llmDuration = Date.now() - startLlmTime;
         res.write(`event: agent_log\ndata: ${JSON.stringify({ id: `llm_${loopCount}`, type: "llm_call", name: `AI Reasoning`, status: "completed", duration: llmDuration, details: `Model: ${model}` })}\n\n`);
 
+        console.log(`[DEBUG chatStream] Loop ${loopCount} LLM done. toolCalls=${toolCalls.length}, fullText.length=${fullText.length}, clientDisconnected=${clientDisconnected}`);
         if (toolCalls.length > 0) {
+          console.log(`[DEBUG chatStream] Tool calls:`, toolCalls.map(tc => tc?.function?.name));
           toolCalls = toolCalls.filter(Boolean);
           dataToolCallCount += toolCalls.filter(
             (toolCall) => toolCall.function.name !== "suggest_tasks",
@@ -3170,7 +3251,9 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
             return { tc, result, toolId, toolDuration };
           });
 
+          console.log(`[DEBUG chatStream] Executing ${toolPromises.length} tool calls...`);
           const toolResults = await Promise.all(toolPromises);
+          console.log(`[DEBUG chatStream] All tool calls completed.`);
 
           // Add results to conversation in original order
           for (const { tc, result, toolId, toolDuration } of toolResults) {
@@ -3194,6 +3277,7 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
             break;
           }
         } else {
+          console.log(`[DEBUG chatStream] No tool calls. plan.intent=${plan.intent}, fullText.length=${fullText.length}`);
           const requiresStructuredTaskOutput =
             plan.intent === "task_suggestion" &&
             ctx.userPermissions.includes("task:create");
@@ -3202,6 +3286,7 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
             requiresStructuredTaskOutput &&
             (dataToolCallCount > 0 || forceStructuredTaskOutput)
           ) {
+            console.log(`[DEBUG chatStream] Finalizing task suggestion with flash...`);
             structuredTaskSuggestion =
               await this.finalizeTaskSuggestionWithFlash(
                 projectId,
@@ -3222,6 +3307,7 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
           }
 
           if (requiresStructuredTaskOutput) {
+            console.log(`[DEBUG chatStream] Task suggestion needs data first, continuing loop...`);
             currentMessages.push(
               { role: "assistant", content: fullText || null },
               {
@@ -3234,6 +3320,7 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
           }
 
           // No tools called, this is the final response. Stream it to client and append to finalFullText.
+          console.log(`[DEBUG chatStream] Final text response, breaking loop.`);
           finalFullText += fullText;
           res.write(`data: ${JSON.stringify({ text: fullText })}\n\n`);
           completedWithFinalResponse = true;
@@ -3315,9 +3402,11 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
         }
       }
 
+      console.log(`[DEBUG chatStream] Writing done event and ending response.`);
       res.write('event: done\ndata: {}\n\n');
       res.end();
     } catch (error: any) {
+      console.error(`[DEBUG chatStream] CAUGHT ERROR:`, error);
       this.logger.error("chatStream failed", error);
       const durationMs = Date.now() - chatStreamStartTime;
       AiLogger.log({

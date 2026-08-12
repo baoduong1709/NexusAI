@@ -44,7 +44,14 @@ interface ChatMessage {
   content: string;
   suggestedTasks?: SuggestedTask[];
   tasksCreated?: { id: string; title: string }[];
-  agentLogs?: { id?: string; type: string; name: string; duration?: number; status?: "running" | "completed"; details?: string }[];
+  agentLogs?: {
+    id?: string;
+    type: string;
+    name: string;
+    duration?: number;
+    status?: "running" | "completed";
+    details?: string;
+  }[];
 }
 
 interface ChatSession {
@@ -88,7 +95,10 @@ function durationToHours(days: any, hours: any, minutes: any) {
 function stripTasksJson(content: string): string {
   if (!content) return "";
   let cleaned = content;
-  cleaned = cleaned.replace(/```json\s*\{\s*["']createTasks["'][\s\S]*?```/gi, "");
+  cleaned = cleaned.replace(
+    /```json\s*\{\s*["']createTasks["'][\s\S]*?```/gi,
+    "",
+  );
   cleaned = cleaned.replace(/```\s*\{\s*["']createTasks["'][\s\S]*?```/gi, "");
   cleaned = cleaned.replace(/```json\s*\{\s*["']createTasks["'][\s\S]*$/gi, "");
   cleaned = cleaned.replace(/```\s*\{\s*["']createTasks["'][\s\S]*$/gi, "");
@@ -101,7 +111,7 @@ export default function AiChatBubble() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const qc = useQueryClient();
 
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
@@ -145,7 +155,8 @@ export default function AiChatBubble() {
 
   useEffect(() => {
     if (open && user) {
-      aiApi.getChatSettings()
+      aiApi
+        .getChatSettings()
         .then((r) => {
           if (r.data) {
             setLanguage(r.data.chatLanguage || "vi");
@@ -245,7 +256,7 @@ export default function AiChatBubble() {
     }
   }, [urlProjectId]);
 
-    // When sessions load for a project, pick the first one (or create one)
+  // When sessions load for a project, pick the first one (or create one)
   useEffect(() => {
     if (!selectedProjectId) return;
     setReviewTasks(null);
@@ -264,7 +275,7 @@ export default function AiChatBubble() {
     }
   }, [sessions, sessionsLoading, selectedProjectId]);
 
-    // Scroll to bottom on new messages
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (open && !reviewTasks) {
       setTimeout(
@@ -275,7 +286,7 @@ export default function AiChatBubble() {
   }, [messages, open, reviewTasks]);
 
   // ── session mutations ────────────────────────────────────────────────────────
-    const createSessionMutation = useMutation({
+  const createSessionMutation = useMutation({
     mutationFn: (name: string) =>
       aiApi.createSession(selectedProjectId!, name).then((r) => r.data),
     onSuccess: (created: ChatSession) => {
@@ -324,7 +335,7 @@ export default function AiChatBubble() {
     });
   };
 
-    const switchSession = (session: ChatSession) => {
+  const switchSession = (session: ChatSession) => {
     setActiveSession(session);
     setReviewTasks(null);
   };
@@ -369,8 +380,6 @@ export default function AiChatBubble() {
     },
   });
 
-
-
   const confirmMutation = useMutation({
     mutationFn: (tasks: SuggestedTask[]) =>
       aiApi.confirmTasks(selectedProjectId!, tasks).then((r) => r.data),
@@ -402,8 +411,7 @@ export default function AiChatBubble() {
 
   const send = async () => {
     const msg = input.trim();
-    if (!msg || !selectedProjectId || !activeSession || isStreaming)
-      return;
+    if (!msg || !selectedProjectId || !activeSession || isStreaming) return;
 
     setInput("");
     setIsStreaming(true);
@@ -415,12 +423,16 @@ export default function AiChatBubble() {
 
     // 1. Render user message and assistant placeholder immediately on UI
     const userMsg: ChatMessage = { role: "user" as const, content: msg };
-    const assistantPlaceholder: ChatMessage = { role: "assistant" as const, content: "", agentLogs: [] };
+    const assistantPlaceholder: ChatMessage = {
+      role: "assistant" as const,
+      content: "",
+      agentLogs: [],
+    };
     const updatedMessages = [...messages, userMsg];
-    
+
     setActiveSession({
       ...activeSession,
-      messages: [...updatedMessages, assistantPlaceholder]
+      messages: [...updatedMessages, assistantPlaceholder],
     });
 
     // Scroll to bottom
@@ -451,7 +463,10 @@ export default function AiChatBubble() {
           setActiveSession((prev) => {
             if (!prev) return prev;
             const nextMessages = [...prev.messages];
-            if (nextMessages.length > 0 && nextMessages[nextMessages.length - 1].role === "assistant") {
+            if (
+              nextMessages.length > 0 &&
+              nextMessages[nextMessages.length - 1].role === "assistant"
+            ) {
               nextMessages[nextMessages.length - 1] = {
                 ...nextMessages[nextMessages.length - 1],
                 content: assistantContent,
@@ -465,12 +480,19 @@ export default function AiChatBubble() {
         },
         async () => {
           // Done streaming, finalize the session in database
-          const finalMessages = [...updatedMessages, {
-            role: "assistant" as const,
-            content: assistantContent,
-            suggestedTasks: suggestedTasksLocal.length ? suggestedTasksLocal : undefined,
-            agentLogs: assistantLogsLocal.length ? assistantLogsLocal : undefined,
-          }];
+          const finalMessages = [
+            ...updatedMessages,
+            {
+              role: "assistant" as const,
+              content: assistantContent,
+              suggestedTasks: suggestedTasksLocal.length
+                ? suggestedTasksLocal
+                : undefined,
+              agentLogs: assistantLogsLocal.length
+                ? assistantLogsLocal
+                : undefined,
+            },
+          ];
 
           const finalSavedSession = await updateSessionMutation.mutateAsync({
             messages: finalMessages,
@@ -495,7 +517,8 @@ export default function AiChatBubble() {
 
           const errorMsg: ChatMessage = {
             role: "assistant",
-            content: "⚠️ [Lỗi]: Đã xảy ra lỗi khi kết nối tới AI. Tin nhắn của bạn đã được lưu lại, vui lòng thử lại sau.",
+            content:
+              "⚠️ [Lỗi]: Đã xảy ra lỗi khi kết nối tới AI. Tin nhắn của bạn đã được lưu lại, vui lòng thử lại sau.",
           };
           setActiveSession({
             ...activeSession,
@@ -517,7 +540,10 @@ export default function AiChatBubble() {
           setActiveSession((prev) => {
             if (!prev) return prev;
             const nextMessages = [...prev.messages];
-            if (nextMessages.length > 0 && nextMessages[nextMessages.length - 1].role === "assistant") {
+            if (
+              nextMessages.length > 0 &&
+              nextMessages[nextMessages.length - 1].role === "assistant"
+            ) {
               nextMessages[nextMessages.length - 1] = {
                 ...nextMessages[nextMessages.length - 1],
                 agentLogs: [...assistantLogsLocal],
@@ -531,7 +557,10 @@ export default function AiChatBubble() {
           setActiveSession((prev) => {
             if (!prev) return prev;
             const nextMessages = [...prev.messages];
-            if (nextMessages.length > 0 && nextMessages[nextMessages.length - 1].role === "assistant") {
+            if (
+              nextMessages.length > 0 &&
+              nextMessages[nextMessages.length - 1].role === "assistant"
+            ) {
               nextMessages[nextMessages.length - 1] = {
                 ...nextMessages[nextMessages.length - 1],
                 content: waitingText,
@@ -539,7 +568,7 @@ export default function AiChatBubble() {
             }
             return { ...prev, messages: nextMessages };
           });
-        }
+        },
       );
     } catch (error: any) {
       console.error("AI chat failed:", error);
@@ -564,74 +593,74 @@ export default function AiChatBubble() {
 
       {/* ChatGPT-style Modal */}
       {open && (
-        <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className='fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200'>
           {/* Backdrop overlay (click outside to close) */}
-          <div 
-            className="absolute inset-0" 
+          <div
+            className='absolute inset-0'
             onClick={() => {
               setOpen(false);
               setReviewTasks(null);
             }}
           />
-          
+
           {/* Main Modal Container */}
-          <div className="relative w-[75vw] h-[80vh] max-w-6xl max-h-[850px] min-h-[500px] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl flex border border-zinc-200/80 dark:border-zinc-800/80 overflow-hidden z-10 transition-all duration-300">
-            
+          <div className='relative w-[75vw] h-[80vh] max-w-6xl max-h-[850px] min-h-[500px] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl flex border border-zinc-200/80 dark:border-zinc-800/80 overflow-hidden z-10 transition-all duration-300'>
             {/* Sidebar (Left Column) */}
-            <div className="w-72 flex-shrink-0 flex flex-col bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 h-full">
+            <div className='w-72 flex-shrink-0 flex flex-col bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 h-full'>
               {showSettings ? (
                 /* ── Chat Settings Form ───────────────────────────────────────── */
-                <div className="flex-1 flex flex-col overflow-hidden animate-in slide-in-from-left duration-200">
-                  <div className="p-4 border-b border-zinc-200/60 dark:border-zinc-800/60 flex-shrink-0">
-                    <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
+                <div className='flex-1 flex flex-col overflow-hidden animate-in slide-in-from-left duration-200'>
+                  <div className='p-4 border-b border-zinc-200/60 dark:border-zinc-800/60 flex-shrink-0'>
+                    <p className='text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider'>
                       Cài đặt AI Assistant
                     </p>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-650 dark:text-zinc-400">
+                  <div className='flex-1 overflow-y-auto p-4 space-y-4 text-xs'>
+                    <div className='space-y-1.5'>
+                      <label className='font-semibold text-zinc-650 dark:text-zinc-400'>
                         Ngôn ngữ AI phản hồi
                       </label>
                       <select
                         value={language}
                         onChange={(e) => handleLanguageChange(e.target.value)}
-                        className="w-full text-xs border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-200 font-medium transition-all shadow-sm"
+                        className='w-full text-xs border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-200 font-medium transition-all shadow-sm'
                       >
-                        <option value="vi">Tiếng Việt (Vietnamese)</option>
-                        <option value="en">Tiếng Anh (English)</option>
+                        <option value='vi'>Tiếng Việt (Vietnamese)</option>
+                        <option value='en'>Tiếng Anh (English)</option>
                       </select>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="font-semibold text-zinc-655 dark:text-zinc-400">
+                    <div className='space-y-1.5'>
+                      <label className='font-semibold text-zinc-655 dark:text-zinc-400'>
                         Mô tả bản thân (User Profile)
                       </label>
                       <textarea
                         value={chatDescription}
                         onChange={(e) => setChatDescription(e.target.value)}
-                        placeholder="Ví dụ: Tôi là Tech Lead dự án, am hiểu NodeJS và muốn task viết ngắn gọn..."
+                        placeholder='Ví dụ: Tôi là Tech Lead dự án, am hiểu NodeJS và muốn task viết ngắn gọn...'
                         rows={8}
-                        className="w-full resize-none border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-100 transition-all placeholder:text-zinc-400 text-xs shadow-inner"
+                        className='w-full resize-none border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-800 dark:text-zinc-100 transition-all placeholder:text-zinc-400 text-xs shadow-inner'
                       />
-                      <p className="text-[10px] text-zinc-450 dark:text-zinc-550 leading-normal">
-                        AI sẽ ghi nhớ vai trò và thói quen làm việc này để đề xuất task và tư vấn phù hợp nhất với bạn.
+                      <p className='text-[10px] text-zinc-450 dark:text-zinc-550 leading-normal'>
+                        AI sẽ ghi nhớ vai trò và thói quen làm việc này để đề
+                        xuất task và tư vấn phù hợp nhất với bạn.
                       </p>
                     </div>
                   </div>
-                  <div className="p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 flex gap-2 flex-shrink-0 bg-zinc-100/10 dark:bg-zinc-900/10">
+                  <div className='p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 flex gap-2 flex-shrink-0 bg-zinc-100/10 dark:bg-zinc-900/10'>
                     <button
                       onClick={() => setShowSettings(false)}
-                      className="flex-1 py-2 text-xs border border-zinc-200 dark:border-zinc-800 text-zinc-650 dark:text-zinc-350 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors font-medium"
+                      className='flex-1 py-2 text-xs border border-zinc-200 dark:border-zinc-800 text-zinc-650 dark:text-zinc-350 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors font-medium'
                     >
                       Hủy
                     </button>
                     <button
                       onClick={handleSaveSettings}
                       disabled={isSavingSettings}
-                      className="flex-1 py-2 text-xs bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-850 dark:hover:bg-zinc-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-1.5"
+                      className='flex-1 py-2 text-xs bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-850 dark:hover:bg-zinc-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-1.5'
                     >
                       {isSavingSettings ? (
-                        <Loader2 size={12} className="animate-spin" />
+                        <Loader2 size={12} className='animate-spin' />
                       ) : (
                         "Lưu"
                       )}
@@ -642,20 +671,20 @@ export default function AiChatBubble() {
                 /* ── History & Projects ───────────────────────────────────────── */
                 <>
                   {/* Project & New Chat Area */}
-                  <div className="p-4 border-b border-zinc-200/60 dark:border-zinc-800/60 space-y-3 flex-shrink-0">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                  <div className='p-4 border-b border-zinc-200/60 dark:border-zinc-800/60 space-y-3 flex-shrink-0'>
+                    <div className='space-y-1.5'>
+                      <label className='text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider'>
                         Dự án
                       </label>
-                      <div className="relative">
+                      <div className='relative'>
                         <select
                           value={selectedProjectId ?? ""}
                           onChange={(e) =>
                             setSelectedProjectId(e.target.value || null)
                           }
-                          className="w-full appearance-none text-xs border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3.5 py-2.5 pr-8 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 text-zinc-800 dark:text-zinc-200 font-medium transition-all shadow-sm"
+                          className='w-full appearance-none text-xs border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3.5 py-2.5 pr-8 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 text-zinc-800 dark:text-zinc-200 font-medium transition-all shadow-sm'
                         >
-                          <option value="">— Chọn dự án —</option>
+                          <option value=''>— Chọn dự án —</option>
                           {projects.map((p: any) => (
                             <option key={p.id} value={p.id}>
                               {p.name}
@@ -664,7 +693,7 @@ export default function AiChatBubble() {
                         </select>
                         <ChevronDown
                           size={14}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 pointer-events-none"
+                          className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 pointer-events-none'
                         />
                       </div>
                     </div>
@@ -672,7 +701,7 @@ export default function AiChatBubble() {
                     {selectedProjectId && (
                       <button
                         onClick={handleNewSession}
-                        className="w-full py-2.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center gap-1.5 font-semibold transition-all active:scale-95 shadow-sm"
+                        className='w-full py-2.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center gap-1.5 font-semibold transition-all active:scale-95 shadow-sm'
                       >
                         <Plus size={14} /> Phiên chat mới
                       </button>
@@ -680,18 +709,21 @@ export default function AiChatBubble() {
                   </div>
 
                   {/* Sessions History List */}
-                  <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+                  <div className='flex-1 overflow-y-auto p-3 space-y-1.5'>
                     {selectedProjectId && (
                       <>
-                        <div className="px-2 pb-1 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                        <div className='px-2 pb-1 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider'>
                           Lịch sử trò chuyện
                         </div>
                         {sessionsLoading ? (
-                          <div className="flex items-center justify-center py-6">
-                            <Loader2 size={16} className="animate-spin text-zinc-400" />
+                          <div className='flex items-center justify-center py-6'>
+                            <Loader2
+                              size={16}
+                              className='animate-spin text-zinc-400'
+                            />
                           </div>
                         ) : sessions.length === 0 ? (
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 text-center py-4">
+                          <p className='text-xs text-zinc-400 dark:text-zinc-500 text-center py-4'>
                             Không có phiên chat nào
                           </p>
                         ) : (
@@ -702,13 +734,16 @@ export default function AiChatBubble() {
                                 "group relative flex items-center justify-between rounded-xl p-2.5 cursor-pointer transition-all",
                                 s.id === activeSession?.id
                                   ? "bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 font-medium"
-                                  : "hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40 text-zinc-650 dark:text-zinc-400"
+                                  : "hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40 text-zinc-650 dark:text-zinc-400",
                               )}
                               onClick={() => switchSession(s)}
                             >
-                              <div className="flex items-center gap-2 min-w-0 flex-1 pr-6">
-                                <MessageSquare size={13} className="text-zinc-400 dark:text-zinc-500 flex-shrink-0" />
-                                <div className="truncate text-xs leading-normal">
+                              <div className='flex items-center gap-2 min-w-0 flex-1 pr-6'>
+                                <MessageSquare
+                                  size={13}
+                                  className='text-zinc-400 dark:text-zinc-500 flex-shrink-0'
+                                />
+                                <div className='truncate text-xs leading-normal'>
                                   {s.name}
                                 </div>
                               </div>
@@ -717,8 +752,8 @@ export default function AiChatBubble() {
                                   e.stopPropagation();
                                   handleDeleteSession(s.id);
                                 }}
-                                className="absolute right-2 opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 rounded transition-opacity"
-                                title="Xóa phiên"
+                                className='absolute right-2 opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 rounded transition-opacity'
+                                title='Xóa phiên'
                               >
                                 <Trash2 size={12} />
                               </button>
@@ -732,15 +767,15 @@ export default function AiChatBubble() {
               )}
 
               {/* User Profiling (Bottom Sidebar) */}
-              <div className="p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-100/10 dark:bg-zinc-900/10 flex items-center gap-3 flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-500/10">
+              <div className='p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-100/10 dark:bg-zinc-900/10 flex items-center gap-3 flex-shrink-0'>
+                <div className='w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-500/10'>
                   {user.name ? user.name[0].toUpperCase() : "U"}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                <div className='min-w-0 flex-1'>
+                  <p className='text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate'>
                     {user.name || "User"}
                   </p>
-                  <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate max-w-[140px]">
+                  <p className='text-[10px] text-zinc-400 dark:text-zinc-500 truncate max-w-[140px]'>
                     {user.email || ""}
                   </p>
                 </div>
@@ -748,9 +783,10 @@ export default function AiChatBubble() {
                   onClick={() => setShowSettings(!showSettings)}
                   className={cn(
                     "p-1.5 rounded-xl transition-all hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200",
-                    showSettings && "bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-205"
+                    showSettings &&
+                      "bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-205",
                   )}
-                  title="Cài đặt chat"
+                  title='Cài đặt chat'
                 >
                   <Settings size={14} />
                 </button>
@@ -758,27 +794,30 @@ export default function AiChatBubble() {
             </div>
 
             {/* Chat Area (Right Column) */}
-            <div className="flex-1 flex flex-col h-full bg-white dark:bg-zinc-950 min-w-0">
+            <div className='flex-1 flex flex-col h-full bg-white dark:bg-zinc-950 min-w-0'>
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 flex-shrink-0 border-b border-zinc-200/60 dark:border-zinc-800/60">
+              <div className='flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 flex-shrink-0 border-b border-zinc-200/60 dark:border-zinc-800/60'>
                 {reviewTasks && (
                   <button
                     onClick={() => setReviewTasks(null)}
-                    className="p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-850 mr-2 transition-colors"
+                    className='p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-850 mr-2 transition-colors'
                   >
-                    <ChevronLeft size={16} className="text-zinc-500 dark:text-zinc-400" />
+                    <ChevronLeft
+                      size={16}
+                      className='text-zinc-500 dark:text-zinc-400'
+                    />
                   </button>
                 )}
-                <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className='flex items-center gap-2 min-w-0 flex-1'>
                   <BrandLogo size={24} />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                  <div className='min-w-0'>
+                    <p className='text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate'>
                       {reviewTasks
                         ? `Review ... đề xuất`
                         : activeSession?.name || "AI Assistant"}
                     </p>
                     {!reviewTasks && summary && (
-                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                      <p className='text-[10px] text-zinc-400 dark:text-zinc-500 truncate'>
                         {summary}
                       </p>
                     )}
@@ -788,10 +827,10 @@ export default function AiChatBubble() {
                   <select
                     value={language}
                     onChange={(e) => handleLanguageChange(e.target.value)}
-                    className="mr-2 text-xs border border-zinc-200 dark:border-zinc-800 rounded-xl px-2 py-1 bg-white dark:bg-zinc-900 focus:outline-none text-zinc-750 dark:text-zinc-300 font-medium animate-in fade-in"
+                    className='mr-2 text-xs border border-zinc-200 dark:border-zinc-800 rounded-xl px-2 py-1 bg-white dark:bg-zinc-900 focus:outline-none text-zinc-750 dark:text-zinc-300 font-medium animate-in fade-in'
                   >
-                    <option value="vi">Tiếng Việt</option>
-                    <option value="en">English</option>
+                    <option value='vi'>Tiếng Việt</option>
+                    <option value='en'>English</option>
                   </select>
                 )}
                 <button
@@ -799,7 +838,7 @@ export default function AiChatBubble() {
                     setOpen(false);
                     setReviewTasks(null);
                   }}
-                  className="p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+                  className='p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors'
                 >
                   <X size={18} />
                 </button>
@@ -807,17 +846,15 @@ export default function AiChatBubble() {
 
               {reviewTasks ? (
                 /* ── Review panel ────────────────────────────────────────────── */
-                <div
-                  className="flex flex-col overflow-hidden flex-1 animate-in fade-in duration-200"
-                >
-                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div className='flex flex-col overflow-hidden flex-1 animate-in fade-in duration-200'>
+                  <div className='flex-1 overflow-y-auto p-6 space-y-4'>
                     {reviewTasks.map((task, idx) => (
                       <div
                         key={idx}
-                        className="bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-150 dark:border-zinc-850 p-4 space-y-3"
+                        className='bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-150 dark:border-zinc-850 p-4 space-y-3'
                       >
                         <input
-                          className="w-full text-sm font-semibold bg-transparent border-b border-zinc-200 dark:border-zinc-800 pb-1.5 focus:outline-none focus:border-indigo-500 text-zinc-800 dark:text-zinc-100"
+                          className='w-full text-sm font-semibold bg-transparent border-b border-zinc-200 dark:border-zinc-800 pb-1.5 focus:outline-none focus:border-indigo-500 text-zinc-800 dark:text-zinc-100'
                           value={task.title}
                           onChange={(e) =>
                             setReviewTasks((prev) =>
@@ -830,7 +867,7 @@ export default function AiChatBubble() {
                         {task.description !== undefined && (
                           <textarea
                             rows={2}
-                            className="w-full text-xs text-zinc-650 dark:text-zinc-400 bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 resize-none"
+                            className='w-full text-xs text-zinc-650 dark:text-zinc-400 bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 resize-none'
                             value={task.description || ""}
                             onChange={(e) =>
                               setReviewTasks((prev) =>
@@ -843,7 +880,7 @@ export default function AiChatBubble() {
                             }
                           />
                         )}
-                        <div className="flex gap-3">
+                        <div className='flex gap-3'>
                           <select
                             value={task.priority || "MEDIUM"}
                             onChange={(e) =>
@@ -855,39 +892,43 @@ export default function AiChatBubble() {
                                 ),
                               )
                             }
-                            className="flex-1 text-xs border border-zinc-200 dark:border-zinc-850 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                            className='flex-1 text-xs border border-zinc-200 dark:border-zinc-850 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                           >
-                            <option value="HIGH">HIGH</option>
-                            <option value="MEDIUM">MEDIUM</option>
-                            <option value="LOW">LOW</option>
+                            <option value='HIGH'>HIGH</option>
+                            <option value='MEDIUM'>MEDIUM</option>
+                            <option value='LOW'>LOW</option>
                           </select>
                           <input
-                            type="date"
+                            type='date'
                             value={task.dueDate?.slice(0, 10) || ""}
                             onChange={(e) =>
                               setReviewTasks((prev) =>
                                 prev!.map((t, i) =>
                                   i === idx
-                                    ? { ...t, dueDate: e.target.value || undefined }
+                                    ? {
+                                        ...t,
+                                        dueDate: e.target.value || undefined,
+                                      }
                                     : t,
                                 ),
                               )
                             }
-                            className="flex-1 text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                            className='flex-1 text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div className='space-y-2'>
                           <div>
-                            <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
+                            <p className='text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1'>
                               Estimate
                             </p>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className='grid grid-cols-3 gap-2'>
                               <input
-                                type="number"
-                                min="0"
-                                placeholder="Days"
+                                type='number'
+                                min='0'
+                                placeholder='Days'
                                 value={
-                                  durationFromHours(task.estimateHours).days || ""
+                                  durationFromHours(task.estimateHours).days ||
+                                  ""
                                 }
                                 onChange={(e) =>
                                   updateReviewTaskDuration(
@@ -897,15 +938,16 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                               <input
-                                type="number"
-                                min="0"
+                                type='number'
+                                min='0'
                                 max={HOURS_PER_WORK_DAY - 1}
-                                placeholder="Hours"
+                                placeholder='Hours'
                                 value={
-                                  durationFromHours(task.estimateHours).hours || ""
+                                  durationFromHours(task.estimateHours).hours ||
+                                  ""
                                 }
                                 onChange={(e) =>
                                   updateReviewTaskDuration(
@@ -915,16 +957,16 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                               <input
-                                type="number"
-                                min="0"
-                                max="59"
-                                placeholder="Mins"
+                                type='number'
+                                min='0'
+                                max='59'
+                                placeholder='Mins'
                                 value={
-                                  durationFromHours(task.estimateHours).minutes ||
-                                  ""
+                                  durationFromHours(task.estimateHours)
+                                    .minutes || ""
                                 }
                                 onChange={(e) =>
                                   updateReviewTaskDuration(
@@ -934,19 +976,19 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                             </div>
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
+                            <p className='text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1'>
                               Logged
                             </p>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className='grid grid-cols-3 gap-2'>
                               <input
-                                type="number"
-                                min="0"
-                                placeholder="Days"
+                                type='number'
+                                min='0'
+                                placeholder='Days'
                                 value={
                                   durationFromHours(task.loggedHours).days || ""
                                 }
@@ -958,15 +1000,16 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                               <input
-                                type="number"
-                                min="0"
+                                type='number'
+                                min='0'
                                 max={HOURS_PER_WORK_DAY - 1}
-                                placeholder="Hours"
+                                placeholder='Hours'
                                 value={
-                                  durationFromHours(task.loggedHours).hours || ""
+                                  durationFromHours(task.loggedHours).hours ||
+                                  ""
                                 }
                                 onChange={(e) =>
                                   updateReviewTaskDuration(
@@ -976,15 +1019,16 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                               <input
-                                type="number"
-                                min="0"
-                                max="59"
-                                placeholder="Mins"
+                                type='number'
+                                min='0'
+                                max='59'
+                                placeholder='Mins'
                                 value={
-                                  durationFromHours(task.loggedHours).minutes || ""
+                                  durationFromHours(task.loggedHours).minutes ||
+                                  ""
                                 }
                                 onChange={(e) =>
                                   updateReviewTaskDuration(
@@ -994,19 +1038,19 @@ export default function AiChatBubble() {
                                     e.target.value,
                                   )
                                 }
-                                className="w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300"
+                                className='w-full text-xs border border-zinc-200 dark:border-zinc-855 rounded-xl px-3 py-2 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-zinc-700 dark:text-zinc-300'
                               />
                             </div>
                           </div>
                         </div>
-                        <div className="flex justify-end pt-1">
+                        <div className='flex justify-end pt-1'>
                           <button
                             onClick={() =>
                               setReviewTasks((prev) =>
                                 prev!.filter((_, i) => i !== idx),
                               )
                             }
-                            className="text-xs text-red-500 hover:text-red-650 font-medium flex items-center gap-1 transition-colors"
+                            className='text-xs text-red-500 hover:text-red-650 font-medium flex items-center gap-1 transition-colors'
                           >
                             <Trash2 size={12} /> Xóa task này
                           </button>
@@ -1014,10 +1058,10 @@ export default function AiChatBubble() {
                       </div>
                     ))}
                   </div>
-                  <div className="p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex gap-3 flex-shrink-0">
+                  <div className='p-4 border-t border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex gap-3 flex-shrink-0'>
                     <button
                       onClick={() => setReviewTasks(null)}
-                      className="flex-1 py-2.5 text-xs text-zinc-650 dark:text-zinc-350 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors font-medium"
+                      className='flex-1 py-2.5 text-xs text-zinc-650 dark:text-zinc-350 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors font-medium'
                     >
                       Hủy
                     </button>
@@ -1029,10 +1073,10 @@ export default function AiChatBubble() {
                       disabled={
                         confirmMutation.isPending || reviewTasks.length === 0
                       }
-                      className="flex-1 py-2.5 text-xs bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white rounded-xl disabled:opacity-40 transition-colors flex items-center justify-center gap-1.5 font-semibold shadow-md shadow-zinc-900/10 dark:shadow-none"
+                      className='flex-1 py-2.5 text-xs bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white rounded-xl disabled:opacity-40 transition-colors flex items-center justify-center gap-1.5 font-semibold shadow-md shadow-zinc-900/10 dark:shadow-none'
                     >
                       {confirmMutation.isPending ? (
-                        <Loader2 size={13} className="animate-spin" />
+                        <Loader2 size={13} className='animate-spin' />
                       ) : (
                         <CheckCircle size={13} />
                       )}
@@ -1043,32 +1087,40 @@ export default function AiChatBubble() {
               ) : (
                 /* ── Chat view ───────────────────────────────────────────────── */
                 <>
-                  <div className="flex-1 overflow-y-auto bg-white dark:bg-zinc-950">
-                    <div className="max-w-3xl mx-auto w-full px-6 py-8 space-y-6">
+                  <div className='flex-1 overflow-y-auto bg-white dark:bg-zinc-950'>
+                    <div className='max-w-3xl mx-auto w-full px-6 py-8 space-y-6'>
                       {!selectedProjectId ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-                          <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-zinc-100 dark:border-zinc-800/60">
-                            <MessageSquare size={26} className="text-zinc-300 dark:text-zinc-700" />
+                        <div className='flex flex-col items-center justify-center py-20 text-center gap-3'>
+                          <div className='w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-zinc-100 dark:border-zinc-800/60'>
+                            <MessageSquare
+                              size={26}
+                              className='text-zinc-300 dark:text-zinc-700'
+                            />
                           </div>
-                          <p className="text-sm text-zinc-400 dark:text-zinc-500 font-medium">
+                          <p className='text-sm text-zinc-400 dark:text-zinc-500 font-medium'>
                             Chọn project để bắt đầu chat với AI
                           </p>
                         </div>
                       ) : messages.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-                          <div className="w-16 h-16 rounded-full bg-indigo-50/50 dark:bg-indigo-950/20 flex items-center justify-center border border-indigo-100/50 dark:border-indigo-900/30">
-                            <Bot size={26} className="text-indigo-500 dark:text-indigo-400" />
+                        <div className='flex flex-col items-center justify-center py-20 text-center gap-3'>
+                          <div className='w-16 h-16 rounded-full bg-indigo-50/50 dark:bg-indigo-950/20 flex items-center justify-center border border-indigo-100/50 dark:border-indigo-900/30'>
+                            <Bot
+                              size={26}
+                              className='text-indigo-500 dark:text-indigo-400'
+                            />
                           </div>
-                          <p className="text-sm text-zinc-650 dark:text-zinc-400 font-semibold">
+                          <p className='text-sm text-zinc-650 dark:text-zinc-400 font-semibold'>
                             Chat với AI về dự án
                           </p>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 max-w-sm">
-                            Ví dụ: &quot;Tạo tasks cho module đăng nhập&quot; hoặc nhờ giải thích cấu trúc code.
+                          <p className='text-xs text-zinc-400 dark:text-zinc-500 max-w-sm'>
+                            Ví dụ: &quot;Tạo tasks cho module đăng nhập&quot;
+                            hoặc nhờ giải thích cấu trúc code.
                           </p>
                         </div>
                       ) : (
                         messages.map((msg, idx) => {
-                          const isCurrentStreamingMessage = isStreaming && idx === messages.length - 1;
+                          const isCurrentStreamingMessage =
+                            isStreaming && idx === messages.length - 1;
                           return (
                             <div
                               key={idx}
@@ -1076,117 +1128,241 @@ export default function AiChatBubble() {
                                 "flex gap-4 p-4 rounded-2xl transition-all animate-in fade-in duration-300 max-w-[85%] w-fit",
                                 msg.role === "assistant"
                                   ? "bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-900/40 mr-auto"
-                                  : "flex-row-reverse ml-auto bg-indigo-50/40 dark:bg-indigo-950/10 border border-indigo-100/30 dark:border-indigo-900/20"
+                                  : "flex-row-reverse ml-auto bg-indigo-50/40 dark:bg-indigo-950/10 border border-indigo-100/30 dark:border-indigo-900/20",
                               )}
                             >
-                              <div className="flex-shrink-0">
+                              <div className='flex-shrink-0'>
                                 {msg.role === "assistant" ? (
-                                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/10 text-white">
+                                  <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/10 text-white'>
                                     <Bot size={15} />
                                   </div>
                                 ) : (
-                                  <div className="w-8 h-8 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 rounded-xl flex items-center justify-center text-zinc-700 dark:text-zinc-200 shadow-sm font-bold text-xs">
-                                    {user?.name ? user.name[0].toUpperCase() : "U"}
+                                  <div className='w-8 h-8 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 rounded-xl flex items-center justify-center text-zinc-700 dark:text-zinc-200 shadow-sm font-bold text-xs'>
+                                    {user?.name
+                                      ? user.name[0].toUpperCase()
+                                      : "U"}
                                   </div>
                                 )}
                               </div>
-                              <div className="flex-1 min-w-0 space-y-2 text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+                              <div className='flex-1 min-w-0 space-y-2 text-sm leading-relaxed text-zinc-800 dark:text-zinc-200'>
                                 {msg.role === "user" ? (
-                                  <div className="whitespace-pre-wrap font-medium">{msg.content}</div>
+                                  <div className='whitespace-pre-wrap font-medium'>
+                                    {msg.content}
+                                  </div>
                                 ) : (
-                                  <div className="space-y-3">
+                                  <div className='space-y-3'>
                                     {/* 1. Real-time Agent Logs (Thinking Process) at the top */}
-                                    {((msg.agentLogs && msg.agentLogs.length > 0) || isCurrentStreamingMessage) && (() => {
-                                      const totalSeconds = isCurrentStreamingMessage
-                                        ? streamDuration.toFixed(1)
-                                        : msg.agentLogs
-                                          ? (msg.agentLogs.reduce((sum, l) => sum + (l.duration || 0), 0) / 1000).toFixed(1)
-                                          : "0.0";
-                                      return (
-                                        <details className="group">
-                                          <summary className="list-none flex items-center gap-1.5 text-xs text-zinc-450 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400 cursor-pointer select-none font-medium [&::-webkit-details-marker]:hidden">
-                                            <ChevronRight size={12} className="transition-transform duration-200 group-open:rotate-90 text-zinc-400 dark:text-zinc-500" />
-                                            <span>
-                                              thinking ({totalSeconds}s)
-                                              {isCurrentStreamingMessage && ".".repeat((Math.floor(streamDuration * 2) % 3) + 1)}
-                                            </span>
-                                          </summary>
-                                          
-                                          <div className="mt-2 mb-3 p-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-150/50 dark:border-zinc-800/40 space-y-2 animate-in fade-in duration-200">
-                                            {msg.agentLogs && msg.agentLogs.length > 0 && (
-                                              <div className="space-y-2 border-l border-zinc-200 dark:border-zinc-800 pl-3 ml-1">
-                                                {msg.agentLogs.map((log, lIdx) => {
-                                                  const isLlm = log.type === "llm_call";
-                                                  const cleanName = log.name.replace(/\s*\(Lượt\s*\d+\)/gi, "");
-                                                  const isRunning = log.status === "running";
-                                                  return (
-                                                    <div key={lIdx} className="text-[11px] space-y-0.5 animate-in fade-in duration-150">
-                                                      <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 font-medium">
-                                                        <span className="flex items-center gap-1.5">
-                                                          {isRunning && (
-                                                            <Loader2 size={11} className="animate-spin text-indigo-500" />
-                                                          )}
-                                                          <span>{cleanName}</span>
-                                                          {isLlm && log.details && (
-                                                            <span className="text-zinc-400 dark:text-zinc-500 font-normal">
-                                                              ({log.details.replace("Model: ", "")})
-                                                            </span>
-                                                          )}
-                                                        </span>
-                                                        {isRunning ? (
-                                                          <span className="text-[10px] text-indigo-500 font-medium animate-pulse">
-                                                            running...
-                                                          </span>
-                                                        ) : (
-                                                          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono bg-zinc-100 dark:bg-white/5 px-1 py-0.5 rounded">
-                                                            {log.duration || 0}ms
-                                                          </span>
-                                                        )}
-                                                      </div>
-                                                      {!isLlm && log.details && (
-                                                        <pre className="mt-1 p-2 rounded-xl bg-zinc-100/40 dark:bg-black/15 text-[10px] text-zinc-400 dark:text-zinc-500 overflow-x-auto font-mono whitespace-pre-wrap break-all border border-zinc-200/20 dark:border-white/5">
-                                                          {log.details}
-                                                        </pre>
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })}
-                                              </div>
-                                            )}
+                                    {((msg.agentLogs &&
+                                      msg.agentLogs.length > 0) ||
+                                      isCurrentStreamingMessage) &&
+                                      (() => {
+                                        const totalSeconds =
+                                          isCurrentStreamingMessage
+                                            ? streamDuration.toFixed(1)
+                                            : msg.agentLogs
+                                              ? (
+                                                  msg.agentLogs.reduce(
+                                                    (sum, l) =>
+                                                      sum + (l.duration || 0),
+                                                    0,
+                                                  ) / 1000
+                                                ).toFixed(1)
+                                              : "0.0";
+                                        return (
+                                          <details className='group'>
+                                            <summary className='list-none flex items-center gap-1.5 text-xs text-zinc-450 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400 cursor-pointer select-none font-medium [&::-webkit-details-marker]:hidden'>
+                                              <ChevronRight
+                                                size={12}
+                                                className='transition-transform duration-200 group-open:rotate-90 text-zinc-400 dark:text-zinc-500'
+                                              />
+                                              <span>
+                                                thinking ({totalSeconds}s)
+                                                {isCurrentStreamingMessage &&
+                                                  ".".repeat(
+                                                    (Math.floor(
+                                                      streamDuration * 2,
+                                                    ) %
+                                                      3) +
+                                                      1,
+                                                  )}
+                                              </span>
+                                            </summary>
 
-                                            {isCurrentStreamingMessage && (
-                                              <div className="text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-2 mt-1 pl-1">
-                                                <Loader2 size={11} className="animate-spin text-indigo-500" />
-                                                <span className="italic">thinking...</span>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </details>
-                                      );
-                                    })()}
+                                            <div className='mt-2 mb-3 p-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-150/50 dark:border-zinc-800/40 space-y-2 animate-in fade-in duration-200'>
+                                              {msg.agentLogs &&
+                                                msg.agentLogs.length > 0 && (
+                                                  <div className='space-y-2 border-l border-zinc-200 dark:border-zinc-800 pl-3 ml-1'>
+                                                    {msg.agentLogs.map(
+                                                      (log, lIdx) => {
+                                                        const isLlm =
+                                                          log.type ===
+                                                          "llm_call";
+                                                        const cleanName =
+                                                          log.name.replace(
+                                                            /\s*\(Lượt\s*\d+\)/gi,
+                                                            "",
+                                                          );
+                                                        const isRunning =
+                                                          log.status ===
+                                                          "running";
+                                                        return (
+                                                          <div
+                                                            key={lIdx}
+                                                            className='text-[11px] space-y-0.5 animate-in fade-in duration-150'
+                                                          >
+                                                            <div className='flex items-center justify-between text-zinc-500 dark:text-zinc-400 font-medium'>
+                                                              <span className='flex items-center gap-1.5'>
+                                                                {isRunning && (
+                                                                  <Loader2
+                                                                    size={11}
+                                                                    className='animate-spin text-indigo-500'
+                                                                  />
+                                                                )}
+                                                                <span>
+                                                                  {cleanName}
+                                                                </span>
+                                                                {isLlm &&
+                                                                  log.details && (
+                                                                    <span className='text-zinc-400 dark:text-zinc-500 font-normal'>
+                                                                      (
+                                                                      {log.details.replace(
+                                                                        "Model: ",
+                                                                        "",
+                                                                      )}
+                                                                      )
+                                                                    </span>
+                                                                  )}
+                                                              </span>
+                                                              {isRunning ? (
+                                                                <span className='text-[10px] text-indigo-500 font-medium animate-pulse'>
+                                                                  running...
+                                                                </span>
+                                                              ) : (
+                                                                <span className='text-[10px] text-zinc-400 dark:text-zinc-500 font-mono bg-zinc-100 dark:bg-white/5 px-1 py-0.5 rounded'>
+                                                                  {log.duration ||
+                                                                    0}
+                                                                  ms
+                                                                </span>
+                                                              )}
+                                                            </div>
+                                                            {!isLlm &&
+                                                              log.details && (
+                                                                <pre className='mt-1 p-2 rounded-xl bg-zinc-100/40 dark:bg-black/15 text-[10px] text-zinc-400 dark:text-zinc-500 overflow-x-auto font-mono whitespace-pre-wrap break-all border border-zinc-200/20 dark:border-white/5'>
+                                                                  {log.details}
+                                                                </pre>
+                                                              )}
+                                                          </div>
+                                                        );
+                                                      },
+                                                    )}
+                                                  </div>
+                                                )}
+
+                                              {isCurrentStreamingMessage && (
+                                                <div className='text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center gap-2 mt-1 pl-1'>
+                                                  <Loader2
+                                                    size={11}
+                                                    className='animate-spin text-indigo-500'
+                                                  />
+                                                  <span className='italic'>
+                                                    thinking...
+                                                  </span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </details>
+                                        );
+                                      })()}
 
                                     {/* 2. Message Content */}
                                     {stripTasksJson(msg.content) !== "" && (
-                                      <div className={cn("whitespace-pre-wrap leading-relaxed break-words", isCurrentStreamingMessage && "streaming-message")}>
+                                      <div
+                                        className={cn(
+                                          "whitespace-pre-wrap leading-relaxed break-words",
+                                          isCurrentStreamingMessage &&
+                                            "streaming-message",
+                                        )}
+                                      >
                                         <ReactMarkdown
                                           remarkPlugins={[remarkGfm as any]}
-                                          components={{
-                                            p: ({node, ...props}: any) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
-                                            ul: ({node, ...props}: any) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
-                                            ol: ({node, ...props}: any) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
-                                            li: ({node, ...props}: any) => <li className="mb-0.5" {...props} />,
-                                            h1: ({node, ...props}: any) => <h1 className="text-sm font-extrabold mt-3 mb-1.5 text-zinc-900 dark:text-zinc-50 uppercase tracking-wider" {...props} />,
-                                            h2: ({node, ...props}: any) => <h2 className="text-sm font-bold mt-3 mb-1.5 text-zinc-900 dark:text-zinc-50" {...props} />,
-                                            h3: ({node, ...props}: any) => <h3 className="text-xs font-semibold mt-2.5 mb-1 text-zinc-900 dark:text-zinc-50" {...props} />,
-                                            code: ({node, ...props}: any) => <code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs font-mono text-indigo-600 dark:text-indigo-400" {...props} />,
-                                            table: ({node, ...props}: any) => (
-                                              <div className="overflow-x-auto my-2 border border-zinc-200 dark:border-zinc-800 rounded-xl">
-                                                <table className="w-full border-collapse text-xs" {...props} />
-                                              </div>
-                                            ),
-                                            th: ({node, ...props}: any) => <th className="border-b border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-zinc-100/50 dark:bg-zinc-900/50 font-bold text-left" {...props} />,
-                                            td: ({node, ...props}: any) => <td className="border-b border-zinc-100 dark:border-zinc-900/50 px-3 py-2 text-zinc-650 dark:text-zinc-300" {...props} />
-                                          } as any}
+                                          components={
+                                            {
+                                              p: ({ node, ...props }: any) => (
+                                                <p
+                                                  className='mb-2 last:mb-0 leading-relaxed'
+                                                  {...props}
+                                                />
+                                              ),
+                                              ul: ({ node, ...props }: any) => (
+                                                <ul
+                                                  className='list-disc pl-4 mb-2 space-y-1'
+                                                  {...props}
+                                                />
+                                              ),
+                                              ol: ({ node, ...props }: any) => (
+                                                <ol
+                                                  className='list-decimal pl-4 mb-2 space-y-1'
+                                                  {...props}
+                                                />
+                                              ),
+                                              li: ({ node, ...props }: any) => (
+                                                <li
+                                                  className='mb-0.5'
+                                                  {...props}
+                                                />
+                                              ),
+                                              h1: ({ node, ...props }: any) => (
+                                                <h1
+                                                  className='text-sm font-extrabold mt-3 mb-1.5 text-zinc-900 dark:text-zinc-50 uppercase tracking-wider'
+                                                  {...props}
+                                                />
+                                              ),
+                                              h2: ({ node, ...props }: any) => (
+                                                <h2
+                                                  className='text-sm font-bold mt-3 mb-1.5 text-zinc-900 dark:text-zinc-50'
+                                                  {...props}
+                                                />
+                                              ),
+                                              h3: ({ node, ...props }: any) => (
+                                                <h3
+                                                  className='text-xs font-semibold mt-2.5 mb-1 text-zinc-900 dark:text-zinc-50'
+                                                  {...props}
+                                                />
+                                              ),
+                                              code: ({
+                                                node,
+                                                ...props
+                                              }: any) => (
+                                                <code
+                                                  className='bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs font-mono text-indigo-600 dark:text-indigo-400'
+                                                  {...props}
+                                                />
+                                              ),
+                                              table: ({
+                                                node,
+                                                ...props
+                                              }: any) => (
+                                                <div className='overflow-x-auto my-2 border border-zinc-200 dark:border-zinc-800 rounded-xl'>
+                                                  <table
+                                                    className='w-full border-collapse text-xs'
+                                                    {...props}
+                                                  />
+                                                </div>
+                                              ),
+                                              th: ({ node, ...props }: any) => (
+                                                <th
+                                                  className='border-b border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-zinc-100/50 dark:bg-zinc-900/50 font-bold text-left'
+                                                  {...props}
+                                                />
+                                              ),
+                                              td: ({ node, ...props }: any) => (
+                                                <td
+                                                  className='border-b border-zinc-100 dark:border-zinc-900/50 px-3 py-2 text-zinc-650 dark:text-zinc-300'
+                                                  {...props}
+                                                />
+                                              ),
+                                            } as any
+                                          }
                                         >
                                           {stripTasksJson(msg.content)}
                                         </ReactMarkdown>
@@ -1195,29 +1371,32 @@ export default function AiChatBubble() {
                                   </div>
                                 )}
                                 {msg.suggestedTasks?.length ? (
-                                  <div className="mt-3 pt-2.5 border-t border-indigo-100 dark:border-indigo-950/40">
+                                  <div className='mt-3 pt-2.5 border-t border-indigo-100 dark:border-indigo-950/40'>
                                     <button
                                       onClick={() =>
                                         setReviewTasks(msg.suggestedTasks!)
                                       }
-                                      className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+                                      className='flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors'
                                     >
                                       <ListChecks size={13} />
-                                      Review {msg.suggestedTasks.length} task đề xuất
+                                      Review {msg.suggestedTasks.length} task đề
+                                      xuất
                                     </button>
                                   </div>
                                 ) : null}
                                 {msg.tasksCreated?.length ? (
-                                  <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-900/40 space-y-1">
-                                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-450 flex items-center gap-1.5">
+                                  <div className='mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-900/40 space-y-1'>
+                                    <p className='text-xs font-semibold text-emerald-600 dark:text-emerald-450 flex items-center gap-1.5'>
                                       <CheckCircle size={12} /> Đã tạo tasks:
                                     </p>
                                     {msg.tasksCreated.map((t) => (
                                       <p
                                         key={t.id}
-                                        className="text-xs text-emerald-600 dark:text-emerald-450 flex items-center gap-1.5 pl-1.5"
+                                        className='text-xs text-emerald-600 dark:text-emerald-450 flex items-center gap-1.5 pl-1.5'
                                       >
-                                        <span className="font-mono text-[10px] bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 px-1 py-0.5 rounded text-emerald-700 dark:text-emerald-400">{t.id}</span>
+                                        <span className='font-mono text-[10px] bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 px-1 py-0.5 rounded text-emerald-700 dark:text-emerald-400'>
+                                          {t.id}
+                                        </span>
                                         <span>{t.title}</span>
                                       </p>
                                     ))}
@@ -1233,8 +1412,8 @@ export default function AiChatBubble() {
                   </div>
 
                   {/* Input Form */}
-                  <div className="border-t border-zinc-100 dark:border-zinc-900/60 bg-white dark:bg-zinc-950 p-4 flex-shrink-0">
-                    <div className="max-w-3xl mx-auto w-full relative flex items-end">
+                  <div className='border-t border-zinc-100 dark:border-zinc-900/60 bg-white dark:bg-zinc-950 p-4 flex-shrink-0'>
+                    <div className='max-w-3xl mx-auto w-full relative flex items-end'>
                       <textarea
                         ref={textareaRef}
                         value={input}
@@ -1252,17 +1431,15 @@ export default function AiChatBubble() {
                             : "Chọn project trước"
                         }
                         rows={1}
-                        className="w-full resize-none text-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-4 pr-12 py-3.5 bg-zinc-50/30 dark:bg-zinc-900/30 text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 disabled:bg-zinc-50 dark:disabled:bg-zinc-900 disabled:text-zinc-400 transition-all max-h-36 overflow-y-auto shadow-inner"
+                        className='w-full resize-none text-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-4 pr-12 py-3.5 bg-zinc-50/30 dark:bg-zinc-900/30 text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 disabled:bg-zinc-50 dark:disabled:bg-zinc-900 disabled:text-zinc-400 transition-all max-h-36 overflow-y-auto shadow-inner'
                         style={{ height: "52px" }}
                       />
                       <button
                         onClick={send}
                         disabled={
-                          !input.trim() ||
-                          !selectedProjectId ||
-                          isStreaming
+                          !input.trim() || !selectedProjectId || isStreaming
                         }
-                        className="absolute right-2.5 bottom-2.5 bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white p-2 rounded-xl disabled:opacity-30 transition-all active:scale-95 flex items-center justify-center shadow-md shadow-black/5"
+                        className='absolute right-2.5 bottom-2.5 bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white p-2 rounded-xl disabled:opacity-30 transition-all active:scale-95 flex items-center justify-center shadow-md shadow-black/5'
                       >
                         <Send size={15} />
                       </button>
@@ -1271,11 +1448,12 @@ export default function AiChatBubble() {
                 </>
               )}
             </div>
-
           </div>
         </div>
       )}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes cursor-blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
@@ -1288,7 +1466,9 @@ export default function AiChatBubble() {
           animation: cursor-blink 1s step-start infinite;
           vertical-align: middle;
         }
-      ` }} />
+      `,
+        }}
+      />
     </>
   );
 }
