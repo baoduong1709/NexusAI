@@ -352,7 +352,9 @@ export default function AiChatBubble() {
         .summarize(
           selectedProjectId!,
           session.summary ?? "",
-          newMsgs.map((m) => ({ role: m.role, content: m.content })),
+          newMsgs
+            .filter((m) => m.content && m.content.trim() !== "")
+            .map((m) => ({ role: m.role, content: m.content })),
         )
         .then((r) => ({ session, newSummary: r.data as string })),
     onSuccess: ({ session, newSummary }) => {
