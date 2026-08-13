@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma/prisma.service";
+import { LeaveStatus } from "@prisma/client";
 import { TasksService } from "../tasks/tasks.service";
 import { AiDataAccessService, FilteredProjectContext } from "./ai-data-access.service";
 import { RagService } from "./rag.service";
@@ -921,20 +922,63 @@ Please analyze the above and respond with a JSON object in this exact format:
 
     if (!ctx.members?.length) return [];
 
+    const userIds = ctx.members.map((m) => m.userId);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const activeLeaves = userIds.length
+      ? await this.prisma.leaveRequest.findMany({
+          where: {
+            userId: { in: userIds },
+            status: { in: [LeaveStatus.APPROVED, LeaveStatus.PENDING] },
+            endDate: { gte: today },
+          },
+          select: {
+            userId: true,
+            type: true,
+            startDate: true,
+            endDate: true,
+            status: true,
+          },
+        })
+      : [];
+
+    const now = new Date();
+
     const teamInfo = ctx.members
-      .map(
-        (m) =>
-          `ID:${m.userId} - ${m.name} (${m.projectRole || m.globalRole || "No role"}, skills: ${m.skills.join(", ")})`,
-      )
+      .map((m) => {
+        const memberLeaves = activeLeaves.filter((l) => l.userId === m.userId);
+        const currentlyOnLeave = memberLeaves.find(
+          (l) => l.startDate <= now && l.endDate >= now && l.status === LeaveStatus.APPROVED,
+        );
+        let leaveNotice = "";
+        if (currentlyOnLeave) {
+          leaveNotice = ` *** [CURRENTLY ON LEAVE: ${currentlyOnLeave.type} from ${currentlyOnLeave.startDate.toISOString().split("T")[0]} to ${currentlyOnLeave.endDate.toISOString().split("T")[0]}] ***`;
+        } else if (memberLeaves.length > 0) {
+          const upcoming = memberLeaves
+            .map(
+              (l) =>
+                `${l.type} (${l.status}) from ${l.startDate.toISOString().split("T")[0]} to ${l.endDate.toISOString().split("T")[0]}`,
+            )
+            .join("; ");
+          leaveNotice = ` [SCHEDULED LEAVE: ${upcoming}]`;
+        }
+        return `ID:${m.userId} - ${m.name} (${m.projectRole || m.globalRole || "No role"}, skills: ${m.skills.join(", ")})${leaveNotice}`;
+      })
       .join("\n");
 
     const prompt = `Given this task: "${taskDescription}"
     
-And these team members:
+And these team members (note their leave/absence status):
 ${teamInfo}
 
 Return a JSON array of up to 3 best-suited member IDs in order of suitability:
-{ "suggestions": [{ "userId": 1, "reason": "..." }] }`;
+{ "suggestions": [{ "userId": 1, "reason": "..." }] }
+
+IMPORTANT LEAVE & AVAILABILITY RULES:
+- Strongly avoid suggesting team members who are CURRENTLY ON LEAVE or scheduled on leave during the task execution, unless no other qualified team member exists.
+- If suggesting a member with upcoming or active leave, explicitly mention their leave status in the "reason" field.
+- Balance skills, job role, and absence status when ranking suitability.`;
 
     try {
       const text = await this.generateAiText(
@@ -2348,6 +2392,7 @@ Tool policy:
 - Call independent data tools together when possible. During a tool-call turn, output only tool calls.
 - For a specific module or feature, pass a focused query instead of loading the entire project.
 - Use get_project_tasks for task facts; get_project_members and analyze_member_workload for staffing; get_document_summaries, read_document_content, and search_document for documentation.
+- Leave & Absence Policy: When assigning a task, suggesting assignees, or discussing specific employees, call 'get_employee_leave_status' for the relevant employee ID(s) to check their availability before assigning or recommending them. Do NOT assign tasks to members who are on leave.
 - requirements.md is not preloaded. Read it when requirements or task decomposition depend on it.
 - If a tool fails or returns no data, try one sensible alternative. Never fabricate missing results.
 
@@ -2447,8 +2492,25 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
         type: "function" as const,
         function: {
           name: "get_project_members",
-          description: "Retrieve a list of project members and their skills. Use this when you need to find the right person to assign a task.",
+          description: "Retrieve a list of project members and their skills. Use this when you need to find the team members in the project.",
           parameters: { type: "object", properties: {}, required: [] },
+        },
+      },
+      {
+        type: "function" as const,
+        function: {
+          name: "get_employee_leave_status",
+          description: "Check current or scheduled leave/absence dates for specific employee(s). Call this tool ONLY when assigning a task, suggesting assignees, or when asked about specific employee availability/leave schedules.",
+          parameters: {
+            type: "object",
+            properties: {
+              userIds: {
+                type: "array",
+                items: { type: "integer" },
+                description: "List of user/employee IDs to check leave dates for. Leave empty to check all project members."
+              }
+            }
+          },
         },
       },
       {
@@ -2908,7 +2970,49 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
                  result = JSON.stringify({
                    count: members.length,
                    members,
-                   _note: "Use member IDs for task assignment via assigneeId field.",
+                   _note: "Use member IDs for task assignment. Call get_employee_leave_status to check leave availability for specific member(s).",
+                 });
+              } else if (tc.function.name === "get_employee_leave_status") {
+                 const args = JSON.parse(tc.function.arguments || "{}");
+                 const targetUserIds: number[] = Array.isArray(args.userIds) && args.userIds.length
+                   ? args.userIds
+                   : ctx.members?.map(m => m.userId) || [];
+
+                 const today = new Date();
+                 today.setHours(0, 0, 0, 0);
+
+                 const activeLeaves = targetUserIds.length
+                   ? await this.prisma.leaveRequest.findMany({
+                       where: {
+                         userId: { in: targetUserIds },
+                         status: { in: [LeaveStatus.APPROVED, LeaveStatus.PENDING] },
+                         endDate: { gte: today },
+                       },
+                       select: {
+                         userId: true,
+                         type: true,
+                         startDate: true,
+                         endDate: true,
+                         totalDays: true,
+                         status: true,
+                         reason: true,
+                         user: { select: { name: true } },
+                       },
+                     })
+                   : [];
+
+                 result = JSON.stringify({
+                   checkedCount: targetUserIds.length,
+                   leaves: activeLeaves.map((l) => ({
+                     userId: l.userId,
+                     employeeName: l.user?.name,
+                     type: l.type,
+                     status: l.status,
+                     startDate: l.startDate.toISOString().split("T")[0],
+                     endDate: l.endDate.toISOString().split("T")[0],
+                     totalDays: l.totalDays,
+                     reason: l.reason,
+                   })),
                  });
               } else if (tc.function.name === "analyze_member_workload") {
                  const members = ctx.members || [];

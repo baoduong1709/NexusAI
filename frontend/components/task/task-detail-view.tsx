@@ -17,7 +17,10 @@ import {
   AlertCircle,
   Link2,
   Unlink,
-  Plus
+  Plus,
+  Sparkles,
+  AlertTriangle,
+  CalendarOff,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -87,6 +90,28 @@ export function TaskDetailView() {
   });
 
   const activities = activitiesQuery.data || [];
+
+  const [isSuggestingAssignee, setIsSuggestingAssignee] = useState(false);
+  const [aiAssigneeSuggestions, setAiAssigneeSuggestions] = useState<Array<{ userId: number; reason: string }>>([]);
+
+  const handleSuggestAssignee = async () => {
+    if (!projectId) return;
+    setIsSuggestingAssignee(true);
+    try {
+      const taskTitle = getValues("title") || "";
+      const taskDesc = stripHtmlTags(getValues("description") || "");
+      const res = await projectsApi.suggestAssignee(projectId as string, `${taskTitle}: ${taskDesc}`);
+      const suggestions = res.data || [];
+      setAiAssigneeSuggestions(suggestions);
+      if (suggestions.length === 0) {
+        toast.info("AI không tìm thấy gợi ý người thực hiện phù hợp");
+      }
+    } catch {
+      toast.error("Lỗi khi nhờ AI gợi ý người thực hiện");
+    } finally {
+      setIsSuggestingAssignee(false);
+    }
+  };
 
   // Form setup
   const { register, setValue, watch, reset, getValues } = useForm({
@@ -972,9 +997,56 @@ export function TaskDetailView() {
 
             {/* Assignee */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-400 block">
-                Assignee
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-zinc-400 block">
+                  Assignee
+                </label>
+                <button
+                  type="button"
+                  onClick={handleSuggestAssignee}
+                  disabled={isSuggestingAssignee}
+                  className="text-[11px] font-bold text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline disabled:opacity-50"
+                  title="Gợi ý người thực hiện bằng AI"
+                >
+                  {isSuggestingAssignee ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <Sparkles size={12} />
+                  )}
+                  AI Gợi ý
+                </button>
+              </div>
+
+              {/* Selected member leave warning */}
+              {(() => {
+                const currentAssigneeId = watch("assigneeId");
+                const selectedMember = (project?.members || []).find(
+                  (m: any) => m.userId.toString() === currentAssigneeId
+                );
+                const todayStr = new Date().toISOString().split("T")[0];
+                const activeLeave = selectedMember?.user?.leaveRequests?.find((l: any) => {
+                  const s = new Date(l.startDate).toISOString().split("T")[0];
+                  const e = new Date(l.endDate).toISOString().split("T")[0];
+                  return s <= todayStr && e >= todayStr && (l.status === "APPROVED" || l.status === "PENDING");
+                });
+
+                if (!activeLeave) return null;
+
+                return (
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-2 mb-2">
+                    <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block">⚠️ Nhân viên đang nghỉ phép!</span>
+                      <span>
+                        {activeLeave.type} ({activeLeave.status === "APPROVED" ? "Đã duyệt" : "Chờ duyệt"}) từ{" "}
+                        {new Date(activeLeave.startDate).toLocaleDateString("vi-VN")} đến{" "}
+                        {new Date(activeLeave.endDate).toLocaleDateString("vi-VN")}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <CustomSelect
                 value={watch("assigneeId")}
                 onChange={(val) => {
@@ -993,6 +1065,57 @@ export function TaskDetailView() {
                 className="w-full"
                 buttonClassName="w-full text-left bg-zinc-50 dark:bg-zinc-950 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-zinc-950 dark:text-white py-2"
               />
+
+              {/* AI Assignee Suggestions list */}
+              {aiAssigneeSuggestions.length > 0 && (
+                <div className="mt-2 p-3 bg-indigo-50/50 dark:bg-indigo-500/10 border border-indigo-200/60 dark:border-indigo-500/20 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                      <Sparkles size={12} /> AI Gợi ý phù hợp:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setAiAssigneeSuggestions([])}
+                      className="text-[10px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {aiAssigneeSuggestions.map((sugg) => {
+                      const member = (project?.members || []).find((m: any) => m.userId === sugg.userId);
+                      if (!member) return null;
+                      return (
+                        <div
+                          key={sugg.userId}
+                          className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-white/5 text-xs"
+                        >
+                          <div className="flex-1 min-w-0 pr-2">
+                            <span className="font-bold text-zinc-900 dark:text-white block truncate">
+                              {member.user.name}
+                            </span>
+                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block truncate">
+                              {sugg.reason}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setValue("assigneeId", sugg.userId.toString());
+                              autoSaveTask();
+                              setAiAssigneeSuggestions([]);
+                              toast.success(`Đã gán cho ${member.user.name}`);
+                            }}
+                            className="px-2.5 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-md text-[11px] font-bold shrink-0"
+                          >
+                            Chọn
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Due date */}

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
-import { Prisma } from "@prisma/client";
+import { Prisma, LeaveStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProjectDto } from "./dto/create-project.dto";
 import { AiService } from "../ai/ai.service";

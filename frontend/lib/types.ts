@@ -33,6 +33,7 @@ export interface User {
   isSuperAdmin: boolean;
   role?: Role;
   company?: Company;
+  leaveRequests?: LeaveRequest[];
   createdAt: string;
   updatedAt: string;
 }
@@ -42,7 +43,7 @@ export interface ProjectMember {
   userId: number;
   projectRole: string | null;
   joinedAt: string;
-  user: Pick<User, 'id' | 'name' | 'email' | 'skills' | 'role'>;
+  user: Pick<User, 'id' | 'name' | 'email' | 'skills' | 'role'> & { leaveRequests?: LeaveRequest[] };
 }
 
 export interface Project {
