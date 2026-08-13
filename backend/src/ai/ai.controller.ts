@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Res,
+  Query,
 } from "@nestjs/common";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Queue } from "bullmq";
@@ -258,11 +259,29 @@ export class AiController {
 
   @Get("suggested-prompts")
   @RequirePermissions("ai:analyze")
-  @ApiOperation({ summary: "Get preset prompt suggestions tailored to user's role" })
+  @ApiOperation({ summary: "Get dynamic LLM-driven prompt suggestions tailored to user's role and chat context" })
   getSuggestedPrompts(
     @Param("projectId") projectId: string,
-    @CurrentUser() user: { id: number },
+    @Query("sessionId") sessionId?: string,
+    @CurrentUser() user: { id: number } = { id: 1 },
   ) {
-    return this.aiService.getSuggestedPrompts(projectId, user.id);
+    const sId = sessionId ? parseInt(sessionId, 10) : undefined;
+    return this.aiService.getSuggestedPrompts(projectId, user.id, sId);
+  }
+
+  @Post("suggested-prompts")
+  @RequirePermissions("ai:analyze")
+  @ApiOperation({ summary: "Get dynamic LLM-driven prompt suggestions based on current chat messages payload" })
+  getSuggestedPromptsPost(
+    @Param("projectId") projectId: string,
+    @CurrentUser() user: { id: number },
+    @Body() body: { sessionId?: number; messages?: any[] },
+  ) {
+    return this.aiService.getSuggestedPrompts(
+      projectId,
+      user.id,
+      body.sessionId,
+      body.messages,
+    );
   }
 }

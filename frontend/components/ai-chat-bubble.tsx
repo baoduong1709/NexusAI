@@ -146,14 +146,19 @@ export default function AiChatBubble() {
   const streamStartRef = useRef<number>(0);
 
   // Fetch dynamic LLM-driven prompt suggestions for the selected project and active chat session
-  const { data: suggestedPromptData, refetch: refetchPrompts } = useQuery({
+  const { data: suggestedPromptData, refetch: refetchPrompts, isFetching: isFetchingPrompts } = useQuery({
     queryKey: ["ai-suggested-prompts", selectedProjectId, activeSession?.id, activeSession?.messages?.length || 0],
     queryFn: async () => {
       if (!selectedProjectId) return null;
-      const res = await aiApi.getSuggestedPrompts(selectedProjectId, activeSession?.id);
+      const msgs = activeSession?.messages || [];
+      const res = await aiApi.getSuggestedPromptsPost(selectedProjectId, {
+        sessionId: activeSession?.id,
+        messages: msgs.map((m: any) => ({ role: m.role, content: m.content })),
+      });
       return res.data;
     },
     enabled: !!selectedProjectId && open,
+    staleTime: 0,
   });
 
   // Clean up timer on unmount
@@ -516,6 +521,7 @@ export default function AiChatBubble() {
           }
 
           stopStreaming();
+          refetchPrompts();
 
           // 6. Summarize in the background
           summarizeMutation.mutate({
@@ -1460,24 +1466,25 @@ export default function AiChatBubble() {
                   </div>
 
                   {/* Quick Prompt Chips */}
-                  {selectedProjectId && suggestedPromptData?.prompts && suggestedPromptData.prompts.length > 0 && (
+                  {selectedProjectId && (suggestedPromptData?.prompts?.length || isFetchingPrompts) ? (
                     <div className='px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-zinc-100 dark:border-zinc-900/60 bg-zinc-50/60 dark:bg-zinc-950/80 flex-shrink-0'>
                       <span className='text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1 flex-shrink-0 mr-1'>
-                        <Sparkles size={11} /> {suggestedPromptData.role}:
+                        <Sparkles size={11} className={cn(isFetchingPrompts && "animate-spin text-amber-500")} />
+                        {isFetchingPrompts ? "Đang suy nghĩ prompt tiếp theo..." : `${suggestedPromptData?.role}:`}
                       </span>
-                      {suggestedPromptData.prompts.map((p) => (
+                      {suggestedPromptData?.prompts?.map((p) => (
                         <button
                           key={p.id}
                           onClick={() => setInput(p.prompt)}
-                          disabled={isStreaming}
+                          disabled={isStreaming || isFetchingPrompts}
                           title={p.prompt}
-                          className='flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors whitespace-nowrap shadow-2xs'
+                          className='flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors whitespace-nowrap shadow-2xs disabled:opacity-60'
                         >
                           {p.title}
                         </button>
                       ))}
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Input Form */}
                   <div className='border-t border-zinc-100 dark:border-zinc-900/60 bg-white dark:bg-zinc-950 p-4 flex-shrink-0'>

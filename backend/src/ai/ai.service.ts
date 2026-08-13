@@ -1951,7 +1951,12 @@ Return only the summary text, with no extra explanation.`;
 
   // ── Pure LLM Dynamic Prompt Suggestions (No Hardcoding) ────────────────────
 
-  async getSuggestedPrompts(projectId: string, userId: number, sessionId?: number) {
+  async getSuggestedPrompts(
+    projectId: string,
+    userId: number,
+    sessionId?: number,
+    customMessages?: ChatMessage[],
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { role: true },
@@ -1959,45 +1964,68 @@ Return only the summary text, with no extra explanation.`;
 
     const roleName = user?.role?.name || "Developer";
 
-    // Fetch recent chat history if sessionId is provided
-    let recentMessagesText = "";
-    if (sessionId) {
+    let chatMessages: ChatMessage[] = customMessages || [];
+    if (!chatMessages.length && sessionId) {
       const session = await this.prisma.aiChatSession.findUnique({
         where: { id: sessionId },
       });
-      if (session && Array.isArray(session.messages) && session.messages.length > 0) {
-        const lastMsgs = (session.messages as any[]).slice(-4);
-        recentMessagesText = lastMsgs
-          .map((m) => `${m.role === "user" ? "User" : "AI"}: ${(m.content || "").slice(0, 300)}`)
-          .join("\n");
+      if (session && Array.isArray(session.messages)) {
+        chatMessages = session.messages as unknown as ChatMessage[];
       }
+    }
+
+    let recentMessagesText = "";
+    if (chatMessages.length > 0) {
+      // Take up to last 6 messages
+      const lastMsgs = chatMessages.slice(-6);
+      recentMessagesText = lastMsgs
+        .map(
+          (m) =>
+            `${m.role === "user" ? "User" : "AI Assistant"}: ${(m.content || "").slice(0, 500)}`,
+        )
+        .join("\n\n");
     }
 
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
-      select: { name: true },
+      select: { name: true, description: true },
     });
 
-    const prompt = `You are an AI Assistant for a project management system.
-Generate 4 HIGHLY RELEVANT, DYNAMIC PROMPT SUGGESTIONS in Vietnamese for a team member with role "${roleName}".
+    const prompt = `You are a Senior Project Manager & AI Assistant.
+Your task is to generate 4 HIGHLY SPECIFIC, RELEVANT, AND NON-REPETITIVE FOLLOW-UP PROMPTS in Vietnamese for a team member with role "${roleName}".
 
-Project: "${project?.name || projectId}"
-User Role: ${roleName}
-${recentMessagesText ? `Recent Chat Context:\n${recentMessagesText}\n` : "No chat history yet (Starting conversation)."}
+[Context]:
+- Project Name: "${project?.name || projectId}"
+- User Role: ${roleName}
 
-Instructions:
-- Analyze the user's role and recent chat context.
-- If there is chat history, suggest 4 logical, natural follow-up actions/questions related to what was just discussed.
-- If there is no chat history, suggest 4 high-value starting prompts tailored specifically to the duties of a ${roleName}.
-- Keep titles concise (max 6-8 words) with an appropriate emoji.
-- Prompts must be actionable, clear commands or questions in Vietnamese.
+[Recent Chat History]:
+${recentMessagesText ? recentMessagesText : "No chat history yet (First interaction in this session)."}
 
-Return ONLY a JSON array of 4 objects in this exact format:
+[STRICT INSTRUCTIONS]:
+1. IF THERE IS CHAT HISTORY:
+   - Carefully read the VERY LAST AI RESPONSE in the history above.
+   - DO NOT repeat questions or topics that have already been answered or discussed.
+   - Generate 4 distinct, logical follow-up prompts that build directly upon what was just discussed or stated by the AI.
+   - Make each prompt target a different angle:
+     * Prompt 1 (Actionable Next Step): "Làm tiếp bước..." or "Triển khai..."
+     * Prompt 2 (Deep Technical/Spec Dive): "Phân tích chi tiết..." or "Trích xuất..."
+     * Prompt 3 (Edge Case & Testing): "Kiểm tra rủi ro..." or "Tạo test case..."
+     * Prompt 4 (Tasks & Estimation): "Đề xuất breakdown task..." or "Gợi ý phân công..."
+
+2. IF THERE IS NO CHAT HISTORY:
+   - Generate 4 high-value starting prompts tailored specifically to a ${roleName} for project "${project?.name}".
+
+3. FORMAT & LANGUAGE:
+   - Everything in natural, professional Vietnamese.
+   - Short, clean titles (4-7 words). DO NOT include any emojis or special symbol prefixes in the title, prompt, or category.
+   - Full prompt string must be ready to send to AI directly.
+
+Return ONLY a JSON array of 4 objects with keys "id", "title", "prompt", "category":
 [
-  { "id": "dyn_1", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Gợi ý tiếp theo" },
-  { "id": "dyn_2", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Chi tiết" },
-  { "id": "dyn_3", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Hành động" },
-  { "id": "dyn_4", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Phân tích" }
+  { "id": "dyn_1", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Bước tiếp theo" },
+  { "id": "dyn_2", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Chi tiết" },
+  { "id": "dyn_3", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Kiểm thử & Rủi ro" },
+  { "id": "dyn_4", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Phân công Task" }
 ]`;
 
     try {
@@ -2013,14 +2041,16 @@ Return ONLY a JSON array of 4 objects in this exact format:
       if (jsonMatch) {
         const dynamicPrompts = JSON.parse(jsonMatch[0]);
         if (Array.isArray(dynamicPrompts) && dynamicPrompts.length > 0) {
+          const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
           return {
             role: roleName,
             isDynamic: true,
+            hasHistory: chatMessages.length > 0,
             prompts: dynamicPrompts.map((p: any, idx: number) => ({
               id: p.id || `dyn_${idx + 1}`,
-              title: p.title || `Gợi ý ${idx + 1}`,
-              prompt: p.prompt || "",
-              category: p.category || "Hội thoại",
+              title: (p.title || `Gợi ý ${idx + 1}`).replace(emojiRegex, "").trim(),
+              prompt: (p.prompt || "").replace(emojiRegex, "").trim(),
+              category: (p.category || "Hội thoại").replace(emojiRegex, "").trim(),
               icon: "sparkles",
             })),
           };
@@ -2032,19 +2062,20 @@ Return ONLY a JSON array of 4 objects in this exact format:
 
     return {
       role: roleName,
-      isDynamic: true,
+      isDynamic: false,
+      hasHistory: false,
       prompts: [
         {
           id: "dyn_fallback_1",
-          title: "📌 Tóm tắt tổng quan dự án",
-          prompt: "Tóm tắt tình hình tổng quan dự án, số lượng tài liệu đã nạp và trạng thái tiến độ hiện tại.",
+          title: "Tóm tắt tiến độ dự án",
+          prompt: "Tóm tắt tình hình tổng quan dự án và các task trọng tâm hiện tại.",
           category: "Tổng quan",
           icon: "sparkles",
         },
         {
           id: "dyn_fallback_2",
-          title: "📄 Phân tích Yêu cầu kỹ thuật",
-          prompt: "Tổng hợp các điểm quan trọng nhất trong tài liệu yêu cầu (requirements.md) của dự án.",
+          title: "Phân tích Yêu cầu kỹ thuật",
+          prompt: "Trích xuất các yêu cầu kỹ thuật quan trọng nhất trong tài liệu dự án.",
           category: "Nghiệp vụ",
           icon: "sparkles",
         },
