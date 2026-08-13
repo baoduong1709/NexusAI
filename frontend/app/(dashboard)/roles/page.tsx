@@ -18,6 +18,7 @@ import {
   FileText,
   Bot,
   Lock,
+  CalendarOff,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/auth";
@@ -32,6 +33,7 @@ const PERMISSION_ICONS: Record<string, any> = {
   "task:": ListChecks,
   "document:": FileText,
   "ai:": Bot,
+  "leave:": CalendarOff,
 };
 
 import AccessDenied from "@/components/layout/access-denied";
@@ -130,6 +132,7 @@ export default function RolesPage() {
     { label: "Task & Backlog", prefix: "task:" },
     { label: "Document Hub", prefix: "document:" },
     { label: "AI Copilot", prefix: "ai:" },
+    { label: "Leave & Absence", prefix: "leave:" },
   ];
 
   // Framer Motion animation configuration

@@ -32,7 +32,7 @@ const navigation: NavigationItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "user:read" },
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "Users", href: "/users", icon: Users, permission: "user:read" },
-  { name: "Leave Requests", href: "/leave-requests", icon: CalendarOff, permission: "leave:create" },
+  { name: "Leave Requests", href: "/leave-requests", icon: CalendarOff },
   { name: "Roles", href: "/roles", icon: Settings, permission: "role:read" },
   {
     name: "AI Settings",
