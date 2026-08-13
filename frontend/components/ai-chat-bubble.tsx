@@ -1144,7 +1144,7 @@ export default function AiChatBubble() {
 
                           {suggestedPromptData?.prompts && suggestedPromptData.prompts.length > 0 ? (
                             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left'>
-                              {suggestedPromptData.prompts.map((p) => (
+                              {suggestedPromptData.prompts.slice(0, 2).map((p) => (
                                 <button
                                   key={p.id}
                                   onClick={() => setInput(p.prompt)}
@@ -1465,20 +1465,19 @@ export default function AiChatBubble() {
                     </div>
                   </div>
 
-                  {/* Quick Prompt Chips */}
-                  {selectedProjectId && (suggestedPromptData?.prompts?.length || isFetchingPrompts) ? (
-                    <div className='px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-zinc-100 dark:border-zinc-900/60 bg-zinc-50/60 dark:bg-zinc-950/80 flex-shrink-0'>
+                  {/* Quick Prompt Chips (Max 2 suggestions, clean UI) */}
+                  {selectedProjectId && suggestedPromptData?.prompts && suggestedPromptData.prompts.length > 0 ? (
+                    <div className='px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar border-t border-zinc-100 dark:border-zinc-900/60 bg-zinc-50/60 dark:bg-zinc-950/80 flex-shrink-0'>
                       <span className='text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1 flex-shrink-0 mr-1'>
-                        <Sparkles size={11} className={cn(isFetchingPrompts && "animate-spin text-amber-500")} />
-                        {isFetchingPrompts ? "Đang suy nghĩ prompt tiếp theo..." : `${suggestedPromptData?.role}:`}
+                        <Sparkles size={11} /> Gợi ý:
                       </span>
-                      {suggestedPromptData?.prompts?.map((p) => (
+                      {suggestedPromptData.prompts.slice(0, 2).map((p) => (
                         <button
                           key={p.id}
                           onClick={() => setInput(p.prompt)}
-                          disabled={isStreaming || isFetchingPrompts}
+                          disabled={isStreaming}
                           title={p.prompt}
-                          className='flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors whitespace-nowrap shadow-2xs disabled:opacity-60'
+                          className='flex-shrink-0 text-[11px] px-3 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors whitespace-nowrap shadow-2xs'
                         >
                           {p.title}
                         </button>

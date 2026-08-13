@@ -1992,7 +1992,7 @@ Return only the summary text, with no extra explanation.`;
     });
 
     const prompt = `You are a Senior Project Manager & AI Assistant.
-Your task is to generate 4 HIGHLY SPECIFIC, RELEVANT, AND NON-REPETITIVE FOLLOW-UP PROMPTS in Vietnamese for a team member with role "${roleName}".
+Your task is to generate EXACTLY 2 HIGHLY SPECIFIC, RELEVANT, AND NON-REPETITIVE FOLLOW-UP PROMPTS in Vietnamese for a team member with role "${roleName}".
 
 [Context]:
 - Project Name: "${project?.name || projectId}"
@@ -2005,27 +2005,22 @@ ${recentMessagesText ? recentMessagesText : "No chat history yet (First interact
 1. IF THERE IS CHAT HISTORY:
    - Carefully read the VERY LAST AI RESPONSE in the history above.
    - DO NOT repeat questions or topics that have already been answered or discussed.
-   - Generate 4 distinct, logical follow-up prompts that build directly upon what was just discussed or stated by the AI.
-   - Make each prompt target a different angle:
-     * Prompt 1 (Actionable Next Step): "Làm tiếp bước..." or "Triển khai..."
-     * Prompt 2 (Deep Technical/Spec Dive): "Phân tích chi tiết..." or "Trích xuất..."
-     * Prompt 3 (Edge Case & Testing): "Kiểm tra rủi ro..." or "Tạo test case..."
-     * Prompt 4 (Tasks & Estimation): "Đề xuất breakdown task..." or "Gợi ý phân công..."
+   - Generate EXACTLY 2 distinct, logical follow-up prompts that build directly upon what was just discussed or stated by the AI.
+   - Prompt 1: Actionable next step or technical breakdown ("Triển khai tiếp..." or "Phân tích...")
+   - Prompt 2: Testing, edge cases, or task breakdown ("Tạo checklist test..." or "Rã task...")
 
 2. IF THERE IS NO CHAT HISTORY:
-   - Generate 4 high-value starting prompts tailored specifically to a ${roleName} for project "${project?.name}".
+   - Generate EXACTLY 2 high-value starting prompts tailored specifically to a ${roleName} for project "${project?.name}".
 
 3. FORMAT & LANGUAGE:
    - Everything in natural, professional Vietnamese.
-   - Short, clean titles (4-7 words). DO NOT include any emojis or special symbol prefixes in the title, prompt, or category.
+   - Short, clean titles (4-7 words). NO emojis, NO special symbols.
    - Full prompt string must be ready to send to AI directly.
 
-Return ONLY a JSON array of 4 objects with keys "id", "title", "prompt", "category":
+Return ONLY a JSON array of 2 objects with keys "id", "title", "prompt", "category":
 [
-  { "id": "dyn_1", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Bước tiếp theo" },
-  { "id": "dyn_2", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Chi tiết" },
-  { "id": "dyn_3", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Kiểm thử & Rủi ro" },
-  { "id": "dyn_4", "title": "Clean Short Title", "prompt": "Complete sentence", "category": "Phân công Task" }
+  { "id": "dyn_1", "title": "Clean Short Title 1", "prompt": "Complete sentence", "category": "Gợi ý" },
+  { "id": "dyn_2", "title": "Clean Short Title 2", "prompt": "Complete sentence", "category": "Gợi ý" }
 ]`;
 
     try {
@@ -2046,7 +2041,7 @@ Return ONLY a JSON array of 4 objects with keys "id", "title", "prompt", "catego
             role: roleName,
             isDynamic: true,
             hasHistory: chatMessages.length > 0,
-            prompts: dynamicPrompts.map((p: any, idx: number) => ({
+            prompts: dynamicPrompts.slice(0, 2).map((p: any, idx: number) => ({
               id: p.id || `dyn_${idx + 1}`,
               title: (p.title || `Gợi ý ${idx + 1}`).replace(emojiRegex, "").trim(),
               prompt: (p.prompt || "").replace(emojiRegex, "").trim(),
