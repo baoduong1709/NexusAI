@@ -22,6 +22,10 @@ export const AVAILABLE_PERMISSIONS = [
   "system:config:write",
   "system:config:read",
   "token:read",
+  "leave:create",
+  "leave:read",
+  "leave:approve",
+  "leave:delete",
 ] as const;
 
 export const PROJECT_SCOPED_PERMISSIONS = [

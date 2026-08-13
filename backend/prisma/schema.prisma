@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Company {
-  id        Int       @id @default(autoincrement())
-  name      String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  projects  Project[]
-  users     User[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  projects      Project[]
+  users         User[]
+  leaveRequests LeaveRequest[]
 
   @@map("companies")
 }
@@ -50,6 +51,8 @@ model User {
   projectMembers  ProjectMember[]
   taskActivities  TaskActivity[]
   assignedTasks   Task[]          @relation("AssignedTasks")
+  leaveRequests   LeaveRequest[]  @relation("UserLeaveRequests")
+  reviewedLeaves  LeaveRequest[]  @relation("ReviewedLeaveRequests")
   company         Company?        @relation(fields: [companyId], references: [id])
   role            Role?           @relation(fields: [roleId], references: [id])
 
@@ -97,16 +100,16 @@ model ProjectAiIndex {
 }
 
 model ProjectAiEmbedding {
-  id          Int      @id @default(autoincrement())
-  projectId   String   @map("project_id")
-  documentId  Int      @map("document_id")
-  chunkIndex  Int      @map("chunk_index")
-  title       String?
-  text        String   @db.Text
-  vector      Float[]
-  createdAt   DateTime @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  projectId  String   @map("project_id")
+  documentId Int      @map("document_id")
+  chunkIndex Int      @map("chunk_index")
+  title      String?
+  text       String   @db.Text
+  vector     Float[]
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([documentId])
@@ -298,4 +301,46 @@ enum TaskActivityType {
   COMMENT
   HISTORY
   WORK_LOG
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  PERSONAL
+  MATERNITY
+  UNPAID
+  OTHER
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model LeaveRequest {
+  id           Int         @id @default(autoincrement())
+  userId       Int         @map("user_id")
+  companyId    Int?        @map("company_id")
+  type         LeaveType   @default(ANNUAL)
+  startDate    DateTime    @map("start_date")
+  endDate      DateTime    @map("end_date")
+  totalDays    Float       @map("total_days")
+  reason       String
+  status       LeaveStatus @default(PENDING)
+  reviewerId   Int?        @map("reviewer_id")
+  reviewerNote String?     @map("reviewer_note")
+  reviewedAt   DateTime?   @map("reviewed_at")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  user     User     @relation("UserLeaveRequests", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer User?    @relation("ReviewedLeaveRequests", fields: [reviewerId], references: [id])
+  company  Company? @relation(fields: [companyId], references: [id])
+
+  @@index([userId, status])
+  @@index([companyId, status])
+  @@index([startDate, endDate])
+  @@map("leave_requests")
 }

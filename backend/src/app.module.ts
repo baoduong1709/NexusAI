@@ -17,6 +17,7 @@ import { LoggingMiddleware } from "./common/middleware/logging.middleware";
 import { StorageModule } from "./common/storage/storage.module";
 import { WebsocketModule } from "./common/websocket/websocket.module";
 import { NotificationModule } from "./notifications/notification.module";
+import { LeaveRequestsModule } from "./leave-requests/leave-requests.module";
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { NotificationModule } from "./notifications/notification.module";
     StorageModule,
     WebsocketModule,
     NotificationModule,
+    LeaveRequestsModule,
   ],
   providers: [
     {

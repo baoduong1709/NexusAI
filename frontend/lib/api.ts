@@ -9,6 +9,8 @@ import type {
   CreateTaskPayload,
   UpdateTaskPayload,
   Task,
+  CreateLeaveRequestPayload,
+  ReviewLeaveRequestPayload,
 } from './types';
 
 const api = axios.create({
@@ -59,6 +61,20 @@ export const usersApi = {
   create: (data: CreateUserPayload) => api.post("/users", data),
   update: (id: number, data: UpdateUserPayload) => api.put(`/users/${id}`, data),
   delete: (id: number) => api.delete(`/users/${id}`),
+};
+
+// ---- Leave Requests ----
+export const leaveRequestsApi = {
+  getAll: (params?: { status?: string; type?: string }) =>
+    api.get("/leave-requests", { params }),
+  getOne: (id: number) => api.get(`/leave-requests/${id}`),
+  create: (data: CreateLeaveRequestPayload) => api.post("/leave-requests", data),
+  update: (id: number, data: Partial<CreateLeaveRequestPayload>) =>
+    api.put(`/leave-requests/${id}`, data),
+  review: (id: number, data: ReviewLeaveRequestPayload) =>
+    api.patch(`/leave-requests/${id}/review`, data),
+  cancel: (id: number) => api.patch(`/leave-requests/${id}/cancel`),
+  delete: (id: number) => api.delete(`/leave-requests/${id}`),
 };
 
 export const companiesApi = {

@@ -228,3 +228,39 @@ export interface RequirementsHistory {
   changesSummary: string | null;
   createdAt: string;
 }
+
+// ---- Leave Requests ----
+export type LeaveType = 'ANNUAL' | 'SICK' | 'PERSONAL' | 'MATERNITY' | 'UNPAID' | 'OTHER';
+export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+
+export interface LeaveRequest {
+  id: number;
+  userId: number;
+  companyId: number | null;
+  type: LeaveType;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason: string;
+  status: LeaveStatus;
+  reviewerId: number | null;
+  reviewerNote: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: Pick<User, 'id' | 'name' | 'email'>;
+  reviewer?: Pick<User, 'id' | 'name'>;
+}
+
+export interface CreateLeaveRequestPayload {
+  type: LeaveType;
+  startDate: string;
+  endDate: string;
+  reason: string;
+}
+
+export interface ReviewLeaveRequestPayload {
+  status: 'APPROVED' | 'REJECTED';
+  reviewerNote?: string;
+}
+
