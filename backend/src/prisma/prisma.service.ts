@@ -25,8 +25,12 @@ export class PrismaService
 
   async onModuleInit() {
     (this as any).$on("query", (e: any) => {
+      let paramsStr = e.params || "";
+      if (typeof paramsStr === "string" && paramsStr.length > 250) {
+        paramsStr = paramsStr.slice(0, 250) + "... [truncated params]";
+      }
       this.logger.debug(
-        `Query: ${e.query} | Params: ${e.params} | Duration: ${e.duration}ms`,
+        `Query: ${e.query} | Params: ${paramsStr} | Duration: ${e.duration}ms`,
       );
     });
     (this as any).$on("error", (e: any) => {

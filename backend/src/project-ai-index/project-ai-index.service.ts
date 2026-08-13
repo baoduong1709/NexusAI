@@ -241,7 +241,6 @@ export class ProjectAiIndexService {
             summary: docSummary,
           };
         }),
-        documentEmbeddings: existingData.documentEmbeddings || [],
         documentSummaries: existingData.documentSummaries || {},
         generatedAt: now,
       };

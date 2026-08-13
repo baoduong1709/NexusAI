@@ -404,6 +404,7 @@ Your summary (Return plain text, without markdown headers format):`;
         documentId
       );
 
+      let savedChunks = 0;
       for (let i = 0; i < chunks.length; i++) {
         const vec = vectors[i] || [];
         if (vec.length > 0) {
@@ -417,10 +418,12 @@ Your summary (Return plain text, without markdown headers format):`;
             chunks[i],
             vec
           );
+          savedChunks++;
         }
       }
+      this.logger.log(`✅ Saved ${savedChunks} vector chunks into project_ai_embeddings table for document ${documentId}`);
     } catch (dbErr: any) {
-      this.logger.error(`Failed to save embeddings to project_ai_embeddings table: ${dbErr.message}`);
+      this.logger.error(`❌ CRITICAL DB ERROR: Failed to save embeddings to project_ai_embeddings table: ${dbErr.message}`);
     }
 
     // Generate document summary
