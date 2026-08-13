@@ -1949,6 +1949,108 @@ Return only the summary text, with no extra explanation.`;
     return { success: true };
   }
 
+  // ── Pure LLM Dynamic Prompt Suggestions (No Hardcoding) ────────────────────
+
+  async getSuggestedPrompts(projectId: string, userId: number, sessionId?: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true },
+    });
+
+    const roleName = user?.role?.name || "Developer";
+
+    // Fetch recent chat history if sessionId is provided
+    let recentMessagesText = "";
+    if (sessionId) {
+      const session = await this.prisma.aiChatSession.findUnique({
+        where: { id: sessionId },
+      });
+      if (session && Array.isArray(session.messages) && session.messages.length > 0) {
+        const lastMsgs = (session.messages as any[]).slice(-4);
+        recentMessagesText = lastMsgs
+          .map((m) => `${m.role === "user" ? "User" : "AI"}: ${(m.content || "").slice(0, 300)}`)
+          .join("\n");
+      }
+    }
+
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { name: true },
+    });
+
+    const prompt = `You are an AI Assistant for a project management system.
+Generate 4 HIGHLY RELEVANT, DYNAMIC PROMPT SUGGESTIONS in Vietnamese for a team member with role "${roleName}".
+
+Project: "${project?.name || projectId}"
+User Role: ${roleName}
+${recentMessagesText ? `Recent Chat Context:\n${recentMessagesText}\n` : "No chat history yet (Starting conversation)."}
+
+Instructions:
+- Analyze the user's role and recent chat context.
+- If there is chat history, suggest 4 logical, natural follow-up actions/questions related to what was just discussed.
+- If there is no chat history, suggest 4 high-value starting prompts tailored specifically to the duties of a ${roleName}.
+- Keep titles concise (max 6-8 words) with an appropriate emoji.
+- Prompts must be actionable, clear commands or questions in Vietnamese.
+
+Return ONLY a JSON array of 4 objects in this exact format:
+[
+  { "id": "dyn_1", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Gợi ý tiếp theo" },
+  { "id": "dyn_2", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Chi tiết" },
+  { "id": "dyn_3", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Hành động" },
+  { "id": "dyn_4", "title": "emoji + Short Title", "prompt": "Complete prompt text to send to AI", "category": "Phân tích" }
+]`;
+
+    try {
+      const llmResponse = await this.generateAiText(
+        [{ role: "user", content: prompt }],
+        "dynamic suggested prompts",
+        0.3,
+        projectId,
+        userId,
+      );
+
+      const jsonMatch = llmResponse.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const dynamicPrompts = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(dynamicPrompts) && dynamicPrompts.length > 0) {
+          return {
+            role: roleName,
+            isDynamic: true,
+            prompts: dynamicPrompts.map((p: any, idx: number) => ({
+              id: p.id || `dyn_${idx + 1}`,
+              title: p.title || `Gợi ý ${idx + 1}`,
+              prompt: p.prompt || "",
+              category: p.category || "Hội thoại",
+              icon: "sparkles",
+            })),
+          };
+        }
+      }
+    } catch (e: any) {
+      this.logger.warn(`Could not generate dynamic prompts with LLM: ${e.message}`);
+    }
+
+    return {
+      role: roleName,
+      isDynamic: true,
+      prompts: [
+        {
+          id: "dyn_fallback_1",
+          title: "📌 Tóm tắt tổng quan dự án",
+          prompt: "Tóm tắt tình hình tổng quan dự án, số lượng tài liệu đã nạp và trạng thái tiến độ hiện tại.",
+          category: "Tổng quan",
+          icon: "sparkles",
+        },
+        {
+          id: "dyn_fallback_2",
+          title: "📄 Phân tích Yêu cầu kỹ thuật",
+          prompt: "Tổng hợp các điểm quan trọng nhất trong tài liệu yêu cầu (requirements.md) của dự án.",
+          category: "Nghiệp vụ",
+          icon: "sparkles",
+        },
+      ],
+    };
+  }
 
   async chatStream(
     projectId: string,

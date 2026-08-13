@@ -198,6 +198,10 @@ export const aiApi = {
   getChatSettings: () => api.get("/users/me/chat-settings"),
   updateChatSettings: (payload: { chatLanguage?: string; chatDescription?: string }) =>
     api.put("/users/me/chat-settings", payload),
+  getSuggestedPrompts: (projectId: string, sessionId?: number) =>
+    api.get<{ role: string; isDynamic?: boolean; prompts: Array<{ id: string; title: string; prompt: string; category: string; icon: string }> }>(
+      `/projects/${projectId}/ai/suggested-prompts${sessionId ? `?sessionId=${sessionId}` : ""}`
+    ),
   chatStream: async (
     projectId: string,
     messages: { role: string; content: string }[],

@@ -23,6 +23,7 @@ import {
   Plus,
   History,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -143,6 +144,17 @@ export default function AiChatBubble() {
   const [streamDuration, setStreamDuration] = useState(0);
   const streamTimerRef = useRef<NodeJS.Timeout | null>(null);
   const streamStartRef = useRef<number>(0);
+
+  // Fetch dynamic LLM-driven prompt suggestions for the selected project and active chat session
+  const { data: suggestedPromptData, refetch: refetchPrompts } = useQuery({
+    queryKey: ["ai-suggested-prompts", selectedProjectId, activeSession?.id, activeSession?.messages?.length || 0],
+    queryFn: async () => {
+      if (!selectedProjectId) return null;
+      const res = await aiApi.getSuggestedPrompts(selectedProjectId, activeSession?.id);
+      return res.data;
+    },
+    enabled: !!selectedProjectId && open,
+  });
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -1102,20 +1114,56 @@ export default function AiChatBubble() {
                           </p>
                         </div>
                       ) : messages.length === 0 ? (
-                        <div className='flex flex-col items-center justify-center py-20 text-center gap-3'>
-                          <div className='w-16 h-16 rounded-full bg-indigo-50/50 dark:bg-indigo-950/20 flex items-center justify-center border border-indigo-100/50 dark:border-indigo-900/30'>
-                            <Bot
-                              size={26}
-                              className='text-indigo-500 dark:text-indigo-400'
-                            />
+                        <div className='flex flex-col items-center justify-center py-10 text-center gap-6 max-w-xl mx-auto'>
+                          <div className='flex flex-col items-center gap-3'>
+                            <div className='w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center border border-indigo-200/50 dark:border-indigo-800/40 shadow-sm'>
+                              <Bot
+                                size={28}
+                                className='text-indigo-600 dark:text-indigo-400'
+                              />
+                            </div>
+                            <div>
+                              <div className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/60 dark:border-indigo-800/50 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-2'>
+                                <Sparkles size={13} />
+                                {suggestedPromptData?.role ? `Gợi ý theo vai trò: ${suggestedPromptData.role}` : "AI Agent Assistant"}
+                              </div>
+                              <h3 className='text-base font-bold text-zinc-900 dark:text-zinc-100'>
+                                Bạn muốn AI hỗ trợ công việc gì?
+                              </h3>
+                              <p className='text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-md'>
+                                Chọn một prompt gợi ý phù hợp với vai trò của bạn hoặc nhập câu hỏi trực tiếp:
+                              </p>
+                            </div>
                           </div>
-                          <p className='text-sm text-zinc-650 dark:text-zinc-400 font-semibold'>
-                            Chat với AI về dự án
-                          </p>
-                          <p className='text-xs text-zinc-400 dark:text-zinc-500 max-w-sm'>
-                            Ví dụ: &quot;Tạo tasks cho module đăng nhập&quot;
-                            hoặc nhờ giải thích cấu trúc code.
-                          </p>
+
+                          {suggestedPromptData?.prompts && suggestedPromptData.prompts.length > 0 ? (
+                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left'>
+                              {suggestedPromptData.prompts.map((p) => (
+                                <button
+                                  key={p.id}
+                                  onClick={() => setInput(p.prompt)}
+                                  disabled={isStreaming}
+                                  className='group flex flex-col p-3.5 rounded-xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/60 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all text-left shadow-sm hover:shadow-md'
+                                >
+                                  <div className='flex items-center justify-between gap-2 mb-1.5'>
+                                    <span className='text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors'>
+                                      {p.title}
+                                    </span>
+                                    <span className='text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 font-medium'>
+                                      {p.category}
+                                    </span>
+                                  </div>
+                                  <p className='text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed'>
+                                    {p.prompt}
+                                  </p>
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className='text-xs text-zinc-400 dark:text-zinc-500'>
+                              Ví dụ: &quot;Tóm tắt tiến độ dự án&quot; hoặc &quot;Tạo tasks cho module chính&quot;
+                            </p>
+                          )}
                         </div>
                       ) : (
                         messages.map((msg, idx) => {
@@ -1410,6 +1458,26 @@ export default function AiChatBubble() {
                       <div ref={bottomRef} />
                     </div>
                   </div>
+
+                  {/* Quick Prompt Chips */}
+                  {selectedProjectId && suggestedPromptData?.prompts && suggestedPromptData.prompts.length > 0 && (
+                    <div className='px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-zinc-100 dark:border-zinc-900/60 bg-zinc-50/60 dark:bg-zinc-950/80 flex-shrink-0'>
+                      <span className='text-[10px] uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1 flex-shrink-0 mr-1'>
+                        <Sparkles size={11} /> {suggestedPromptData.role}:
+                      </span>
+                      {suggestedPromptData.prompts.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => setInput(p.prompt)}
+                          disabled={isStreaming}
+                          title={p.prompt}
+                          className='flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-800 transition-colors whitespace-nowrap shadow-2xs'
+                        >
+                          {p.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Input Form */}
                   <div className='border-t border-zinc-100 dark:border-zinc-900/60 bg-white dark:bg-zinc-950 p-4 flex-shrink-0'>

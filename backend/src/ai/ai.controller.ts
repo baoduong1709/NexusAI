@@ -255,4 +255,14 @@ export class AiController {
   ) {
     return this.aiService.deleteSession(sessionId, user.id);
   }
+
+  @Get("suggested-prompts")
+  @RequirePermissions("ai:analyze")
+  @ApiOperation({ summary: "Get preset prompt suggestions tailored to user's role" })
+  getSuggestedPrompts(
+    @Param("projectId") projectId: string,
+    @CurrentUser() user: { id: number },
+  ) {
+    return this.aiService.getSuggestedPrompts(projectId, user.id);
+  }
 }
