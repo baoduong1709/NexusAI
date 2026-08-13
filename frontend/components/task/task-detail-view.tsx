@@ -100,7 +100,7 @@ export function TaskDetailView() {
     try {
       const taskTitle = getValues("title") || "";
       const taskDesc = stripHtmlTags(getValues("description") || "");
-      const res = await projectsApi.suggestAssignee(projectId as string, `${taskTitle}: ${taskDesc}`);
+      const res = await aiApi.suggestAssignee(projectId as string, `${taskTitle}: ${taskDesc}`);
       const suggestions = res.data || [];
       setAiAssigneeSuggestions(suggestions);
       if (suggestions.length === 0) {
