@@ -3328,10 +3328,9 @@ ${actualSummary ? `\nConversation memory:\n${actualSummary}` : ""}`;
             continue;
           }
 
-          // No tools called, this is the final response. Stream it to client and append to finalFullText.
+          // No tools called, this is the final response. Append to finalFullText.
           console.log(`[DEBUG chatStream] Final text response, breaking loop.`);
           finalFullText += fullText;
-          res.write(`data: ${JSON.stringify({ text: fullText })}\n\n`);
           completedWithFinalResponse = true;
           // No more tool calls, exit loop
           break;
